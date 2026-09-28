@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -13,8 +14,10 @@ public class OllamaSettings
     public int timeoutSeconds = 180;
     [Tooltip("Cargar el modelo en segundo plano al arrancar la escena")]
     public bool preloadOnStart = true;
-    [Tooltip("Tiempo que Ollama mantiene el modelo en memoria tras cada petición (\"60m\", \"2h\", \"-1m\" = siempre)")]
-    public string keepAlive = "60m";
+    [Tooltip("Tiempo que Ollama mantiene el modelo en memoria tras cada petición (\"60m\", \"2h\", \"-1m\" = siempre). Un número sin unidad se interpreta en minutos")]
+    public string keepAlive = DefaultKeepAlive;
+
+    public const string DefaultKeepAlive = "60m";
 }
 
 /// <summary>
@@ -33,6 +36,57 @@ public class OllamaProvider : ILLMProvider
 
     private string ChatUrl => settings.baseUrl.TrimEnd('/') + "/api/chat";
 
+    // Número sin unidad ("60", "-1", "1.5") y duración de Go válida ("60m", "1h30m", "-1m")
+    private static readonly Regex BareNumber = new Regex(@"^-?\d+(\.\d+)?$");
+    private static readonly Regex GoDuration = new Regex(@"^-?(\d+(\.\d+)?(ns|us|µs|ms|s|m|h))+$");
+
+    private string lastWarnedKeepAlive;
+
+    /// <summary>
+    /// keepAlive del Inspector listo para enviar. Ollama rechaza con HTTP 400 un texto sin unidad como "-1".
+    /// </summary>
+    private string KeepAlive
+    {
+        get
+        {
+            string value = NormalizeKeepAlive(settings.keepAlive, out string warning);
+
+            // Avisar una vez por valor, no en cada petición
+            if (warning != null && settings.keepAlive != lastWarnedKeepAlive)
+            {
+                lastWarnedKeepAlive = settings.keepAlive;
+                Debug.LogWarning($"[Ollama] keepAlive: {warning}");
+            }
+
+            return value;
+        }
+    }
+
+    /// <summary>
+    /// Vacío → valor por defecto; número sin unidad → minutos ("-1" → "-1m");
+    /// duración válida → sin cambios; cualquier otra cosa → valor por defecto.
+    /// </summary>
+    public static string NormalizeKeepAlive(string raw, out string warning)
+    {
+        warning = null;
+        string value = raw?.Trim();
+
+        if (string.IsNullOrEmpty(value))
+            return OllamaSettings.DefaultKeepAlive;
+
+        if (BareNumber.IsMatch(value))
+        {
+            warning = $"'{raw}' no tiene unidad; se usa '{value}m'.";
+            return value + "m";
+        }
+
+        if (GoDuration.IsMatch(value))
+            return value;
+
+        warning = $"'{raw}' no es una duración válida (ej. \"60m\", \"2h\", \"-1m\"); se usa '{OllamaSettings.DefaultKeepAlive}'.";
+        return OllamaSettings.DefaultKeepAlive;
+    }
+
     /// <summary>
     /// Con "messages" vacío, Ollama solo carga el modelo en memoria (done_reason: "load") sin generar nada.
     /// Si falla (Ollama no arrancado, etc.) solo se registra: el jugador verá el aviso normal al preguntar.
@@ -49,7 +103,7 @@ public class OllamaProvider : ILLMProvider
                 model = settings.model,
                 messages = new ChatMessage[0],
                 stream = false,
-                keep_alive = settings.keepAlive,
+                keep_alive = KeepAlive,
                 options = new OllamaOptions()
             };
 
@@ -57,7 +111,7 @@ public class OllamaProvider : ILLMProvider
             var response = await LLMHttp.PostJsonAsync(ChatUrl, JsonUtility.ToJson(body), settings.timeoutSeconds);
 
             if (response.Result == UnityWebRequest.Result.Success)
-                Debug.Log($"[Ollama] Modelo '{settings.model}' precargado en {Time.realtimeSinceStartup - start:F1} s (keep_alive {settings.keepAlive})");
+                Debug.Log($"[Ollama] Modelo '{settings.model}' precargado en {Time.realtimeSinceStartup - start:F1} s (keep_alive {KeepAlive})");
             else
                 Debug.Log($"[Ollama] Precarga no completada ({response.StatusCode} {response.Error}). Se reintentará con la primera pregunta.");
         }
@@ -79,7 +133,7 @@ public class OllamaProvider : ILLMProvider
             model = settings.model,
             messages = messages.ToArray(),
             stream = false,
-            keep_alive = settings.keepAlive,
+            keep_alive = KeepAlive,
             options = new OllamaOptions { temperature = temperature, num_predict = maxTokens }
         };
 
