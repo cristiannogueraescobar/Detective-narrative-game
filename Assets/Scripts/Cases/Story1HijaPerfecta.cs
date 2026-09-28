@@ -357,7 +357,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     },
                     version = "A las 21:00 salí y volví a las 23:05. A los pocos minutos Carmen gritó desde arriba.",
                     secret = "Dices que fue una cena con clientes, pero es mentira: tienes una aventura.",
-                    admitsWhen = "el inspector insiste o te dice que va a comprobar la cena",
+                    admitsWhen = "el inspector insiste, menciona el restaurante o dice que lo va a comprobar",
                     nervousAbout = "dónde estuviste entre las 21:00 y las 23:05.",
                     ifAccused = "Te enfrías y hablas de pruebas y de presunción de inocencia.",
                     doesNotKnow = "Qué medicación le dio Carmen a Elena esa noche."
@@ -501,7 +501,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 {
                     id = "1B_cena", playerName = "La cena del viernes", holder = "padre", kind = ClueKind.Clears, clears = "padre", isSecret = true,
                     summary = "Daniel no estaba en una cena de clientes: estuvo con Marta, una compañera del bufete, de 21:00 a 23:00.",
-                    topic = "dónde estuviste",
+                    topic = "dónde o con quién estuviste esa noche",
                     fact = "Estuviste de 21:00 a 23:00 en casa de Marta, una compañera del bufete; ella y el portero pueden confirmarlo.",
                     anchors = new[]
                     {
@@ -683,7 +683,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     id = "1C_llamada", playerName = "Una llamada corta", holder = "padre", kind = ClueKind.Incriminates, isSecret = true,
                     summary = "Lucas llamó a Daniel a las 21:52, llorando: 'Elena se ha caído, pero está bien'. Daniel llegó a casa a las 22:15, no a las 23:00.",
                     topic = "las llamadas de esa noche",
-                    fact = "A las 21:52 Lucas te llamó llorando y te dijo 'Elena se ha caído por la escalera, pero está bien'. Llegaste a casa a las 22:15, no a las 23:00.",
+                    fact = "Lucas te llamó a las 21:52 llorando: 'Elena se ha caído por la escalera, pero está bien'. Por eso llegaste a casa a las 22:15, no a las 23:00.",
                     anchors = new[]
                     {
                         new[] { "21:52", "9:52", "me llamo", "llamo llorando" },
