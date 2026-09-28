@@ -3,6 +3,7 @@
     "rootNamespace": "",
     "references": [
         "Detective",
+        "Detective.Editor",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

@@ -1,0 +1,332 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using UnityEditor;
+using UnityEngine;
+
+/// <summary>
+/// CALIBRACIÓN DE PISTAS
+/// Para cada pista, lanza sus preguntas típicas al portador (con su ficha real) contra Ollama y
+/// mide cuántas respuestas detecta el mismo detector del juego. Una pista pasa con ≥ 2/3.
+///
+/// Menú: Detective/Calibrar pistas
+/// Batchmode: Unity.exe -batchmode -nographics -projectPath . -executeMethod ClueCalibrator.RunFromCommandLine
+///            [-variants 1A,1B] [-tries 3] [-ollama http://localhost:11434] [-model qwen2.5:7b-instruct]
+/// Informe: Logs/clue-calibration.md
+/// </summary>
+public static class ClueCalibrator
+{
+    public const string ReportPath = "Logs/clue-calibration.md";
+    private const int CalibrationDay = 2;
+
+    public class Options
+    {
+        public List<string> variantIds = new List<string>();
+        public int tries = 3;
+        public string ollamaUrl = "http://localhost:11434";
+        public string model = new OllamaSettings().model;
+    }
+
+    public class Attempt
+    {
+        public string question;
+        public List<string> responses = new List<string>();
+        public List<AnchorTrace> traces = new List<AnchorTrace>();
+        public bool detected;
+        public string error;
+    }
+
+    public class ClueResult
+    {
+        public string variantId;
+        public ClueData clue;
+        public List<Attempt> attempts = new List<Attempt>();
+        public int Hits => attempts.Count(a => a.detected);
+        public int Total => attempts.Count;
+        public bool Passed => Passes(Hits, Total);
+    }
+
+    // ============================================
+    // LÓGICA PURA
+    // ============================================
+
+    public static bool Passes(int hits, int total)
+    {
+        return total > 0 && hits * 3 >= total * 2;
+    }
+
+    public static string[] SplitTurns(string question)
+    {
+        return question.Split(new[] { "||" }, StringSplitOptions.RemoveEmptyEntries)
+                       .Select(t => t.Trim())
+                       .Where(t => t.Length > 0)
+                       .ToArray();
+    }
+
+    public static Options ParseArgs(string[] args)
+    {
+        var options = new Options();
+
+        for (int i = 0; i < args.Length - 1; i++)
+        {
+            switch (args[i])
+            {
+                case "-variants":
+                    options.variantIds = args[i + 1].Split(',').Select(v => v.Trim()).Where(v => v.Length > 0).ToList();
+                    break;
+                case "-tries":
+                    options.tries = int.Parse(args[i + 1]);
+                    break;
+                case "-ollama":
+                    options.ollamaUrl = args[i + 1];
+                    break;
+                case "-model":
+                    options.model = args[i + 1];
+                    break;
+            }
+        }
+
+        if (options.variantIds.Count == 0)
+            options.variantIds = CaseLibrary.AllVariants().Select(p => p.variant.id).ToList();
+
+        return options;
+    }
+
+    // ============================================
+    // PUNTOS DE ENTRADA
+    // ============================================
+
+    [MenuItem("Detective/Calibrar pistas")]
+    public static void RunMenu()
+    {
+        Options options = ParseArgs(new string[0]);
+
+        try
+        {
+            List<ClueResult> results = Run(options, (label, progress) =>
+                EditorUtility.DisplayCancelableProgressBar("Calibrando pistas", label, progress));
+            int failed = results.Count(r => !r.Passed);
+            Debug.Log($"[Calibración] {results.Count - failed}/{results.Count} pistas ≥ 2/3. Informe: {Path.GetFullPath(ReportPath)}");
+        }
+        finally
+        {
+            EditorUtility.ClearProgressBar();
+        }
+    }
+
+    public static void RunFromCommandLine()
+    {
+        int exitCode;
+
+        try
+        {
+            Options options = ParseArgs(Environment.GetCommandLineArgs());
+            List<ClueResult> results = Run(options, (label, progress) =>
+            {
+                Console.WriteLine($"[Calibración] {progress:P0} {label}");
+                return false;
+            });
+            int failed = results.Count(r => !r.Passed);
+            Console.WriteLine($"[Calibración] {results.Count - failed}/{results.Count} pistas ≥ 2/3. Informe: {Path.GetFullPath(ReportPath)}");
+            exitCode = failed == 0 ? 0 : 1;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"[Calibración] Error: {e}");
+            exitCode = 2;
+        }
+
+        EditorApplication.Exit(exitCode);
+    }
+
+    // ============================================
+    // EJECUCIÓN
+    // ============================================
+
+    /// <summary>
+    /// 'progress' devuelve true si el usuario cancela.
+    /// </summary>
+    public static List<ClueResult> Run(Options options, Func<string, float, bool> progress)
+    {
+        var results = new List<ClueResult>();
+
+        var work = new List<(StoryData story, VariantData variant, ClueData clue)>();
+        foreach (string id in options.variantIds)
+        {
+            if (!CaseLibrary.TryFind(id, out StoryData story, out VariantData variant))
+            {
+                Debug.LogWarning($"[Calibración] Variante {id} no registrada");
+                continue;
+            }
+            work.AddRange(variant.clues.Select(c => (story, variant, c)));
+        }
+
+        int totalAttempts = work.Sum(w => w.clue.calibrationQuestions.Length) * options.tries;
+        int done = 0;
+
+        using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(180) })
+        {
+            foreach (var (story, variant, clue) in work)
+            {
+                var result = new ClueResult { variantId = variant.id, clue = clue };
+                string systemPrompt = PromptBuilder.Build(story, variant, clue.holder, CalibrationDay,
+                    new ClueData[0], new ClueData[0]);
+
+                foreach (string question in clue.calibrationQuestions)
+                {
+                    for (int t = 0; t < options.tries; t++)
+                    {
+                        bool cancelled = progress($"{clue.id} · {question}", (float)done / Math.Max(1, totalAttempts));
+                        if (cancelled)
+                        {
+                            WriteReport(options, results);
+                            return results;
+                        }
+
+                        result.attempts.Add(RunAttempt(client, options, systemPrompt, clue, question));
+                        done++;
+                    }
+                }
+
+                results.Add(result);
+                Debug.Log($"[Calibración] {clue.id}: {result.Hits}/{result.Total} {(result.Passed ? "OK" : "FALLA")}");
+            }
+        }
+
+        WriteReport(options, results);
+        return results;
+    }
+
+    private static Attempt RunAttempt(HttpClient client, Options options, string systemPrompt, ClueData clue, string question)
+    {
+        var attempt = new Attempt { question = question };
+        var history = new List<ChatMessage>();
+
+        foreach (string turn in SplitTurns(question))
+        {
+            history.Add(new ChatMessage { role = "user", content = turn });
+
+            string response;
+            try
+            {
+                response = Chat(client, options, systemPrompt, history);
+            }
+            catch (Exception e)
+            {
+                attempt.error = e.GetBaseException().Message;
+                return attempt;
+            }
+
+            history.Add(new ChatMessage { role = "assistant", content = response });
+
+            AnchorTrace trace = ClueDetector.Evaluate(clue.anchors, ClueDetector.Normalize(response));
+            attempt.responses.Add(response);
+            attempt.traces.Add(trace);
+            attempt.detected |= trace.Matched;
+        }
+
+        return attempt;
+    }
+
+    // ============================================
+    // OLLAMA (HttpClient: funciona en batchmode sin bucle de actualización del editor)
+    // ============================================
+
+    [Serializable]
+    private class ChatRequest
+    {
+        public string model;
+        public ChatMessage[] messages;
+        public bool stream;
+        public ChatOptions options;
+    }
+
+    [Serializable]
+    private class ChatOptions
+    {
+        public float temperature;
+        public int num_predict;
+        public int num_ctx;
+    }
+
+    [Serializable]
+    private class ChatResponse
+    {
+        public ChatMessage message;
+        public string error;
+    }
+
+    private static string Chat(HttpClient client, Options options, string systemPrompt, List<ChatMessage> history)
+    {
+        var messages = new List<ChatMessage> { new ChatMessage { role = "system", content = systemPrompt } };
+        messages.AddRange(history);
+
+        var request = new ChatRequest
+        {
+            model = options.model,
+            messages = messages.ToArray(),
+            stream = false,
+            options = new ChatOptions
+            {
+                temperature = AIConversationManager.DefaultTemperature,
+                num_predict = AIConversationManager.DefaultMaxTokens,
+                num_ctx = OllamaSettings.DefaultNumCtx
+            }
+        };
+
+        var content = new StringContent(JsonUtility.ToJson(request), Encoding.UTF8, "application/json");
+        HttpResponseMessage http = client.PostAsync(options.ollamaUrl.TrimEnd('/') + "/api/chat", content).GetAwaiter().GetResult();
+        string body = http.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        ChatResponse parsed = JsonUtility.FromJson<ChatResponse>(body);
+
+        if (!http.IsSuccessStatusCode || !string.IsNullOrEmpty(parsed?.error))
+            throw new Exception($"HTTP {(int)http.StatusCode}: {parsed?.error ?? body}");
+
+        return parsed?.message?.content?.Trim() ?? "";
+    }
+
+    // ============================================
+    // INFORME
+    // ============================================
+
+    private static void WriteReport(Options options, List<ClueResult> results)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("# Calibración de pistas");
+        sb.AppendLine();
+        sb.AppendLine($"Fecha: {DateTime.Now:yyyy-MM-dd HH:mm} · Modelo: `{options.model}` · Intentos por pregunta: {options.tries} · Umbral: 2/3");
+        sb.AppendLine();
+        sb.AppendLine("| Variante | Pista | Portador | Aciertos | Tasa | Estado |");
+        sb.AppendLine("|---|---|---|---|---|---|");
+
+        foreach (ClueResult r in results)
+        {
+            float rate = r.Total == 0 ? 0f : (float)r.Hits / r.Total;
+            sb.AppendLine($"| {r.variantId} | {r.clue.id} | {r.clue.holder} | {r.Hits}/{r.Total} | {rate:P0} | {(r.Passed ? "OK" : "**FALLA**")} |");
+        }
+
+        foreach (ClueResult r in results.Where(r => !r.Passed))
+        {
+            sb.AppendLine();
+            sb.AppendLine($"## {r.clue.id} — {r.Hits}/{r.Total}");
+            sb.AppendLine();
+            sb.AppendLine($"Anclas: `{string.Join(" & ", r.clue.anchors.Select(g => "[" + string.Join("|", g) + "]"))}`");
+
+            foreach (Attempt a in r.attempts.Where(a => !a.detected))
+            {
+                sb.AppendLine();
+                sb.AppendLine($"**P:** {a.question}");
+                if (a.error != null)
+                    sb.AppendLine($"- ERROR: {a.error}");
+                for (int i = 0; i < a.responses.Count; i++)
+                    sb.AppendLine($"- R{i + 1}: {a.responses[i].Replace("\n", " ")}\n  - Traza: `{a.traces[i]}`");
+            }
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(ReportPath));
+        File.WriteAllText(ReportPath, sb.ToString(), new UTF8Encoding(false));
+    }
+}
