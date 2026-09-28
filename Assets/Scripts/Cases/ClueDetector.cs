@@ -7,12 +7,21 @@ using System.Text.RegularExpressions;
 /// <summary>
 /// Detección determinista de pistas: normaliza el texto y comprueba grupos de anclas.
 /// Un grupo se cumple si aparece cualquiera de sus anclas; la pista se detecta si se cumplen todos los grupos.
+/// Guardia de negación: no cuenta un ancla precedida de cerca por "no", "nunca", "nadie"... en la misma frase
+/// ("no vi ninguna taza de cacao" no revela la taza).
 /// </summary>
 public static class ClueDetector
 {
     // 22.35 / 22,35 / 22h35 / 22 : 35 → 22:35
     private static readonly Regex TimePattern = new Regex(@"\b(\d{1,2})\s*[.,h:]\s*(\d{2})\b");
     private static readonly Regex Spaces = new Regex(@"\s+");
+
+    private static readonly HashSet<string> Negations = new HashSet<string>
+    {
+        "no", "ni", "nunca", "nadie", "ningun", "ninguna", "ninguno", "nada", "tampoco", "jamas"
+    };
+    private const int NegationWindow = 4; // Palabras antes del ancla
+    private static readonly char[] ClauseBreaks = { '.', ',', ';', ':', '!', '?' };
 
     public static string Normalize(string text)
     {
@@ -32,7 +41,7 @@ public static class ClueDetector
         return Spaces.Replace(s, " ").Trim();
     }
 
-    public static AnchorTrace Evaluate(string[][] groups, string normalizedText)
+    public static AnchorTrace Evaluate(string[][] groups, string normalizedText, bool negationGuard = true)
     {
         var trace = new AnchorTrace();
 
@@ -43,7 +52,7 @@ public static class ClueDetector
 
         foreach (string[] group in groups)
         {
-            List<string> found = group.Where(anchor => normalizedText.Contains(Normalize(anchor))).ToList();
+            List<string> found = group.Where(anchor => Occurs(normalizedText, Normalize(anchor), negationGuard)).ToList();
             trace.Groups.Add(new GroupTrace { Anchors = group, Found = found });
 
             if (found.Count == 0)
@@ -51,6 +60,33 @@ public static class ClueDetector
         }
 
         return trace;
+    }
+
+    /// <summary>
+    /// ¿Aparece el ancla al menos una vez sin negación delante?
+    /// </summary>
+    private static bool Occurs(string text, string anchor, bool negationGuard)
+    {
+        if (anchor.Length == 0)
+            return false;
+
+        for (int index = text.IndexOf(anchor, System.StringComparison.Ordinal); index >= 0;
+             index = text.IndexOf(anchor, index + 1, System.StringComparison.Ordinal))
+        {
+            if (!negationGuard || !IsNegated(text, index))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsNegated(string text, int anchorIndex)
+    {
+        string before = text.Substring(0, anchorIndex);
+        string clause = before.Substring(before.LastIndexOfAny(ClauseBreaks) + 1);
+        string[] words = clause.Split(new[] { ' ', '¿', '¡' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+        return words.Skip(System.Math.Max(0, words.Length - NegationWindow)).Any(Negations.Contains);
     }
 
     public static bool MentionsAny(string normalizedText, IEnumerable<string> aliases)

@@ -36,7 +36,7 @@ public static class PromptBuilder
 
         if (openFacts.Count > 0)
         {
-            sb.AppendLine("SI TE PREGUNTAN, CUÉNTALO CON LA HORA Y LOS DETALLES EXACTOS:");
+            sb.AppendLine("LO CUENTAS SIN PROBLEMA EN CUANTO TE PREGUNTEN POR EL TEMA. Dilo completo, con la hora y todos los detalles:");
             foreach (ClueData clue in openFacts)
                 sb.AppendLine($"- Si te preguntan por {clue.topic}: {clue.fact}");
         }
@@ -45,7 +45,7 @@ public static class PromptBuilder
 
         sb.AppendLine($"LO QUE OCULTAS: {role.secret} Lo admites solo si {role.admitsWhen}.");
         foreach (ClueData clue in secretFacts)
-            sb.AppendLine($"- Si te preguntan por {clue.topic}: al principio lo niegas. Si el inspector insiste o te presiona, confiesas: {clue.fact}");
+            sb.AppendLine($"- Si te preguntan por {clue.topic}: la primera vez lo niegas. Si el inspector insiste, te presiona o dice que lo va a comprobar, lo confiesas sin rodeos: {clue.fact}");
 
         if (isCulprit)
         {
@@ -54,12 +54,12 @@ public static class PromptBuilder
         }
         else
         {
-            sb.AppendLine("Eres inocente del crimen, aunque tengas cosas que ocultar.");
+            sb.AppendLine("Eres inocente del crimen, aunque ocultes cosas.");
         }
 
         sb.AppendLine($"TE PONE NERVIOSO: {role.nervousAbout}");
         sb.AppendLine($"SI TE ACUSAN: {role.ifAccused}");
-        sb.AppendLine($"NO SABES: {role.doesNotKnow} Si te preguntan por eso, di que no lo sabes.");
+        sb.AppendLine($"NO SABES: {role.doesNotKnow} Si te preguntan, di que no lo sabes.");
 
         if (shown.Count > 0)
         {
@@ -76,9 +76,8 @@ public static class PromptBuilder
         }
 
         sb.AppendLine($"HOY ES EL DÍA {day} DE LA INVESTIGACIÓN.");
-        sb.Append("REGLAS: Responde en español, en primera persona, con 2 a 4 frases. " +
-                  "Sin asteriscos, sin listas, sin acotaciones. Nunca digas que eres una IA. " +
-                  "No inventes horas, nombres ni hechos que no estén en esta ficha.");
+        sb.Append("REGLAS: español, primera persona, 2 a 4 frases, sin asteriscos ni listas. " +
+                  "Nunca digas que eres una IA. No inventes horas, nombres ni hechos fuera de esta ficha.");
 
         return sb.ToString();
     }

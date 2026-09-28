@@ -43,6 +43,53 @@ public class ClueDetectorTests
         StringAssert.Contains("taza", trace.ToString());
     }
 
+    [TestCase("No, no vi ninguna taza de cacao en la mesilla.")]
+    [TestCase("Nunca hubo cacao en esa taza.")]
+    [TestCase("Nadie dejó una taza de cacao ahí.")]
+    public void Evaluate_IgnoraAnclasNegadas(string denial)
+    {
+        var groups = new[] { new[] { "taza" }, new[] { "cacao" } };
+
+        Assert.IsFalse(ClueDetector.Evaluate(groups, ClueDetector.Normalize(denial)).Matched);
+    }
+
+    [Test]
+    public void Evaluate_NegacionEnOtraFraseNoAfecta()
+    {
+        var groups = new[] { new[] { "taza" }, new[] { "cacao" } };
+
+        Assert.IsTrue(ClueDetector.Evaluate(groups, ClueDetector.Normalize("No sé, tío. Vi una taza de cacao.")).Matched);
+        Assert.IsTrue(ClueDetector.Evaluate(groups, ClueDetector.Normalize("No, había una taza de cacao.")).Matched);
+    }
+
+    [Test]
+    public void Evaluate_BastaUnaOcurrenciaNoNegada()
+    {
+        var groups = new[] { new[] { "cacao" }, new[] { "taza" } };
+
+        Assert.IsTrue(ClueDetector.Evaluate(groups,
+            ClueDetector.Normalize("Elena nunca tomaba cacao, pero vi una taza de cacao en la mesilla.")).Matched);
+    }
+
+    [Test]
+    public void Evaluate_AnclaQueEmpiezaPorNoSeRespeta()
+    {
+        var groups = new[] { new[] { "no quiero mas" }, new[] { "pared" } };
+
+        Assert.IsTrue(ClueDetector.Evaluate(groups, ClueDetector.Normalize("A través de la pared decía: no quiero más.")).Matched);
+    }
+
+    [Test]
+    public void Evaluate_SinGuardiaDeNegacionDetectaNegaciones()
+    {
+        // Las mentiras del culpable son a menudo negaciones: se evalúan sin guardia
+        var lie = new[] { new[] { "mi cuarto" }, new[] { "cascos" } };
+        string text = ClueDetector.Normalize("Nunca salí de mi cuarto, tenía los cascos.");
+
+        Assert.IsFalse(ClueDetector.Evaluate(lie, text).Matched);
+        Assert.IsTrue(ClueDetector.Evaluate(lie, text, negationGuard: false).Matched);
+    }
+
     [Test]
     public void Evaluate_SinGruposNoDetecta()
     {

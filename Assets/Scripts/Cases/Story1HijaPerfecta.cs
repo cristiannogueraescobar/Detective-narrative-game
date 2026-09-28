@@ -145,13 +145,13 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     knowledge = new[]
                     {
                         MentionRosario,
-                        "Papá y Elena discutieron el miércoles en el despacho; papá le gritó."
+                        "Papá y Elena discutieron el miércoles en el despacho por unos papeles; papá le gritó."
                     },
                     version = "Estuve toda la noche en mi cuarto jugando online con los cascos. No oí nada hasta que papá empezó a gritar; entonces salí al pasillo.",
                     secret = "Fumas porros a escondidas en tu cuarto y no quieres que tus padres lo sepan.",
                     admitsWhen = "el inspector te insiste mucho",
                     nervousAbout = "que registren tu cuarto y que te pregunten por papá y Elena.",
-                    ifAccused = "Te pones a la defensiva, alzas la voz y dices que estabas jugando, que queda todo registrado.",
+                    ifAccused = "Te pones a la defensiva, alzas la voz y dices que estabas jugando.",
                     doesNotKnow = "Qué medicación tomaba nadie en casa."
                 },
                 new CharacterRole
@@ -200,13 +200,14 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     anchors = new[]
                     {
                         new[] { "llave" },
-                        new[] { "puerta", "cerrada", "cerrado", "bolsillo" }
+                        new[] { "puerta", "cerrada", "cerrado", "bolsillo", "su cuarto", "su habitacion", "cuarto de elena" }
                     },
                     calibrationQuestions = new[] { "¿Cómo estaba la puerta del cuarto de Elena cuando tu padre la encontró?", "¿Viste algo raro cuando tu padre empezó a gritar?" },
                     sampleHits = new[]
                     {
                         "La puerta estaba cerrada con llave, tío, y papá tenía la llave en el bolsillo.",
-                        "O sea, papá sacó la llave del bolsillo para abrir."
+                        "O sea, papá sacó la llave del bolsillo para abrir.",
+                        "Solo oí que papá se ponía muy fuerte con Elena y luego salió corriendo con la llave de su cuarto."
                     },
                     sampleMisses = new[] { "No sé, tío, la puerta estaba abierta como siempre." }
                 },
@@ -218,7 +219,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     fact = "a las 22:35 viste al padre, Daniel, en el cuarto de la niña cerrando las cortinas. Te extrañó porque él casi nunca entra en ese cuarto.",
                     anchors = new[]
                     {
-                        new[] { "padre", "daniel", "marido", "senor mendoza", "abogado" },
+                        new[] { "padre", "daniel", "senor mendoza", "abogado" },
                         new[] { "cortina", "cuarto de la nina", "habitacion de la nina", "cuarto de elena", "habitacion de elena" }
                     },
                     calibrationQuestions = new[] { "¿Qué vio usted esa noche desde su ventana?", "¿Vio a alguien en el cuarto de Elena esa noche?" },
@@ -233,20 +234,21 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 {
                     id = "1A_papeles", playerName = "Papeles del despacho", holder = "hermano", kind = ClueKind.Incriminates,
                     summary = "Elena le enseñó a Lucas fotos de extractos del banco del despacho de Daniel: decía que su padre le había robado 'su dinero'.",
-                    topic = "si Elena tenía algún problema o secreto estos días",
+                    topic = "lo que Elena te contó de papá, o si tenía algún secreto",
                     fact = "hace una semana Elena te enseñó fotos de unos extractos del banco del despacho de papá y te dijo que papá le había robado su herencia.",
                     anchors = new[]
                     {
-                        new[] { "extracto", "papeles del banco", "banco", "cuenta" },
+                        new[] { "extracto", "papeles", "banco", "cuentas", "despacho" },
                         new[] { "dinero", "herencia", "robado", "robo" }
                     },
                     calibrationQuestions = new[] { "¿Tenía Elena algún problema o secreto estos últimos días?", "¿Te contó Elena algo sobre tu padre?" },
                     sampleHits = new[]
                     {
                         "Elena me enseñó unas fotos de extractos del banco, tío, decía que papá le había robado su dinero.",
-                        "O sea, ella decía que papá le quitaba la herencia, tenía fotos de papeles del banco."
+                        "O sea, ella decía que papá le quitaba la herencia, tenía fotos de papeles del banco.",
+                        "Solo me dijo que mi papá le había robado su herencia del despacho, pero eso fue hace una semana."
                     },
-                    sampleMisses = new[] { "No sé, tío, Elena no tenía secretos, solo estaba rara." }
+                    sampleMisses = new[] { "No sé, tío, Elena no tenía secretos, solo estaba rara.", "No me di cuenta de nada, tío; el dinero me da igual." }
                 },
                 new ClueData
                 {
@@ -256,14 +258,16 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     fact = "de 21:30 a 00:00 estuviste en una partida online con tus amigos; el juego guarda el registro.",
                     anchors = new[]
                     {
-                        new[] { "partida", "jugando", "online", "en linea" },
-                        new[] { "registro", "registrado", "queda guardado", "historial", "mis amigos", "mis colegas", "con amigos", "con mis" }
+                        new[] { "partida", "jugando", "jugue", "jugaba", "juego", "online", "en linea" },
+                        new[] { "registro", "registrad", "guardado", "historial", "amigo", "colega" }
                     },
                     calibrationQuestions = new[] { "¿Qué hiciste tú esa noche entre las nueve y media y las doce?", "¿Alguien puede confirmar dónde estabas?" },
                     sampleHits = new[]
                     {
                         "Estuve jugando online de 21:30 a 00:00 con mis colegas, tío, queda registrado.",
-                        "Estaba en una partida con los cascos, el juego guarda el historial."
+                        "Estaba en una partida con los cascos, el juego guarda el historial.",
+                        "Mis amigos pueden decir que jugué esa noche hasta muy tarde, el registro del juego lo demuestra.",
+                        "Mi amigo Carlos puede decir que jugué hasta altas horas con él online."
                     },
                     sampleMisses = new[] { "Estaba en mi cuarto, no sé, a mis cosas." }
                 },
@@ -351,8 +355,8 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         MentionRosario,
                         "Carmen siempre se encargaba de los médicos de Elena."
                     },
-                    version = "A las 21:00 salí a una cena con clientes y volví a las 23:05. A los pocos minutos Carmen gritó desde arriba.",
-                    secret = "La 'cena con clientes' es mentira: tienes una aventura con Marta, una compañera del bufete.",
+                    version = "A las 21:00 salí y volví a las 23:05. A los pocos minutos Carmen gritó desde arriba.",
+                    secret = "Dices que fue una cena con clientes, pero es mentira: tienes una aventura.",
                     admitsWhen = "el inspector insiste dos veces o te dice que va a comprobar la cena",
                     nervousAbout = "dónde estuviste entre las 21:00 y las 23:05.",
                     ifAccused = "Te enfrías y hablas de pruebas y de presunción de inocencia.",
@@ -400,7 +404,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     anchors = new[]
                     {
                         new[] { "urgencias", "hospital", "medicos", "especialista" },
-                        new[] { "once veces", "11 veces", "encontro nada", "encontraron nada", "nadie encontro", "ninguno encontro" }
+                        new[] { "once veces", "11 veces", "ningun especialista", "ningun medico", "no le encontraron", "no encontraron", "nadie le encontro", "nadie encontro" }
                     },
                     calibrationQuestions = new[] { "¿Cómo era la salud de Elena?", "¿Elena estaba enferma de algo?" },
                     sampleHits = new[]
@@ -415,11 +419,11 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     id = "1B_receta", playerName = "La receta de casa", holder = "padre", kind = ClueKind.Incriminates,
                     summary = "Carmen le recetó ella misma a Elena un medicamento para el corazón. Cuando Daniel pidió una segunda opinión, ella se puso furiosa.",
                     topic = "la medicación de Elena o quién le recetaba las medicinas",
-                    fact = "Carmen le recetó ella misma a Elena un medicamento para el corazón. Cuando propusiste pedir una segunda opinión a un cardiólogo, se puso furiosa.",
+                    fact = "Carmen le recetó ella misma a Elena un medicamento para el corazón, y se puso furiosa cuando pediste una segunda opinión a un cardiólogo.",
                     anchors = new[]
                     {
-                        new[] { "corazon", "cardiolog", "arritmia" },
-                        new[] { "receto", "recetaba", "prescrit", "prescribio", "segunda opinion", "furiosa", "se enfado", "ella misma", "hecha una fiera" }
+                        new[] { "corazon", "cardi", "arritmia", "medicament", "medicina", "tratamiento", "segunda opinion" },
+                        new[] { "receto", "recetaba", "prescrit", "prescrib", "segunda opinion", "furiosa", "se enfado", "se molesto", "ella misma", "hecha una fiera" }
                     },
                     calibrationQuestions = new[] { "¿Tomaba Elena alguna medicación?", "¿Quién decidía los tratamientos de Elena?" },
                     sampleHits = new[]
@@ -427,7 +431,10 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         "Carmen le recetó ella misma algo para el corazón. Cuando pedí una segunda opinión se puso furiosa.",
                         "Yo quería que la viera un cardiólogo, una segunda opinión, y Carmen se enfadó muchísimo.",
                         "No estoy seguro de qué medicación tomaba Elena esa noche, solo sé que Carmen le recetó uno para el corazón hace unos meses.",
-                        "Elena solía tomar un medicamento para el corazón prescrito por Carmen."
+                        "Elena solía tomar un medicamento para el corazón prescrito por Carmen.",
+                        "Carmen siempre tomaba decisiones sobre la salud de Elena, y ella misma le recetaba medicamentos cuando era necesario.",
+                        "Carmen la recetó y siempre ha sido muy cuidadosa con su tratamiento cardiovascular.",
+                        "Carmen tomaba las decisiones médicas para Elena y se molestó cuando pedí una segunda opinión."
                     },
                     sampleMisses = new[] { "Tenía algo del corazón, eso lo lleva Carmen." }
                 },
@@ -436,11 +443,11 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     id = "1B_pared", playerName = "A través de la pared", holder = "hermano", kind = ClueKind.Incriminates, exposesLie = true,
                     summary = "Hacia las 22:10 Lucas oyó a Elena llorar al otro lado de la pared: 'Mamá, no quiero más'.",
                     topic = "si oíste algo esa noche",
-                    fact = "sobre las 22:10 te quitaste los cascos un momento y oíste a Elena llorar al otro lado de la pared diciendo 'mamá, no quiero más'. Te dio mal rollo pero volviste a tu partida.",
+                    fact = "sobre las 22:10 oíste a Elena llorar a través de la pared diciendo 'mamá, no quiero más'. Te habías quitado los cascos un momento.",
                     anchors = new[]
                     {
                         new[] { "no quiero mas", "llorar", "llorando", "lloraba" },
-                        new[] { "22:10", "10:10", "diez y diez", "pared", "mama" }
+                        new[] { "22:10", "10:10", "diez y diez", "pared", "no quiero mas" }
                     },
                     calibrationQuestions = new[] { "¿Oíste algo esa noche?", "¿Te quitaste los cascos en algún momento? ¿Oíste algo en el cuarto de Elena?" },
                     sampleHits = new[]
@@ -448,14 +455,14 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         "Sobre las 22:10 oí a Elena llorar, tío. Decía 'mamá, no quiero más'.",
                         "Me quité los cascos y a través de la pared la oí llorando."
                     },
-                    sampleMisses = new[] { "No oí nada, tío, tenía los cascos puestos." }
+                    sampleMisses = new[] { "No oí nada, tío, tenía los cascos puestos.", "Mamá no para de llorar desde entonces, tío." }
                 },
                 new ClueData
                 {
                     id = "1B_luz", playerName = "La luz encendida", holder = "vecina", kind = ClueKind.Incriminates,
                     summary = "Rosario vio la luz del cuarto de Elena encendida de 22:00 a 23:15, con la madre sentada junto a la cama, muy quieta, sin llamar a nadie.",
                     topic = "lo que viste esa noche en la casa de enfrente",
-                    fact = "la luz del cuarto de la niña estuvo encendida desde las 22:00 hasta las 23:15, y viste a la madre sentada junto a la cama, muy quieta, sin moverse ni llamar a nadie.",
+                    fact = "viste a la madre sentada junto a la cama de la niña, muy quieta, sin llamar a nadie, desde las 22:00 hasta las 23:15, con la luz encendida.",
                     anchors = new[]
                     {
                         new[] { "madre", "carmen", "doctora", "senora mendoza" },
@@ -660,7 +667,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     anchors = new[]
                     {
                         new[] { "movil", "telefono" },
-                        new[] { "pantalla rota", "rota", "roto", "cuarto de lucas", "habitacion de lucas", "debajo de la cama" }
+                        new[] { "pantalla", "cuarto de lucas", "habitacion de lucas", "debajo de la cama" }
                     },
                     calibrationQuestions = new[] { "¿Dónde estaba el móvil de Elena?", "¿Encontró algo fuera de su sitio esa noche?" },
                     sampleHits = new[]
@@ -668,7 +675,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         "El móvil de Elena estaba en el cuarto de Lucas, con la pantalla rota.",
                         "Encontré su teléfono debajo de la cama de Lucas, roto."
                     },
-                    sampleMisses = new[] { "No sé dónde estará su móvil, supongo que en su cuarto." }
+                    sampleMisses = new[] { "No sé dónde estará su móvil, supongo que en su cuarto.", "Estoy rota, inspector. Daniel me llamó por teléfono y vine corriendo." }
                 },
                 new ClueData
                 {
@@ -678,8 +685,8 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     fact = "A las 21:52 Lucas te llamó llorando y te dijo 'Elena se ha caído por la escalera, pero está bien'. Llegaste a casa a las 22:15, no a las 23:00.",
                     anchors = new[]
                     {
-                        new[] { "21:52", "9:52", "llamo", "llamada" },
-                        new[] { "lucas", "mi hijo", "se ha caido", "se cayo", "22:15" }
+                        new[] { "21:52", "9:52", "me llamo", "llamo llorando" },
+                        new[] { "caido", "se cayo", "22:15", "escalera" }
                     },
                     calibrationQuestions = new[]
                     {
@@ -691,7 +698,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         "A las 21:52 Lucas me llamó llorando: Elena se había caído, pero estaba bien.",
                         "Está bien... mi hijo me llamó. Dijo que Elena se cayó por la escalera. Llegué a las 22:15."
                     },
-                    sampleMisses = new[] { "Nadie me llamó. Llegué a las 23:00 del despacho." }
+                    sampleMisses = new[] { "Nadie me llamó. Llegué a las 23:00 del despacho.", "No, Lucas no me llamó.", "La llamada al 112 la hice yo; mi hijo estaba arriba." }
                 },
                 new ClueData
                 {

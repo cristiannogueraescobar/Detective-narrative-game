@@ -59,7 +59,8 @@ public static class TurnAnalyzer
 
         if (characterId == variant.culpritId)
         {
-            outcome.lieTrace = ClueDetector.Evaluate(variant.Role(characterId).lieAnchors, normalized);
+            // Las mentiras suelen ser negaciones ("no entré"): sin guardia de negación
+            outcome.lieTrace = ClueDetector.Evaluate(variant.Role(characterId).lieAnchors, normalized, negationGuard: false);
             if (outcome.lieTrace.Matched)
             {
                 outcome.lieTold = true;

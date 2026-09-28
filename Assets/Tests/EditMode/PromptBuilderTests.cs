@@ -39,7 +39,15 @@ public class PromptBuilderTests
     {
         string prompt = Build("b");
 
-        StringAssert.Contains("- Si te preguntan por tema d: al principio lo niegas. Si el inspector insiste o te presiona, confiesas: hecho d con partida", prompt);
+        StringAssert.Contains("- Si te preguntan por tema d: la primera vez lo niegas. Si el inspector insiste, te presiona o dice que lo va a comprobar, lo confiesas sin rodeos: hecho d con partida", prompt);
+    }
+
+    [Test]
+    public void HechosAbiertosSeCuentanCompletosYSinProblema()
+    {
+        string prompt = Build("b");
+
+        StringAssert.Contains("LO CUENTAS SIN PROBLEMA EN CUANTO TE PREGUNTEN POR EL TEMA. Dilo completo, con la hora y todos los detalles:", prompt);
     }
 
     [Test]

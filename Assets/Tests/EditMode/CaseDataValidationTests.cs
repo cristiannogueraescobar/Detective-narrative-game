@@ -109,12 +109,46 @@ public class CaseDataValidationTests
     }
 
     [TestCaseSource(nameof(Variants))]
+    public void NegacionesDeCadaPistaNoSeDetectan(string storyId, string variantId)
+    {
+        var (_, v) = Get(variantId);
+
+        foreach (ClueData clue in v.clues)
+        {
+            string denial = $"No, no {clue.anchors[0][0]} ni {clue.anchors[1][0]}.";
+            Assert.IsFalse(ClueDetector.Evaluate(clue.anchors, ClueDetector.Normalize(denial)).Matched,
+                $"{clue.id} no debería detectar la negación: {denial}");
+        }
+    }
+
+    [TestCaseSource(nameof(Variants))]
+    public void LaFichaDelPortadorNoDisparaSusPropiasPistas(string storyId, string variantId)
+    {
+        var (story, v) = Get(variantId);
+
+        foreach (CharacterData character in story.cast)
+        {
+            CharacterRole role = v.Role(character.id);
+            // Todo lo que el personaje dirá con naturalidad, salvo los hechos de sus pistas
+            var ownText = new List<string> { character.identity, character.speechExample, role.version, role.secret, role.nervousAbout, role.ifAccused };
+            ownText.AddRange(role.knowledge);
+            string normalized = ClueDetector.Normalize(string.Join(" ", ownText));
+
+            foreach (ClueData clue in v.clues.Where(c => c.holder == character.id))
+            {
+                AnchorTrace trace = ClueDetector.Evaluate(clue.anchors, normalized);
+                Assert.IsFalse(trace.Matched, $"{clue.id} se dispara con la propia ficha de {character.id}: {trace}");
+            }
+        }
+    }
+
+    [TestCaseSource(nameof(Variants))]
     public void LaMentiraDelCulpableSeDetectaEnSuVersion(string storyId, string variantId)
     {
         var (_, v) = Get(variantId);
         CharacterRole culprit = v.Role(v.culpritId);
 
-        Assert.IsTrue(ClueDetector.Evaluate(culprit.lieAnchors, ClueDetector.Normalize(culprit.version)).Matched,
+        Assert.IsTrue(ClueDetector.Evaluate(culprit.lieAnchors, ClueDetector.Normalize(culprit.version), negationGuard: false).Matched,
             "la versión del culpable debe contener su mentira");
     }
 
