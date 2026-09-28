@@ -11,31 +11,33 @@ public class InterrogationUI : MonoBehaviour
 {
     [Header("Referencias")]
     [SerializeField] private GameManager gameManager;
-    
+
     [Header("Paneles Principales")]
     [SerializeField] private GameObject introPanel;
     [SerializeField] private GameObject interrogationPanel;
     [SerializeField] private GameObject accusationPanel;
     [SerializeField] private GameObject resultPanel;
-    
+
     [Header("Intro")]
     [SerializeField] private TMP_Text caseTitleText;
     [SerializeField] private TMP_Text caseDescriptionText;
     [SerializeField] private Button startButton;
-    
+
     [Header("Interrogatorio - Input")]
     [SerializeField] private TMP_Dropdown suspectDropdown;
     [SerializeField] private TMP_InputField questionInput;
     [SerializeField] private Button askButton;
     [SerializeField] private Button endDayButton;
     [SerializeField] private Button accuseNowButton; // NUEVO: Botón acusar anticipado
-    
+    [Tooltip("Selector 'Mostrar prueba'. Si se deja vacío se crea clonando el desplegable de sospechosos")]
+    [SerializeField] private TMP_Dropdown evidenceDropdown;
+
     [Header("Interrogatorio - Display")]
     [SerializeField] private TMP_Text conversationText;
     [SerializeField] private ScrollRect conversationScroll;
     [SerializeField] private TMP_Text hudText;
     [SerializeField] private TMP_Text waitingText;
-    
+
     [Header("NUEVO - Imágenes de Sospechosos")]
     [SerializeField] private RawImage suspectImage;
     [SerializeField] private Texture2D padreGif;
@@ -45,77 +47,80 @@ public class InterrogationUI : MonoBehaviour
     [SerializeField] private Texture2D detectiveGif;
     [SerializeField] private Texture2D carteroGif;
     [SerializeField] private Texture2D duenioBarGif;
-    
+
     [Header("Pistas y Contradicciones")]
     [SerializeField] private TMP_Text cluesText;
     [SerializeField] private TMP_Text contradictionsText;
     [SerializeField] private GameObject clueNotification;
     [SerializeField] private TMP_Text clueNotificationText;
-    
+
     [Header("Botones Panel Pistas")]
     [SerializeField] private Button viewCluesButton;
     [SerializeField] private Button closeCluesButton;
     [SerializeField] private GameObject cluesPanel;
-    
+
     [Header("Acusacion")]
     [SerializeField] private TMP_Dropdown accusationDropdown;
     [SerializeField] private Button accuseButton;
-    
+
     [Header("Resultado")]
     [SerializeField] private TMP_Text resultTitleText;
     [SerializeField] private TMP_Text resultDetailsText;
     [SerializeField] private Button restartButton;
     [SerializeField] private Button menuButton;
-    
-    private string currentSuspect = "Padre";
-    private List<string> allSuspects = new List<string>();
-    private HashSet<string> unlockedSuspects = new HashSet<string>();
+
+    private const string NoEvidenceOption = "— Sin prueba —";
+
+    private string currentSuspectId;
+    private List<SuspectView> suspects = new List<SuspectView>();
+    private List<SuspectView> accusationOptions = new List<SuspectView>();
+    private List<ClueData> evidenceOptions = new List<ClueData>();
     private Dictionary<string, string> conversationsBySuspect = new Dictionary<string, string>();
     private Dictionary<string, Texture2D> suspectImages = new Dictionary<string, Texture2D>();
-    
+
     public void Initialize(GameManager gm)
     {
         gameManager = gm;
-        
+
         // Botones principales
         if (startButton != null)
             startButton.onClick.AddListener(StartInterrogation);
-        
+
         if (askButton != null)
             askButton.onClick.AddListener(OnAskButtonClick);
-        
+
         if (endDayButton != null)
             endDayButton.onClick.AddListener(OnEndDayClick);
-        
+
         // NUEVO: Botón acusar anticipado
         if (accuseNowButton != null)
             accuseNowButton.onClick.AddListener(OnAccuseNowClick);
-        
+
         if (accuseButton != null)
             accuseButton.onClick.AddListener(OnAccuseClick);
-        
+
         if (restartButton != null)
             restartButton.onClick.AddListener(() => gameManager.RestartGame());
-        
+
         if (menuButton != null)
             menuButton.onClick.AddListener(() => gameManager.BackToMenu());
-        
+
         if (suspectDropdown != null)
             suspectDropdown.onValueChanged.AddListener(OnSuspectChanged);
-        
+
         // Botones panel pistas (ARREGLADO)
         if (viewCluesButton != null)
         {
             viewCluesButton.onClick.RemoveAllListeners(); // Limpia listeners viejos
             viewCluesButton.onClick.AddListener(ShowCluesPanel);
         }
-        
+
         if (closeCluesButton != null)
         {
             closeCluesButton.onClick.RemoveAllListeners(); // Limpia listeners viejos
             closeCluesButton.onClick.AddListener(HideCluesPanel);
         }
-        
+
         // Imágenes de sospechosos
         suspectImages["Padre"] = padreGif;
         suspectImages["Madre"] = madreGif;
@@ -124,163 +129,153 @@ public class InterrogationUI : MonoBehaviour
         suspectImages["Detective"] = detectiveGif;
         suspectImages["Cartero"] = carteroGif;
         suspectImages["Dueño del Bar"] = duenioBarGif;
-        
+
+        EnsureEvidenceDropdown();
+
         if (clueNotification != null)
             clueNotification.SetActive(false);
-        
+
         if (cluesPanel != null)
             cluesPanel.SetActive(false);
-        
+
         // Ocultar todos los paneles al inicio
         HideAllPanels();
-        
+
         Debug.Log("[InterrogationUI] Inicializado - Todos los paneles ocultos");
     }
-    
+
     // ============================================
     // INTRO
     // ============================================
-    
+
     public void ShowCaseIntro(string title, string description)
     {
         if (caseTitleText != null)
             caseTitleText.text = title;
-        
+
         if (caseDescriptionText != null)
             caseDescriptionText.text = description;
-        
+
         Debug.Log("[InterrogationUI] Caso cargado: " + title);
     }
-    
+
     public void StartInterrogation()
     {
         Debug.Log("[InterrogationUI] StartInterrogation llamado");
-        
+
         HideAllPanels();
-        
+
         if (interrogationPanel != null)
-        {
             interrogationPanel.SetActive(true);
-            Debug.Log("[InterrogationUI] InterrogationPanel activado");
-        }
-        
+
         if (conversationText != null)
             conversationText.text = "";
-        
-        conversationsBySuspect["Padre"] = "";
-        conversationsBySuspect["Madre"] = "";
-        conversationsBySuspect["Hermano"] = "";
-        
-        // IMPORTANTE: Inicializar sospechosos desbloqueados por defecto
-        unlockedSuspects.Clear();
-        unlockedSuspects.Add("Padre");
-        unlockedSuspects.Add("Madre");
-        unlockedSuspects.Add("Hermano");
-        
-        Debug.Log($"[InterrogationUI] Sospechosos desbloqueados iniciales: {string.Join(", ", unlockedSuspects)}");
-        
-        UpdateSuspectImage("Padre");
+
+        conversationsBySuspect.Clear();
+        currentSuspectId = null;
+        gameManager.BeginInterrogation();
     }
-    
+
     // ============================================
     // GESTIÓN DE PANELES
     // ============================================
-    
+
     private void HideAllPanels()
     {
         if (introPanel != null) introPanel.SetActive(false);
         if (interrogationPanel != null) interrogationPanel.SetActive(false);
         if (accusationPanel != null) accusationPanel.SetActive(false);
         if (resultPanel != null) resultPanel.SetActive(false);
-        
+
         Debug.Log("[InterrogationUI] Todos los paneles ocultos");
     }
-    
+
     private void ShowPanel(GameObject panel)
     {
         HideAllPanels();
-        
+
         if (panel != null)
         {
             panel.SetActive(true);
             Debug.Log($"[InterrogationUI] Panel mostrado: {panel.name}");
         }
     }
-    
+
     // ============================================
     // INTERROGATORIO
     // ============================================
-    
+
     public void OnAskButtonClick()
     {
         string question = questionInput.text.Trim();
-        
-        if (string.IsNullOrEmpty(question))
+        string shownClueId = SelectedEvidenceId();
+
+        if (string.IsNullOrEmpty(question) && shownClueId == null)
         {
-            ShowError("Escribe una pregunta primero.");
+            ShowError("Escribe una pregunta o elige una prueba para mostrar.");
             return;
         }
-        
+
         if (!gameManager.CanAskMoreQuestions())
         {
             ShowError("No te quedan preguntas hoy.");
             return;
         }
-        
+
         questionInput.text = "";
         SetInputEnabled(false);
-        gameManager.AskQuestion(currentSuspect, question);
+        gameManager.AskQuestion(currentSuspectId, question, shownClueId);
     }
-    
+
     public void OnEndDayClick()
     {
         gameManager.EndDay();
     }
-    
+
     // NUEVO: Método para acusar antes del día 7
     public void OnAccuseNowClick()
     {
         Debug.Log("[InterrogationUI] Acusación anticipada solicitada");
         gameManager.ForceAccusationPanel();
     }
-    
+
     private void OnSuspectChanged(int index)
     {
-        if (suspectDropdown != null && suspectDropdown.options.Count > index)
-        {
-            if (!string.IsNullOrEmpty(currentSuspect) && conversationText != null)
-            {
-                conversationsBySuspect[currentSuspect] = conversationText.text;
-            }
-            
-            currentSuspect = suspectDropdown.options[index].text;
-            
-            if (conversationText != null)
-            {
-                if (conversationsBySuspect.ContainsKey(currentSuspect))
-                {
-                    conversationText.text = conversationsBySuspect[currentSuspect];
-                }
-                else
-                {
-                    conversationText.text = "";
-                    conversationsBySuspect[currentSuspect] = "";
-                }
-            }
-            
-            UpdateSuspectImage(currentSuspect);
-            StartCoroutine(ForceScrollToBottom());
-        }
+        if (index < 0 || index >= suspects.Count)
+            return;
+
+        SelectSuspect(suspects[index].id);
+        StartCoroutine(ForceScrollToBottom());
     }
-    
-    private void UpdateSuspectImage(string suspectName)
+
+    private void SelectSuspect(string suspectId)
+    {
+        if (suspectId == currentSuspectId)
+            return;
+
+        if (!string.IsNullOrEmpty(currentSuspectId) && conversationText != null)
+            conversationsBySuspect[currentSuspectId] = conversationText.text;
+
+        currentSuspectId = suspectId;
+
+        if (conversationText != null)
+        {
+            conversationsBySuspect.TryGetValue(suspectId, out string saved);
+            conversationText.text = saved ?? "";
+        }
+
+        SuspectView view = suspects.Find(v => v.id == suspectId);
+        UpdateSuspectImage(view.portraitKey);
+    }
+
+    private void UpdateSuspectImage(string portraitKey)
     {
         if (suspectImage == null)
             return;
-        
-        if (suspectImages.ContainsKey(suspectName) && suspectImages[suspectName] != null)
+
+        if (portraitKey != null && suspectImages.ContainsKey(portraitKey) && suspectImages[portraitKey] != null)
         {
-            suspectImage.texture = suspectImages[suspectName];
+            suspectImage.texture = suspectImages[portraitKey];
             suspectImage.gameObject.SetActive(true);
         }
         else
@@ -288,42 +283,51 @@ public class InterrogationUI : MonoBehaviour
             suspectImage.gameObject.SetActive(false);
         }
     }
-    
-    public void AddToConversation(string suspect, string question, string response)
+
+    public void AddToConversation(string suspectId, string displayName, string question, string response)
     {
-        if (conversationText != null)
+        string entry = $"<color=#00AAFF><b>TÚ:</b></color> {question}\n\n" +
+                       $"<color=#FFFFFF><b>{displayName.ToUpper()}:</b></color> {response}\n\n" +
+                       "─────────────────\n\n";
+
+        if (suspectId == currentSuspectId && conversationText != null)
         {
-            conversationText.text += $"<color=#00AAFF><b>TÚ:</b></color> {question}\n\n";
-            conversationText.text += $"<color=#FFFFFF><b>{suspect.ToUpper()}:</b></color> {response}\n\n";
-            conversationText.text += "─────────────────\n\n";
-            
-            conversationsBySuspect[suspect] = conversationText.text;
+            conversationText.text += entry;
+            conversationsBySuspect[suspectId] = conversationText.text;
         }
-        
+        else
+        {
+            conversationsBySuspect.TryGetValue(suspectId, out string saved);
+            conversationsBySuspect[suspectId] = (saved ?? "") + entry;
+        }
+
+        if (evidenceDropdown != null)
+            evidenceDropdown.value = 0;
+
         SetInputEnabled(true);
         StartCoroutine(ForceScrollToBottom());
     }
-    
+
     private IEnumerator ForceScrollToBottom()
     {
         yield return null;
         yield return null;
-        
+
         if (conversationScroll != null)
         {
             Canvas.ForceUpdateCanvases();
             conversationScroll.verticalNormalizedPosition = 0f;
         }
     }
-    
-    public void UpdateGameState(int day, int questionsUsed, int questionsMax)
+
+    public void UpdateGameState(int day, int maxDays, int questionsUsed, int questionsMax)
     {
         if (hudText != null)
         {
-            hudText.text = $"DÍA {day}/7  |  PREGUNTAS: {questionsUsed}/{questionsMax}";
+            hudText.text = $"DÍA {day}/{maxDays}  |  PREGUNTAS: {questionsUsed}/{questionsMax}";
         }
     }
-    
+
     public void ShowWaiting(bool show)
     {
         if (waitingText != null)
@@ -332,32 +336,35 @@ public class InterrogationUI : MonoBehaviour
             waitingText.text = show ? "Esperando respuesta..." : "";
         }
     }
-    
+
     private void SetInputEnabled(bool enabled)
     {
         if (questionInput != null)
             questionInput.interactable = enabled;
-        
+
         if (askButton != null)
             askButton.interactable = enabled;
-        
+
         if (endDayButton != null)
             endDayButton.interactable = enabled;
-        
+
         if (suspectDropdown != null)
             suspectDropdown.interactable = enabled;
-        
+
         if (accuseNowButton != null)
             accuseNowButton.interactable = enabled;
+
+        if (evidenceDropdown != null)
+            evidenceDropdown.interactable = enabled;
     }
-    
+
     public void ShowError(string message)
     {
         if (conversationText != null)
         {
             conversationText.text += $"<color=#FF4444>⚠ {message}</color>\n\n";
         }
-        
+
         StartCoroutine(ForceScrollToBottom());
     }
 
@@ -377,8 +384,8 @@ public class InterrogationUI : MonoBehaviour
     // ============================================
     // PISTAS Y CONTRADICCIONES (ARREGLADO)
     // ============================================
-    
-    public void UpdateCluesList(List<string> clues)
+
+    public void UpdateCluesList(List<ClueData> clues)
     {
         if (cluesText != null)
         {
@@ -389,14 +396,14 @@ public class InterrogationUI : MonoBehaviour
             else
             {
                 cluesText.text = "<b>PISTAS DESCUBIERTAS:</b>\n\n";
-                foreach (string clue in clues)
+                foreach (ClueData clue in clues)
                 {
-                    cluesText.text += $"• {clue}\n";
+                    cluesText.text += $"• <b>{clue.playerName}</b>: {clue.summary}\n\n";
                 }
             }
         }
     }
-    
+
     public void UpdateContradictionsList(List<string> contradictions)
     {
         if (contradictionsText != null)
@@ -415,7 +422,7 @@ public class InterrogationUI : MonoBehaviour
             }
         }
     }
-    
+
     public void ShowClueNotification(string clueName)
     {
         if (clueNotification != null && clueNotificationText != null)
@@ -425,22 +432,22 @@ public class InterrogationUI : MonoBehaviour
             Invoke(nameof(HideClueNotification), 3f);
         }
     }
-    
+
     private void HideClueNotification()
     {
         if (clueNotification != null)
             clueNotification.SetActive(false);
     }
-    
-    public void ShowContradictionNotification(string suspectName)
+
+    public void ShowContradictionNotification(string text)
     {
         if (conversationText != null)
         {
-            conversationText.text += $"<color=#FFAA00>⚠ {suspectName} cambió su versión!</color>\n\n";
+            conversationText.text += $"<color=#FFAA00>⚠ CONTRADICCIÓN: {text}</color>\n\n";
             StartCoroutine(ForceScrollToBottom());
         }
     }
-    
+
     // ARREGLADO: Panel de pistas
     private void ShowCluesPanel()
     {
@@ -450,7 +457,7 @@ public class InterrogationUI : MonoBehaviour
             Debug.Log("[InterrogationUI] Panel de pistas mostrado");
         }
     }
-    
+
     private void HideCluesPanel()
     {
         if (cluesPanel != null)
@@ -459,208 +466,204 @@ public class InterrogationUI : MonoBehaviour
             Debug.Log("[InterrogationUI] Panel de pistas cerrado");
         }
     }
-    
+
     // ============================================
     // SOSPECHOSOS
     // ============================================
-    
-    public void UpdateSuspectList(List<string> all, HashSet<string> unlocked)
+
+    public void SetSuspects(List<SuspectView> unlocked)
     {
-        Debug.Log($"[InterrogationUI] UpdateSuspectList llamado");
-        Debug.Log($"[InterrogationUI] All suspects: {string.Join(", ", all)}");
-        Debug.Log($"[InterrogationUI] Unlocked suspects: {string.Join(", ", unlocked)}");
-        
-        allSuspects = all;
-        unlockedSuspects = unlocked;
-        
-        if (suspectDropdown != null)
-        {
-            suspectDropdown.ClearOptions();
-            
-            List<string> options = new List<string>();
-            foreach (string suspect in all)
-            {
-                if (unlocked.Contains(suspect))
-                {
-                    options.Add(suspect);
-                    Debug.Log($"[InterrogationUI] Dropdown option added: {suspect}");
-                }
-            }
-            
-            if (options.Count == 0)
-            {
-                Debug.LogWarning("[InterrogationUI] No unlocked suspects! Using defaults.");
-                options.Add("Padre");
-                options.Add("Madre");
-                options.Add("Hermano");
-            }
-            
-            suspectDropdown.AddOptions(options);
-            
-            if (options.Count > 0)
-            {
-                currentSuspect = options[0];
-                UpdateSuspectImage(currentSuspect);
-                Debug.Log($"[InterrogationUI] Current suspect set to: {currentSuspect}");
-            }
-        }
+        suspects = unlocked;
+
+        if (suspectDropdown == null || suspects.Count == 0)
+            return;
+
+        // Conserva el sospechoso actual si sigue en la lista
+        int index = suspects.FindIndex(v => v.id == currentSuspectId);
+        if (index < 0)
+            index = 0;
+
+        suspectDropdown.ClearOptions();
+        suspectDropdown.AddOptions(suspects.ConvertAll(v => v.displayName));
+        suspectDropdown.SetValueWithoutNotify(index);
+        SelectSuspect(suspects[index].id);
     }
-    
-    public void ShowSuspectUnlocked(string suspectName)
+
+    public void SetEvidenceOptions(List<ClueData> discovered)
+    {
+        evidenceOptions = discovered;
+
+        if (evidenceDropdown == null)
+            return;
+
+        var options = new List<string> { NoEvidenceOption };
+        options.AddRange(discovered.ConvertAll(c => c.playerName));
+
+        int previous = evidenceDropdown.value;
+        evidenceDropdown.ClearOptions();
+        evidenceDropdown.AddOptions(options);
+        evidenceDropdown.SetValueWithoutNotify(previous < options.Count ? previous : 0);
+    }
+
+    private string SelectedEvidenceId()
+    {
+        if (evidenceDropdown == null || evidenceDropdown.value <= 0 || evidenceDropdown.value > evidenceOptions.Count)
+            return null;
+
+        return evidenceOptions[evidenceDropdown.value - 1].id;
+    }
+
+    /// <summary>
+    /// Si la escena no tiene selector de pruebas, lo crea clonando el de sospechosos justo debajo.
+    /// </summary>
+    private void EnsureEvidenceDropdown()
+    {
+        if (evidenceDropdown != null || suspectDropdown == null)
+            return;
+
+        GameObject clone = Instantiate(suspectDropdown.gameObject, suspectDropdown.transform.parent);
+        clone.name = "EvidenceDropdown (auto)";
+
+        var rect = (RectTransform)clone.transform;
+        var source = (RectTransform)suspectDropdown.transform;
+        rect.anchoredPosition = source.anchoredPosition - new Vector2(0f, source.rect.height + 8f);
+
+        evidenceDropdown = clone.GetComponent<TMP_Dropdown>();
+        evidenceDropdown.onValueChanged.RemoveAllListeners();
+        evidenceDropdown.ClearOptions();
+        evidenceDropdown.AddOptions(new List<string> { NoEvidenceOption });
+
+        Debug.LogWarning("[InterrogationUI] Selector de pruebas creado automáticamente bajo el de sospechosos. " +
+                         "Para colocarlo a mano, asigna 'evidenceDropdown' en el Inspector.");
+    }
+
+    public void ShowSuspectUnlocked(string displayName)
     {
         if (conversationText != null)
         {
-            conversationText.text += $"<color=#00FF88>✓ NUEVO SOSPECHOSO: {suspectName}</color>\n\n";
+            conversationText.text += $"<color=#00FF88>✓ NUEVO SOSPECHOSO: {displayName}</color>\n\n";
             StartCoroutine(ForceScrollToBottom());
         }
     }
-    
-    public void ShowDayTransition(int newDay)
+
+    public void ShowNotice(string message)
+    {
+        if (conversationText != null)
+        {
+            conversationText.text += $"<color=#AAAAFF><i>{message}</i></color>\n\n";
+            StartCoroutine(ForceScrollToBottom());
+        }
+    }
+
+    public void ShowDayTransition(int newDay, string morningReport)
     {
         if (conversationText != null)
         {
             conversationText.text += $"\n<size=18><color=#FFFF00>═══════════════════</color></size>\n";
             conversationText.text += $"<size=16><b>DÍA {newDay}</b></size>\n";
             conversationText.text += $"<size=18><color=#FFFF00>═══════════════════</color></size>\n\n";
+
+            if (!string.IsNullOrEmpty(morningReport))
+                conversationText.text += $"<color=#CCCCCC><i>Parte de la mañana: {morningReport}</i></color>\n\n";
+
             StartCoroutine(ForceScrollToBottom());
         }
-        
+
         SetInputEnabled(true);
     }
-    
+
     // ============================================
     // ACUSACIÓN
     // ============================================
-    
-    public void ShowAccusationPanel(List<string> all, HashSet<string> unlocked)
+
+    public void ShowAccusationPanel(List<SuspectView> options)
     {
-        Debug.Log($"[InterrogationUI] ShowAccusationPanel llamado");
-        Debug.Log($"[InterrogationUI] Total sospechosos recibidos: {all.Count}");
-        Debug.Log($"[InterrogationUI] Sospechosos desbloqueados: {unlocked.Count}");
-        
         ShowPanel(accusationPanel);
-        
+        accusationOptions = options;
+
         if (accusationDropdown != null)
         {
             accusationDropdown.ClearOptions();
-            
-            List<string> options = new List<string>();
-            
-            // Construir lista de opciones con TODOS los sospechosos desbloqueados
-            foreach (string suspect in all)
-            {
-                if (unlocked.Contains(suspect))
-                {
-                    options.Add(suspect);
-                    Debug.Log($"[InterrogationUI] ✓ Agregado al dropdown: {suspect}");
-                }
-                else
-                {
-                    Debug.Log($"[InterrogationUI] ✗ NO agregado (bloqueado): {suspect}");
-                }
-            }
-            
-            // Verificación de seguridad
-            if (options.Count == 0)
-            {
-                Debug.LogWarning("[InterrogationUI] ¡WARNING! No hay opciones en el dropdown. Usando sospechosos por defecto.");
-                options.Add("Padre");
-                options.Add("Madre");
-                options.Add("Hermano");
-            }
-            
-            accusationDropdown.AddOptions(options);
-            
-            Debug.Log($"[InterrogationUI] Total opciones en dropdown: {options.Count}");
-            Debug.Log($"[InterrogationUI] Opciones: {string.Join(", ", options)}");
+            accusationDropdown.AddOptions(options.ConvertAll(v => v.displayName));
         }
         else
         {
             Debug.LogError("[InterrogationUI] ¡accusationDropdown es NULL!");
         }
     }
-    
+
     public void OnAccuseClick()
     {
-        if (accusationDropdown != null && accusationDropdown.options.Count > 0)
+        if (accusationDropdown != null && accusationDropdown.value < accusationOptions.Count)
         {
-            string accused = accusationDropdown.options[accusationDropdown.value].text;
-            gameManager.MakeAccusation(accused);
+            gameManager.MakeAccusation(accusationOptions[accusationDropdown.value].id);
         }
     }
-    
+
     // ============================================
     // RESULTADO (MEJORADO)
     // ============================================
-    
-    public void ShowAccusationResult(bool correct, string accused, string realCulprit, 
-                                      string ending, int cluesFound, int cluesTotal, int contradictions)
+
+    public void ShowAccusationResult(AccusationResult result, string accusedName, string culpritName,
+                                     int maxEvidence, string epilogue)
     {
         ShowPanel(resultPanel);
-        
+
         if (resultTitleText != null)
         {
-            if (ending == "GOOD")
+            switch (result.ending)
             {
-                resultTitleText.text = "✓ CASO RESUELTO - FINAL BUENO";
-                resultTitleText.color = Color.green;
-            }
-            else if (ending == "BITTERSWEET")
-            {
-                resultTitleText.text = "⚠ ACERTASTE PERO SIN PRUEBAS";
-                resultTitleText.color = Color.yellow;
-            }
-            else if (ending == "BAD")
-            {
-                resultTitleText.text = "✗ CASO NO RESUELTO - FINAL MALO";
-                resultTitleText.color = Color.red;
-            }
-            else if (ending == "INSUFFICIENT")
-            {
-                resultTitleText.text = "⚠ CULPABLE LIBRE POR FALTA DE PRUEBAS";
-                resultTitleText.color = new Color(1f, 0.5f, 0f); // Naranja
+                case Ending.Good:
+                    resultTitleText.text = "✓ CASO RESUELTO - FINAL BUENO";
+                    resultTitleText.color = Color.green;
+                    break;
+                case Ending.Bittersweet:
+                    resultTitleText.text = "⚠ ACERTASTE PERO SIN PRUEBAS";
+                    resultTitleText.color = Color.yellow;
+                    break;
+                case Ending.Insufficient:
+                    resultTitleText.text = "⚠ CULPABLE LIBRE POR FALTA DE PRUEBAS";
+                    resultTitleText.color = new Color(1f, 0.5f, 0f); // Naranja
+                    break;
+                default:
+                    resultTitleText.text = "✗ CASO NO RESUELTO - FINAL MALO";
+                    resultTitleText.color = Color.red;
+                    break;
             }
         }
-        
-        if (resultDetailsText != null)
+
+        if (resultDetailsText == null)
+            return;
+
+        string text = $"<b>TU ACUSACIÓN:</b> {accusedName}\n";
+        text += $"<b>VERDADERO CULPABLE:</b> {culpritName}\n\n";
+        text += $"<b>PISTAS INCRIMINATORIAS:</b> {result.incriminatingFound}\n";
+        text += $"<b>CONTRADICCIONES DEL CULPABLE:</b> {result.contradictions}\n";
+        text += $"<b>EVIDENCIA:</b> {result.evidence}/{maxEvidence} (hacen falta {InvestigationState.GoodThreshold} para una condena segura)\n\n";
+
+        switch (result.ending)
         {
-            resultDetailsText.text = $"<b>TU ACUSACIÓN:</b> {accused}\n";
-            resultDetailsText.text += $"<b>VERDADERO CULPABLE:</b> {realCulprit}\n\n";
-            resultDetailsText.text += $"<b>PISTAS DESCUBIERTAS:</b> {cluesFound}/{cluesTotal}\n";
-            resultDetailsText.text += $"<b>CONTRADICCIONES DETECTADAS:</b> {contradictions}\n\n";
-            
-            float percentage = (float)cluesFound / cluesTotal * 100f;
-            resultDetailsText.text += $"<b>EVIDENCIA RECOPILADA:</b> {percentage:F0}%\n\n";
-            
-            // Mensajes según el ending
-            if (ending == "GOOD")
-            {
-                resultDetailsText.text += "<color=green><b>¡EXCELENTE TRABAJO!</b></color>\n\n";
-                resultDetailsText.text += "Resolviste el caso con todas las pruebas necesarias. ";
-                resultDetailsText.text += "El culpable fue condenado y la justicia prevalece.\n\n";
-                resultDetailsText.text += "Tu investigación fue meticulosa y exhaustiva.";
-            }
-            else if (ending == "BITTERSWEET")
-            {
-                resultDetailsText.text += "<color=yellow><b>ACERTASTE PERO...</b></color>\n\n";
-                resultDetailsText.text += "Identificaste correctamente al culpable, pero sin pruebas suficientes ";
-                resultDetailsText.text += "para asegurar una condena. El caso puede reabrirse si aparecen más evidencias.\n\n";
-                resultDetailsText.text += $"Necesitabas al menos {Mathf.Ceil(cluesTotal * 0.75f)} pistas para un caso sólido.";
-            }
-            else if (ending == "INSUFFICIENT")
-            {
-                resultDetailsText.text += "<color=orange><b>INSUFICIENTE EVIDENCIA</b></color>\n\n";
-                resultDetailsText.text += "Aunque acusaste correctamente, NO tenías pruebas suficientes. ";
-                resultDetailsText.text += "El sospechoso queda en libertad por falta de evidencia contundente.\n\n";
-                resultDetailsText.text += "Tu intuición era correcta, pero en el sistema judicial las pruebas son esenciales.";
-            }
-            else // BAD
-            {
-                resultDetailsText.text += "<color=red><b>INVESTIGACIÓN FALLIDA</b></color>\n\n";
-                resultDetailsText.text += "Acusaste a la persona equivocada. El verdadero culpable sigue libre ";
-                resultDetailsText.text += "y la justicia no se ha cumplido.\n\n";
-                resultDetailsText.text += "Una investigación más profunda habría revelado la verdad.";
-            }
+            case Ending.Good:
+                text += "<color=green><b>¡EXCELENTE TRABAJO!</b></color>\n";
+                text += "Las pruebas y las contradicciones no dejan lugar a dudas. El culpable es condenado.\n\n";
+                break;
+            case Ending.Bittersweet:
+                text += "<color=yellow><b>ACERTASTE PERO...</b></color>\n";
+                text += "Identificaste al culpable, pero la defensa encuentra huecos. El juicio será largo e incierto.\n\n";
+                break;
+            case Ending.Insufficient:
+                text += "<color=orange><b>INSUFICIENTE EVIDENCIA</b></color>\n";
+                text += "Tu intuición era correcta, pero sin pruebas el sospechoso queda en libertad.\n\n";
+                break;
+            default:
+                text += "<color=red><b>INVESTIGACIÓN FALLIDA</b></color>\n";
+                text += result.ignoredClearingClue
+                    ? "Acusaste a alguien a quien tus propias pistas descartaban. Ignoraste pruebas.\n\n"
+                    : "Acusaste a la persona equivocada. El verdadero culpable sigue libre.\n\n";
+                break;
         }
+
+        text += $"<b>LO QUE PASÓ DE VERDAD:</b>\n{epilogue}";
+        resultDetailsText.text = text;
     }
 }

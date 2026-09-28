@@ -1,85 +1,119 @@
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 /// <summary>
-/// GAME MANAGER MEJORADO - Con acusación anticipada y 4 finales
+/// Flujo de la partida: sorteo de variante, días y preguntas, elenco y desbloqueos, partes de la mañana y acusación.
 /// </summary>
 public class GameManager : MonoBehaviour
 {
+    public enum CaseSelection
+    {
+        Aleatoria,
+        Caso1A, Caso1B, Caso1C,
+        Caso2A, Caso2B, Caso2C,
+        Caso3A, Caso3B, Caso3C
+    }
+
+    public const int SafetyUnlockDay = 3; // Al empezar este día se desbloquea todo el elenco
+
     [Header("Referencias")]
     [SerializeField] private AIConversationManager conversationManager;
     [SerializeField] private InterrogationUI interrogationUI;
-    
+
     [Header("Configuración")]
     [SerializeField] private int maxDays = 7;
     [SerializeField] private int questionsPerDay = 5;
-    
-    private AIConversationManager.CaseData currentCase;
+
+    [Header("Debug (solo editor)")]
+    [Tooltip("Fuerza historia y variante. Se ignora fuera del editor")]
+    [SerializeField] private CaseSelection debugCase = CaseSelection.Aleatoria;
+
+    private StoryData story;
+    private VariantData variant;
     private int currentDay = 1;
     private int questionsUsedToday = 0;
-    
-    private List<string> allSuspects = new List<string> { "Padre", "Madre", "Hermano", "Vecina", "Detective", "Cartero", "Dueño del Bar" };
-    private HashSet<string> unlockedSuspects = new HashSet<string>();
-    
-    private HashSet<string> discoveredClues = new HashSet<string>();
-    private Dictionary<string, string> clueNames = new Dictionary<string, string>();
-    private List<string> contradictions = new List<string>();
-    
+    private bool accusationMade;
+
+    private readonly List<string> unlocked = new List<string>();
+
+    private InvestigationState State => conversationManager.State;
+
     private void Start()
     {
         conversationManager.OnClueRevealed += OnClueRevealed;
         conversationManager.OnContradictionDetected += OnContradictionDetected;
-        conversationManager.OnResponseReceived += OnResponseReceived;
-        
+        conversationManager.OnCharacterMentioned += OnCharacterMentioned;
+
         if (interrogationUI != null)
-        {
             interrogationUI.Initialize(this);
-        }
-        
-        SelectRandomCase();
-        
-        unlockedSuspects.Add("Padre");
-        unlockedSuspects.Add("Madre");
-        unlockedSuspects.Add("Hermano");
-        
+
+        SelectCase();
+
         Debug.Log("[GameManager] Inicializado. Esperando menú principal...");
     }
-    
-    private void SelectRandomCase()
+
+    private void SelectCase()
     {
-        string[] caseIds = { "1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C" };
-        string randomId = caseIds[Random.Range(0, caseIds.Length)];
-        
-        var casesField = typeof(AIConversationManager).GetField("cases", 
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var cases = (Dictionary<string, AIConversationManager.CaseData>)casesField.GetValue(conversationManager);
-        
-        currentCase = cases[randomId];
-        
-        Debug.Log($"[GameManager] Caso: {currentCase.title} ({currentCase.id})");
-        Debug.Log($"[GameManager] Culpable: {currentCase.culprit}");
+        string forcedId = Application.isEditor ? CaseIdFor(debugCase) : null;
+
+        if (forcedId == null || !CaseLibrary.TryFind(forcedId, out story, out variant))
+        {
+            if (forcedId != null)
+                Debug.LogWarning($"[GameManager] La variante {forcedId} aún no existe; se sortea entre las registradas.");
+
+            var all = CaseLibrary.AllVariants().ToList();
+            (story, variant) = all[Random.Range(0, all.Count)];
+        }
+
+        conversationManager.StartCase(story, variant);
+
+        unlocked.Clear();
+        unlocked.AddRange(story.cast.Where(c => c.startsUnlocked).Select(c => c.id));
+
+        Debug.Log($"[GameManager] Caso: {story.title} ({variant.id}) · culpable: {variant.culpritId}");
     }
-    
+
+    private static string CaseIdFor(CaseSelection selection)
+    {
+        return selection == CaseSelection.Aleatoria ? null : selection.ToString().Substring("Caso".Length);
+    }
+
+    // ============================================
+    // FLUJO
+    // ============================================
+
     public void ShowCaseIntro()
     {
-        if (interrogationUI != null)
-        {
-            interrogationUI.ShowCaseIntro(currentCase.title, currentCase.description);
-        }
+        interrogationUI?.ShowCaseIntro(story.title, story.intro);
     }
-    
-    public async void AskQuestion(string suspectName, string question)
+
+    /// <summary>
+    /// Llamado por la UI al pulsar "Empezar".
+    /// </summary>
+    public void BeginInterrogation()
+    {
+        RefreshSuspects();
+        interrogationUI?.SetEvidenceOptions(DiscoveredClues());
+        interrogationUI?.UpdateCluesList(DiscoveredClues());
+        interrogationUI?.UpdateContradictionsList(new List<string>());
+        UpdateGameState();
+    }
+
+    public async void AskQuestion(string characterId, string question, string shownClueId)
     {
         if (questionsUsedToday >= questionsPerDay)
         {
             interrogationUI?.ShowError("No te quedan preguntas hoy.");
             return;
         }
-        
+
+        ClueData shownClue = string.IsNullOrEmpty(shownClueId) ? null : variant.Clue(shownClueId);
+        string asked = TurnAnalyzer.BuildUserMessage(question, shownClue);
+
         interrogationUI?.ShowWaiting(true);
 
-        LLMResult result = await conversationManager.AskSuspect(suspectName, question, currentCase.id, currentDay);
+        LLMResult result = await conversationManager.AskSuspect(characterId, question, currentDay, shownClue);
 
         interrogationUI?.ShowWaiting(false);
 
@@ -91,166 +125,155 @@ public class GameManager : MonoBehaviour
         }
 
         questionsUsedToday++;
-        interrogationUI?.AddToConversation(suspectName, question, result.Text);
+        interrogationUI?.AddToConversation(characterId, story.Character(characterId).DisplayName, asked, result.Text);
         UpdateGameState();
     }
-    
+
     public void EndDay()
     {
         currentDay++;
         questionsUsedToday = 0;
-        
+
         if (currentDay > maxDays)
         {
             ShowAccusationPanel();
+            return;
         }
-        else
+
+        interrogationUI?.ShowDayTransition(currentDay, MorningReport(currentDay));
+
+        if (currentDay >= SafetyUnlockDay)
         {
-            interrogationUI?.ShowDayTransition(currentDay);
-            UpdateGameState();
-            CheckSuspectUnlocks();
+            foreach (CharacterData character in story.cast.Where(c => !unlocked.Contains(c.id)))
+                Unlock(character.id, $"Un agente te informa: conviene hablar con {character.name}.");
         }
+
+        UpdateGameState();
     }
-    
-    // NUEVO: Forzar panel de acusación antes del día 7
+
+    private string MorningReport(int day)
+    {
+        string report = day - 1 < variant.morningReports.Length ? variant.morningReports[day - 1] : "";
+
+        if (day == maxDays)
+            report += "\nÚltimo día: al terminarlo tendrás que acusar a alguien.";
+        else if (day == maxDays - 1)
+            report += "\nQuedan dos días de investigación.";
+
+        return report.Trim();
+    }
+
     public void ForceAccusationPanel()
     {
         Debug.Log("[GameManager] Acusación anticipada activada");
         ShowAccusationPanel();
     }
-    
-    private void CheckSuspectUnlocks()
+
+    // ============================================
+    // SOSPECHOSOS
+    // ============================================
+
+    private void OnCharacterMentioned(string characterId)
     {
-        if (!unlockedSuspects.Contains("Vecina") && discoveredClues.Count >= 1)
-        {
-            UnlockSuspect("Vecina");
-        }
-        
-        if (!unlockedSuspects.Contains("Cartero") && discoveredClues.Count >= 2)
-        {
-            UnlockSuspect("Cartero");
-        }
-        
-        if (!unlockedSuspects.Contains("Detective") && discoveredClues.Count >= 3)
-        {
-            UnlockSuspect("Detective");
-        }
-        
-        if (currentCase.id.StartsWith("2") && !unlockedSuspects.Contains("Dueño del Bar") && discoveredClues.Count >= 2)
-        {
-            UnlockSuspect("Dueño del Bar");
-        }
+        Unlock(characterId, null);
     }
-    
-    private void UnlockSuspect(string suspectName)
+
+    private void Unlock(string characterId, string notice)
     {
-        if (unlockedSuspects.Add(suspectName))
-        {
-            Debug.Log($"[GameManager] Desbloqueado: {suspectName}");
-            interrogationUI?.ShowSuspectUnlocked(suspectName);
-            interrogationUI?.UpdateSuspectList(allSuspects, unlockedSuspects);
-        }
+        if (unlocked.Contains(characterId))
+            return;
+
+        unlocked.Add(characterId);
+        CharacterData character = story.Character(characterId);
+        Debug.Log($"[GameManager] Desbloqueado: {character.name}");
+
+        if (!string.IsNullOrEmpty(notice))
+            interrogationUI?.ShowNotice(notice);
+
+        interrogationUI?.ShowSuspectUnlocked(character.DisplayName);
+        RefreshSuspects();
     }
-    
-    private void OnClueRevealed(string clueId, string clueName, string description)
+
+    private List<SuspectView> UnlockedSuspects()
     {
-        if (discoveredClues.Add(clueId))
-        {
-            clueNames[clueId] = clueName;
-            Debug.Log($"[GameManager] Pista: {clueName}");
-            interrogationUI?.ShowClueNotification(clueName);
-            interrogationUI?.UpdateCluesList(GetDiscoveredCluesNames());
-            CheckSuspectUnlocks();
-        }
+        // En el orden del elenco
+        return story.cast.Where(c => unlocked.Contains(c.id)).Select(SuspectView.From).ToList();
     }
-    
-    private void OnContradictionDetected(string contradiction)
+
+    private void RefreshSuspects()
     {
-        contradictions.Add(contradiction);
-        Debug.Log($"[GameManager] Contradicción: {contradiction}");
-        interrogationUI?.ShowContradictionNotification(contradiction);
-        interrogationUI?.UpdateContradictionsList(contradictions);
+        interrogationUI?.SetSuspects(UnlockedSuspects());
     }
-    
-    private void OnResponseReceived(string suspect, string question, string response)
+
+    // ============================================
+    // PISTAS Y CONTRADICCIONES
+    // ============================================
+
+    private List<ClueData> DiscoveredClues()
     {
-        Debug.Log($"[GameManager] {suspect} respondió");
+        return State.DiscoveredClueIds.Select(variant.Clue).ToList();
     }
-    
+
+    private void OnClueRevealed(ClueData clue)
+    {
+        Debug.Log($"[GameManager] Pista: {clue.playerName}");
+        interrogationUI?.ShowClueNotification(clue.playerName);
+        interrogationUI?.UpdateCluesList(DiscoveredClues());
+        interrogationUI?.SetEvidenceOptions(DiscoveredClues());
+    }
+
+    private void OnContradictionDetected(string text)
+    {
+        Debug.Log($"[GameManager] Contradicción: {text}");
+        interrogationUI?.ShowContradictionNotification(text);
+        interrogationUI?.UpdateContradictionsList(
+            State.ContradictionClueIds.Select(id => conversationManager.DescribeContradiction(variant.Clue(id))).ToList());
+    }
+
+    // ============================================
+    // ACUSACIÓN
+    // ============================================
+
     private void ShowAccusationPanel()
     {
-        interrogationUI?.ShowAccusationPanel(allSuspects, unlockedSuspects);
+        interrogationUI?.ShowAccusationPanel(UnlockedSuspects());
     }
-    
-    // MEJORADO: Sistema de 4 finales
-    public void MakeAccusation(string accused)
+
+    public void MakeAccusation(string accusedId)
     {
-        bool correct = accused == currentCase.culprit;
-        int cluesFound = discoveredClues.Count;
-        int totalClues = currentCase.requiredClues.Count;
-        float cluePercentage = (float)cluesFound / totalClues;
-        
-        string ending;
-        
-        // 4 FINALES POSIBLES:
-        if (correct && cluePercentage >= 0.75f)
-        {
-            // FINAL 1: GOOD - Acertaste + 75%+ pruebas
-            ending = "GOOD";
-            Debug.Log("[GameManager] FINAL BUENO - Culpable condenado con pruebas");
-        }
-        else if (correct && cluePercentage >= 0.5f && cluePercentage < 0.75f)
-        {
-            // FINAL 2: BITTERSWEET - Acertaste + 50-74% pruebas
-            ending = "BITTERSWEET";
-            Debug.Log("[GameManager] FINAL AGRIDULCE - Acertaste pero pocas pruebas");
-        }
-        else if (correct && cluePercentage < 0.5f)
-        {
-            // FINAL 3: INSUFFICIENT - Acertaste pero <50% pruebas (QUEDA LIBRE)
-            ending = "INSUFFICIENT";
-            Debug.Log("[GameManager] FINAL INSUFICIENTE - Culpable libre por falta de pruebas");
-        }
-        else
-        {
-            // FINAL 4: BAD - Acusación incorrecta
-            ending = "BAD";
-            Debug.Log("[GameManager] FINAL MALO - Acusación incorrecta");
-        }
-        
+        if (accusationMade)
+            return;
+
+        accusationMade = true;
+        AccusationResult result = State.Accuse(accusedId);
+
+        Debug.Log($"[GameManager] Acusación: {accusedId} → {result.ending} (evidencia {result.evidence})");
+
         interrogationUI?.ShowAccusationResult(
-            correct, 
-            accused, 
-            currentCase.culprit, 
-            ending, 
-            cluesFound, 
-            totalClues, 
-            contradictions.Count
-        );
+            result,
+            story.Character(accusedId).name,
+            story.Character(variant.culpritId).name,
+            InvestigationState.MaxEvidenceWithoutCulprit(variant),
+            variant.epilogue);
     }
-    
+
     public bool CanAskMoreQuestions()
     {
         return questionsUsedToday < questionsPerDay;
     }
-    
+
     private void UpdateGameState()
     {
-        interrogationUI?.UpdateGameState(currentDay, questionsUsedToday, questionsPerDay);
+        interrogationUI?.UpdateGameState(currentDay, maxDays, questionsUsedToday, questionsPerDay);
     }
-    
-    private List<string> GetDiscoveredCluesNames()
-    {
-        return discoveredClues.Select(id => clueNames.ContainsKey(id) ? clueNames[id] : id).ToList();
-    }
-    
+
     public void RestartGame()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(
             UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
         );
     }
-    
+
     public void BackToMenu()
     {
         Debug.Log("[GameManager] Menú principal");

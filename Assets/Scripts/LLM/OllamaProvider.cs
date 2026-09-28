@@ -16,8 +16,11 @@ public class OllamaSettings
     public bool preloadOnStart = true;
     [Tooltip("Tiempo que Ollama mantiene el modelo en memoria tras cada petición (\"60m\", \"2h\", \"-1m\" = siempre). Un número sin unidad se interpreta en minutos")]
     public string keepAlive = DefaultKeepAlive;
+    [Tooltip("Tamaño de contexto (num_ctx). Debe ser igual en la precarga y en las preguntas, o Ollama recarga el modelo")]
+    public int numCtx = DefaultNumCtx;
 
     public const string DefaultKeepAlive = "60m";
+    public const int DefaultNumCtx = 8192;
 }
 
 /// <summary>
@@ -104,7 +107,7 @@ public class OllamaProvider : ILLMProvider
                 messages = new ChatMessage[0],
                 stream = false,
                 keep_alive = KeepAlive,
-                options = new OllamaOptions()
+                options = new OllamaOptions { num_ctx = settings.numCtx }
             };
 
             float start = Time.realtimeSinceStartup;
@@ -134,7 +137,7 @@ public class OllamaProvider : ILLMProvider
             messages = messages.ToArray(),
             stream = false,
             keep_alive = KeepAlive,
-            options = new OllamaOptions { temperature = temperature, num_predict = maxTokens }
+            options = new OllamaOptions { temperature = temperature, num_predict = maxTokens, num_ctx = settings.numCtx }
         };
 
         var response = await LLMHttp.PostJsonAsync(ChatUrl, JsonUtility.ToJson(body), settings.timeoutSeconds);
@@ -198,6 +201,7 @@ public class OllamaProvider : ILLMProvider
     {
         public float temperature;
         public int num_predict;
+        public int num_ctx;
     }
 
     [Serializable]
