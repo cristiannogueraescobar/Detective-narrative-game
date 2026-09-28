@@ -147,7 +147,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         MentionRosario,
                         "Papá y Elena discutieron el miércoles en el despacho; papá le gritó."
                     },
-                    version = "Estuve toda la noche en mi cuarto jugando online con los cascos. No oí nada hasta que papá empezó a gritar.",
+                    version = "Estuve toda la noche en mi cuarto jugando online con los cascos. No oí nada hasta que papá empezó a gritar; entonces salí al pasillo.",
                     secret = "Fumas porros a escondidas en tu cuarto y no quieres que tus padres lo sepan.",
                     admitsWhen = "el inspector te insiste mucho",
                     nervousAbout = "que registren tu cuarto y que te pregunten por papá y Elena.",
@@ -195,7 +195,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 {
                     id = "1A_puerta", playerName = "La puerta de Elena", holder = "hermano", kind = ClueKind.Incriminates,
                     summary = "La puerta del cuarto de Elena estaba cerrada con llave por fuera. La llave la llevaba Daniel en el bolsillo.",
-                    topic = "la puerta de Elena o lo que viste cuando papá gritó",
+                    topic = "lo que viste al salir al pasillo cuando papá gritó, o la puerta de Elena",
                     fact = "la puerta de Elena estaba cerrada con llave por fuera y papá sacó la llave de su bolsillo. Elena nunca cerraba con llave.",
                     anchors = new[]
                     {
@@ -280,8 +280,8 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     },
                     calibrationQuestions = new[]
                     {
-                        "¿Toma usted alguna medicación para dormir?",
-                        "Sé que me oculta algo sobre sus pastillas. ¿Qué pasó con ellas?"
+                        "¿Toma usted alguna medicación para dormir? || No me convence. Sé que me oculta algo sobre sus pastillas. Dígame la verdad.",
+                        "¿Qué pasó con sus pastillas para dormir esa noche? || Insisto: sé que me oculta algo. Dígame la verdad."
                     },
                     sampleHits = new[]
                     {
@@ -396,7 +396,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     id = "1B_historial", playerName = "Un historial abultado", holder = "padre", kind = ClueKind.Incriminates,
                     summary = "Elena fue a urgencias once veces en dos años, siempre llevada por Carmen. Ningún especialista encontró nada.",
                     topic = "la salud de Elena",
-                    fact = "en dos años Elena fue once veces a urgencias, siempre llevada por Carmen, y ningún especialista le encontró nada. A ti te parecía excesivo.",
+                    fact = "en dos años Elena fue once veces a urgencias, siempre llevada por Carmen, y ningún especialista le encontró nada.",
                     anchors = new[]
                     {
                         new[] { "urgencias", "hospital", "medicos", "especialista" },
@@ -414,18 +414,20 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 {
                     id = "1B_receta", playerName = "La receta de casa", holder = "padre", kind = ClueKind.Incriminates,
                     summary = "Carmen le recetó ella misma a Elena un medicamento para el corazón. Cuando Daniel pidió una segunda opinión, ella se puso furiosa.",
-                    topic = "la medicación de Elena",
-                    fact = "Carmen le recetó ella misma a Elena un medicamento para el corazón hace unos meses. Cuando propusiste pedir una segunda opinión a un cardiólogo, se puso furiosa.",
+                    topic = "la medicación de Elena o quién le recetaba las medicinas",
+                    fact = "Carmen le recetó ella misma a Elena un medicamento para el corazón. Cuando propusiste pedir una segunda opinión a un cardiólogo, se puso furiosa.",
                     anchors = new[]
                     {
                         new[] { "corazon", "cardiolog", "arritmia" },
-                        new[] { "segunda opinion", "furiosa", "se enfado", "ella misma", "hecha una fiera" }
+                        new[] { "receto", "recetaba", "prescrit", "prescribio", "segunda opinion", "furiosa", "se enfado", "ella misma", "hecha una fiera" }
                     },
                     calibrationQuestions = new[] { "¿Tomaba Elena alguna medicación?", "¿Quién decidía los tratamientos de Elena?" },
                     sampleHits = new[]
                     {
                         "Carmen le recetó ella misma algo para el corazón. Cuando pedí una segunda opinión se puso furiosa.",
-                        "Yo quería que la viera un cardiólogo, una segunda opinión, y Carmen se enfadó muchísimo."
+                        "Yo quería que la viera un cardiólogo, una segunda opinión, y Carmen se enfadó muchísimo.",
+                        "No estoy seguro de qué medicación tomaba Elena esa noche, solo sé que Carmen le recetó uno para el corazón hace unos meses.",
+                        "Elena solía tomar un medicamento para el corazón prescrito por Carmen."
                     },
                     sampleMisses = new[] { "Tenía algo del corazón, eso lo lleva Carmen." }
                 },
@@ -469,20 +471,21 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 },
                 new ClueData
                 {
-                    id = "1B_tutora", playerName = "Un mensaje a la tutora", holder = "hermano", kind = ClueKind.Incriminates,
+                    id = "1B_tutora", playerName = "Otro médico", holder = "hermano", kind = ClueKind.Incriminates,
                     summary = "Elena le contó a Lucas que había pedido a su tutora ir a otro médico: decía que no estaba enferma y que las pastillas la mareaban.",
                     topic = "si Elena te contó algo estos días",
                     fact = "hace unos días Elena te contó que le había pedido a su tutora del colegio que la llevaran a otro médico, porque ella decía que no estaba enferma y que las pastillas la mareaban.",
                     anchors = new[]
                     {
-                        new[] { "tutora", "profesora", "colegio" },
-                        new[] { "otro medico", "no estaba enferma", "no estoy enferma", "mareaban", "marean" }
+                        new[] { "otro medico", "cambiar de medico", "no estaba enferma", "no estoy enferma" },
+                        new[] { "mareaban", "marean", "tutora", "profesora", "colegio", "pastillas" }
                     },
                     calibrationQuestions = new[] { "¿Te contó Elena algo estos últimos días?", "¿Elena se quejaba de algo?" },
                     sampleHits = new[]
                     {
                         "Elena me dijo que le había pedido a su tutora ir a otro médico, que ella no estaba enferma.",
-                        "Decía que las pastillas la mareaban y se lo contó a la profesora."
+                        "Decía que no estaba enferma, que las pastillas la mareaban, y se lo contó a la profesora.",
+                        "Sí, me dijo que quería cambiar de médico porque sentía que estaba mejor y que las pastillas la mareaban mucho."
                     },
                     sampleMisses = new[] { "No sé, tío, Elena no me contaba nada." }
                 },
@@ -499,8 +502,8 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     },
                     calibrationQuestions = new[]
                     {
-                        "¿Dónde estuvo exactamente entre las 21:00 y las 23:00?",
-                        "No me mienta: he llamado al restaurante y nadie le vio. ¿Dónde estaba?"
+                        "¿Dónde estuvo exactamente entre las 21:00 y las 23:00? || No me mienta: he llamado al restaurante y nadie le vio. ¿Dónde estaba de verdad?",
+                        "¿Con quién cenó esa noche? || Voy a comprobarlo con el restaurante. ¿Seguro que no quiere cambiar su versión?"
                     },
                     sampleHits = new[]
                     {
@@ -680,8 +683,8 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     },
                     calibrationQuestions = new[]
                     {
-                        "¿Recibió alguna llamada esa noche?",
-                        "Voy a pedir el registro de llamadas de su móvil. ¿Quiere contarme algo antes?"
+                        "¿Recibió alguna llamada esa noche? || Voy a pedir el registro de llamadas de su móvil. Dígame la verdad ahora.",
+                        "¿A qué hora llegó realmente a casa? || Insisto, no me lo creo. ¿Qué pasó antes de las 23:00?"
                     },
                     sampleHits = new[]
                     {

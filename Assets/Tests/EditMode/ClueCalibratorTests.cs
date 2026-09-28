@@ -33,6 +33,15 @@ public class ClueCalibratorTests
     }
 
     [Test]
+    public void FiltroDePistasOpcional()
+    {
+        var options = ClueCalibrator.ParseArgs(new[] { "Unity.exe", "-clues", "1A_puerta, 1B_cena" });
+
+        CollectionAssert.AreEqual(new[] { "1A_puerta", "1B_cena" }, options.clueIds);
+        Assert.IsEmpty(ClueCalibrator.ParseArgs(new[] { "Unity.exe" }).clueIds);
+    }
+
+    [Test]
     public void SinVariantesUsaTodasLasRegistradas()
     {
         var options = ClueCalibrator.ParseArgs(new[] { "Unity.exe" });

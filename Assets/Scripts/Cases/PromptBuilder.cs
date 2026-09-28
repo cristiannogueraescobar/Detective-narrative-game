@@ -43,10 +43,9 @@ public static class PromptBuilder
 
         sb.AppendLine($"TU VERSIÓN: {role.version}");
 
-        sb.Append($"LO QUE OCULTAS: {role.secret}");
+        sb.AppendLine($"LO QUE OCULTAS: {role.secret} Lo admites solo si {role.admitsWhen}.");
         foreach (ClueData clue in secretFacts)
-            sb.Append($" {clue.fact}");
-        sb.AppendLine($" Lo admites solo si {role.admitsWhen}.");
+            sb.AppendLine($"- Si te preguntan por {clue.topic}: al principio lo niegas. Si el inspector insiste o te presiona, confiesas: {clue.fact}");
 
         if (isCulprit)
         {

@@ -14,7 +14,7 @@ using UnityEngine;
 ///
 /// Menú: Detective/Calibrar pistas
 /// Batchmode: Unity.exe -batchmode -nographics -projectPath . -executeMethod ClueCalibrator.RunFromCommandLine
-///            [-variants 1A,1B] [-tries 3] [-ollama http://localhost:11434] [-model qwen2.5:7b-instruct]
+///            [-variants 1A,1B] [-clues 1A_puerta,1B_cena] [-tries 3] [-ollama http://localhost:11434] [-model qwen2.5:7b-instruct]
 /// Informe: Logs/clue-calibration.md
 /// </summary>
 public static class ClueCalibrator
@@ -25,6 +25,7 @@ public static class ClueCalibrator
     public class Options
     {
         public List<string> variantIds = new List<string>();
+        public List<string> clueIds = new List<string>(); // Vacío = todas las pistas de las variantes
         public int tries = 3;
         public string ollamaUrl = "http://localhost:11434";
         public string model = new OllamaSettings().model;
@@ -76,6 +77,9 @@ public static class ClueCalibrator
             {
                 case "-variants":
                     options.variantIds = args[i + 1].Split(',').Select(v => v.Trim()).Where(v => v.Length > 0).ToList();
+                    break;
+                case "-clues":
+                    options.clueIds = args[i + 1].Split(',').Select(v => v.Trim()).Where(v => v.Length > 0).ToList();
                     break;
                 case "-tries":
                     options.tries = int.Parse(args[i + 1]);
@@ -161,7 +165,9 @@ public static class ClueCalibrator
                 Debug.LogWarning($"[Calibración] Variante {id} no registrada");
                 continue;
             }
-            work.AddRange(variant.clues.Select(c => (story, variant, c)));
+            work.AddRange(variant.clues
+                .Where(c => options.clueIds.Count == 0 || options.clueIds.Contains(c.id))
+                .Select(c => (story, variant, c)));
         }
 
         int totalAttempts = work.Sum(w => w.clue.calibrationQuestions.Length) * options.tries;

@@ -35,6 +35,14 @@ public class PromptBuilderTests
     }
 
     [Test]
+    public void PistaSecretaIndicaCuandoYComoConfesarla()
+    {
+        string prompt = Build("b");
+
+        StringAssert.Contains("- Si te preguntan por tema d: al principio lo niegas. Si el inspector insiste o te presiona, confiesas: hecho d con partida", prompt);
+    }
+
+    [Test]
     public void SoloElCulpableRecibeInstruccionesDeCulpable()
     {
         string culprit = Build("a");
