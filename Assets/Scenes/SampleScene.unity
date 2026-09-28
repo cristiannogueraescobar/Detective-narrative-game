@@ -148,7 +148,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c155b4e446692674baa8da0bbd736351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AIConversationManager
-  apiKey: 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
   maxTokens: 500
   temperature: 0.7
   maxQuestionsPerDay: 5

@@ -31,7 +31,6 @@ public class GameManager : MonoBehaviour
         conversationManager.OnClueRevealed += OnClueRevealed;
         conversationManager.OnContradictionDetected += OnContradictionDetected;
         conversationManager.OnResponseReceived += OnResponseReceived;
-        conversationManager.OnError += OnError;
         
         if (interrogationUI != null)
         {
@@ -78,15 +77,21 @@ public class GameManager : MonoBehaviour
             return;
         }
         
-        questionsUsedToday++;
-        UpdateGameState();
-        
         interrogationUI?.ShowWaiting(true);
-        
-        string response = await conversationManager.AskSuspect(suspectName, question, currentCase.id, currentDay);
-        
+
+        LLMResult result = await conversationManager.AskSuspect(suspectName, question, currentCase.id, currentDay);
+
         interrogationUI?.ShowWaiting(false);
-        interrogationUI?.AddToConversation(suspectName, question, response);
+
+        // Una petición fallida no gasta pregunta del día
+        if (!result.Success)
+        {
+            interrogationUI?.ShowRequestFailed(result.ErrorMessage, question);
+            return;
+        }
+
+        questionsUsedToday++;
+        interrogationUI?.AddToConversation(suspectName, question, result.Text);
         UpdateGameState();
     }
     
@@ -170,12 +175,6 @@ public class GameManager : MonoBehaviour
     private void OnResponseReceived(string suspect, string question, string response)
     {
         Debug.Log($"[GameManager] {suspect} respondió");
-    }
-    
-    private void OnError(string error)
-    {
-        Debug.LogError($"[GameManager] Error: {error}");
-        interrogationUI?.ShowError(error);
     }
     
     private void ShowAccusationPanel()

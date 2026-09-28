@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Networking;
 
 /// <summary>
 /// SISTEMA DE PISTAS LÓGICO Y DETERMINISTA
@@ -12,12 +11,11 @@ using UnityEngine.Networking;
 /// </summary>
 public class AIConversationManager : MonoBehaviour
 {
-    private const string ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-    private const string ANTHROPIC_MODEL = "claude-sonnet-4-20250514";
-    
-    [Header("API Settings")]
-    [SerializeField] private string apiKey = "";
-    
+    [Header("Proveedor LLM")]
+    [SerializeField] private LLMProviderType provider = LLMProviderType.Ollama;
+    [SerializeField] private OllamaSettings ollamaSettings = new OllamaSettings();
+    [SerializeField] private AnthropicSettings anthropicSettings = new AnthropicSettings();
+
     [Header("Response Settings")]
     [SerializeField] private int maxTokens = 400;
     [SerializeField][Range(0f, 1f)] private float temperature = 0.75f;
@@ -26,14 +24,14 @@ public class AIConversationManager : MonoBehaviour
     public event Action<string, string, string> OnClueRevealed; // (clueId, clueName, description)
     public event Action<string> OnContradictionDetected; // (contradiction)
     public event Action<string, string, string> OnResponseReceived; // (suspect, question, response)
-    public event Action<string> OnError; // (error)
     public event Action<string, string> OnSuspectMentioned; // (caseId, suspectName)
-    
+
     // DATOS
+    private ILLMProvider llmProvider;
     private Dictionary<string, CaseData> cases = new Dictionary<string, CaseData>();
     private Dictionary<string, string> personalityPrompts = new Dictionary<string, string>();
-    private Dictionary<string, List<ConversationMessage>> conversationHistory = 
-        new Dictionary<string, List<ConversationMessage>>();
+    private Dictionary<string, List<ChatMessage>> conversationHistory =
+        new Dictionary<string, List<ChatMessage>>();
     private Dictionary<string, HashSet<string>> revealedClues = 
         new Dictionary<string, HashSet<string>>();
     
@@ -43,7 +41,19 @@ public class AIConversationManager : MonoBehaviour
     {
         BuildCases();
         BuildPersonalities();
-        Debug.Log($"[AIConversation] Sistema cargado: {cases.Count} historias");
+        llmProvider = CreateProvider();
+        Debug.Log($"[AIConversation] Sistema cargado: {cases.Count} historias. Proveedor: {llmProvider.DisplayName}");
+    }
+
+    private ILLMProvider CreateProvider()
+    {
+        switch (provider)
+        {
+            case LLMProviderType.Anthropic:
+                return new AnthropicProvider(anthropicSettings);
+            default:
+                return new OllamaProvider(ollamaSettings);
+        }
     }
     
     // ============================================
@@ -371,22 +381,21 @@ Ejemplo:
     // ============================================
 
     /// <summary>
-    /// Método principal usado por GameManager
-    /// Firma: AskSuspect(suspectName, question, caseId, currentDay)
+    /// Método principal usado por GameManager.
+    /// Si la petición falla, el historial queda como estaba y no se detectan pistas.
     /// </summary>
-    public async Task<string> AskSuspect(string suspectName, string question, string caseId, int currentDay)
+    public async Task<LLMResult> AskSuspect(string suspectName, string question, string caseId, int currentDay)
     {
         if (!cases.ContainsKey(caseId))
         {
-            OnError?.Invoke("Caso no existe");
-            return "Error: Caso no encontrado.";
+            return LLMResult.Fail("Caso no encontrado.");
         }
 
         string conversationKey = $"{caseId}_{suspectName}";
         
         if (!conversationHistory.ContainsKey(conversationKey))
         {
-            conversationHistory[conversationKey] = new List<ConversationMessage>();
+            conversationHistory[conversationKey] = new List<ChatMessage>();
         }
         
         if (!revealedClues.ContainsKey(conversationKey))
@@ -394,139 +403,27 @@ Ejemplo:
             revealedClues[conversationKey] = new HashSet<string>();
         }
 
-        conversationHistory[conversationKey].Add(new ConversationMessage
+        List<ChatMessage> history = conversationHistory[conversationKey];
+        history.Add(new ChatMessage { role = "user", content = question });
+
+        LLMResult result = await llmProvider.SendAsync(
+            BuildSystemPrompt(caseId, suspectName), history, maxTokens, temperature);
+
+        if (!result.Success)
         {
-            role = "user",
-            content = question
-        });
+            // Quitar la pregunta para no dejar dos mensajes "user" seguidos al reintentar
+            history.RemoveAt(history.Count - 1);
+            Debug.LogWarning($"[AIConversation] Petición fallida ({llmProvider.DisplayName}): {result.ErrorMessage}");
+            return result;
+        }
+
+        history.Add(new ChatMessage { role = "assistant", content = result.Text });
 
         DetectSuspectMentions(question, caseId);
+        DetectCluesInResponse(caseId, suspectName, question, result.Text);
 
-        try
-        {
-            string response = await CallClaudeAPI(caseId, suspectName, question);
-            
-            conversationHistory[conversationKey].Add(new ConversationMessage
-            {
-                role = "assistant",
-                content = response
-            });
-
-            DetectCluesInResponse(caseId, suspectName, question, response);
-
-            // Disparar evento con firma correcta: (suspect, question, response)
-            OnResponseReceived?.Invoke(suspectName, question, response);
-            return response;
-        }
-        catch (Exception e)
-        {
-            OnError?.Invoke($"Error API: {e.Message}");
-            return $"Error: {e.Message}";
-        }
-    }
-
-    /// <summary>
-    /// Método alternativo para compatibilidad con callback
-    /// </summary>
-    public void AskSuspect(string caseId, string suspect, string playerMessage, Action<string> onResponse)
-    {
-        _ = AskSuspectCallbackAsync(caseId, suspect, playerMessage, onResponse);
-    }
-
-    private async Task AskSuspectCallbackAsync(string caseId, string suspect, string playerMessage, Action<string> onResponse)
-    {
-        string response = await AskSuspect(suspect, playerMessage, caseId, 1);
-        onResponse?.Invoke(response);
-    }
-
-    public async Task<bool> SendMessageAsync(string caseId, string suspect, string playerMessage)
-    {
-        if (!cases.ContainsKey(caseId))
-        {
-            OnError?.Invoke("Caso no existe");
-            return false;
-        }
-
-        string conversationKey = $"{caseId}_{suspect}";
-        
-        if (!conversationHistory.ContainsKey(conversationKey))
-        {
-            conversationHistory[conversationKey] = new List<ConversationMessage>();
-        }
-        
-        if (!revealedClues.ContainsKey(conversationKey))
-        {
-            revealedClues[conversationKey] = new HashSet<string>();
-        }
-
-        conversationHistory[conversationKey].Add(new ConversationMessage
-        {
-            role = "user",
-            content = playerMessage
-        });
-
-        DetectSuspectMentions(playerMessage, caseId);
-
-        try
-        {
-            string response = await CallClaudeAPI(caseId, suspect, playerMessage);
-            
-            conversationHistory[conversationKey].Add(new ConversationMessage
-            {
-                role = "assistant",
-                content = response
-            });
-
-            DetectCluesInResponse(caseId, suspect, playerMessage, response);
-
-            OnResponseReceived?.Invoke(caseId, suspect, response);
-            return true;
-        }
-        catch (Exception e)
-        {
-            OnError?.Invoke($"Error API: {e.Message}");
-            return false;
-        }
-    }
-
-    // ============================================
-    // LLAMADA A CLAUDE API
-    // ============================================
-
-    private async Task<string> CallClaudeAPI(string caseId, string suspect, string playerMessage)
-    {
-        string conversationKey = $"{caseId}_{suspect}";
-        string systemPrompt = BuildSystemPrompt(caseId, suspect);
-        
-        string jsonBody = SerializeRequest(systemPrompt, conversationHistory[conversationKey]);
-        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
-
-        using (UnityWebRequest request = new UnityWebRequest(ANTHROPIC_API_URL, "POST"))
-        {
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            
-            request.SetRequestHeader("Content-Type", "application/json");
-            request.SetRequestHeader("x-api-key", apiKey);
-            request.SetRequestHeader("anthropic-version", "2023-06-01");
-
-            var operation = request.SendWebRequest();
-            
-            while (!operation.isDone)
-            {
-                await Task.Yield();
-            }
-
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                string responseJson = request.downloadHandler.text;
-                return ParseClaudeResponse(responseJson);
-            }
-            else
-            {
-                throw new Exception($"API Error: {request.error}\n{request.downloadHandler.text}");
-            }
-        }
+        OnResponseReceived?.Invoke(suspectName, question, result.Text);
+        return result;
     }
 
     // ============================================
@@ -833,71 +730,6 @@ Ejemplo:
         return personalityPrompts["padre_controlador"];
     }
 
-    private string SerializeRequest(string systemPrompt, List<ConversationMessage> messages)
-    {
-        StringBuilder json = new StringBuilder();
-        json.Append("{");
-        json.Append($"\"model\":\"{ANTHROPIC_MODEL}\",");
-        json.Append($"\"max_tokens\":{maxTokens},");
-        json.Append($"\"temperature\":{temperature.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)},");
-        json.Append($"\"system\":{JsonEncode(systemPrompt)},");
-        json.Append("\"messages\":[");
-        
-        for (int i = 0; i < messages.Count; i++)
-        {
-            if (i > 0) json.Append(",");
-            json.Append("{");
-            json.Append($"\"role\":\"{messages[i].role}\",");
-            json.Append($"\"content\":{JsonEncode(messages[i].content)}");
-            json.Append("}");
-        }
-        
-        json.Append("]}");
-        return json.ToString();
-    }
-
-    private string JsonEncode(string text)
-    {
-        if (string.IsNullOrEmpty(text)) return "\"\"";
-        
-        text = text.Replace("\\", "\\\\");
-        text = text.Replace("\"", "\\\"");
-        text = text.Replace("\n", "\\n");
-        text = text.Replace("\r", "\\r");
-        text = text.Replace("\t", "\\t");
-        
-        return "\"" + text + "\"";
-    }
-
-    private string ParseClaudeResponse(string jsonResponse)
-    {
-        try
-        {
-            int contentStart = jsonResponse.IndexOf("\"text\":\"") + 8;
-            int contentEnd = jsonResponse.IndexOf("\"", contentStart);
-            
-            while (contentEnd > 0 && jsonResponse[contentEnd - 1] == '\\')
-            {
-                contentEnd = jsonResponse.IndexOf("\"", contentEnd + 1);
-            }
-
-            if (contentStart > 7 && contentEnd > contentStart)
-            {
-                string content = jsonResponse.Substring(contentStart, contentEnd - contentStart);
-                content = content.Replace("\\n", "\n");
-                content = content.Replace("\\\"", "\"");
-                content = content.Replace("\\\\", "\\");
-                return content;
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Error parseando: {e.Message}");
-        }
-
-        return "Error al procesar respuesta";
-    }
-
     // ============================================
     // API PÚBLICA
     // ============================================
@@ -976,12 +808,5 @@ Ejemplo:
         public string name;
         public string suspectToUnlock;
         public bool isTimeClue;
-    }
-    
-    [Serializable]
-    public class ConversationMessage
-    {
-        public string role;
-        public string content;
     }
 }

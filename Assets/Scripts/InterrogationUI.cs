@@ -360,7 +360,20 @@ public class InterrogationUI : MonoBehaviour
         
         StartCoroutine(ForceScrollToBottom());
     }
-    
+
+    /// <summary>
+    /// La petición al LLM falló: avisa, devuelve la pregunta al campo de texto y reactiva el input.
+    /// </summary>
+    public void ShowRequestFailed(string message, string question)
+    {
+        ShowError($"{message}\nLa pregunta no se ha descontado.");
+
+        if (questionInput != null && string.IsNullOrEmpty(questionInput.text))
+            questionInput.text = question;
+
+        SetInputEnabled(true);
+    }
+
     // ============================================
     // PISTAS Y CONTRADICCIONES (ARREGLADO)
     // ============================================

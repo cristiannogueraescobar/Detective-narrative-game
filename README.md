@@ -1,6 +1,6 @@
 # Detective Narrative Game
 
-![Unity](https://img.shields.io/badge/Unity-2022.3+-000000?style=for-the-badge&logo=unity&logoColor=white)
+![Unity](https://img.shields.io/badge/Unity-6000.3-000000?style=for-the-badge&logo=unity&logoColor=white)
 ![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)
 ![Claude AI](https://img.shields.io/badge/Claude_AI-Powered-7B68EE?style=for-the-badge)
 
@@ -49,11 +49,11 @@ Each NPC has:
 
 ```
 Game Architecture:
-├── GameManager_COMPLETO.cs (2,048 lines total)
+├── GameManager.cs (2,048 lines total)
 │   └── Manages game state, case logic, and flow
-├── AIConversationManager_COMPLETO.cs
-│   └── Handles Claude API integration and AI responses
-├── InterrogationUI_COMPLETO.cs
+├── AIConversationManager.cs
+│   └── Case data, prompts, clue detection; talks to the LLM via ILLMProvider
+├── InterrogationUI.cs
 │   └── Manages UI, chat interface, and clue system
 └── MenuManager.cs
     └── Main menu and navigation
@@ -61,9 +61,9 @@ Game Architecture:
 
 ### Key Technologies
 
-- **Unity 2022.3+** - Game engine
+- **Unity 6 (6000.3)** - Game engine
 - **C#** - Programming language
-- **Claude API** - AI conversation system
+- **Ollama / Claude API** - AI conversation system (swappable providers)
 - **Async/Await** - HTTP communication
 - **TextMeshPro** - UI text rendering
 - **UnityWebRequest** - API calls
@@ -184,9 +184,10 @@ Each case includes:
 
 ### Prerequisites
 
-- Unity 2022.3 or higher
-- Claude API key from Anthropic
-- Basic understanding of Unity Editor
+- Unity 6000.3.2f1
+- An LLM backend, either:
+  - [Ollama](https://ollama.com/) running locally (default), or
+  - A Claude API key from Anthropic
 
 ### Installation
 
@@ -195,24 +196,34 @@ Each case includes:
 git clone https://github.com/cristiannogueraescobar/detective-narrative-game.git
 ```
 
-2. Open the project in Unity
+2. Open the project in Unity and open `Assets/Scenes/Game.unity`
 
-3. Configure your Claude API key:
-   - Open `AIConversationManager_COMPLETO.cs`
-   - Replace `YOUR_API_KEY` with your actual Claude API key
+3. Choose a provider on the `AIConversationManager` component (Inspector → **Provider**)
 
-4. Open the main scene:
-   - Navigate to `Assets/Scenes/`
-   - Open the main game scene
+4. Press Play
 
-5. Press Play to test
+### LLM Providers
 
-### API Key Setup
+The game talks to the LLM through `ILLMProvider` (`Assets/Scripts/LLM/`). Switching provider only requires changing the **Provider** field in the Inspector.
 
-Get your Claude API key from:
-- [Anthropic Console](https://console.anthropic.com/)
+**Ollama (default)**
 
-**Security Note**: Never commit API keys to version control. Consider using Unity's [Secret Manager](https://docs.unity3d.com/) or environment variables in production.
+```bash
+ollama pull qwen2.5:7b-instruct
+ollama serve
+```
+
+URL, model and timeout are configurable under **Ollama Settings**. The first question can be slow while Ollama loads the model.
+
+**Anthropic**
+
+The API key is never stored in the scene. It is read from, in order:
+1. The `ANTHROPIC_API_KEY` environment variable
+2. An `anthropic_api_key.txt` file in the project root (next to the `.exe` in a build). This file is in `.gitignore`.
+
+Get a key from the [Anthropic Console](https://console.anthropic.com/). Model and timeout are configurable under **Anthropic Settings**.
+
+If a request fails (backend not running, timeout, invalid key...), a warning is shown in the chat and the question is not counted against the day's limit.
 
 ---
 

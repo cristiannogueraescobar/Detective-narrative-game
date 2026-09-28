@@ -2,8 +2,8 @@
 
 ## Prerequisites
 
-- Unity 2022.3 LTS or higher
-- Claude API key ([Get one here](https://console.anthropic.com/))
+- Unity 6000.3.2f1
+- [Ollama](https://ollama.com/) (default) **or** a Claude API key ([get one here](https://console.anthropic.com/))
 
 ## Setup in 3 Steps
 
@@ -13,40 +13,46 @@
 git clone https://github.com/cristiannogueraescobar/detective-narrative-game.git
 ```
 
-Open the project in Unity Hub.
+Open the project in Unity Hub and open `Assets/Scenes/Game.unity`.
 
-### 2️⃣ Configure API Key
+### 2️⃣ Configure the LLM provider
 
-1. Open `Assets/Scripts/AIConversationManager_COMPLETO.cs`
-2. Find the line with `YOUR_API_KEY`
-3. Replace it with your actual Claude API key:
+Select the `AIConversationManager` object and pick a **Provider** in the Inspector.
 
-```csharp
-private string apiKey = "sk-ant-api03-..."; // Your key here
+**Ollama (default):**
+
+```bash
+ollama pull qwen2.5:7b-instruct
+ollama serve
 ```
+
+**Anthropic:** set the `ANTHROPIC_API_KEY` environment variable, or create `anthropic_api_key.txt` in the project root containing only the key. That file is git-ignored. Never put the key in the scene.
 
 ### 3️⃣ Play
 
-1. Open the main scene in `Assets/Scenes/`
-2. Click Play ▶️ in Unity Editor
-3. Select a case and start interrogating!
+1. Click Play ▶️ in Unity Editor
+2. Start the case and begin interrogating!
 
 ---
 
 ## Quick Tips
 
-- **Internet Required**: The game needs internet for AI responses
+- **First question is slow with Ollama**: the model is loaded into memory on the first request
 - **API Costs**: Claude API has usage costs - check [Anthropic pricing](https://www.anthropic.com/pricing)
-- **Case Selection**: Start with Case 1 for the simplest scenario
+- **Failed requests don't cost a question**: if the backend is unreachable you'll see a warning in the chat and can retry
 
 ---
 
 ## Troubleshooting
 
-**API Not Working?**
-- Check your API key is correct
-- Verify internet connection
-- Check Anthropic API status
+**"No se pudo conectar con Ollama"**
+- Run `ollama serve` and check the URL under *Ollama Settings*
+
+**"El modelo '...' no está descargado"**
+- Run `ollama pull <model>`
+
+**"Falta la API key de Anthropic" / "La API key de Anthropic no es válida"**
+- Check `ANTHROPIC_API_KEY` or `anthropic_api_key.txt` in the project root
 
 **Font Issues?**
 - Reimport TextMeshPro fonts
