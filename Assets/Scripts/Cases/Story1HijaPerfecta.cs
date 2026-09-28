@@ -202,7 +202,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         new[] { "llave" },
                         new[] { "puerta", "cerrada", "cerrado", "bolsillo", "su cuarto", "su habitacion", "cuarto de elena" }
                     },
-                    calibrationQuestions = new[] { "¿Cómo estaba la puerta del cuarto de Elena cuando tu padre la encontró?", "¿Viste algo raro cuando tu padre empezó a gritar?" },
+                    calibrationQuestions = new[] { "¿Cómo estaba la puerta del cuarto de Elena cuando tu padre la encontró?", "¿Viste algo raro cuando tu padre empezó a gritar? || ¿Y qué viste al salir al pasillo?" },
                     sampleHits = new[]
                     {
                         "La puerta estaba cerrada con llave, tío, y papá tenía la llave en el bolsillo.",
@@ -357,7 +357,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     },
                     version = "A las 21:00 salí y volví a las 23:05. A los pocos minutos Carmen gritó desde arriba.",
                     secret = "Dices que fue una cena con clientes, pero es mentira: tienes una aventura.",
-                    admitsWhen = "el inspector insiste dos veces o te dice que va a comprobar la cena",
+                    admitsWhen = "el inspector insiste o te dice que va a comprobar la cena",
                     nervousAbout = "dónde estuviste entre las 21:00 y las 23:05.",
                     ifAccused = "Te enfrías y hablas de pruebas y de presunción de inocencia.",
                     doesNotKnow = "Qué medicación le dio Carmen a Elena esa noche."
@@ -462,19 +462,20 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     id = "1B_luz", playerName = "La luz encendida", holder = "vecina", kind = ClueKind.Incriminates,
                     summary = "Rosario vio la luz del cuarto de Elena encendida de 22:00 a 23:15, con la madre sentada junto a la cama, muy quieta, sin llamar a nadie.",
                     topic = "lo que viste esa noche en la casa de enfrente",
-                    fact = "viste a la madre sentada junto a la cama de la niña, muy quieta, sin llamar a nadie, desde las 22:00 hasta las 23:15, con la luz encendida.",
+                    fact = "viste a la madre, Carmen, sentada junto a la cama de la niña, muy quieta, sin llamar a nadie, desde las 22:00 hasta las 23:15.",
                     anchors = new[]
                     {
-                        new[] { "madre", "carmen", "doctora", "senora mendoza" },
-                        new[] { "sentada", "quieta", "junto a la cama", "la luz", "sin moverse" }
+                        new[] { "madre", "carmen", "doctora", "senora mendoza", "sentada" },
+                        new[] { "quieta", "junto a la cama", "al lado de la cama", "sin moverse", "sin llamar" }
                     },
-                    calibrationQuestions = new[] { "¿Qué vio usted esa noche desde su ventana?", "¿Vio luz en el cuarto de Elena?" },
+                    calibrationQuestions = new[] { "¿Qué vio usted esa noche desde su ventana?", "¿Vio a alguien en el cuarto de Elena esa noche?" },
                     sampleHits = new[]
                     {
                         "La luz estuvo encendida de 22:00 a 23:15, hijo, y la madre sentada junto a la cama, muy quieta.",
-                        "Vi a Carmen sentada al lado de la cama, sin moverse, toda la noche."
+                        "Vi a Carmen sentada al lado de la cama, sin moverse, toda la noche.",
+                        "La vi sentada junto a la cama de Elena desde las 22:00, sin moverse."
                     },
-                    sampleMisses = new[] { "A la niña la acostaba siempre su madre, eso sí." }
+                    sampleMisses = new[] { "A la niña la acostaba siempre su madre, eso sí.", "Sí, hijo, la luz del cuarto de Elena estuvo encendida desde las 22:00 hasta las 23:15." }
                 },
                 new ClueData
                 {
@@ -582,7 +583,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     },
                     version = "Estuve en el despacho hasta tarde. Llegué a casa a las 23:00, subí a ver a Elena y no respiraba. A las 23:15 llamé al 112.",
                     secret = "En realidad llegaste a casa a las 22:15. Viste a Elena acostada con un chichón y decidiste no llevarla al hospital para no montar un drama. Te sientes culpable y proteges a tu hijo.",
-                    admitsWhen = "el inspector te dice que va a pedir el registro de llamadas o insiste dos veces",
+                    admitsWhen = "el inspector insiste o te dice que va a pedir el registro de llamadas",
                     nervousAbout = "la hora a la que llegaste y tu móvil.",
                     ifAccused = "Te indignas, hablas de presunción de inocencia y exiges un abogado.",
                     doesNotKnow = "Qué hacía Lucas en el instituto."
