@@ -16,11 +16,20 @@ using UnityEngine;
 /// Batchmode: Unity.exe -batchmode -nographics -projectPath . -executeMethod ClueCalibrator.RunFromCommandLine
 ///            [-variants 1A,1B] [-clues 1A_puerta,1B_cena] [-tries 3] [-ollama http://localhost:11434] [-model qwen2.5:7b-instruct]
 /// Informe: Logs/clue-calibration.md
+///
+/// Sonda de precisión (desactivable con -noprecision): preguntas ajenas al caso a cada portador; cualquier
+/// pista detectada ahí es una revelación espontánea o un falso positivo del detector, y se lista para revisarla.
 /// </summary>
 public static class ClueCalibrator
 {
     public const string ReportPath = "Logs/clue-calibration.md";
     private const int CalibrationDay = 2;
+
+    public static readonly string[] PrecisionQuestions =
+    {
+        "¿Cómo se encuentra hoy?",
+        "Hábleme un poco de usted."
+    };
 
     public class Options
     {
@@ -29,6 +38,7 @@ public static class ClueCalibrator
         public int tries = 3;
         public string ollamaUrl = "http://localhost:11434";
         public string model = new OllamaSettings().model;
+        public bool precisionProbe = true;
     }
 
     public class Attempt
@@ -37,7 +47,17 @@ public static class ClueCalibrator
         public List<string> responses = new List<string>();
         public List<AnchorTrace> traces = new List<AnchorTrace>();
         public bool detected;
+        public int firstMatchTurn; // 1 = primer turno; 0 = no detectada
         public string error;
+    }
+
+    public class PrecisionHit
+    {
+        public string variantId;
+        public string characterId;
+        public string question;
+        public string response;
+        public List<string> clueIds = new List<string>();
     }
 
     public class ClueResult
@@ -46,6 +66,7 @@ public static class ClueCalibrator
         public ClueData clue;
         public List<Attempt> attempts = new List<Attempt>();
         public int Hits => attempts.Count(a => a.detected);
+        public int FirstTurnHits => attempts.Count(a => a.firstMatchTurn == 1);
         public int Total => attempts.Count;
         public bool Passed => Passes(Hits, Total);
     }
@@ -92,6 +113,8 @@ public static class ClueCalibrator
                     break;
             }
         }
+
+        options.precisionProbe = !args.Contains("-noprecision");
 
         if (options.variantIds.Count == 0)
             options.variantIds = CaseLibrary.AllVariants().Select(p => p.variant.id).ToList();
@@ -170,7 +193,11 @@ public static class ClueCalibrator
                 .Select(c => (story, variant, c)));
         }
 
-        int totalAttempts = work.Sum(w => w.clue.calibrationQuestions.Length) * options.tries;
+        var holders = work.Select(w => (w.story, w.variant, w.clue.holder)).Distinct().ToList();
+        var precisionHits = new List<PrecisionHit>();
+        int precisionTotal = options.precisionProbe ? holders.Count * PrecisionQuestions.Length * options.tries : 0;
+
+        int totalAttempts = work.Sum(w => w.clue.calibrationQuestions.Length) * options.tries + precisionTotal;
         int done = 0;
 
         using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(180) })
@@ -188,7 +215,7 @@ public static class ClueCalibrator
                         bool cancelled = progress($"{clue.id} · {question}", (float)done / Math.Max(1, totalAttempts));
                         if (cancelled)
                         {
-                            WriteReport(options, results);
+                            WriteReport(options, results, precisionHits, precisionTotal);
                             return results;
                         }
 
@@ -200,10 +227,63 @@ public static class ClueCalibrator
                 results.Add(result);
                 Debug.Log($"[Calibración] {clue.id}: {result.Hits}/{result.Total} {(result.Passed ? "OK" : "FALLA")}");
             }
+
+            if (options.precisionProbe)
+            {
+                foreach (var (story, variant, holder) in holders)
+                {
+                    string systemPrompt = PromptBuilder.Build(story, variant, holder, CalibrationDay,
+                        new ClueData[0], new ClueData[0]);
+                    List<ClueData> ownClues = variant.clues.Where(c => c.holder == holder).ToList();
+
+                    foreach (string question in PrecisionQuestions)
+                    {
+                        for (int t = 0; t < options.tries; t++)
+                        {
+                            if (progress($"precisión · {variant.id} {holder} · {question}", (float)done / Math.Max(1, totalAttempts)))
+                            {
+                                WriteReport(options, results, precisionHits, precisionTotal);
+                                return results;
+                            }
+
+                            PrecisionHit hit = RunPrecision(client, options, systemPrompt, variant.id, holder, ownClues, question);
+                            if (hit != null)
+                                precisionHits.Add(hit);
+                            done++;
+                        }
+                    }
+                }
+
+                Debug.Log($"[Calibración] Sonda de precisión: {precisionHits.Count}/{precisionTotal} respuestas revelaron alguna pista");
+            }
         }
 
-        WriteReport(options, results);
+        WriteReport(options, results, precisionHits, precisionTotal);
         return results;
+    }
+
+    private static PrecisionHit RunPrecision(HttpClient client, Options options, string systemPrompt, string variantId,
+                                             string holder, List<ClueData> ownClues, string question)
+    {
+        string response;
+        try
+        {
+            response = Chat(client, options, systemPrompt,
+                new List<ChatMessage> { new ChatMessage { role = "user", content = question } });
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[Calibración] Sonda de precisión fallida: {e.GetBaseException().Message}");
+            return null;
+        }
+
+        string normalized = ClueDetector.Normalize(response);
+        List<string> matched = ownClues.Where(c => ClueDetector.Evaluate(c.anchors, normalized).Matched).Select(c => c.id).ToList();
+
+        return matched.Count == 0 ? null : new PrecisionHit
+        {
+            variantId = variantId, characterId = holder, question = question, response = response, clueIds = matched
+        };
     }
 
     private static Attempt RunAttempt(HttpClient client, Options options, string systemPrompt, ClueData clue, string question)
@@ -231,6 +311,9 @@ public static class ClueCalibrator
             AnchorTrace trace = ClueDetector.Evaluate(clue.anchors, ClueDetector.Normalize(response));
             attempt.responses.Add(response);
             attempt.traces.Add(trace);
+
+            if (trace.Matched && !attempt.detected)
+                attempt.firstMatchTurn = attempt.responses.Count;
             attempt.detected |= trace.Matched;
         }
 
@@ -298,30 +381,48 @@ public static class ClueCalibrator
     // INFORME
     // ============================================
 
-    private static void WriteReport(Options options, List<ClueResult> results)
+    private static void WriteReport(Options options, List<ClueResult> results, List<PrecisionHit> precisionHits, int precisionTotal)
     {
         var sb = new StringBuilder();
         sb.AppendLine("# Calibración de pistas");
         sb.AppendLine();
         sb.AppendLine($"Fecha: {DateTime.Now:yyyy-MM-dd HH:mm} · Modelo: `{options.model}` · Intentos por pregunta: {options.tries} · Umbral: 2/3");
         sb.AppendLine();
-        sb.AppendLine("| Variante | Pista | Portador | Aciertos | Tasa | Estado |");
-        sb.AppendLine("|---|---|---|---|---|---|");
+        sb.AppendLine("T1 = aciertos ya en el primer turno (en pistas secretas, revisar que sea una confesión y no una negación).");
+        sb.AppendLine();
+        sb.AppendLine("| Variante | Pista | Portador | Secreta | Aciertos | T1 | Tasa | Estado |");
+        sb.AppendLine("|---|---|---|---|---|---|---|---|");
 
         foreach (ClueResult r in results)
         {
             float rate = r.Total == 0 ? 0f : (float)r.Hits / r.Total;
-            sb.AppendLine($"| {r.variantId} | {r.clue.id} | {r.clue.holder} | {r.Hits}/{r.Total} | {rate:P0} | {(r.Passed ? "OK" : "**FALLA**")} |");
+            sb.AppendLine($"| {r.variantId} | {r.clue.id} | {r.clue.holder} | {(r.clue.isSecret ? "sí" : "")} | {r.Hits}/{r.Total} | {r.FirstTurnHits} | {rate:P0} | {(r.Passed ? "OK" : "**FALLA**")} |");
         }
 
-        foreach (ClueResult r in results.Where(r => !r.Passed))
+        if (precisionTotal > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine($"## Sonda de precisión: {precisionHits.Count}/{precisionTotal} respuestas revelaron alguna pista");
+            sb.AppendLine();
+            sb.AppendLine($"Preguntas: {string.Join(" · ", PrecisionQuestions)}");
+
+            foreach (PrecisionHit hit in precisionHits)
+            {
+                sb.AppendLine();
+                sb.AppendLine($"- {hit.variantId} · {hit.characterId} · \"{hit.question}\" → {string.Join(", ", hit.clueIds)}");
+                sb.AppendLine($"  - {hit.response.Replace("\n", " ")}");
+            }
+        }
+
+        foreach (ClueResult r in results.Where(r => !r.Passed || (r.clue.isSecret && r.FirstTurnHits > 0)))
         {
             sb.AppendLine();
             sb.AppendLine($"## {r.clue.id} — {r.Hits}/{r.Total}");
             sb.AppendLine();
             sb.AppendLine($"Anclas: `{string.Join(" & ", r.clue.anchors.Select(g => "[" + string.Join("|", g) + "]"))}`");
 
-            foreach (Attempt a in r.attempts.Where(a => !a.detected))
+            // Fallidas y, en secretas, las detectadas en el primer turno (posibles negaciones)
+            foreach (Attempt a in r.attempts.Where(a => !a.detected || (r.clue.isSecret && a.firstMatchTurn == 1)))
             {
                 sb.AppendLine();
                 sb.AppendLine($"**P:** {a.question}");

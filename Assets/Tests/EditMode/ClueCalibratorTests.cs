@@ -42,6 +42,14 @@ public class ClueCalibratorTests
     }
 
     [Test]
+    public void SondaDePrecisionActivaPorDefectoYDesactivable()
+    {
+        Assert.IsTrue(ClueCalibrator.ParseArgs(new[] { "Unity.exe" }).precisionProbe);
+        Assert.IsFalse(ClueCalibrator.ParseArgs(new[] { "Unity.exe", "-noprecision" }).precisionProbe);
+        CollectionAssert.IsNotEmpty(ClueCalibrator.PrecisionQuestions);
+    }
+
+    [Test]
     public void SinVariantesUsaTodasLasRegistradas()
     {
         var options = ClueCalibrator.ParseArgs(new[] { "Unity.exe" });
