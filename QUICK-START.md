@@ -37,7 +37,7 @@ ollama serve
 
 ## Quick Tips
 
-- **First question is slow with Ollama**: the model is loaded into memory on the first request
+- **Ollama model preload**: the model loads in the background while you're in the main menu. If you start asking right away, the first answer may take a while
 - **API Costs**: Claude API has usage costs - check [Anthropic pricing](https://www.anthropic.com/pricing)
 - **Failed requests don't cost a question**: if the backend is unreachable you'll see a warning in the chat and can retry
 

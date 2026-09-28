@@ -50,6 +50,9 @@ public class AnthropicProvider : ILLMProvider
         return string.IsNullOrWhiteSpace(key) ? null : key.Trim();
     }
 
+    // Nada que precargar en una API remota
+    public Task WarmUpAsync() => Task.CompletedTask;
+
     public async Task<LLMResult> SendAsync(string systemPrompt, IReadOnlyList<ChatMessage> history,
                                            int maxTokens, float temperature)
     {

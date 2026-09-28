@@ -14,6 +14,11 @@ public interface ILLMProvider
     string DisplayName { get; }
     Task<LLMResult> SendAsync(string systemPrompt, IReadOnlyList<ChatMessage> history,
                               int maxTokens, float temperature);
+
+    /// <summary>
+    /// Preparación opcional en segundo plano (p. ej. cargar el modelo). Nunca lanza ni muestra errores.
+    /// </summary>
+    Task WarmUpAsync();
 }
 
 public enum LLMProviderType

@@ -45,6 +45,12 @@ public class AIConversationManager : MonoBehaviour
         Debug.Log($"[AIConversation] Sistema cargado: {cases.Count} historias. Proveedor: {llmProvider.DisplayName}");
     }
 
+    private void Start()
+    {
+        // En segundo plano mientras el jugador está en el menú; no se espera ni bloquea la UI
+        _ = llmProvider.WarmUpAsync();
+    }
+
     private ILLMProvider CreateProvider()
     {
         switch (provider)

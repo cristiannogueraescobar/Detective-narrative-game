@@ -10,7 +10,11 @@ public class OllamaSettings
     public string baseUrl = "http://localhost:11434";
     public string model = "qwen2.5:7b-instruct";
     [Tooltip("La primera petición carga el modelo en memoria y puede tardar")]
-    public int timeoutSeconds = 120;
+    public int timeoutSeconds = 180;
+    [Tooltip("Cargar el modelo en segundo plano al arrancar la escena")]
+    public bool preloadOnStart = true;
+    [Tooltip("Tiempo que Ollama mantiene el modelo en memoria tras cada petición (\"60m\", \"2h\", \"-1m\" = siempre)")]
+    public string keepAlive = "60m";
 }
 
 /// <summary>
@@ -27,6 +31,42 @@ public class OllamaProvider : ILLMProvider
 
     public string DisplayName => $"Ollama ({settings.model})";
 
+    private string ChatUrl => settings.baseUrl.TrimEnd('/') + "/api/chat";
+
+    /// <summary>
+    /// Con "messages" vacío, Ollama solo carga el modelo en memoria (done_reason: "load") sin generar nada.
+    /// Si falla (Ollama no arrancado, etc.) solo se registra: el jugador verá el aviso normal al preguntar.
+    /// </summary>
+    public async Task WarmUpAsync()
+    {
+        if (!settings.preloadOnStart)
+            return;
+
+        try
+        {
+            var body = new OllamaChatRequest
+            {
+                model = settings.model,
+                messages = new ChatMessage[0],
+                stream = false,
+                keep_alive = settings.keepAlive,
+                options = new OllamaOptions()
+            };
+
+            float start = Time.realtimeSinceStartup;
+            var response = await LLMHttp.PostJsonAsync(ChatUrl, JsonUtility.ToJson(body), settings.timeoutSeconds);
+
+            if (response.Result == UnityWebRequest.Result.Success)
+                Debug.Log($"[Ollama] Modelo '{settings.model}' precargado en {Time.realtimeSinceStartup - start:F1} s (keep_alive {settings.keepAlive})");
+            else
+                Debug.Log($"[Ollama] Precarga no completada ({response.StatusCode} {response.Error}). Se reintentará con la primera pregunta.");
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"[Ollama] Precarga no completada: {e.Message}");
+        }
+    }
+
     public async Task<LLMResult> SendAsync(string systemPrompt, IReadOnlyList<ChatMessage> history,
                                            int maxTokens, float temperature)
     {
@@ -39,11 +79,11 @@ public class OllamaProvider : ILLMProvider
             model = settings.model,
             messages = messages.ToArray(),
             stream = false,
+            keep_alive = settings.keepAlive,
             options = new OllamaOptions { temperature = temperature, num_predict = maxTokens }
         };
 
-        string url = settings.baseUrl.TrimEnd('/') + "/api/chat";
-        var response = await LLMHttp.PostJsonAsync(url, JsonUtility.ToJson(body), settings.timeoutSeconds);
+        var response = await LLMHttp.PostJsonAsync(ChatUrl, JsonUtility.ToJson(body), settings.timeoutSeconds);
         var parsed = LLMHttp.TryParse<OllamaChatResponse>(response.Body);
 
         if (response.IsTimeout)
@@ -95,6 +135,7 @@ public class OllamaProvider : ILLMProvider
         public string model;
         public ChatMessage[] messages;
         public bool stream;
+        public string keep_alive;
         public OllamaOptions options;
     }
 

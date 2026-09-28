@@ -213,7 +213,7 @@ ollama pull qwen2.5:7b-instruct
 ollama serve
 ```
 
-URL, model and timeout are configurable under **Ollama Settings**. The first question can be slow while Ollama loads the model.
+URL, model, timeout (180 s) and `keep_alive` (60m) are configurable under **Ollama Settings**. The model is preloaded in the background when the scene starts, so it is usually ready by the time the player asks the first question. Use `"-1m"` for `keep_alive` to keep it loaded indefinitely.
 
 **Anthropic**
 
