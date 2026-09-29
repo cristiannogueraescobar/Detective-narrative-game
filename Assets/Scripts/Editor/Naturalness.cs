@@ -13,6 +13,10 @@ public static class Naturalness
     private static readonly Regex BulletLine = new Regex(@"(^|\n)\s*([-•]|\d+[.)])\s+");
     private static readonly Regex SentenceEnd = new Regex(@"[.!?…]+");
     private static readonly string[] AiMentions = { "inteligencia artificial", "como ia", "soy una ia", "modelo de lenguaje", "asistente virtual" };
+    private static readonly string[] MetaLeaks = { "la primera vez lo niego", "si insiste", "si el inspector insiste", "sin rodeos", "esta ficha", "mi ficha" };
+    private static readonly Regex English = new Regex(@"\b(the|and|because|she|her|his|was|with|didn't|don't)\b", RegexOptions.IgnoreCase);
+    // Hecho copiado tal cual de la ficha, en segunda persona: "Tu madre te dejó..."
+    private static readonly Regex CopiedSecondPerson = new Regex(@"\btu \w+ te \w+", RegexOptions.IgnoreCase);
 
     public class Stats
     {
@@ -35,6 +39,12 @@ public static class Naturalness
             found.Add("menciona IA");
         if (SentenceEnd.Matches(response).Count > MaxSentences)
             found.Add("demasiadas frases");
+        if (English.IsMatch(response))
+            found.Add("inglés");
+        if (MetaLeaks.Any(lower.Contains))
+            found.Add("recita la ficha");
+        if (CopiedSecondPerson.IsMatch(response))
+            found.Add("segunda persona copiada");
 
         return found;
     }

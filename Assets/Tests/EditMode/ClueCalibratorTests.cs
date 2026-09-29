@@ -73,6 +73,9 @@ public class NaturalnessTests
     [TestCase("- Estuve en casa\n- No vi nada", 1)]
     [TestCase("Como inteligencia artificial, no puedo saberlo.", 1)]
     [TestCase("Uno. Dos. Tres. Cuatro. Cinco. Seis. Siete.", 1)]
+    [TestCase("Me escribió que su padre estaba mal because of alcohol.", 1)]
+    [TestCase("No, la primera vez lo niego. Pero si insiste, le digo la verdad.", 1)]
+    [TestCase("Tu madre te dejó en casa de mi tía a mediodía.", 1)]
     public void DetectaViolacionesDeEstilo(string response, int expected)
     {
         Assert.AreEqual(expected, Naturalness.Violations(response).Count);
