@@ -14,6 +14,16 @@ public class EmotionSystemTests
     }
 
     [Test]
+    public void LaGuiaDeEstadoNombraALaVictima()
+    {
+        StoryData story = TestCases.Story();
+        story.victim = "Elena";
+        string prompt = PromptBuilder.Build(story, story.variants[0], "b", 1, new ClueData[0], new ClueData[0]);
+
+        StringAssert.Contains("Triste si te hablan de Elena", prompt);
+    }
+
+    [Test]
     public void RetratoBuscaEstadoExactoLuegoSustitutoLuegoBase()
     {
         CollectionAssert.AreEqual(
