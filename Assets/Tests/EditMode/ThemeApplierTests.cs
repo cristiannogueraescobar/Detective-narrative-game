@@ -18,6 +18,9 @@ public class ThemeApplierTests
     [TestCase("ConversationText", false, true, false, UIRole.Body)]
     [TestCase("Text (TMP)", false, true, true, UIRole.ButtonLabel)]
     [TestCase("Scrollbar", false, false, false, UIRole.Ignore)]
+    [TestCase("Template", false, false, false, UIRole.Panel)]
+    [TestCase("Item Background", false, false, false, UIRole.Field)]
+    [TestCase("Item Checkmark", false, false, false, UIRole.Accent)]
     public void RolPorNombreYTipo(string name, bool isButton, bool isText, bool insideButton, UIRole expected)
     {
         Assert.AreEqual(expected, ThemeApplier.RoleFor(name, isButton, isText, insideButton));

@@ -14,7 +14,9 @@ public enum UIRole
     Title,
     Heading,
     Body,
-    Secondary
+    Secondary,
+    Field,           // Fondo de desplegables y campos de texto (y de sus opciones)
+    Accent           // Marcas de selección
 }
 
 /// <summary>
@@ -66,6 +68,12 @@ public static class ThemeApplier
             return UIRole.Body;
         }
 
+        if (n == "template")
+            return UIRole.Panel;
+        if (n.Contains("item background"))
+            return UIRole.Field;
+        if (n.Contains("checkmark"))
+            return UIRole.Accent;
         if (n.Contains("panel") || n.Contains("notification"))
             return UIRole.Panel;
         if (n == "canvas" || n.Contains("background"))
@@ -95,6 +103,11 @@ public static class ThemeApplier
             bool insideButton = !isText ? false : graphic.GetComponentInParent<Button>(true) != null;
 
             UIRole role = graphic.TryGetComponent(out ThemeRole themeRole) ? themeRole.role : UIRole.Auto;
+
+            // El fondo de un desplegable o de un campo de texto es un control, no un panel
+            if (role == UIRole.Auto && !isText && (graphic.TryGetComponent(out TMP_Dropdown _) || graphic.TryGetComponent(out TMP_InputField _)))
+                role = UIRole.Field;
+
             if (role == UIRole.Auto)
                 role = RoleFor(graphic.gameObject.name, button != null && graphic.gameObject == button.gameObject, isText, insideButton);
 
@@ -121,6 +134,21 @@ public static class ThemeApplier
                 graphic.color = Color.white;
                 if (button != null)
                     button.colors = ButtonColors(theme.buttonSecondary, theme.buttonDisabled);
+                break;
+            case UIRole.Field:
+                Selectable owner = graphic.GetComponentInParent<Selectable>(true);
+                if (owner != null && owner.targetGraphic == graphic)
+                {
+                    graphic.color = Color.white; // El color lo pone el ColorBlock del control
+                    owner.colors = ButtonColors(theme.buttonSecondary, theme.buttonDisabled);
+                }
+                else
+                {
+                    graphic.color = theme.buttonSecondary;
+                }
+                break;
+            case UIRole.Accent:
+                graphic.color = theme.accent;
                 break;
             case UIRole.ButtonLabel:
                 Style((TMP_Text)graphic, theme.bodyFont, theme.bodySize, IsInPrimaryButton(graphic) ? theme.buttonPrimaryText : theme.buttonSecondaryText);
