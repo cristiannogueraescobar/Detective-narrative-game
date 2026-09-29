@@ -40,31 +40,31 @@ public class MenuManager : MonoBehaviour
     {
         // Configurar botones del menú principal
         if (playButton != null)
-            playButton.onClick.AddListener(OnPlayClicked);
+            UIComponents.SetOnlyListener(playButton, OnPlayClicked);
 
         SetUpContinueButton();
         
         if (instructionsButton != null)
-            instructionsButton.onClick.AddListener(ShowInstructions);
+            UIComponents.SetOnlyListener(instructionsButton, ShowInstructions);
         
         if (settingsButton != null)
-            settingsButton.onClick.AddListener(ShowSettings);
+            UIComponents.SetOnlyListener(settingsButton, ShowSettings);
         
         if (aboutButton != null)
-            aboutButton.onClick.AddListener(ShowAbout);
+            UIComponents.SetOnlyListener(aboutButton, ShowAbout);
         
         if (quitButton != null)
-            quitButton.onClick.AddListener(QuitGame);
+            UIComponents.SetOnlyListener(quitButton, QuitGame);
         
         // Configurar botones de retorno
         if (backFromInstructionsButton != null)
-            backFromInstructionsButton.onClick.AddListener(ShowMainMenu);
+            UIComponents.SetOnlyListener(backFromInstructionsButton, ShowMainMenu);
         
         if (backFromSettingsButton != null)
-            backFromSettingsButton.onClick.AddListener(ShowMainMenu);
+            UIComponents.SetOnlyListener(backFromSettingsButton, ShowMainMenu);
         
         if (backFromAboutButton != null)
-            backFromAboutButton.onClick.AddListener(ShowMainMenu);
+            UIComponents.SetOnlyListener(backFromAboutButton, ShowMainMenu);
         
         // Fondo: arte nuevo (Assets/Art/Backgrounds/menu.png), si no el de la escena, si no color plano
         if (mainMenuBackground != null)
@@ -110,8 +110,7 @@ public class MenuManager : MonoBehaviour
         rect.anchoredPosition = source.anchoredPosition + new Vector2(0f, source.rect.height + ThemeManager.Current.spacing);
 
         var continueButton = clone.GetComponent<Button>();
-        continueButton.onClick.RemoveAllListeners();
-        continueButton.onClick.AddListener(OnContinueClicked);
+        UIComponents.SetOnlyListener(continueButton, OnContinueClicked);
         SetLabel(clone, "Continuar");
         SetLabel(playButton.gameObject, "Nueva partida");
     }

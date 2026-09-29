@@ -94,7 +94,7 @@ public static class ThemeApplier
             Button button = graphic.GetComponent<Button>();
             bool insideButton = !isText ? false : graphic.GetComponentInParent<Button>(true) != null;
 
-            UIRole role = graphic.GetComponent<ThemeRole>()?.role ?? UIRole.Auto;
+            UIRole role = graphic.TryGetComponent(out ThemeRole themeRole) ? themeRole.role : UIRole.Auto;
             if (role == UIRole.Auto)
                 role = RoleFor(graphic.gameObject.name, button != null && graphic.gameObject == button.gameObject, isText, insideButton);
 

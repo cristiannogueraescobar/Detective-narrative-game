@@ -187,52 +187,79 @@ public class GameManager : MonoBehaviour
         UpdateGameState();
     }
 
+    private bool requestInFlight;
+
     public async void AskQuestion(string characterId, string question, string shownClueId)
     {
+        // Un doble clic o un segundo listener no deben lanzar dos peticiones a la vez
+        if (requestInFlight)
+            return;
+
         if (questionsUsedToday >= questionsPerDay)
         {
             interrogationUI?.ShowRequestFailed("No te quedan preguntas hoy.", question);
             return;
         }
 
+        requestInFlight = true;
         notices.BeginDefer();
-        interrogationUI?.ShowWaiting(true);
-
-        LLMResult result;
-        string asked;
+        bool answered = false;
 
         try
         {
-            ClueData shownClue = string.IsNullOrEmpty(shownClueId) ? null : variant.Clue(shownClueId);
-            asked = TurnAnalyzer.BuildUserMessage(question, shownClue);
-            result = await conversationManager.AskSuspect(characterId, question, currentDay, shownClue);
+            interrogationUI?.ShowWaiting(true);
+
+            LLMResult result;
+            string asked;
+
+            try
+            {
+                ClueData shownClue = string.IsNullOrEmpty(shownClueId) ? null : variant.Clue(shownClueId);
+                asked = TurnAnalyzer.BuildUserMessage(question, shownClue);
+                result = await conversationManager.AskSuspect(characterId, question, currentDay, shownClue);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                result = LLMResult.Fail("Error inesperado al procesar la pregunta.");
+                asked = question;
+            }
+
+            interrogationUI?.ShowWaiting(false);
+
+            // Una petición fallida no gasta pregunta del día
+            if (!result.Success)
+            {
+                interrogationUI?.ShowRequestFailed(result.ErrorMessage, question);
+                return;
+            }
+
+            questionsUsedToday++;
+            answered = true;
+            // El estado va antes que la respuesta: marca la velocidad de escritura y el retrato
+            interrogationUI?.SetEmotion(characterId, conversationManager.CurrentEmotion(characterId));
+            RefreshNotebook();
+            interrogationUI?.AddToConversation(characterId, story.Character(characterId).DisplayName, asked, result.Text);
         }
         catch (Exception e)
         {
-            // Nunca dejar la entrada bloqueada por un error inesperado
+            // Cualquier fallo al mostrar la respuesta: nunca dejar la entrada bloqueada
             Debug.LogException(e);
-            result = LLMResult.Fail("Error inesperado al procesar la pregunta.");
-            asked = question;
+            interrogationUI?.ShowRequestFailed("Error inesperado al mostrar la respuesta.", answered ? "" : question);
         }
-
-        interrogationUI?.ShowWaiting(false);
-
-        // Una petición fallida no gasta pregunta del día
-        if (!result.Success)
+        finally
         {
-            notices.Discard();
-            interrogationUI?.ShowRequestFailed(result.ErrorMessage, question);
-            return;
-        }
+            requestInFlight = false;
 
-        questionsUsedToday++;
-        // El estado va antes que la respuesta: marca la velocidad de escritura y el retrato
-        interrogationUI?.SetEmotion(characterId, conversationManager.CurrentEmotion(characterId));
-        RefreshNotebook();
-        interrogationUI?.AddToConversation(characterId, story.Character(characterId).DisplayName, asked, result.Text);
-        notices.Flush();
-        UpdateGameState();
-        SaveGame();
+            if (answered)
+                notices.Flush();
+            else
+                notices.Discard();
+
+            UpdateGameState();
+            if (answered)
+                SaveGame();
+        }
     }
 
     public void EndDay()

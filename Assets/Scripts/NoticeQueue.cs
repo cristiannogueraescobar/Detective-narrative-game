@@ -32,8 +32,18 @@ public class NoticeQueue
         var toRun = new List<Action>(pending);
         pending.Clear();
 
+        // Un aviso que falla no debe llevarse por delante a los demás
         foreach (Action notice in toRun)
-            notice();
+        {
+            try
+            {
+                notice();
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogException(e);
+            }
+        }
     }
 
     /// <summary>

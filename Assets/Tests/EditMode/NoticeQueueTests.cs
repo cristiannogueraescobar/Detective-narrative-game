@@ -43,6 +43,23 @@ public class NoticeQueueTests
     }
 
     [Test]
+    public void UnAvisoQueFallaNoImpideLosDemas()
+    {
+        var log = new List<string>();
+        var queue = new NoticeQueue();
+
+        queue.BeginDefer();
+        queue.Post(() => throw new System.InvalidOperationException("roto"));
+        queue.Post(() => log.Add("siguiente"));
+        UnityEngine.TestTools.LogAssert.ignoreFailingMessages = true;
+        queue.Flush();
+        UnityEngine.TestTools.LogAssert.ignoreFailingMessages = false;
+        queue.Post(() => log.Add("inmediato"));
+
+        CollectionAssert.AreEqual(new[] { "siguiente", "inmediato" }, log);
+    }
+
+    [Test]
     public void DescartarVaciaSinEjecutar()
     {
         var log = new List<string>();

@@ -95,26 +95,26 @@ public class InterrogationUI : MonoBehaviour
 
         // Botones principales
         if (startButton != null)
-            startButton.onClick.AddListener(StartInterrogation);
+            UIComponents.SetOnlyListener(startButton, StartInterrogation);
 
         if (askButton != null)
-            askButton.onClick.AddListener(OnAskButtonClick);
+            UIComponents.SetOnlyListener(askButton, OnAskButtonClick);
 
         if (endDayButton != null)
-            endDayButton.onClick.AddListener(OnEndDayClick);
+            UIComponents.SetOnlyListener(endDayButton, OnEndDayClick);
 
         // NUEVO: Botón acusar anticipado
         if (accuseNowButton != null)
-            accuseNowButton.onClick.AddListener(OnAccuseNowClick);
+            UIComponents.SetOnlyListener(accuseNowButton, OnAccuseNowClick);
 
         if (accuseButton != null)
-            accuseButton.onClick.AddListener(OnAccuseClick);
+            UIComponents.SetOnlyListener(accuseButton, OnAccuseClick);
 
         if (restartButton != null)
-            restartButton.onClick.AddListener(() => gameManager.RestartGame());
+            UIComponents.SetOnlyListener(restartButton, () => gameManager.RestartGame());
 
         if (menuButton != null)
-            menuButton.onClick.AddListener(() => gameManager.BackToMenu());
+            UIComponents.SetOnlyListener(menuButton, () => gameManager.BackToMenu());
 
         if (suspectDropdown != null)
             suspectDropdown.onValueChanged.AddListener(OnSuspectChanged);
@@ -122,14 +122,12 @@ public class InterrogationUI : MonoBehaviour
         // Botones panel pistas (ARREGLADO)
         if (viewCluesButton != null)
         {
-            viewCluesButton.onClick.RemoveAllListeners(); // Limpia listeners viejos
-            viewCluesButton.onClick.AddListener(ShowCluesPanel);
+            UIComponents.SetOnlyListener(viewCluesButton, ShowCluesPanel);
         }
 
         if (closeCluesButton != null)
         {
-            closeCluesButton.onClick.RemoveAllListeners(); // Limpia listeners viejos
-            closeCluesButton.onClick.AddListener(HideCluesPanel);
+            UIComponents.SetOnlyListener(closeCluesButton, HideCluesPanel);
         }
 
         // Imágenes de sospechosos
@@ -159,9 +157,9 @@ public class InterrogationUI : MonoBehaviour
 
         // Reacciones por código: no necesitan nada en la escena
         if (suspectImage != null)
-            emotionPresenter = suspectImage.GetComponent<EmotionPresenter>() ?? suspectImage.gameObject.AddComponent<EmotionPresenter>();
+            emotionPresenter = UIComponents.GetOrAdd<EmotionPresenter>(suspectImage.gameObject);
         if (conversationText != null)
-            typewriter = conversationText.GetComponent<Typewriter>() ?? conversationText.gameObject.AddComponent<Typewriter>();
+            typewriter = UIComponents.GetOrAdd<Typewriter>(conversationText.gameObject);
 
         if (clueNotification != null)
             clueNotification.SetActive(false);
@@ -211,7 +209,7 @@ public class InterrogationUI : MonoBehaviour
             caseDescriptionText.text = description;
 
             // El parte del caso se escribe como el de la mañana; un toque lo completa
-            Typewriter briefing = caseDescriptionText.GetComponent<Typewriter>() ?? caseDescriptionText.gameObject.AddComponent<Typewriter>();
+            Typewriter briefing = UIComponents.GetOrAdd<Typewriter>(caseDescriptionText.gameObject);
             if (briefing.isActiveAndEnabled)
                 briefing.Reveal(0, 1f);
         }
@@ -819,8 +817,7 @@ public class InterrogationUI : MonoBehaviour
         rect.anchoredPosition = source.anchoredPosition - new Vector2(0f, source.rect.height + T.spacing);
 
         accusationBackButton = clone.GetComponent<Button>();
-        accusationBackButton.onClick.RemoveAllListeners();
-        accusationBackButton.onClick.AddListener(() => gameManager.CancelAccusation());
+        UIComponents.SetOnlyListener(accusationBackButton, () => gameManager.CancelAccusation());
 
         TMP_Text label = clone.GetComponentInChildren<TMP_Text>(true);
         if (label != null)

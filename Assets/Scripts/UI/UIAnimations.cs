@@ -55,7 +55,7 @@ public static class UIAnimations
         if (panel == null || host == null)
             return;
 
-        CanvasGroup group = panel.GetComponent<CanvasGroup>() ?? panel.AddComponent<CanvasGroup>();
+        CanvasGroup group = UIComponents.GetOrAdd<CanvasGroup>(panel);
         if (Instant || !host.isActiveAndEnabled)
         {
             group.alpha = 1f;
