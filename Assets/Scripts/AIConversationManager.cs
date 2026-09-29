@@ -64,6 +64,14 @@ public class AIConversationManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sustituye el proveedor configurado (tests con un proveedor falso).
+    /// </summary>
+    public void UseProvider(ILLMProvider replacement)
+    {
+        llmProvider = replacement;
+    }
+
     public void StartCase(StoryData story, VariantData variant)
     {
         Story = story;
