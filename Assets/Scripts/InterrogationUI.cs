@@ -148,6 +148,8 @@ public class InterrogationUI : MonoBehaviour
 
         // Lo que se anima cada fotograma, en su propio Canvas (rendimiento en móvil)
         UIPerformance.IsolateInOwnCanvas(suspectImage);
+        if (suspectImage != null && suspectImage.GetComponent<PortraitMotion>() == null)
+            suspectImage.gameObject.AddComponent<PortraitMotion>(); // Respiración e inclinación al tocar
         UIPerformance.IsolateInOwnCanvas(conversationText);
         UIPerformance.IsolateInOwnCanvas(hudText);
 
@@ -236,6 +238,7 @@ public class InterrogationUI : MonoBehaviour
             rect.SetAsFirstSibling();
             introBackground = rect.gameObject.AddComponent<UnityEngine.UI.RawImage>();
             introBackground.raycastTarget = false;
+            ParallaxLayer.AddTo(introBackground);
         }
 
         if (introHeader == null)
@@ -627,7 +630,7 @@ public class InterrogationUI : MonoBehaviour
             clueNotificationText.text = (visibleClueNames.Count == 1 ? "PISTA DESCUBIERTA:\n" : "PISTAS DESCUBIERTAS:\n") +
                                         string.Join("\n", visibleClueNames);
             clueNotification.SetActive(true);
-            UIAnimations.Pop(this, clueNotification.transform);
+            UIAnimations.CardFlip(this, clueNotification.transform);
             CancelInvoke(nameof(HideClueNotification));
             Invoke(nameof(HideClueNotification), 3f + visibleClueNames.Count - 1);
         }
@@ -657,6 +660,7 @@ public class InterrogationUI : MonoBehaviour
         if (cluesPanel != null)
         {
             cluesPanel.SetActive(true);
+            UIAnimations.CardFlip(this, cluesPanel.transform);
             Debug.Log("[InterrogationUI] Panel de pistas mostrado");
         }
     }

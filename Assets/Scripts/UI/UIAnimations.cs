@@ -84,6 +84,25 @@ public static class UIAnimations
     }
 
     /// <summary>
+    /// Aparición como una carta que gira hacia el jugador (pistas, libreta).
+    /// </summary>
+    public static void CardFlip(MonoBehaviour host, Transform target)
+    {
+        if (target == null || host == null)
+            return;
+
+        if (Instant || !host.isActiveAndEnabled)
+        {
+            target.localRotation = Quaternion.identity;
+            return;
+        }
+
+        host.StartCoroutine(Animate(ThemeManager.Current.cardFlipDuration,
+            t => target.localRotation = Quaternion.Euler(0f, Motion3D.CardFlip(t), 0f),
+            () => target.localRotation = Quaternion.identity));
+    }
+
+    /// <summary>
     /// Destello de color sobre un gráfico (contradicción): sube y vuelve a transparente.
     /// </summary>
     public static void Flash(MonoBehaviour host, UnityEngine.UI.Graphic overlay, Color color, float maxAlpha)

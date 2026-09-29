@@ -74,6 +74,8 @@ public class MenuManager : MonoBehaviour
                                          ?? (mainMenuBackgroundTexture != null ? mainMenuBackgroundTexture : null)
                                          ?? ArtLibrary.Placeholder(ThemeManager.Current.background);
 
+            ParallaxLayer.AddTo(mainMenuBackground);
+
             // Solo el fondo antiguo se gradúa
             if (newArt == null && mainMenuBackgroundTexture != null)
                 ArtGrading.Apply(mainMenuBackground, ArtGrading.Kind.Background);

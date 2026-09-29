@@ -84,6 +84,15 @@ public class Theme : ScriptableObject
     public float contradictionAnimDuration = 0.5f;
     public float typewriterCharsPerSecond = 45f;
 
+    [Header("Profundidad (pseudo-3D). Sutil: mejor imperceptible que mareante")]
+    [Range(0f, 0.03f)] public float breathAmplitude = 0.012f;   // 1,2 % de escala
+    public float breathPeriod = 4.5f;                          // s por respiración
+    [Range(0f, 20f)] public float tiltDegrees = 7f;            // Inclinación al tocar un retrato
+    public float tiltDuration = 0.6f;
+    [Range(0f, 60f)] public float parallaxPixels = 16f;        // Desplazamiento máximo de los fondos
+    public float parallaxSmoothing = 4f;                       // Mayor = sigue antes al movimiento
+    public float cardFlipDuration = 0.45f;                     // Giro de carta de pistas y libreta
+
     [Header("Distribución vertical (px a 1080 × 1920)")]
     public float hudHeight = 140f;
     public float portraitHeight = 480f;
