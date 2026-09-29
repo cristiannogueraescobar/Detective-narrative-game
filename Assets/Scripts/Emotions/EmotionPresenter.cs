@@ -9,7 +9,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(RawImage))]
 public class EmotionPresenter : MonoBehaviour
 {
-    private const float TintDuration = 0.35f;
     private const float ShakeOnceDuration = 0.45f;
 
     private RawImage image;
@@ -64,9 +63,10 @@ public class EmotionPresenter : MonoBehaviour
     private IEnumerator TintTo(Color target)
     {
         Color start = image.color;
-        for (float t = 0f; t < TintDuration; t += Time.unscaledDeltaTime)
+        float duration = ThemeManager.Current.tintDuration;
+        for (float t = 0f; t < duration; t += Time.unscaledDeltaTime)
         {
-            image.color = Color.Lerp(start, target, t / TintDuration);
+            image.color = Color.Lerp(start, target, t / duration);
             yield return null;
         }
         image.color = target;

@@ -11,8 +11,6 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(TMP_Text))]
 public class Typewriter : MonoBehaviour, IPointerClickHandler
 {
-    public const float BaseCharactersPerSecond = 45f;
-
     private TMP_Text text;
     private Coroutine routine;
     private bool skipRequested;
@@ -38,7 +36,7 @@ public class Typewriter : MonoBehaviour, IPointerClickHandler
     {
         Complete();
         skipRequested = false;
-        routine = StartCoroutine(Type(fromCharacter, BaseCharactersPerSecond * Mathf.Max(0.1f, speedMultiplier)));
+        routine = StartCoroutine(Type(fromCharacter, ThemeManager.Current.typewriterCharsPerSecond * GameSettings.TextSpeed * Mathf.Max(0.1f, speedMultiplier)));
     }
 
     /// <summary>

@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Cómo se ve y se lee cada estado emocional: tinte del retrato, temblor y velocidad del texto.
-/// Valores por defecto en código; el tema (ThemeManager) puede sustituirlos.
+/// Los valores salen del tema activo (ThemeManager); aquí solo se reparten por estado.
 /// </summary>
 public class EmotionStyle
 {
@@ -14,18 +14,32 @@ public class EmotionStyle
 
     public static EmotionStyle For(Emotion emotion)
     {
+        Theme theme = ThemeManager.Current;
+        var style = new EmotionStyle { tint = theme.EmotionTint(emotion) };
+
         switch (emotion)
         {
             case Emotion.Nervioso:
-                return new EmotionStyle { tint = new Color(1f, 0.96f, 0.86f), shakeAmplitude = 1.5f, shakeFrequency = 18f, textSpeed = 1.25f };
+                style.shakeAmplitude = theme.nerviousShake;
+                style.shakeFrequency = 18f;
+                style.textSpeed = theme.nervousTextSpeed;
+                break;
             case Emotion.Asustado:
-                return new EmotionStyle { tint = new Color(0.86f, 0.9f, 1f), shakeAmplitude = 3f, shakeFrequency = 26f, textSpeed = 1.4f };
+                style.shakeAmplitude = theme.scaredShake;
+                style.shakeFrequency = 26f;
+                style.textSpeed = theme.scaredTextSpeed;
+                break;
             case Emotion.Enfadado:
-                return new EmotionStyle { tint = new Color(1f, 0.84f, 0.8f), shakeAmplitude = 6f, shakeFrequency = 30f, shakeOnce = true, textSpeed = 1.15f };
+                style.shakeAmplitude = theme.angryShake;
+                style.shakeFrequency = 30f;
+                style.shakeOnce = true;
+                style.textSpeed = theme.angryTextSpeed;
+                break;
             case Emotion.Triste:
-                return new EmotionStyle { tint = new Color(0.82f, 0.86f, 0.95f), textSpeed = 0.75f };
-            default:
-                return new EmotionStyle();
+                style.textSpeed = theme.sadTextSpeed;
+                break;
         }
+
+        return style;
     }
 }
