@@ -141,7 +141,17 @@ public class MenuManager : MonoBehaviour
         if (mainMenuPanel != null)
             mainMenuPanel.SetActive(false);
 
-        if (gameManager == null || !gameManager.ContinueSavedGame())
+        bool continued = false;
+        try
+        {
+            continued = gameManager != null && gameManager.ContinueSavedGame();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogException(e);
+        }
+
+        if (!continued)
         {
             // El guardado ya no es válido: se empieza una partida nueva
             SaveSystem.Delete();

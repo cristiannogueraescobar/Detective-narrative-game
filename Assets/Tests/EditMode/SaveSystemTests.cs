@@ -102,6 +102,15 @@ public class SaveSystemTests
     }
 
     [Test]
+    public void PersonajesRepetidosSeRechazan()
+    {
+        SaveData data = Sample();
+        data.histories.Add(new SaveData.History { characterId = "madre" });
+
+        Assert.IsFalse(SaveSystem.TryDeserialize(SaveSystem.Serialize(data), out _));
+    }
+
+    [Test]
     public void DiaFueraDeRangoSeRechaza()
     {
         SaveData data = Sample();

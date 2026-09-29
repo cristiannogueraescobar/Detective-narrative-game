@@ -96,6 +96,11 @@ public static class SaveSystem
         var clues = new HashSet<string>(variant.clues.Select(c => c.id));
 
         bool Known(string id) => id != null && characters.Contains(id);
+        bool Unique<T>(List<T> list, System.Func<T, string> key) => list == null || list.Select(key).Distinct().Count() == list.Count;
+
+        if (!Unique(data.histories, h => h.characterId) || !Unique(data.emotions, e => e.characterId) ||
+            !Unique(data.conversations, c => c.characterId))
+            return false;
 
         return (data.unlocked ?? new List<string>()).All(Known)
             && (data.discovered ?? new List<string>()).All(clues.Contains)
