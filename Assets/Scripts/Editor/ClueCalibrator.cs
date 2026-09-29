@@ -352,7 +352,7 @@ public static class ClueCalibrator
         public string error;
     }
 
-    private static string Chat(HttpClient client, Options options, string systemPrompt, List<ChatMessage> history)
+    public static string Chat(HttpClient client, Options options, string systemPrompt, List<ChatMessage> history)
     {
         var messages = new List<ChatMessage> { new ChatMessage { role = "system", content = systemPrompt } };
         messages.AddRange(history);
