@@ -73,6 +73,74 @@ public class GameManager : MonoBehaviour
         conversationManager.OnCharacterMentioned -= OnCharacterMentioned;
     }
 
+    // ============================================
+    // GUARDADO
+    // ============================================
+
+    private void SaveGame()
+    {
+        if (accusationMade || State == null || currentDay > maxDays)
+            return;
+
+        var data = new SaveData
+        {
+            variantId = variant.id,
+            day = currentDay,
+            questionsUsedToday = questionsUsedToday,
+            currentSuspect = interrogationUI != null ? interrogationUI.CurrentSuspectId : null,
+            unlocked = new List<string>(unlocked),
+            discovered = new List<string>(State.DiscoveredClueIds),
+            culpritToldLie = State.CulpritToldLie
+        };
+
+        foreach (CharacterData character in story.cast)
+        {
+            foreach (string clueId in State.ShownTo(character.id))
+                data.shown.Add(new SaveData.Shown { characterId = character.id, clueId = clueId });
+        }
+
+        foreach (var pair in conversationManager.Histories)
+            data.histories.Add(new SaveData.History { characterId = pair.Key, messages = new List<ChatMessage>(pair.Value) });
+        foreach (var pair in conversationManager.Emotions)
+            data.emotions.Add(new SaveData.EmotionEntry { characterId = pair.Key, emotion = pair.Value.ToString() });
+
+        if (interrogationUI != null)
+        {
+            Dictionary<string, string> texts = interrogationUI.ExportConversations(out string shared);
+            foreach (var pair in texts)
+                data.conversations.Add(new SaveData.Conversation { characterId = pair.Key, text = pair.Value });
+            data.sharedConversation = shared;
+        }
+
+        SaveSystem.Save(data);
+    }
+
+    /// <summary>
+    /// Continúa la partida guardada. Devuelve false si no hay guardado válido (se empieza de cero).
+    /// </summary>
+    public bool ContinueSavedGame()
+    {
+        if (!SaveSystem.TryLoad(out SaveData data) || !CaseLibrary.TryFind(data.variantId, out story, out variant))
+            return false;
+
+        currentDay = data.day;
+        questionsUsedToday = data.questionsUsedToday;
+        accusationMade = false;
+        unlocked.Clear();
+        unlocked.AddRange(data.unlocked);
+
+        conversationManager.RestoreCase(story, SaveSystem.RestoreState(variant, data),
+            data.histories.ToDictionary(h => h.characterId, h => h.messages),
+            data.emotions.ToDictionary(e => e.characterId, e => (Emotion)Enum.Parse(typeof(Emotion), e.emotion)));
+
+        var texts = data.conversations.ToDictionary(c => c.characterId, c => c.text);
+        interrogationUI?.ContinueInterrogation(texts, data.sharedConversation, data.currentSuspect,
+            conversationManager.Emotions);
+
+        Debug.Log($"[GameManager] Partida continuada: {variant.id}, día {currentDay}");
+        return true;
+    }
+
     private void SelectCase()
     {
         string forcedId = Application.isEditor ? CaseIdFor(debugCase) : null;
@@ -164,6 +232,7 @@ public class GameManager : MonoBehaviour
         interrogationUI?.AddToConversation(characterId, story.Character(characterId).DisplayName, asked, result.Text);
         notices.Flush();
         UpdateGameState();
+        SaveGame();
     }
 
     public void EndDay()
@@ -186,6 +255,7 @@ public class GameManager : MonoBehaviour
         }
 
         UpdateGameState();
+        SaveGame();
     }
 
     private string MorningReport(int day)
@@ -311,6 +381,7 @@ public class GameManager : MonoBehaviour
             return;
 
         accusationMade = true;
+        SaveSystem.Delete(); // La partida ha terminado
         AccusationResult result = State.Accuse(accusedId);
 
         Debug.Log($"[GameManager] Acusación: {accusedId} → {result.ending} (evidencia {result.evidence})");
@@ -341,6 +412,7 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         StartNewGameOnLoad = true;
+        SaveSystem.Delete();
         ReloadScene();
     }
 

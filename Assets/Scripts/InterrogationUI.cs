@@ -206,6 +206,43 @@ public class InterrogationUI : MonoBehaviour
         Debug.Log("[InterrogationUI] Caso cargado: " + title);
     }
 
+    public string CurrentSuspectId => currentSuspectId;
+
+    public Dictionary<string, string> ExportConversations(out string shared)
+    {
+        shared = conversations.SharedText;
+        return conversations.Export();
+    }
+
+    /// <summary>
+    /// Vuelve a la partida guardada: conversaciones, sospechoso abierto y estados emocionales.
+    /// </summary>
+    public void ContinueInterrogation(IDictionary<string, string> texts, string shared, string suspectId,
+                                      IReadOnlyDictionary<string, Emotion> emotions)
+    {
+        HideAllPanels();
+        if (interrogationPanel != null)
+        {
+            interrogationPanel.SetActive(true);
+            UIAnimations.FadeIn(this, interrogationPanel);
+        }
+
+        conversations.Import(texts, shared);
+        emotionBySuspect.Clear();
+        foreach (var pair in emotions)
+            emotionBySuspect[pair.Key] = pair.Value;
+
+        currentSuspectId = string.IsNullOrEmpty(suspectId) ? null : suspectId;
+        if (currentSuspectId != null)
+            conversations.Select(currentSuspectId);
+
+        gameManager.BeginInterrogation();
+        RefreshConversationView();
+        if (currentSuspectId != null)
+            UpdateSuspectImage(currentSuspectId, instant: true);
+        SetInputEnabled(true);
+    }
+
     public void StartInterrogation()
     {
         Debug.Log("[InterrogationUI] StartInterrogation llamado");

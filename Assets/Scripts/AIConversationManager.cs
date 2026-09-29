@@ -151,6 +151,28 @@ public class AIConversationManager : MonoBehaviour
     /// </summary>
     public IReadOnlyDictionary<string, Emotion> Emotions => emotions;
 
+    /// <summary>
+    /// Historial completo por sospechoso (con etiquetas de estado), para guardar la partida.
+    /// </summary>
+    public IReadOnlyDictionary<string, List<ChatMessage>> Histories => conversationHistory;
+
+    /// <summary>
+    /// Continúa una partida guardada: estado, historiales y estados emocionales.
+    /// </summary>
+    public void RestoreCase(StoryData story, InvestigationState state,
+                            IDictionary<string, List<ChatMessage>> histories, IDictionary<string, Emotion> savedEmotions)
+    {
+        Story = story;
+        State = state;
+        conversationHistory.Clear();
+        emotions.Clear();
+
+        foreach (var pair in histories)
+            conversationHistory[pair.Key] = new List<ChatMessage>(pair.Value);
+        foreach (var pair in savedEmotions)
+            emotions[pair.Key] = pair.Value;
+    }
+
     public Emotion CurrentEmotion(string characterId)
     {
         return emotions.TryGetValue(characterId, out Emotion emotion) ? emotion : Emotion.Tranquilo;

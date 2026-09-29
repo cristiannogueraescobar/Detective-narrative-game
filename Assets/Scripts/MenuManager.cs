@@ -41,6 +41,8 @@ public class MenuManager : MonoBehaviour
         // Configurar botones del menú principal
         if (playButton != null)
             playButton.onClick.AddListener(OnPlayClicked);
+
+        SetUpContinueButton();
         
         if (instructionsButton != null)
             instructionsButton.onClick.AddListener(ShowInstructions);
@@ -83,9 +85,52 @@ public class MenuManager : MonoBehaviour
         Debug.Log("[MenuManager] Inicializado");
     }
     
+    /// <summary>
+    /// Si hay una partida guardada válida, añade "Continuar" (clonando el botón de jugar, encima de él)
+    /// y el de jugar pasa a llamarse "Nueva partida".
+    /// </summary>
+    private void SetUpContinueButton()
+    {
+        if (playButton == null || !SaveSystem.TryLoad(out _))
+            return;
+
+        GameObject clone = Instantiate(playButton.gameObject, playButton.transform.parent);
+        clone.name = "ContinueButton (auto)";
+        var rect = (RectTransform)clone.transform;
+        var source = (RectTransform)playButton.transform;
+        rect.anchoredPosition = source.anchoredPosition + new Vector2(0f, source.rect.height + ThemeManager.Current.spacing);
+
+        var continueButton = clone.GetComponent<Button>();
+        continueButton.onClick.RemoveAllListeners();
+        continueButton.onClick.AddListener(OnContinueClicked);
+        SetLabel(clone, "Continuar");
+        SetLabel(playButton.gameObject, "Nueva partida");
+    }
+
+    private static void SetLabel(GameObject button, string text)
+    {
+        TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
+        if (label != null)
+            label.text = text;
+    }
+
+    private void OnContinueClicked()
+    {
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(false);
+
+        if (gameManager == null || !gameManager.ContinueSavedGame())
+        {
+            // El guardado ya no es válido: se empieza una partida nueva
+            SaveSystem.Delete();
+            OnPlayClicked();
+        }
+    }
+
     private void OnPlayClicked()
     {
         Debug.Log("[MenuManager] Botón JUGAR presionado");
+        SaveSystem.Delete(); // "Nueva partida" descarta la anterior
         
         // Ocultar menú principal
         if (mainMenuPanel != null)

@@ -43,6 +43,27 @@ public class ConversationStore
             sb.Append(entry);
     }
 
+    public string SharedText => shared.ToString();
+
+    /// <summary>
+    /// Conversaciones por sospechoso (para guardar la partida).
+    /// </summary>
+    public Dictionary<string, string> Export()
+    {
+        var result = new Dictionary<string, string>();
+        foreach (var pair in bySuspect)
+            result[pair.Key] = pair.Value.ToString();
+        return result;
+    }
+
+    public void Import(IDictionary<string, string> texts, string sharedText)
+    {
+        Clear();
+        shared.Append(sharedText ?? "");
+        foreach (var pair in texts)
+            bySuspect[pair.Key] = new StringBuilder(pair.Value ?? "");
+    }
+
     public void Clear()
     {
         bySuspect.Clear();
