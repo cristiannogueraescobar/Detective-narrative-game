@@ -36,7 +36,7 @@ public static class PromptBuilder
 
         if (openFacts.Count > 0)
         {
-            sb.AppendLine("LO CUENTAS SIN PROBLEMA EN CUANTO TE PREGUNTEN POR EL TEMA. Dilo completo, con la hora y todos los detalles:");
+            sb.AppendLine("LO CUENTAS SIN PROBLEMA SI TE PREGUNTAN POR EL TEMA, con tus palabras, en primera persona, completo y con la hora:");
             foreach (ClueData clue in openFacts)
                 sb.AppendLine($"- Si te preguntan por {clue.topic}: {clue.fact}");
         }
@@ -45,7 +45,7 @@ public static class PromptBuilder
 
         sb.AppendLine($"LO QUE OCULTAS: {role.secret} Lo admites solo si {role.admitsWhen}.");
         foreach (ClueData clue in secretFacts)
-            sb.AppendLine($"- Si te preguntan por {clue.topic}: la primera vez lo niegas. Si el inspector insiste, te presiona o dice que lo va a comprobar, lo confiesas sin rodeos: {clue.fact}");
+            sb.AppendLine($"- Si te preguntan por {clue.topic}: niégalo la primera vez; si el inspector insiste o dice que lo va a comprobar, confiésalo con tus palabras: {clue.fact}");
 
         if (isCulprit)
         {

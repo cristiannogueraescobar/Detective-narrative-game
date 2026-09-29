@@ -84,7 +84,7 @@ Tienes 7 días.",
         {
             characterId = "vecina",
             knowledge = knowledge,
-            version = "Esa madrugada me levanté a las cinco, como siempre, a encender la cocina de leña.",
+            version = "Esa madrugada me levanté a las cinco, como siempre, a encender la cocina de leña, y miré por la ventana.",
             secret = "Destilas orujo en casa sin licencia y lo vendes a los vecinos.",
             admitsWhen = "te preguntan qué hacías levantada tan temprano con tanto humo en la cocina",
             nervousAbout = "que la policía entre en tu casa.",
@@ -384,12 +384,12 @@ Tienes 7 días.",
                 {
                     id = "2B_furgoneta", playerName = "La furgoneta blanca", holder = "vecina", kind = ClueKind.Incriminates,
                     summary = "A las 5:12 Maruxa vio una furgoneta blanca pequeña parar junto a la chica en la curva. Ella subió.",
-                    topic = "lo que viste en la curva esa madrugada",
+                    topic = "lo que viste en la curva o lo que pasó por delante de tu casa esa madrugada",
                     fact = "a las 5:12 viste una furgoneta blanca pequeña parar junto a la chica en la curva, y ella se subió.",
                     anchors = new[]
                     {
                         new[] { "furgoneta" },
-                        new[] { "blanca", "se subio", "subio", "5:12" }
+                        new[] { "blanca", "se subio", "subio", "5:12", "paro", "la nina", "la chica", "la rapaza" }
                     },
                     calibrationQuestions = new[] { "¿Vio algo raro en la curva esa madrugada?", "¿Pasó algún vehículo por delante de su casa hacia las cinco?" },
                     sampleHits = new[]
@@ -426,7 +426,7 @@ Tienes 7 días.",
                     fact = "la cámara de La Marea grabó a Marcos dentro del bar, recogiendo, desde las 5:00 hasta las 6:30.",
                     anchors = new[]
                     {
-                        new[] { "camara", "grabacion", "grabo" },
+                        new[] { "camara", "grabacion", "grabo", "6:30", "seis y media" },
                         new[] { "marcos", "dueno", "dentro del bar", "recogiendo" }
                     },
                     calibrationQuestions = new[] { "¿Hay grabaciones de cámaras de esa noche?", "¿Qué sabe de Marcos, el del bar?" },
@@ -505,7 +505,7 @@ Tienes 7 días.",
                 {
                     characterId = "cartero",
                     knowledge = new[] { MentionMaruxa, "Esa madrugada llevabas un certificado urgente para la comisaría." },
-                    version = "A las 5:05 pasé por la comisaría a dejar un certificado urgente y a las 5:15 entré en la oficina.",
+                    version = "A las 5:15 entré en la oficina de Correos, como siempre.",
                     secret = "Guardas en casa postales que nunca llegaste a entregar; te da vergüenza que se sepa.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "que registren tu casa.",
@@ -558,18 +558,19 @@ Tienes 7 días.",
                 {
                     id = "2C_comisaria", playerName = "Comisaría cerrada", holder = "cartero", kind = ClueKind.Incriminates, exposesLie = true,
                     summary = "A las 5:05 Andrés fue a la comisaría a dejar un certificado urgente: estaba cerrada y no había nadie dentro.",
-                    topic = "lo que viste en la comisaría esa madrugada",
+                    topic = "lo que pasó cuando fuiste a la comisaría con el certificado",
                     fact = "a las 5:05 fuiste a la comisaría a dejar el certificado urgente y estaba cerrada, con las luces apagadas y sin nadie dentro.",
                     anchors = new[]
                     {
-                        new[] { "comisaria" },
-                        new[] { "cerrada", "sin nadie", "nadie dentro", "vacia", "luces apagadas" }
+                        new[] { "comisaria", "certificado" },
+                        new[] { "cerrada", "cerrado", "sin nadie", "nadie dentro", "vacia", "luces apagadas" }
                     },
                     calibrationQuestions = new[] { "¿Pasó por la comisaría esa madrugada?", "¿Qué hizo usted entre las cinco y las cinco y cuarto?" },
                     sampleHits = new[]
                     {
                         "A las 5:05 fui a la comisaría con el certificado y estaba cerrada, sin nadie dentro.",
-                        "La comisaría estaba vacía, con las luces apagadas."
+                        "La comisaría estaba vacía, con las luces apagadas.",
+                        "Sí, pasé por allí a las 5:05 para dejar un certificado urgente, pero estaba todo cerrado."
                     },
                     sampleMisses = new[] { "Dejé el certificado en la comisaría y seguí mi ruta." }
                 },
@@ -581,8 +582,8 @@ Tienes 7 días.",
                     fact = "el móvil de la chica apareció en la cala, se registró como prueba y se extravió en el traslado a Vigo. Son cosas que pasan.",
                     anchors = new[]
                     {
-                        new[] { "movil", "telefono" },
-                        new[] { "extravio", "se perdio", "perdido", "traslado" }
+                        new[] { "movil", "telefono", "prueba" },
+                        new[] { "extravi", "se perdio", "perdido", "traslado", "desaparecio" }
                     },
                     calibrationQuestions = new[] { "¿Dónde está el móvil de Sofía?", "¿Encontraron el teléfono de la chica?" },
                     sampleHits = new[]

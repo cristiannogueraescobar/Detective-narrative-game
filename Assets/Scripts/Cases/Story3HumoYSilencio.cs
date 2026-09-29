@@ -177,14 +177,15 @@ Tienes 7 días para descubrir qué pasó.",
                     fact = "a las 20:40 Paula te escribió por WhatsApp: 'Papá está fatal, ha bebido, ven a por mí'. Fue su último mensaje.",
                     anchors = new[]
                     {
-                        new[] { "ven a por mi", "esta fatal", "ha bebido", "habia bebido" },
+                        new[] { "ven a por mi", "esta fatal", "ha bebido", "habia bebido", "estaba mal", "recogiera", "a buscarla", "a por ella" },
                         new[] { "20:40", "8:40", "mensaje", "whatsapp", "me escribio" }
                     },
                     calibrationQuestions = new[] { "¿Cuándo supiste de Paula por última vez?", "¿Te escribió Paula el sábado?" },
                     sampleHits = new[]
                     {
                         "A las 20:40 me escribió: papá está fatal, ha bebido, ven a por mí.",
-                        "Su último mensaje fue por WhatsApp: que papá había bebido y que fuera a por ella."
+                        "Su último mensaje fue por WhatsApp: que papá había bebido y que fuera a por ella.",
+                        "A las 20:40 me envió un mensaje diciendo que su padre estaba mal y que yo debía ir a buscarla."
                     },
                     sampleMisses = new[] { "Paula no me escribió nada ese día." }
                 },
@@ -235,13 +236,14 @@ Tienes 7 días para descubrir qué pasó.",
                     anchors = new[]
                     {
                         new[] { "audio", "de voz", "whatsapp" },
-                        new[] { "no la vuelves a ver", "quitas a la nina", "amenaz" }
+                        new[] { "no la vuelves a ver", "no la volveria a ver", "quitas a la nina", "quitaba a paula", "amenaz" }
                     },
                     calibrationQuestions = new[] { "¿Le había amenazado Javier alguna vez?", "¿Cómo era su relación con Javier estas semanas?" },
                     sampleHits = new[]
                     {
                         "Me mandó audios: si me quitas a la niña, no la vuelves a ver.",
-                        "Tengo sus mensajes de voz. Me amenazó la semana pasada."
+                        "Tengo sus mensajes de voz. Me amenazó la semana pasada.",
+                        "Javier me mandó audios la semana pasada diciendo que si me quitaba a Paula no la volvería a ver."
                     },
                     sampleMisses = new[] { "Javier y yo ya no hablamos, todo va por abogados." }
                 },
@@ -367,7 +369,7 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     id = "3B_carta", playerName = "La carta de la mesilla", holder = "padre", kind = ClueKind.Incriminates,
                     summary = "En la mesilla de Paula, Javier encontró una carta de Lucía: 'Pronto estaremos lejos de él, tú hazme caso'.",
-                    topic = "si encontraste algo en el cuarto de Paula",
+                    topic = "si encontraste algo en el cuarto de Paula o si Paula tenía contacto con su madre",
                     fact = "el domingo encontraste en la mesilla de Paula una carta de Lucía: 'Pronto estaremos lejos de él, tú hazme caso'.",
                     anchors = new[]
                     {
@@ -387,7 +389,7 @@ Tienes 7 días para descubrir qué pasó.",
                     id = "3B_noche", playerName = "Una noche larga", holder = "hermano", kind = ClueKind.Incriminates, exposesLie = true, isSecret = true,
                     summary = "Lucía dejó a Álex en Granada a mediodía y volvió de madrugada, sobre las cuatro, con un ticket de peaje de Huelva.",
                     topic = "si tu madre estuvo contigo todo el sábado",
-                    fact = "Tu madre te dejó en casa de tu tía a mediodía y no volvió hasta las cuatro de la madrugada; en su coche viste un ticket de peaje de Huelva.",
+                    fact = "«Mamá me dejó en casa de la tía a mediodía y no volvió hasta las cuatro de la madrugada; en su coche vi un ticket de peaje de Huelva.»",
                     anchors = new[]
                     {
                         new[] { "madrugada", "las cuatro", "4:00", "mediodia", "me dejo" },
@@ -559,14 +561,15 @@ Tienes 7 días para descubrir qué pasó.",
                     fact = "Encarna es la única persona con llave de la cancela que une su finca con la tuya.",
                     anchors = new[]
                     {
-                        new[] { "llave" },
-                        new[] { "cancela", "entre las fincas", "encarna" }
+                        new[] { "llave", "cancela" },
+                        new[] { "entre las fincas", "encarna" }
                     },
                     calibrationQuestions = new[] { "¿Quién más puede entrar en su finca?", "¿Hay otra entrada al quemadero además de la suya?" },
                     sampleHits = new[]
                     {
                         "Encarna tiene llave de la cancela; se la dio mi padre y nunca la devolvió.",
-                        "Por la cancela solo entra quien tenga la llave, y esa es Encarna."
+                        "Por la cancela solo entra quien tenga la llave, y esa es Encarna.",
+                        "No, solo hay esa entrada con la cancela que comparte Encarna."
                     },
                     sampleMisses = new[] { "La finca está abierta, entra quien quiere." }
                 },
