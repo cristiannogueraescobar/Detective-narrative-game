@@ -75,13 +75,13 @@ public class InterrogationUI : MonoBehaviour
     private List<SuspectView> suspects = new List<SuspectView>();
     private List<SuspectView> accusationOptions = new List<SuspectView>();
     private List<ClueData> evidenceOptions = new List<ClueData>();
-    private Dictionary<string, string> conversationsBySuspect = new Dictionary<string, string>();
+    private readonly ConversationStore conversations = new ConversationStore(); // Una conversación por sospechoso
     private Dictionary<string, Texture2D> suspectImages = new Dictionary<string, Texture2D>();
     private readonly List<string> visibleClueNames = new List<string>(); // Pistas del aviso en pantalla
     private readonly Dictionary<string, Emotion> emotionBySuspect = new Dictionary<string, Emotion>();
     private EmotionPresenter emotionPresenter;
     private Typewriter typewriter;
-    private static readonly Color PortraitPlaceholderColor = new Color(0.18f, 0.18f, 0.2f);
+    private static Theme T => ThemeManager.Current; // Todos los colores y tamaños salen del tema
 
     public void Initialize(GameManager gm)
     {
@@ -179,11 +179,9 @@ public class InterrogationUI : MonoBehaviour
         if (interrogationPanel != null)
             interrogationPanel.SetActive(true);
 
-        if (conversationText != null)
-            conversationText.text = "";
-
-        conversationsBySuspect.Clear();
+        conversations.Clear();
         currentSuspectId = null;
+        RefreshConversationView();
         gameManager.BeginInterrogation();
     }
 
@@ -264,17 +262,10 @@ public class InterrogationUI : MonoBehaviour
         if (suspectId == currentSuspectId)
             return;
 
-        if (!string.IsNullOrEmpty(currentSuspectId) && conversationText != null)
-            conversationsBySuspect[currentSuspectId] = conversationText.text;
-
         typewriter?.Complete();
         currentSuspectId = suspectId;
-
-        if (conversationText != null)
-        {
-            conversationsBySuspect.TryGetValue(suspectId, out string saved);
-            conversationText.text = saved ?? "";
-        }
+        conversations.Select(suspectId);
+        RefreshConversationView();
 
         UpdateSuspectImage(suspectId, instant: true);
     }
@@ -313,7 +304,7 @@ public class InterrogationUI : MonoBehaviour
         if (texture == null && view.portraitKey != null && suspectImages.TryGetValue(view.portraitKey, out Texture2D legacy))
             texture = legacy;
         if (texture == null)
-            texture = ArtLibrary.Placeholder(PortraitPlaceholderColor);
+            texture = ArtLibrary.Placeholder(T.placeholder);
 
         suspectImage.texture = texture;
         suspectImage.gameObject.SetActive(true);
@@ -322,28 +313,54 @@ public class InterrogationUI : MonoBehaviour
 
     public void AddToConversation(string suspectId, string displayName, string question, string response)
     {
-        string entry = $"<color=#00AAFF><b>TÚ:</b></color> {question}\n\n" +
-                       $"<color=#FFFFFF><b>{displayName.ToUpper()}:</b></color> {response}\n\n" +
+        string entry = $"<color={Theme.Hex(T.playerName)}><b>TÚ:</b></color> {question}\n\n" +
+                       $"<color={Theme.Hex(T.suspectName)}><b>{displayName.ToUpper()}:</b></color> {response}\n\n" +
                        "─────────────────\n\n";
 
         if (suspectId == currentSuspectId && conversationText != null)
         {
             // La respuesta se escribe letra a letra, a la velocidad del estado emocional; un toque la completa
             int visibleBefore = typewriter != null ? typewriter.VisibleCount() : 0;
-            conversationText.text += entry;
-            conversationsBySuspect[suspectId] = conversationText.text;
+            conversations.Append(suspectId, entry);
+            RefreshConversationView();
             typewriter?.Reveal(visibleBefore, EmotionStyle.For(EmotionOf(suspectId)).textSpeed);
         }
         else
         {
-            conversationsBySuspect.TryGetValue(suspectId, out string saved);
-            conversationsBySuspect[suspectId] = (saved ?? "") + entry;
+            // Respuesta de otro sospechoso (no debería ocurrir con la entrada bloqueada): a su conversación
+            conversations.Append(suspectId, entry);
         }
 
         if (evidenceDropdown != null)
             evidenceDropdown.value = 0;
 
         SetInputEnabled(true);
+        StartCoroutine(ForceScrollToBottom());
+    }
+
+    /// <summary>
+    /// Aviso de sistema en la conversación abierta (o solo en pantalla si aún no hay sospechoso).
+    /// </summary>
+    private void AppendNotice(string notice)
+    {
+        if (currentSuspectId != null)
+        {
+            conversations.AppendToCurrent(notice);
+            RefreshConversationView();
+        }
+        else if (conversationText != null)
+        {
+            conversationText.text += notice;
+            StartCoroutine(ForceScrollToBottom());
+        }
+    }
+
+    private void RefreshConversationView()
+    {
+        if (conversationText == null)
+            return;
+
+        conversationText.text = conversations.CurrentText;
         StartCoroutine(ForceScrollToBottom());
     }
 
@@ -399,12 +416,7 @@ public class InterrogationUI : MonoBehaviour
 
     public void ShowError(string message)
     {
-        if (conversationText != null)
-        {
-            conversationText.text += $"<color=#FF4444>⚠ {message}</color>\n\n";
-        }
-
-        StartCoroutine(ForceScrollToBottom());
+        AppendNotice($"<color={Theme.Hex(T.danger)}>⚠ {message}</color>\n\n");
     }
 
     /// <summary>
@@ -486,11 +498,7 @@ public class InterrogationUI : MonoBehaviour
 
     public void ShowContradictionNotification(string text)
     {
-        if (conversationText != null)
-        {
-            conversationText.text += $"<color=#FFAA00>⚠ CONTRADICCIÓN: {text}</color>\n\n";
-            StartCoroutine(ForceScrollToBottom());
-        }
+        AppendNotice($"<color={Theme.Hex(T.contradiction)}>⚠ CONTRADICCIÓN: {text}</color>\n\n");
     }
 
     // ARREGLADO: Panel de pistas
@@ -584,35 +592,27 @@ public class InterrogationUI : MonoBehaviour
 
     public void ShowSuspectUnlocked(string displayName)
     {
-        if (conversationText != null)
-        {
-            conversationText.text += $"<color=#00FF88>✓ NUEVO SOSPECHOSO: {displayName}</color>\n\n";
-            StartCoroutine(ForceScrollToBottom());
-        }
+        AppendNotice($"<color={Theme.Hex(T.success)}>✓ NUEVO SOSPECHOSO: {displayName}</color>\n\n");
     }
 
     public void ShowNotice(string message)
     {
-        if (conversationText != null)
-        {
-            conversationText.text += $"<color=#AAAAFF><i>{message}</i></color>\n\n";
-            StartCoroutine(ForceScrollToBottom());
-        }
+        AppendNotice($"<color={Theme.Hex(T.systemText)}><i>{message}</i></color>\n\n");
     }
 
     public void ShowDayTransition(int newDay, string morningReport)
     {
-        if (conversationText != null)
-        {
-            conversationText.text += $"\n<size=18><color=#FFFF00>═══════════════════</color></size>\n";
-            conversationText.text += $"<size=16><b>DÍA {newDay}</b></size>\n";
-            conversationText.text += $"<size=18><color=#FFFF00>═══════════════════</color></size>\n\n";
+        // El cambio de día se anota en todas las conversaciones, no solo en la abierta
+        string header = $"\n<size={T.secondarySize}><color={Theme.Hex(T.accent)}>═══════════════════</color></size>\n" +
+                        $"<size={T.headingSize}><b>DÍA {newDay}</b></size>\n" +
+                        $"<size={T.secondarySize}><color={Theme.Hex(T.accent)}>═══════════════════</color></size>\n\n";
 
-            if (!string.IsNullOrEmpty(morningReport))
-                conversationText.text += $"<color=#CCCCCC><i>Parte de la mañana: {morningReport}</i></color>\n\n";
+        if (!string.IsNullOrEmpty(morningReport))
+            header += $"<color={Theme.Hex(T.systemText)}><i>Parte de la mañana: {morningReport}</i></color>\n\n";
 
-            StartCoroutine(ForceScrollToBottom());
-        }
+        typewriter?.Complete();
+        conversations.AppendToAll(header);
+        RefreshConversationView();
 
         SetInputEnabled(true);
     }
@@ -660,19 +660,19 @@ public class InterrogationUI : MonoBehaviour
             {
                 case Ending.Good:
                     resultTitleText.text = "✓ CASO RESUELTO - FINAL BUENO";
-                    resultTitleText.color = Color.green;
+                    resultTitleText.color = T.success;
                     break;
                 case Ending.Bittersweet:
                     resultTitleText.text = "⚠ ACERTASTE PERO SIN PRUEBAS";
-                    resultTitleText.color = Color.yellow;
+                    resultTitleText.color = T.accent;
                     break;
                 case Ending.Insufficient:
                     resultTitleText.text = "⚠ CULPABLE LIBRE POR FALTA DE PRUEBAS";
-                    resultTitleText.color = new Color(1f, 0.5f, 0f); // Naranja
+                    resultTitleText.color = T.contradiction;
                     break;
                 default:
                     resultTitleText.text = "✗ CASO NO RESUELTO - FINAL MALO";
-                    resultTitleText.color = Color.red;
+                    resultTitleText.color = T.danger;
                     break;
             }
         }
@@ -689,19 +689,19 @@ public class InterrogationUI : MonoBehaviour
         switch (result.ending)
         {
             case Ending.Good:
-                text += "<color=green><b>¡EXCELENTE TRABAJO!</b></color>\n";
+                text += $"<color={Theme.Hex(T.success)}><b>¡EXCELENTE TRABAJO!</b></color>\n";
                 text += "Las pruebas y las contradicciones no dejan lugar a dudas. El culpable es condenado.\n\n";
                 break;
             case Ending.Bittersweet:
-                text += "<color=yellow><b>ACERTASTE PERO...</b></color>\n";
+                text += $"<color={Theme.Hex(T.accent)}><b>ACERTASTE PERO...</b></color>\n";
                 text += "Identificaste al culpable, pero la defensa encuentra huecos. El juicio será largo e incierto.\n\n";
                 break;
             case Ending.Insufficient:
-                text += "<color=orange><b>INSUFICIENTE EVIDENCIA</b></color>\n";
+                text += $"<color={Theme.Hex(T.contradiction)}><b>INSUFICIENTE EVIDENCIA</b></color>\n";
                 text += "Tu intuición era correcta, pero sin pruebas el sospechoso queda en libertad.\n\n";
                 break;
             default:
-                text += "<color=red><b>INVESTIGACIÓN FALLIDA</b></color>\n";
+                text += $"<color={Theme.Hex(T.danger)}><b>INVESTIGACIÓN FALLIDA</b></color>\n";
                 text += result.ignoredClearingClue
                     ? "Acusaste a alguien a quien tus propias pistas descartaban. Ignoraste pruebas.\n\n"
                     : "Acusaste a la persona equivocada. El verdadero culpable sigue libre.\n\n";
