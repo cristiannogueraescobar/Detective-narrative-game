@@ -274,9 +274,20 @@ public class GameManager : MonoBehaviour
     // ACUSACIÓN
     // ============================================
 
+    /// <summary>
+    /// Se puede volver a interrogar desde la acusación mientras queden días y no se haya acusado.
+    /// </summary>
+    public bool CanCancelAccusation => !accusationMade && currentDay <= maxDays;
+
     private void ShowAccusationPanel()
     {
-        interrogationUI?.ShowAccusationPanel(UnlockedSuspects());
+        interrogationUI?.ShowAccusationPanel(UnlockedSuspects(), CanCancelAccusation);
+    }
+
+    public void CancelAccusation()
+    {
+        if (CanCancelAccusation)
+            interrogationUI?.ShowInterrogation();
     }
 
     public void MakeAccusation(string accusedId)
@@ -307,15 +318,26 @@ public class GameManager : MonoBehaviour
         interrogationUI?.UpdateGameState(currentDay, maxDays, questionsUsedToday, questionsPerDay);
     }
 
+    /// <summary>
+    /// Tras recargar la escena, el menú empieza directamente una partida nueva (Reiniciar).
+    /// </summary>
+    public static bool StartNewGameOnLoad;
+
     public void RestartGame()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
-        );
+        StartNewGameOnLoad = true;
+        ReloadScene();
     }
 
     public void BackToMenu()
     {
-        Debug.Log("[GameManager] Menú principal");
+        StartNewGameOnLoad = false;
+        ReloadScene();
+    }
+
+    private static void ReloadScene()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
 }

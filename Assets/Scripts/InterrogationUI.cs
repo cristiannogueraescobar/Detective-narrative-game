@@ -62,6 +62,8 @@ public class InterrogationUI : MonoBehaviour
     [Header("Acusacion")]
     [SerializeField] private TMP_Dropdown accusationDropdown;
     [SerializeField] private Button accuseButton;
+    [Tooltip("Botón para volver al interrogatorio. Si se deja vacío se crea bajo el de acusar")]
+    [SerializeField] private Button accusationBackButton;
 
     [Header("Resultado")]
     [SerializeField] private TMP_Text resultTitleText;
@@ -621,10 +623,13 @@ public class InterrogationUI : MonoBehaviour
     // ACUSACIÓN
     // ============================================
 
-    public void ShowAccusationPanel(List<SuspectView> options)
+    public void ShowAccusationPanel(List<SuspectView> options, bool canGoBack)
     {
         ShowPanel(accusationPanel);
         accusationOptions = options;
+        EnsureAccusationBackButton();
+        if (accusationBackButton != null)
+            accusationBackButton.gameObject.SetActive(canGoBack);
 
         if (accusationDropdown != null)
         {
@@ -635,6 +640,41 @@ public class InterrogationUI : MonoBehaviour
         {
             Debug.LogError("[InterrogationUI] ¡accusationDropdown es NULL!");
         }
+    }
+
+    /// <summary>
+    /// Vuelve al interrogatorio desde el panel de acusación.
+    /// </summary>
+    public void ShowInterrogation()
+    {
+        ShowPanel(interrogationPanel);
+        SetInputEnabled(true);
+        RefreshConversationView();
+    }
+
+    /// <summary>
+    /// Si la escena no tiene botón "Volver" en la acusación, lo crea clonando el de acusar, debajo de él.
+    /// </summary>
+    private void EnsureAccusationBackButton()
+    {
+        if (accusationBackButton != null || accuseButton == null)
+            return;
+
+        GameObject clone = Instantiate(accuseButton.gameObject, accuseButton.transform.parent);
+        clone.name = "AccusationBackButton (auto)";
+        var rect = (RectTransform)clone.transform;
+        var source = (RectTransform)accuseButton.transform;
+        rect.anchoredPosition = source.anchoredPosition - new Vector2(0f, source.rect.height + T.spacing);
+
+        accusationBackButton = clone.GetComponent<Button>();
+        accusationBackButton.onClick.RemoveAllListeners();
+        accusationBackButton.onClick.AddListener(() => gameManager.CancelAccusation());
+
+        TMP_Text label = clone.GetComponentInChildren<TMP_Text>(true);
+        if (label != null)
+            label.text = "Volver";
+
+        ThemeApplier.Apply(clone.transform);
     }
 
     public void OnAccuseClick()

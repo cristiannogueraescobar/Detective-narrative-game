@@ -72,6 +72,13 @@ public class MenuManager : MonoBehaviour
         
         // Mostrar menú principal
         ShowMainMenu();
+
+        // "Reiniciar" recarga la escena y salta el menú
+        if (GameManager.StartNewGameOnLoad)
+        {
+            GameManager.StartNewGameOnLoad = false;
+            StartCoroutine(PlayNextFrame());
+        }
         
         Debug.Log("[MenuManager] Inicializado");
     }
@@ -105,6 +112,13 @@ public class MenuManager : MonoBehaviour
         }
     }
     
+    // Un fotograma de espera para que GameManager haya elegido ya la historia
+    private System.Collections.IEnumerator PlayNextFrame()
+    {
+        yield return null;
+        OnPlayClicked();
+    }
+
     private void ShowMainMenu()
     {
         ShowPanel(mainMenuPanel);
