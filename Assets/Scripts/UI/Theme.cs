@@ -59,6 +59,15 @@ public class Theme : ScriptableObject
     public float angryTextSpeed = 1.15f;
     public float sadTextSpeed = 0.75f;
 
+    [Header("Gradación del arte existente (no destructiva, ver ArtGrading)")]
+    [Range(0f, 1f)] public float legacyPortraitSaturation = 0.35f; // Retratos pixel art muy saturados
+    public Color legacyPortraitGrade = new Color(0.95f, 0.88f, 0.78f); // Sepia suave
+    [Range(0f, 2f)] public float legacyPortraitBrightness = 0.9f;
+    public bool legacyPortraitPointFilter = true;
+    [Range(0f, 1f)] public float backgroundSaturation = 0.7f;
+    public Color backgroundGrade = new Color(0.92f, 0.9f, 0.88f);
+    [Range(0f, 2f)] public float backgroundBrightness = 0.75f;          // Fondos más oscuros: el texto va encima
+
     [Header("Tipografía (px a 1080 × 1920)")]
     public TMPro.TMP_FontAsset titleFont;   // Vacío = la fuente que ya tenga cada texto
     public TMPro.TMP_FontAsset bodyFont;

@@ -25,6 +25,19 @@ public static class ThemeApplier
 {
     private static readonly string[] PrimaryButtonWords = { "ask", "accuse", "acuse", "start", "play", "confirm" };
 
+    // Sprites por defecto de uGUI: los que sí se colorean con el tema
+    private static readonly string[] BuiltInSprites =
+        { "UISprite", "Background", "InputFieldBackground", "Knob", "Checkmark", "DropdownArrow", "UIMask" };
+
+    /// <summary>
+    /// ¿Es una ilustración (fondo, póster...) y no un sprite de interfaz? Las ilustraciones no se tiñen
+    /// con el color del panel: reciben la gradación del arte (ArtGrading).
+    /// </summary>
+    public static bool IsArtworkSprite(string spriteName)
+    {
+        return !string.IsNullOrEmpty(spriteName) && System.Array.IndexOf(BuiltInSprites, spriteName) < 0;
+    }
+
     public static UIRole RoleFor(string objectName, bool isButton, bool isText, bool insideButton)
     {
         string n = objectName.ToLowerInvariant();
@@ -70,6 +83,12 @@ public static class ThemeApplier
             // Los retratos y el arte no se tiñen aquí
             if (graphic is RawImage)
                 continue;
+
+            if (graphic is Image image && IsArtworkSprite(image.sprite != null ? image.sprite.name : null))
+            {
+                ArtGrading.Apply(image, ArtGrading.Kind.Background);
+                continue;
+            }
 
             bool isText = graphic is TMP_Text;
             Button button = graphic.GetComponent<Button>();

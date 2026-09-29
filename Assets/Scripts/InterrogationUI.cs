@@ -441,12 +441,23 @@ public class InterrogationUI : MonoBehaviour
         Texture2D texture = null;
         if (!string.IsNullOrEmpty(view.artId))
             texture = ArtLibrary.LoadFirst(PortraitPaths.Candidates(view.artId, emotion));
-        if (texture == null && view.portraitKey != null && suspectImages.TryGetValue(view.portraitKey, out Texture2D legacy))
+
+        bool legacyArt = false;
+        if (texture == null && view.portraitKey != null && suspectImages.TryGetValue(view.portraitKey, out Texture2D legacy) && legacy != null)
+        {
             texture = legacy;
+            legacyArt = true;
+        }
         if (texture == null)
             texture = ArtLibrary.Placeholder(T.placeholder);
 
         suspectImage.texture = texture;
+
+        // El arte antiguo se gradúa para casar con el tema; el nuevo ya viene con la paleta del juego
+        if (legacyArt)
+            ArtGrading.Apply(suspectImage, ArtGrading.Kind.LegacyPortrait);
+        else
+            ArtGrading.Clear(suspectImage);
         suspectImage.gameObject.SetActive(true);
         emotionPresenter?.Apply(emotion, instant);
     }

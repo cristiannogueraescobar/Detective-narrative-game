@@ -69,9 +69,14 @@ public class MenuManager : MonoBehaviour
         // Fondo: arte nuevo (Assets/Art/Backgrounds/menu.png), si no el de la escena, si no color plano
         if (mainMenuBackground != null)
         {
-            mainMenuBackground.texture = ArtLibrary.Load(ArtSlots.MenuBackground)
+            Texture2D newArt = ArtLibrary.Load(ArtSlots.MenuBackground);
+            mainMenuBackground.texture = newArt
                                          ?? (mainMenuBackgroundTexture != null ? mainMenuBackgroundTexture : null)
                                          ?? ArtLibrary.Placeholder(ThemeManager.Current.background);
+
+            // Solo el fondo antiguo se gradúa
+            if (newArt == null && mainMenuBackgroundTexture != null)
+                ArtGrading.Apply(mainMenuBackground, ArtGrading.Kind.Background);
         }
         
         // Mostrar menú principal

@@ -22,4 +22,16 @@ public class ThemeApplierTests
     {
         Assert.AreEqual(expected, ThemeApplier.RoleFor(name, isButton, isText, insideButton));
     }
+
+    [TestCase("UISprite", false)]
+    [TestCase("Background", false)]
+    [TestCase("InputFieldBackground", false)]
+    [TestCase("Knob", false)]
+    [TestCase("menu_fondo.png_0", true)]
+    [TestCase("sospechosos_imagen.png_0", true)]
+    [TestCase(null, false)]
+    public void IlustracionesNoSeTinenComoPaneles(string spriteName, bool isArtwork)
+    {
+        Assert.AreEqual(isArtwork, ThemeApplier.IsArtworkSprite(spriteName));
+    }
 }

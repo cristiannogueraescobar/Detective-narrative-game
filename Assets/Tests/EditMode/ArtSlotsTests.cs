@@ -39,6 +39,15 @@ public class ArtSlotsTests
     }
 
     [Test]
+    public void ShaderDeGradacionDisponibleYCompilado()
+    {
+        Shader shader = Shader.Find(ArtGrading.ShaderName);
+
+        Assert.IsNotNull(shader, "el shader debe estar en Resources para incluirse en las builds");
+        Assert.IsTrue(shader.isSupported);
+    }
+
+    [Test]
     public void SinArchivoSeUsaColorPlano()
     {
         Texture2D texture = ArtSlots.LoadOrPlaceholder("Assets/Art/no/existe.png", Color.red);
