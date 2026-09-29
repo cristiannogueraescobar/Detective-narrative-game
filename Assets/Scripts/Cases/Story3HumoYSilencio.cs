@@ -578,17 +578,18 @@ Tienes 7 días para descubrir qué pasó.",
                     id = "3C_fotos", playerName = "Dos niñas en la pared", holder = "madre", kind = ClueKind.Incriminates,
                     summary = "Encarna tiene fotos de Paula junto a las de su hija muerta, Rocío, y le regalaba ropa de Rocío.",
                     topic = "qué opinas de Encarna o qué relación tenía con Paula",
-                    fact = "Encarna tiene fotos de Paula colgadas junto a las de su hija muerta, Rocío, y le regalaba ropa de Rocío. A ti te daba miedo.",
+                    fact = "Encarna está obsesionada con Paula: tiene fotos de Paula colgadas junto a las de su hija muerta, Rocío, y le regalaba ropa de Rocío. A ti te daba miedo.",
                     anchors = new[]
                     {
-                        new[] { "foto", "ropa" },
-                        new[] { "rocio", "hija muerta" }
+                        new[] { "foto", "ropa", "obsesion", "vigilaba", "pendiente de" },
+                        new[] { "rocio", "hija muerta", "hija fallecida" }
                     },
                     calibrationQuestions = new[] { "¿Qué opina de Encarna, la vecina?", "¿Qué relación tenía Paula con Encarna?" },
                     sampleHits = new[]
                     {
                         "Tiene fotos de Paula junto a las de su hija muerta, Rocío.",
-                        "Le regalaba ropa de Rocío. A mí me daba miedo."
+                        "Le regalaba ropa de Rocío. A mí me daba miedo.",
+                        "Paula y Encarna se llevaban bien, pero Encarna la vigilaba demasiado. Me daba miedo por lo de Rocío."
                     },
                     sampleMisses = new[] { "Encarna es una vecina amable, poco más." }
                 },
