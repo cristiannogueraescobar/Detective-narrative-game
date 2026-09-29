@@ -475,7 +475,11 @@ public class InterrogationUI : MonoBehaviour
             int visibleBefore = typewriter != null ? typewriter.VisibleCount() : 0;
             conversations.Append(suspectId, entry);
             RefreshConversationView();
-            typewriter?.Reveal(visibleBefore, EmotionStyle.For(EmotionOf(suspectId)).textSpeed);
+            if (typewriter != null)
+            {
+                typewriter.Reveal(visibleBefore, EmotionStyle.For(EmotionOf(suspectId)).textSpeed);
+                StartCoroutine(FollowTyping());
+            }
         }
         else
         {
@@ -539,11 +543,54 @@ public class InterrogationUI : MonoBehaviour
         yield return null;
         yield return null;
 
+        // Mientras se escribe una respuesta, el scroll lo lleva FollowTyping (el final aún está en blanco)
+        if (typewriter != null && typewriter.IsTyping)
+            yield break;
+
         if (conversationScroll != null)
         {
             Canvas.ForceUpdateCanvases();
             conversationScroll.verticalNormalizedPosition = 0f;
         }
+    }
+
+    /// <summary>
+    /// Durante el efecto de escritura, el scroll sigue al último carácter visible en vez de saltar al
+    /// final del texto completo (que aún no se ve). Al terminar, baja del todo.
+    /// </summary>
+    private IEnumerator FollowTyping()
+    {
+        yield return null;
+
+        while (typewriter != null && typewriter.IsTyping && conversationScroll != null && conversationScroll.content != null)
+        {
+            KeepVisible(conversationText.maxVisibleCharacters);
+            yield return null;
+        }
+
+        StartCoroutine(ForceScrollToBottom());
+    }
+
+    private void KeepVisible(int visibleCharacters)
+    {
+        TMPro.TMP_TextInfo info = conversationText.textInfo;
+        if (info == null || info.characterCount == 0)
+            return;
+
+        int index = Mathf.Clamp(visibleCharacters - 1, 0, info.characterCount - 1);
+        RectTransform content = conversationScroll.content;
+        RectTransform viewport = conversationScroll.viewport != null ? conversationScroll.viewport : (RectTransform)conversationScroll.transform;
+
+        // Posición del carácter en el espacio del contenido, medida desde su borde superior
+        Vector3 world = conversationText.rectTransform.TransformPoint(new Vector3(0f, info.characterInfo[index].descender, 0f));
+        float fromTop = content.rect.yMax - content.InverseTransformPoint(world).y;
+
+        float scrollable = content.rect.height - viewport.rect.height;
+        if (scrollable <= 0f)
+            return;
+
+        float target = Mathf.Clamp(fromTop - viewport.rect.height + T.bodySize, 0f, scrollable);
+        conversationScroll.verticalNormalizedPosition = 1f - target / scrollable;
     }
 
     public void UpdateGameState(int day, int maxDays, int questionsUsed, int questionsMax)
