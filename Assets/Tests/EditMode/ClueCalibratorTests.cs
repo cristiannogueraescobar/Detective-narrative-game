@@ -58,3 +58,34 @@ public class ClueCalibratorTests
         Assert.AreEqual(3, options.tries);
     }
 }
+
+public class NaturalnessTests
+{
+    [Test]
+    public void TemperaturaPorDefectoYConfigurable()
+    {
+        Assert.AreEqual(AIConversationManager.DefaultTemperature, ClueCalibrator.ParseArgs(new[] { "Unity.exe" }).temperature, 1e-6);
+        Assert.AreEqual(0.4f, ClueCalibrator.ParseArgs(new[] { "Unity.exe", "-temperature", "0.4" }).temperature, 1e-6);
+    }
+
+    [TestCase("Estuve en casa, inspector. No sé nada más.", 0)]
+    [TestCase("*se remueve en la silla* Estuve en casa.", 1)]
+    [TestCase("- Estuve en casa\n- No vi nada", 1)]
+    [TestCase("Como inteligencia artificial, no puedo saberlo.", 1)]
+    [TestCase("Uno. Dos. Tres. Cuatro. Cinco. Seis. Siete.", 1)]
+    public void DetectaViolacionesDeEstilo(string response, int expected)
+    {
+        Assert.AreEqual(expected, Naturalness.Violations(response).Count);
+    }
+
+    [Test]
+    public void ResumenCalculaLongitudYVariedad()
+    {
+        var stats = Naturalness.Summarize(new[] { "Hola, soy yo.", "Hola, soy yo.", "Otra cosa distinta aquí." });
+
+        Assert.AreEqual(3, stats.responses);
+        Assert.AreEqual(2f / 3f, stats.distinctRatio, 1e-3);
+        Assert.AreEqual((3 + 3 + 4) / 3f, stats.averageWords, 1e-3);
+        Assert.AreEqual(0, stats.violations);
+    }
+}

@@ -39,6 +39,7 @@ public static class ClueCalibrator
         public string ollamaUrl = "http://localhost:11434";
         public string model = new OllamaSettings().model;
         public bool precisionProbe = true;
+        public float temperature = AIConversationManager.DefaultTemperature;
     }
 
     public class Attempt
@@ -107,6 +108,9 @@ public static class ClueCalibrator
                     break;
                 case "-ollama":
                     options.ollamaUrl = args[i + 1];
+                    break;
+                case "-temperature":
+                    options.temperature = float.Parse(args[i + 1], System.Globalization.CultureInfo.InvariantCulture);
                     break;
                 case "-model":
                     options.model = args[i + 1];
@@ -360,7 +364,7 @@ public static class ClueCalibrator
             stream = false,
             options = new ChatOptions
             {
-                temperature = AIConversationManager.DefaultTemperature,
+                temperature = options.temperature,
                 num_predict = AIConversationManager.DefaultMaxTokens,
                 num_ctx = OllamaSettings.DefaultNumCtx
             }
@@ -386,7 +390,25 @@ public static class ClueCalibrator
         var sb = new StringBuilder();
         sb.AppendLine("# Calibración de pistas");
         sb.AppendLine();
-        sb.AppendLine($"Fecha: {DateTime.Now:yyyy-MM-dd HH:mm} · Modelo: `{options.model}` · Intentos por pregunta: {options.tries} · Umbral: 2/3");
+        sb.AppendLine($"Fecha: {DateTime.Now:yyyy-MM-dd HH:mm} · Modelo: `{options.model}` · Temperatura: {options.temperature.ToString(System.Globalization.CultureInfo.InvariantCulture)} · Intentos por pregunta: {options.tries} · Umbral: 2/3");
+
+        List<string> allResponses = results.SelectMany(r => r.attempts).SelectMany(a => a.responses)
+            .Concat(precisionHits.Select(h => h.response)).ToList();
+        Naturalness.Stats natural = Naturalness.Summarize(allResponses);
+        int passed = results.Count(r => r.Passed);
+        sb.AppendLine();
+        sb.AppendLine($"**Resumen:** {passed}/{results.Count} pistas ≥ 2/3 · detección media {(results.Count == 0 ? 0 : results.Average(r => r.Total == 0 ? 0 : (double)r.Hits / r.Total)):P0}");
+        sb.AppendLine($"**Naturalidad:** {natural.responses} respuestas · {natural.averageWords:F1} palabras de media · variedad {natural.distinctRatio:P0} · violaciones de estilo {natural.violations}");
+
+        var violating = allResponses.Select(r => (r, v: Naturalness.Violations(r))).Where(x => x.v.Count > 0).Take(8).ToList();
+        foreach (var (response, v) in violating)
+            sb.AppendLine($"- ({string.Join(", ", v)}) {response.Replace("\n", " ")}");
+
+        // Muestra de respuestas para juzgar el tono a mano
+        sb.AppendLine();
+        sb.AppendLine("**Muestra de respuestas (primer intento de cada pista):**");
+        foreach (ClueResult r in results.Where(r => r.attempts.Count > 0 && r.attempts[0].responses.Count > 0))
+            sb.AppendLine($"- {r.clue.id} ({r.clue.holder}): {r.attempts[0].responses[0].Replace("\n", " ")}");
         sb.AppendLine();
         sb.AppendLine("T1 = aciertos ya en el primer turno (en pistas secretas, revisar que sea una confesión y no una negación).");
         sb.AppendLine();
