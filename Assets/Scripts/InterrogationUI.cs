@@ -206,7 +206,10 @@ public class InterrogationUI : MonoBehaviour
         HideAllPanels();
 
         if (interrogationPanel != null)
+        {
             interrogationPanel.SetActive(true);
+            UIAnimations.FadeIn(this, interrogationPanel);
+        }
 
         conversations.Clear();
         currentSuspectId = null;
@@ -235,6 +238,7 @@ public class InterrogationUI : MonoBehaviour
         if (panel != null)
         {
             panel.SetActive(true);
+            UIAnimations.FadeIn(this, panel);
             Debug.Log($"[InterrogationUI] Panel mostrado: {panel.name}");
         }
     }
@@ -384,6 +388,24 @@ public class InterrogationUI : MonoBehaviour
         }
     }
 
+    private UnityEngine.UI.Image contradictionOverlay;
+
+    // Capa a pantalla completa para el destello de contradicción (se crea la primera vez)
+    private UnityEngine.UI.Image ContradictionOverlay()
+    {
+        if (contradictionOverlay == null && interrogationPanel != null)
+        {
+            RectTransform rect = UIFactory.Container(interrogationPanel.transform, "ContradictionFlash (auto)", Vector2.zero, Vector2.one);
+            contradictionOverlay = rect.gameObject.AddComponent<UnityEngine.UI.Image>();
+            contradictionOverlay.raycastTarget = false;
+            rect.gameObject.SetActive(false);
+        }
+
+        if (contradictionOverlay != null)
+            contradictionOverlay.transform.SetAsLastSibling();
+        return contradictionOverlay;
+    }
+
     private void RefreshConversationView()
     {
         if (conversationText == null)
@@ -512,6 +534,7 @@ public class InterrogationUI : MonoBehaviour
             clueNotificationText.text = (visibleClueNames.Count == 1 ? "PISTA DESCUBIERTA:\n" : "PISTAS DESCUBIERTAS:\n") +
                                         string.Join("\n", visibleClueNames);
             clueNotification.SetActive(true);
+            UIAnimations.Pop(this, clueNotification.transform);
             CancelInvoke(nameof(HideClueNotification));
             Invoke(nameof(HideClueNotification), 3f + visibleClueNames.Count - 1);
         }
@@ -528,6 +551,11 @@ public class InterrogationUI : MonoBehaviour
     public void ShowContradictionNotification(string text)
     {
         AppendNotice($"<color={Theme.Hex(T.contradiction)}>⚠ CONTRADICCIÓN: {text}</color>\n\n");
+
+        // Destello del color de contradicción y sacudida del HUD
+        UIAnimations.Flash(this, ContradictionOverlay(), T.contradiction, 0.25f);
+        if (hudText != null)
+            UIAnimations.Shake(this, hudText.rectTransform, 12f, T.contradictionAnimDuration);
     }
 
     // ARREGLADO: Panel de pistas

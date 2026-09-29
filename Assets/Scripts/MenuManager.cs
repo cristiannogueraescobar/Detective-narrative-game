@@ -161,6 +161,9 @@ public class MenuManager : MonoBehaviour
         
         // Mostrar el seleccionado
         if (panelToShow != null)
+        {
             panelToShow.SetActive(true);
+            UIAnimations.FadeIn(this, panelToShow);
+        }
     }
 }
