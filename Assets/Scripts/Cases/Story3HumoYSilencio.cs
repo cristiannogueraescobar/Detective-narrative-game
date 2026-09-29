@@ -232,7 +232,7 @@ Tienes 7 días para descubrir qué pasó.",
                     id = "3A_audios", playerName = "Audios de voz", holder = "madre", kind = ClueKind.Incriminates,
                     summary = "Javier le mandó audios a Lucía: 'Si me quitas a la niña, no la vuelves a ver'. La vista de custodia era el lunes.",
                     topic = "si Javier te había amenazado",
-                    fact = "Javier te mandó audios de voz la semana pasada: 'Si me quitas a la niña, no la vuelves a ver'. La vista de custodia era el lunes.",
+                    fact = "«Javier me mandó audios la semana pasada: 'Si me quitas a la niña, no la vuelves a ver'. Y el lunes era la vista.»",
                     anchors = new[]
                     {
                         new[] { "audio", "de voz", "whatsapp" },
@@ -578,7 +578,7 @@ Tienes 7 días para descubrir qué pasó.",
                     id = "3C_fotos", playerName = "Dos niñas en la pared", holder = "madre", kind = ClueKind.Incriminates,
                     summary = "Encarna tiene fotos de Paula junto a las de su hija muerta, Rocío, y le regalaba ropa de Rocío.",
                     topic = "qué opinas de Encarna o qué relación tenía con Paula",
-                    fact = "Encarna está obsesionada con Paula: tiene fotos de Paula colgadas junto a las de su hija muerta, Rocío, y le regalaba ropa de Rocío. A ti te daba miedo.",
+                    fact = "«Encarna está obsesionada con Paula: tiene fotos suyas junto a las de su hija muerta, Rocío, y le regalaba ropa de Rocío. Me da miedo.»",
                     anchors = new[]
                     {
                         new[] { "foto", "ropa", "obsesion", "vigilaba", "pendiente de" },

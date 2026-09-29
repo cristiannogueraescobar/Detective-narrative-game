@@ -385,11 +385,11 @@ Tienes 7 días.",
                     id = "2B_furgoneta", playerName = "La furgoneta blanca", holder = "vecina", kind = ClueKind.Incriminates,
                     summary = "A las 5:12 Maruxa vio una furgoneta blanca pequeña parar junto a la chica en la curva. Ella subió.",
                     topic = "lo que viste en la curva o lo que pasó por delante de tu casa esa madrugada",
-                    fact = "a las 5:12 viste una furgoneta blanca pequeña parar junto a la chica en la curva, y ella se subió.",
+                    fact = "«A las 5:12 paró una furgoneta blanca pequeña junto a la rapaza, en la curva, y ella se subió.»",
                     anchors = new[]
                     {
-                        new[] { "furgoneta" },
-                        new[] { "blanca", "se subio", "subio", "5:12", "paro", "la nina", "la chica", "la rapaza" }
+                        new[] { "furgoneta", "coche pequeno" },
+                        new[] { "blanca", "se subio", "subio", "subirse", "5:12", "paro", "sofia", "la nina", "la chica", "la rapaza" }
                     },
                     calibrationQuestions = new[] { "¿Vio algo raro en la curva esa madrugada?", "¿Pasó algún vehículo por delante de su casa hacia las cinco?" },
                     sampleHits = new[]
@@ -599,7 +599,7 @@ Tienes 7 días.",
                     id = "2C_gps", playerName = "El GPS de Correos", holder = "cartero", kind = ClueKind.Clears, clears = "cartero",
                     summary = "La furgoneta de Correos tiene GPS: a las 5:15 Andrés estaba en la nacional camino de la oficina.",
                     topic = "quién puede confirmar dónde estabas",
-                    fact = "la furgoneta de Correos tiene GPS: a las 5:15 estabas en la nacional camino de la oficina, lo puede comprobar cualquiera.",
+                    fact = "«La furgoneta de Correos lleva GPS: a las 5:15 yo estaba en la nacional, camino de la oficina. Compruébelo.»",
                     anchors = new[]
                     {
                         new[] { "gps", "localizador" },
