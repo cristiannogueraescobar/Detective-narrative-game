@@ -1,7 +1,7 @@
 # Informe de trabajo autónomo (12 h)
 
 **Estado:** hechas las 15 tareas de la cola. Todo está en ramas, sin push ni fusión a `main`.
-**Tests EditMode:** 297/297 en verde en `feature/ui-movil`.
+**Tests EditMode:** 316/316 en verde en `feature/ui-movil`.
 **Revisión independiente:** ver el apartado "Revisión final" al pie.
 
 ## Ramas (en cadena, cada una contiene la anterior)
@@ -20,7 +20,7 @@ Hay además un worktree en `C:\Dev\dng-calib`, con `feature/historias-etapa1`, q
 
 Recomiendo abrir `feature/ui-movil` y probar en este orden (de lo más básico a lo más visual):
 
-1. **Compilación y tests.** Window → General → Test Runner → EditMode → Run All: deben salir 297 en verde.
+1. **Compilación y tests.** Window → General → Test Runner → EditMode → Run All: deben salir 316 en verde.
 2. **Flujo básico en vista vertical.** En la vista Game, elige una resolución vertical (por ejemplo 1080×1920). Pulsa Play.
    - El menú debe verse con el fondo oscurecido. Si hay partida guardada, aparece "Continuar" y el botón de jugar dice "Nueva partida".
 3. **Intro del caso.** Tras jugar aparece el **parte del caso** (lugar, víctima, situación) escribiéndose; un toque lo completa.
@@ -187,4 +187,25 @@ Detalle completo en `docs/IMAGE-AUDIT.md`.
 - **Iconos del HUD** para días y preguntas: el hueco de arte existe, pero el HUD es un único texto.
 
 ## Revisión final
-(Se completa al terminar la revisión independiente.)
+
+Un revisor independiente (otro agente, solo lectura) revisó los 37 commits de la sesión. Encontró **3 fallos críticos y 4 importantes**, todos corregidos y con tests donde era posible:
+
+| | Hallazgo | Corrección |
+|---|---|---|
+| Crítico | `GetComponent() ?? AddComponent()` no añade nada en el editor (Unity devuelve un "null falso"), así que el bucle principal se rompía al jugar en el editor | `UIComponents.GetOrAdd` con `TryGetComponent`, con test |
+| Crítico | Con el Canvas en vertical, los botones de intro, resultado y submenús quedaban fuera de pantalla (la escena estaba diseñada en horizontal) | `MobilePanelLayout` para todos los paneles secundarios; la libreta se trae al frente al abrirla |
+| Crítico | Listeners persistentes duplicados en la escena: "Acusar ya" terminaba el día y "Preguntar" se ejecutaba dos veces (dos peticiones y dos preguntas gastadas) | Los botones conectados por código apagan sus llamadas del Inspector; `AskQuestion` ignora un segundo clic mientras hay una petición en vuelo |
+| Importante | Una excepción al mostrar la respuesta dejaba la entrada bloqueada y los avisos retenidos | `try/finally` en todo el turno; un aviso que falla ya no impide los demás (test) |
+| Importante | Desplegables y campo de texto blancos con texto blanco roto encima (ilegible) | Papel "Field" en el tema: fondo de control oscuro (test) |
+| Importante | Con respuestas largas, el scroll saltaba al final aún en blanco | El scroll sigue al texto que se escribe |
+| Importante | Etiquetas de estado cortadas o de varias palabras podían verse en el chat | Se leen ("muy nervioso") y se eliminan aunque estén cortadas (test) |
+
+También corregido: el guardado rechaza personajes repetidos, y "Continuar" empieza una partida nueva si algo falla.
+
+**Menores sin corregir** (para decidir juntos):
+- El parte del caso dice "7 días y cinco preguntas" con texto fijo, no con los valores de `GameManager`.
+- Si sales justo al terminar el día 7, antes de acusar, "Continuar" vuelve al día 7.
+- `SaveSystem.MaxDays` duplica el `maxDays` del Inspector.
+- El filtrado nítido de los retratos antiguos cambia la textura compartida en memoria durante la sesión del editor; no afecta al archivo.
+- Hasta que haya retratos nuevos, los personajes de las historias 2 y 3 usan los retratos de la historia 1 (graduados); Maruxa y Encarna comparten "Vecina".
+- Aspecto: el panel de Ajustes, el icono sobre el botón de la libreta y los botones del HUD pueden quedar apretados. Entra en el ajuste visual que haremos juntos.
