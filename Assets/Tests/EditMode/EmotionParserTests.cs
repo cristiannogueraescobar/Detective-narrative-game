@@ -65,6 +65,23 @@ public class EmotionParserTests
     }
 
     [Test]
+    public void EtiquetaDeVariasPalabrasSeLeeYSeQuita()
+    {
+        EmotionParse p = EmotionParser.Parse("No sé nada. [ESTADO: muy nervioso]");
+
+        Assert.AreEqual(Emotion.Nervioso, p.emotion);
+        Assert.AreEqual("No sé nada.", p.text);
+    }
+
+    [TestCase("Estuve en casa. [ESTADO: nerv")]
+    [TestCase("Estuve en casa. [ESTADO:")]
+    [TestCase("Estuve en casa. [EST")]
+    public void EtiquetaCortadaPorElLimiteDeTokensNoSeMuestra(string raw)
+    {
+        Assert.AreEqual("Estuve en casa.", EmotionParser.Parse(raw).text);
+    }
+
+    [Test]
     public void TextoNuloOVacio()
     {
         Assert.AreEqual("", EmotionParser.Parse(null).text);

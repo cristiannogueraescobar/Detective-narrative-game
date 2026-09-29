@@ -26,7 +26,9 @@ public static class EmotionParser
         "Termina SIEMPRE con una línea aparte que diga cómo te sientes: [ESTADO: tranquilo], [ESTADO: nervioso], " +
         "[ESTADO: asustado], [ESTADO: enfadado] o [ESTADO: triste].";
 
-    private static readonly Regex Bracketed = new Regex(@"\[\s*estado\s*:\s*([^\]\s]+)\s*\]", RegexOptions.IgnoreCase);
+    private static readonly Regex Bracketed = new Regex(@"\[\s*estado\s*:\s*([^\]]*?)\s*\]", RegexOptions.IgnoreCase);
+    // Etiqueta cortada por el límite de tokens: "[ESTADO: nerv", "[EST"
+    private static readonly Regex Truncated = new Regex(@"\[\s*es[^\]\n]*$", RegexOptions.IgnoreCase);
     private static readonly Regex Bare = new Regex(@"(^|\n)\s*estado\s*:\s*(\S+)\s*$", RegexOptions.IgnoreCase);
     private static readonly Regex Spaces = new Regex(@"[ \t]+");
 
@@ -57,7 +59,8 @@ public static class EmotionParser
             }
         }
 
-        Emotion? emotion = word == null ? (Emotion?)null : Map(word);
+        text = Truncated.Replace(text, "");
+        Emotion? emotion = word == null ? (Emotion?)null : MapWords(word);
 
         return new EmotionParse
         {
@@ -65,6 +68,19 @@ public static class EmotionParser
             emotion = emotion,
             wellFormed = bracketed && emotion.HasValue
         };
+    }
+
+    // "muy nervioso" → nervioso: vale la última palabra reconocible
+    private static Emotion? MapWords(string words)
+    {
+        string[] parts = words.Split(new[] { ' ', '\t', ',', '/' }, System.StringSplitOptions.RemoveEmptyEntries);
+        for (int i = parts.Length - 1; i >= 0; i--)
+        {
+            Emotion? emotion = Map(parts[i]);
+            if (emotion.HasValue)
+                return emotion;
+        }
+        return null;
     }
 
     private static Emotion? Map(string word)
