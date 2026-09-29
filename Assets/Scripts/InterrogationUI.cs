@@ -142,7 +142,16 @@ public class InterrogationUI : MonoBehaviour
         EnsureEvidenceDropdown();
 
         if (applyMobileLayout)
+        {
             ApplyMobileLayout();
+
+            // Paneles secundarios: título arriba, contenido en el centro, botones abajo
+            foreach (GameObject panel in new[] { introPanel, resultPanel, accusationPanel, cluesPanel })
+            {
+                if (panel != null)
+                    MobilePanelLayout.Apply((RectTransform)panel.transform);
+            }
+        }
 
         // Lo que se anima cada fotograma, en su propio Canvas (rendimiento en móvil)
         UIPerformance.IsolateInOwnCanvas(suspectImage);
@@ -705,6 +714,7 @@ public class InterrogationUI : MonoBehaviour
         if (cluesPanel != null)
         {
             cluesPanel.SetActive(true);
+            cluesPanel.transform.SetAsLastSibling(); // Por encima del retrato y los desplegables
             UIAnimations.CardFlip(this, cluesPanel.transform);
             Debug.Log("[InterrogationUI] Panel de pistas mostrado");
         }
@@ -871,6 +881,10 @@ public class InterrogationUI : MonoBehaviour
             label.text = "Volver";
 
         ThemeApplier.Apply(clone.transform);
+
+        // Con la distribución móvil, el botón nuevo entra en la pila de botones de abajo
+        if (applyMobileLayout && accusationPanel != null)
+            MobilePanelLayout.Apply((RectTransform)accusationPanel.transform);
     }
 
     public void OnAccuseClick()

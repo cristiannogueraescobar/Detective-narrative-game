@@ -17,6 +17,11 @@ public class SettingsPanel : MonoBehaviour
         if (existing != null)
             return existing;
 
+        // El panel de la escena traía un texto de relleno: los controles ocupan su sitio
+        Transform filler = panel.transform.Find("InstructionsText");
+        if (filler != null)
+            filler.gameObject.SetActive(false);
+
         var settings = panel.AddComponent<SettingsPanel>();
         settings.onRestart = onRestart;
         settings.CreateControls();

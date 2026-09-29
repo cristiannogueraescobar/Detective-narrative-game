@@ -29,6 +29,10 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button backFromSettingsButton;
     [SerializeField] private Button backFromAboutButton;
     
+    [Header("Móvil")]
+    [Tooltip("Recoloca los paneles del menú en vertical (título arriba, botones abajo). Medidas en el tema")]
+    [SerializeField] private bool applyMobileLayout = true;
+
     [Header("Referencia GameManager")]
     [SerializeField] private GameManager gameManager; // NUEVO
     
@@ -43,6 +47,15 @@ public class MenuManager : MonoBehaviour
             UIComponents.SetOnlyListener(playButton, OnPlayClicked);
 
         SetUpContinueButton();
+
+        if (applyMobileLayout)
+        {
+            foreach (GameObject panel in new[] { mainMenuPanel, instructionsPanel, settingsPanel, aboutPanel })
+            {
+                if (panel != null)
+                    MobilePanelLayout.Apply((RectTransform)panel.transform);
+            }
+        }
         
         if (instructionsButton != null)
             UIComponents.SetOnlyListener(instructionsButton, ShowInstructions);
@@ -105,6 +118,7 @@ public class MenuManager : MonoBehaviour
 
         GameObject clone = Instantiate(playButton.gameObject, playButton.transform.parent);
         clone.name = "ContinueButton (auto)";
+        clone.transform.SetSiblingIndex(playButton.transform.GetSiblingIndex()); // Encima de "Nueva partida"
         var rect = (RectTransform)clone.transform;
         var source = (RectTransform)playButton.transform;
         rect.anchoredPosition = source.anchoredPosition + new Vector2(0f, source.rect.height + ThemeManager.Current.spacing);
