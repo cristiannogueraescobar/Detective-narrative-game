@@ -24,6 +24,9 @@ public static class Story3HumoYSilencio
             id = "3",
             title = "Humo y Silencio",
             victim = "Paula",
+            place = "Finca Los Olivares, Jaén. Octubre.",
+            victimSummary = "Paula Romero Navarro, 15 años. Pasaba el fin de semana con su padre en la finca.",
+            situation = "Divorcio reciente y vista de custodia el lunes. El sábado salió humo negro del quemadero; el domingo a las 22:30 su padre denunció la desaparición.",
             intro = @"Finca Los Olivares, Jaén. Octubre.
 
 Paula Romero Navarro, 15 años, pasa el fin de semana con su padre en la finca. Sus padres se divorciaron hace tres meses y el lunes hay vista de custodia.

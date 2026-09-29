@@ -19,6 +19,9 @@ public static class Story1HijaPerfecta
             id = "1",
             title = "La Hija Perfecta",
             victim = "Elena",
+            place = "Santiago de Compostela. Una casa en una urbanización tranquila. Viernes de septiembre, de noche.",
+            victimSummary = "Elena Mendoza, 12 años, adoptada a los tres. Murió en su cama; a las 23:15 llamaron al 112 desde casa.",
+            situation = "La familia asegura que se acostó como cualquier noche. Enfrente vive una vecina que duerme poco.",
             intro = @"Santiago de Compostela. Viernes de septiembre.
 
 A las 23:15 llaman al 112 desde la casa de los Mendoza: Elena, de 12 años, no respira. Cuando llega la ambulancia ya no hay nada que hacer.

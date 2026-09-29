@@ -194,7 +194,14 @@ public class InterrogationUI : MonoBehaviour
             caseTitleText.text = title;
 
         if (caseDescriptionText != null)
+        {
             caseDescriptionText.text = description;
+
+            // El parte del caso se escribe como el de la mañana; un toque lo completa
+            Typewriter briefing = caseDescriptionText.GetComponent<Typewriter>() ?? caseDescriptionText.gameObject.AddComponent<Typewriter>();
+            if (briefing.isActiveAndEnabled)
+                briefing.Reveal(0, 1f);
+        }
 
         Debug.Log("[InterrogationUI] Caso cargado: " + title);
     }
@@ -487,42 +494,17 @@ public class InterrogationUI : MonoBehaviour
     // PISTAS Y CONTRADICCIONES (ARREGLADO)
     // ============================================
 
-    public void UpdateCluesList(List<ClueData> clues)
+    /// <summary>
+    /// Libreta del detective (pistas, contradicciones y sospechosos), en el panel de pistas.
+    /// </summary>
+    public void UpdateNotebook(string notebook)
     {
         if (cluesText != null)
-        {
-            if (clues.Count == 0)
-            {
-                cluesText.text = "No hay pistas descubiertas aún.";
-            }
-            else
-            {
-                cluesText.text = "<b>PISTAS DESCUBIERTAS:</b>\n\n";
-                foreach (ClueData clue in clues)
-                {
-                    cluesText.text += $"• <b>{clue.playerName}</b>: {clue.summary}\n\n";
-                }
-            }
-        }
-    }
+            cluesText.text = notebook;
 
-    public void UpdateContradictionsList(List<string> contradictions)
-    {
+        // Las contradicciones ya van en la libreta
         if (contradictionsText != null)
-        {
-            if (contradictions.Count == 0)
-            {
-                contradictionsText.text = "No se han detectado contradicciones.";
-            }
-            else
-            {
-                contradictionsText.text = "<b>CONTRADICCIONES:</b>\n\n";
-                foreach (string contra in contradictions)
-                {
-                    contradictionsText.text += $"• {contra}\n";
-                }
-            }
-        }
+            contradictionsText.gameObject.SetActive(false);
     }
 
     public void ShowClueNotification(string clueName)

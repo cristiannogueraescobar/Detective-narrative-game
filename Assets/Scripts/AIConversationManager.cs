@@ -149,6 +149,8 @@ public class AIConversationManager : MonoBehaviour
     /// <summary>
     /// Último estado emocional de un sospechoso (tranquilo hasta que el modelo diga otra cosa).
     /// </summary>
+    public IReadOnlyDictionary<string, Emotion> Emotions => emotions;
+
     public Emotion CurrentEmotion(string characterId)
     {
         return emotions.TryGetValue(characterId, out Emotion emotion) ? emotion : Emotion.Tranquilo;

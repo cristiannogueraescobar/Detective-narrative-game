@@ -22,6 +22,9 @@ public static class Story2NocheDeVerano
             id = "2",
             title = "Noche de Verano",
             victim = "Sofía",
+            place = "Portomar, costa gallega. Madrugada del martes, fiestas del patrón.",
+            victimSummary = "Sofía Vargas, 19 años, estudiante de Periodismo. Salió sola del bar La Marea a las 5:00 y a las 5:08 escribió «Estoy cerca».",
+            situation = "Nunca llegó a casa de su tía. Su bolso apareció en la Cala do Corvo. El inspector local llevó las primeras horas.",
             intro = @"Portomar, costa gallega. Madrugada del martes, fiestas del patrón.
 
 Sofía Vargas, 19 años, estudiante de Periodismo, sale sola del bar La Marea a las 5:00. A las 5:08 escribe a una amiga: «Estoy cerca».

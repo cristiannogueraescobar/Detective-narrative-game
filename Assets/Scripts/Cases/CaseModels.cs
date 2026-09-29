@@ -95,6 +95,9 @@ public class StoryData
     public string title;
     public string victim;         // Nombre de pila de la víctima
     public string intro;          // Texto de la pantalla de introducción
+    public string place;          // Parte del caso: lugar y momento
+    public string victimSummary;  // Parte del caso: quién es la víctima
+    public string situation;      // Parte del caso: qué se sabe al empezar
     public string caseBrief;      // "EL CASO" en las fichas de personaje
     public List<CharacterData> cast = new List<CharacterData>();
     public List<VariantData> variants = new List<VariantData>();

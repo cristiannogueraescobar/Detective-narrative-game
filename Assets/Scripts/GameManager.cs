@@ -105,7 +105,7 @@ public class GameManager : MonoBehaviour
 
     public void ShowCaseIntro()
     {
-        interrogationUI?.ShowCaseIntro(story.title, story.intro);
+        interrogationUI?.ShowCaseIntro(story.title, CaseBriefing.Format(story));
     }
 
     /// <summary>
@@ -115,8 +115,7 @@ public class GameManager : MonoBehaviour
     {
         RefreshSuspects();
         interrogationUI?.SetEvidenceOptions(DiscoveredClues());
-        interrogationUI?.UpdateCluesList(DiscoveredClues());
-        interrogationUI?.UpdateContradictionsList(new List<string>());
+        RefreshNotebook();
         UpdateGameState();
     }
 
@@ -161,6 +160,7 @@ public class GameManager : MonoBehaviour
         questionsUsedToday++;
         // El estado va antes que la respuesta: marca la velocidad de escritura y el retrato
         interrogationUI?.SetEmotion(characterId, conversationManager.CurrentEmotion(characterId));
+        RefreshNotebook();
         interrogationUI?.AddToConversation(characterId, story.Character(characterId).DisplayName, asked, result.Text);
         notices.Flush();
         UpdateGameState();
@@ -231,6 +231,7 @@ public class GameManager : MonoBehaviour
 
             interrogationUI?.ShowSuspectUnlocked(character.DisplayName);
             RefreshSuspects();
+            RefreshNotebook();
         });
     }
 
@@ -254,14 +255,23 @@ public class GameManager : MonoBehaviour
         return State.DiscoveredClueIds.Select(variant.Clue).ToList();
     }
 
+    /// <summary>
+    /// Libreta: pistas, contradicciones y sospechosos desbloqueados con su estado.
+    /// </summary>
+    private void RefreshNotebook()
+    {
+        interrogationUI?.UpdateNotebook(Notebook.Format(story, State, unlocked,
+            conversationManager.Emotions, conversationManager.DescribeContradiction));
+    }
+
     private void OnClueRevealed(ClueData clue)
     {
         Debug.Log($"[GameManager] Pista: {clue.playerName}");
         notices.Post(() =>
         {
             interrogationUI?.ShowClueNotification(clue.playerName);
-            interrogationUI?.UpdateCluesList(DiscoveredClues());
             interrogationUI?.SetEvidenceOptions(DiscoveredClues());
+            RefreshNotebook();
         });
     }
 
@@ -271,8 +281,7 @@ public class GameManager : MonoBehaviour
         notices.Post(() =>
         {
             interrogationUI?.ShowContradictionNotification(text);
-            interrogationUI?.UpdateContradictionsList(
-                State.ContradictionClueIds.Select(id => conversationManager.DescribeContradiction(variant.Clue(id))).ToList());
+            RefreshNotebook();
         });
     }
 
