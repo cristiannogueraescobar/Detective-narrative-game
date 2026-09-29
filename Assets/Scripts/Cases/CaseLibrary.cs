@@ -16,7 +16,8 @@ public static class CaseLibrary
             {
                 stories = new List<StoryData>
                 {
-                    Story1HijaPerfecta.Build()
+                    Story1HijaPerfecta.Build(),
+                    Story2NocheDeVerano.Build()
                 };
             }
             return stories;
