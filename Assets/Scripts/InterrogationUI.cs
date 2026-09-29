@@ -146,6 +146,11 @@ public class InterrogationUI : MonoBehaviour
         if (applyMobileLayout)
             ApplyMobileLayout();
 
+        // Lo que se anima cada fotograma, en su propio Canvas (rendimiento en móvil)
+        UIPerformance.IsolateInOwnCanvas(suspectImage);
+        UIPerformance.IsolateInOwnCanvas(conversationText);
+        UIPerformance.IsolateInOwnCanvas(hudText);
+
         // Iconos (con sustituto si aún no hay arte)
         AddIcon(viewCluesButton != null ? viewCluesButton.transform : null, ArtSlots.IconNotebook);
         AddIcon(clueNotification != null ? clueNotification.transform : null, ArtSlots.IconClue);
