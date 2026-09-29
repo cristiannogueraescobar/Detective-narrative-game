@@ -72,6 +72,7 @@ public class CharacterRole
     public string lieQuote;       // Cita corta de su mentira, para el texto de la contradicción
     public string[][] lieAnchors; // Detecta que ha contado su mentira
     public string versionB;       // Verdad parcial cuando le muestran una prueba que le contradice
+    public string[] admissionSamples; // Frases de la versión B que NO deben contar como la mentira
 }
 
 public class VariantData

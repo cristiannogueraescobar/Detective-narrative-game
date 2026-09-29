@@ -153,6 +153,22 @@ public class CaseDataValidationTests
     }
 
     [TestCaseSource(nameof(Variants))]
+    public void LaVersionBDelCulpableNoCuentaComoMentira(string storyId, string variantId)
+    {
+        var (_, v) = Get(variantId);
+        CharacterRole culprit = v.Role(v.culpritId);
+
+        // Si la admisión parcial activara las anclas, la contradicción citaría una mentira ya retirada
+        Assert.GreaterOrEqual(culprit.admissionSamples?.Length ?? 0, 1, "ejemplos de admisión parcial");
+
+        foreach (string admission in culprit.admissionSamples)
+        {
+            AnchorTrace trace = ClueDetector.Evaluate(culprit.lieAnchors, ClueDetector.Normalize(admission), negationGuard: false);
+            Assert.IsFalse(trace.Matched, $"la admisión no debe contar como mentira: {admission} · {trace}");
+        }
+    }
+
+    [TestCaseSource(nameof(Variants))]
     public void PartesDeLaMananaYEpilogo(string storyId, string variantId)
     {
         var (_, v) = Get(variantId);

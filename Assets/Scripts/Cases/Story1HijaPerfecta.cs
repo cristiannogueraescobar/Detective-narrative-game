@@ -118,10 +118,15 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     lieQuote = "no entré en su cuarto",
                     lieAnchors = new[]
                     {
-                        new[] { "no entre", "ni entre", "no pase", "no subi" },
+                        new[] { "no entre", "ni entre", "no pase" },
                         new[] { "cuarto", "habitacion" }
                     },
-                    versionB = "Admites que a las 22:30 entraste un momento a darle las buenas noches y a cerrar las cortinas, pero insistes en que estaba bien y en que no le diste nada."
+                    versionB = "Admites que a las 22:30 entraste un momento a darle las buenas noches y a cerrar las cortinas, pero insistes en que estaba bien y en que no le diste nada.",
+                    admissionSamples = new[]
+                    {
+                        "Está bien: entré un momento en su cuarto a las 22:30 a darle las buenas noches, pero no subí nada.",
+                        "Pasé por su habitación a cerrar las cortinas. Eso es todo."
+                    }
                 },
                 new CharacterRole
                 {
@@ -342,10 +347,15 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     lieQuote = "estaba perfecta; la encontré a las 23:10",
                     lieAnchors = new[]
                     {
-                        new[] { "salon", "la encontre", "subi a verla" },
-                        new[] { "23:10", "11:10", "once y diez", "perfectamente", "estaba bien" }
+                        new[] { "salon", "la encontre asi", "la encontre a las" },
+                        new[] { "23:10", "11:10", "once y diez", "perfectamente" }
                     },
-                    versionB = "Admites que subiste antes, sobre las 22:00, porque Elena se encontraba mal, y que te quedaste con ella pensando que se le pasaría. Dices que fue un error de juicio, nada más."
+                    versionB = "Admites que subiste antes, sobre las 22:00, porque Elena se encontraba mal, y que te quedaste con ella pensando que se le pasaría. Dices que fue un error de juicio, nada más.",
+                    admissionSamples = new[]
+                    {
+                        "Subí a verla sobre las 22:00 porque no estaba bien, y me quedé con ella.",
+                        "Es verdad, estuve con ella desde las diez. Pensé que se le pasaría."
+                    }
                 },
                 new CharacterRole
                 {
@@ -568,10 +578,15 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     lieQuote = "estuve con los cascos, no oí nada",
                     lieAnchors = new[]
                     {
-                        new[] { "cascos", "no oi nada", "no escuche nada" },
-                        new[] { "toda la noche", "mi cuarto", "jugando" }
+                        new[] { "no oi nada", "no escuche nada", "no me entere de nada" },
+                        new[] { "cascos", "toda la noche", "mi cuarto", "jugando" }
                     },
-                    versionB = "Admites que discutiste con Elena en la escalera y que ella se cayó, pero insistes en que fue un accidente y en que estaba bien y hablaba cuando la acostaste."
+                    versionB = "Admites que discutiste con Elena en la escalera y que ella se cayó, pero insistes en que fue un accidente y en que estaba bien y hablaba cuando la acostaste.",
+                    admissionSamples = new[]
+                    {
+                        "Vale, tío, discutimos en la escalera y se cayó. Pero estaba bien, hablaba.",
+                        "Me quité los cascos y salí de mi cuarto porque gritaba; fue un accidente."
+                    }
                 },
                 new CharacterRole
                 {
