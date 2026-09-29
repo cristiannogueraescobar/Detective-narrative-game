@@ -386,11 +386,11 @@ Tienes 7 días.",
                     id = "2B_furgoneta", playerName = "La furgoneta blanca", holder = "vecina", kind = ClueKind.Incriminates,
                     summary = "A las 5:12 Maruxa vio una furgoneta blanca pequeña parar junto a la chica en la curva. Ella subió.",
                     topic = "lo que viste en la curva o lo que pasó por delante de tu casa esa madrugada",
-                    fact = "a las 5:12 viste una furgoneta blanca pequeña parar junto a la chica en la curva, y ella se subió.",
+                    fact = "«A las 5:12 paró una furgoneta blanca pequeña junto a la rapaza, en la curva, y ella se subió.»",
                     anchors = new[]
                     {
-                        new[] { "furgoneta" },
-                        new[] { "blanca", "se subio", "subio", "5:12", "paro", "la nina", "la chica", "la rapaza" }
+                        new[] { "furgoneta", "coche pequeno" },
+                        new[] { "blanca", "se subio", "subio", "subirse", "5:12", "paro", "sofia", "la nina", "la chica", "la rapaza" }
                     },
                     calibrationQuestions = new[] { "¿Vio algo raro en la curva esa madrugada?", "¿Pasó algún vehículo por delante de su casa hacia las cinco?" },
                     sampleHits = new[]
@@ -559,11 +559,11 @@ Tienes 7 días.",
                 {
                     id = "2C_comisaria", playerName = "Comisaría cerrada", holder = "cartero", kind = ClueKind.Incriminates, exposesLie = true,
                     summary = "A las 5:05 Andrés fue a la comisaría a dejar un certificado urgente: estaba cerrada y no había nadie dentro.",
-                    topic = "lo que pasó cuando fuiste a la comisaría con el certificado",
+                    topic = "lo que hiciste entre las cinco y las cinco y cuarto, o lo que pasó cuando fuiste a la comisaría con el certificado",
                     fact = "a las 5:05 fuiste a la comisaría a dejar el certificado urgente y estaba cerrada, con las luces apagadas y sin nadie dentro.",
                     anchors = new[]
                     {
-                        new[] { "comisaria", "certificado" },
+                        new[] { "comisaria", "certificado", "5:05", "cinco y cinco" },
                         new[] { "cerrada", "cerrado", "sin nadie", "nadie dentro", "vacia", "luces apagadas" }
                     },
                     calibrationQuestions = new[] { "¿Pasó por la comisaría esa madrugada?", "¿Qué hizo usted entre las cinco y las cinco y cuarto?" },
@@ -571,7 +571,8 @@ Tienes 7 días.",
                     {
                         "A las 5:05 fui a la comisaría con el certificado y estaba cerrada, sin nadie dentro.",
                         "La comisaría estaba vacía, con las luces apagadas.",
-                        "Sí, pasé por allí a las 5:05 para dejar un certificado urgente, pero estaba todo cerrado."
+                        "Sí, pasé por allí a las 5:05 para dejar un certificado urgente, pero estaba todo cerrado.",
+                        "Sí, pasé por allí a las 5:05, pero estaba cerrada y no pude dejar el certificado."
                     },
                     sampleMisses = new[] { "Dejé el certificado en la comisaría y seguí mi ruta." }
                 },
@@ -599,7 +600,7 @@ Tienes 7 días.",
                     id = "2C_gps", playerName = "El GPS de Correos", holder = "cartero", kind = ClueKind.Clears, clears = "cartero",
                     summary = "La furgoneta de Correos tiene GPS: a las 5:15 Andrés estaba en la nacional camino de la oficina.",
                     topic = "quién puede confirmar dónde estabas",
-                    fact = "la furgoneta de Correos tiene GPS: a las 5:15 estabas en la nacional camino de la oficina, lo puede comprobar cualquiera.",
+                    fact = "«La furgoneta de Correos lleva GPS: a las 5:15 yo estaba en la nacional, camino de la oficina. Compruébelo.»",
                     anchors = new[]
                     {
                         new[] { "gps", "localizador" },
