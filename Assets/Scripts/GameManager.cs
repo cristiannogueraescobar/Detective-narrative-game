@@ -173,7 +173,7 @@ public class GameManager : MonoBehaviour
 
     public void ShowCaseIntro()
     {
-        interrogationUI?.ShowCaseIntro(story.title, CaseBriefing.Format(story));
+        interrogationUI?.ShowCaseIntro(story.id, story.title, CaseBriefing.Format(story));
     }
 
     /// <summary>

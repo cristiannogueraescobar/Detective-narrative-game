@@ -66,10 +66,12 @@ public class MenuManager : MonoBehaviour
         if (backFromAboutButton != null)
             backFromAboutButton.onClick.AddListener(ShowMainMenu);
         
-        // Aplicar fondo si existe
-        if (mainMenuBackground != null && mainMenuBackgroundTexture != null)
+        // Fondo: arte nuevo (Assets/Art/Backgrounds/menu.png), si no el de la escena, si no color plano
+        if (mainMenuBackground != null)
         {
-            mainMenuBackground.texture = mainMenuBackgroundTexture;
+            mainMenuBackground.texture = ArtLibrary.Load(ArtSlots.MenuBackground)
+                                         ?? (mainMenuBackgroundTexture != null ? mainMenuBackgroundTexture : null)
+                                         ?? ArtLibrary.Placeholder(ThemeManager.Current.background);
         }
         
         // Mostrar menú principal

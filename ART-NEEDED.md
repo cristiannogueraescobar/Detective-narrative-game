@@ -28,3 +28,38 @@ Todo el arte es **opcional**: si falta un archivo, el juego usa un sustituto y s
 **Total: 36 imágenes.** Si hay que priorizar, empieza por los 12 `*_tranquilo.png`: con ellos, cada personaje ya tiene cara propia en todos los estados.
 
 Hasta que haya retratos nuevos se usan los antiguos (`Assets/Images/Suspects/*.gif.png`), que se comparten entre historias. Si no hay ninguno, se muestra un color plano.
+
+## 2. Fondos, cabeceras e intro de caso
+
+Todas las imágenes son verticales para móvil, con la resolución de referencia de 1080 × 1920. Si falta una, se usa un color plano del tema.
+
+| Uso | Ruta exacta | Tamaño | Formato | Contenido |
+|---|---|---|---|---|
+| Fondo del menú principal | `Assets/Art/Backgrounds/menu.png` | 1080 × 1920 | PNG | Calle mojada de noche, farola, silueta con gabardina de espaldas; mucho espacio oscuro en el centro para los botones |
+| Cabecera historia 1 | `Assets/Art/Stories/historia1_cabecera.png` | 1080 × 480 | PNG | Fachada de chalé en Santiago de noche, una ventana iluminada en el piso de arriba |
+| Intro historia 1 | `Assets/Art/Stories/historia1_intro.png` | 1080 × 1920 | PNG | Habitación infantil a oscuras, mesilla con una taza, luz azul de ambulancia en la ventana. Parte central poco detallada (irá texto encima) |
+| Cabecera historia 2 | `Assets/Art/Stories/historia2_cabecera.png` | 1080 × 480 | PNG | Bar de pueblo costero de madrugada, guirnaldas de fiesta apagadas, niebla |
+| Intro historia 2 | `Assets/Art/Stories/historia2_intro.png` | 1080 × 1920 | PNG | Carretera de la costa en curva, de madrugada, un bolso en las rocas de una cala. Centro despejado para texto |
+| Cabecera historia 3 | `Assets/Art/Stories/historia3_cabecera.png` | 1080 × 480 | PNG | Olivar al atardecer con una columna de humo negro al fondo |
+| Intro historia 3 | `Assets/Art/Stories/historia3_intro.png` | 1080 × 1920 | PNG | Quemadero con ceniza humeante y una zapatilla medio quemada; cortijo al fondo. Centro despejado para texto |
+
+**Composición:** las pantallas de intro llevan el texto del parte del caso encima, así que conviene dejar oscuro y con poco detalle la franja central (del 25 % al 85 % de la altura).
+
+## 3. Iconos
+
+- **Formato:** PNG de 128 × 128 px con fondo transparente, trazo claro (blanco roto `#E8E2D6`) o ámbar (`#D9A441`).
+- **Estilo:** de línea, sencillo, legible a 48 px.
+
+| Icono | Ruta exacta | Descripción |
+|---|---|---|
+| Libreta | `Assets/Art/Icons/libreta.png` | Libreta de detective con goma elástica |
+| Pista | `Assets/Art/Icons/pista.png` | Lupa sobre una ficha |
+| Día | `Assets/Art/Icons/dia.png` | Hoja de calendario arrancada |
+| Preguntas | `Assets/Art/Icons/preguntas.png` | Bocadillo de diálogo con interrogación |
+| Contradicción | `Assets/Art/Icons/contradiccion.png` | Dos flechas que chocan, o un aspa sobre una ficha |
+
+## 4. Cómo añadir arte
+
+1. Guarda la imagen con el nombre y la ruta exactos de esta lista (crea la carpeta si no existe).
+2. En el editor aparece al momento. El catálogo para las builds (`Assets/Resources/ArtCatalog.asset`) se regenera solo.
+3. No hace falta tocar ninguna escena ni ningún script.

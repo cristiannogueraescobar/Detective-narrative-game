@@ -146,6 +146,10 @@ public class InterrogationUI : MonoBehaviour
         if (applyMobileLayout)
             ApplyMobileLayout();
 
+        // Iconos (con sustituto si aún no hay arte)
+        AddIcon(viewCluesButton != null ? viewCluesButton.transform : null, ArtSlots.IconNotebook);
+        AddIcon(clueNotification != null ? clueNotification.transform : null, ArtSlots.IconClue);
+
         // Reacciones por código: no necesitan nada en la escena
         if (suspectImage != null)
             emotionPresenter = suspectImage.GetComponent<EmotionPresenter>() ?? suspectImage.gameObject.AddComponent<EmotionPresenter>();
@@ -188,8 +192,10 @@ public class InterrogationUI : MonoBehaviour
     // INTRO
     // ============================================
 
-    public void ShowCaseIntro(string title, string description)
+    public void ShowCaseIntro(string storyId, string title, string description)
     {
+        ApplyIntroArt(storyId);
+
         if (caseTitleText != null)
             caseTitleText.text = title;
 
@@ -207,6 +213,58 @@ public class InterrogationUI : MonoBehaviour
     }
 
     public string CurrentSuspectId => currentSuspectId;
+
+    private UnityEngine.UI.RawImage introBackground;
+    private UnityEngine.UI.RawImage introHeader;
+
+    /// <summary>
+    /// Fondo y cabecera de la intro de cada historia (Assets/Art/Stories/...), o color plano si faltan.
+    /// </summary>
+    private void ApplyIntroArt(string storyId)
+    {
+        if (introPanel == null)
+            return;
+
+        if (introBackground == null)
+        {
+            RectTransform rect = UIFactory.Container(introPanel.transform, "IntroFondo (auto)", Vector2.zero, Vector2.one);
+            rect.SetAsFirstSibling();
+            introBackground = rect.gameObject.AddComponent<UnityEngine.UI.RawImage>();
+            introBackground.raycastTarget = false;
+        }
+
+        if (introHeader == null)
+        {
+            RectTransform rect = UIFactory.Container(introPanel.transform, "IntroCabecera (auto)", new Vector2(0f, 1f), Vector2.one);
+            rect.pivot = new Vector2(0.5f, 1f);
+            rect.sizeDelta = new Vector2(0f, 480f);
+            rect.SetSiblingIndex(1);
+            introHeader = rect.gameObject.AddComponent<UnityEngine.UI.RawImage>();
+            introHeader.raycastTarget = false;
+        }
+
+        // El fondo se oscurece para que el texto del parte se lea encima
+        introBackground.texture = ArtSlots.LoadOrPlaceholder(ArtSlots.StoryIntro(storyId), T.background);
+        introBackground.color = new Color(0.45f, 0.45f, 0.45f, 1f);
+        introHeader.texture = ArtSlots.LoadOrPlaceholder(ArtSlots.StoryHeader(storyId), T.panel);
+    }
+
+    /// <summary>
+    /// Icono pequeño a la izquierda de un botón o aviso (Assets/Art/Icons/...), o un cuadro de color si falta.
+    /// </summary>
+    private void AddIcon(Transform parent, string path)
+    {
+        if (parent == null || parent.Find("Icono (auto)") != null)
+            return;
+
+        RectTransform rect = UIFactory.Container(parent, "Icono (auto)", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f));
+        rect.pivot = new Vector2(0f, 0.5f);
+        rect.sizeDelta = new Vector2(56f, 56f);
+        rect.anchoredPosition = new Vector2(T.spacing, 0f);
+        var icon = rect.gameObject.AddComponent<UnityEngine.UI.RawImage>();
+        icon.raycastTarget = false;
+        icon.texture = ArtSlots.LoadOrPlaceholder(path, new Color(T.accent.r, T.accent.g, T.accent.b, 0.35f));
+    }
 
     public Dictionary<string, string> ExportConversations(out string shared)
     {
