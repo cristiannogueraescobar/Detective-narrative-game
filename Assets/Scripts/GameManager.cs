@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -37,6 +38,9 @@ public class GameManager : MonoBehaviour
 
     private readonly List<string> unlocked = new List<string>();
 
+    // Los avisos que provoca una respuesta se muestran después de la respuesta, no antes
+    private readonly NoticeQueue notices = new NoticeQueue();
+
     private InvestigationState State => conversationManager.State;
 
     private void Start()
@@ -53,6 +57,16 @@ public class GameManager : MonoBehaviour
         Debug.Log("[GameManager] Inicializado. Esperando menú principal...");
     }
 
+    private void OnDestroy()
+    {
+        if (conversationManager == null)
+            return;
+
+        conversationManager.OnClueRevealed -= OnClueRevealed;
+        conversationManager.OnContradictionDetected -= OnContradictionDetected;
+        conversationManager.OnCharacterMentioned -= OnCharacterMentioned;
+    }
+
     private void SelectCase()
     {
         string forcedId = Application.isEditor ? CaseIdFor(debugCase) : null;
@@ -63,7 +77,7 @@ public class GameManager : MonoBehaviour
                 Debug.LogWarning($"[GameManager] La variante {forcedId} aún no existe; se sortea entre las registradas.");
 
             var all = CaseLibrary.AllVariants().ToList();
-            (story, variant) = all[Random.Range(0, all.Count)];
+            (story, variant) = all[UnityEngine.Random.Range(0, all.Count)];
         }
 
         conversationManager.StartCase(story, variant);
@@ -104,28 +118,43 @@ public class GameManager : MonoBehaviour
     {
         if (questionsUsedToday >= questionsPerDay)
         {
-            interrogationUI?.ShowError("No te quedan preguntas hoy.");
+            interrogationUI?.ShowRequestFailed("No te quedan preguntas hoy.", question);
             return;
         }
 
-        ClueData shownClue = string.IsNullOrEmpty(shownClueId) ? null : variant.Clue(shownClueId);
-        string asked = TurnAnalyzer.BuildUserMessage(question, shownClue);
-
+        notices.BeginDefer();
         interrogationUI?.ShowWaiting(true);
 
-        LLMResult result = await conversationManager.AskSuspect(characterId, question, currentDay, shownClue);
+        LLMResult result;
+        string asked;
+
+        try
+        {
+            ClueData shownClue = string.IsNullOrEmpty(shownClueId) ? null : variant.Clue(shownClueId);
+            asked = TurnAnalyzer.BuildUserMessage(question, shownClue);
+            result = await conversationManager.AskSuspect(characterId, question, currentDay, shownClue);
+        }
+        catch (Exception e)
+        {
+            // Nunca dejar la entrada bloqueada por un error inesperado
+            Debug.LogException(e);
+            result = LLMResult.Fail("Error inesperado al procesar la pregunta.");
+            asked = question;
+        }
 
         interrogationUI?.ShowWaiting(false);
 
         // Una petición fallida no gasta pregunta del día
         if (!result.Success)
         {
+            notices.Discard();
             interrogationUI?.ShowRequestFailed(result.ErrorMessage, question);
             return;
         }
 
         questionsUsedToday++;
         interrogationUI?.AddToConversation(characterId, story.Character(characterId).DisplayName, asked, result.Text);
+        notices.Flush();
         UpdateGameState();
     }
 
@@ -187,11 +216,14 @@ public class GameManager : MonoBehaviour
         CharacterData character = story.Character(characterId);
         Debug.Log($"[GameManager] Desbloqueado: {character.name}");
 
-        if (!string.IsNullOrEmpty(notice))
-            interrogationUI?.ShowNotice(notice);
+        notices.Post(() =>
+        {
+            if (!string.IsNullOrEmpty(notice))
+                interrogationUI?.ShowNotice(notice);
 
-        interrogationUI?.ShowSuspectUnlocked(character.DisplayName);
-        RefreshSuspects();
+            interrogationUI?.ShowSuspectUnlocked(character.DisplayName);
+            RefreshSuspects();
+        });
     }
 
     private List<SuspectView> UnlockedSuspects()
@@ -217,17 +249,23 @@ public class GameManager : MonoBehaviour
     private void OnClueRevealed(ClueData clue)
     {
         Debug.Log($"[GameManager] Pista: {clue.playerName}");
-        interrogationUI?.ShowClueNotification(clue.playerName);
-        interrogationUI?.UpdateCluesList(DiscoveredClues());
-        interrogationUI?.SetEvidenceOptions(DiscoveredClues());
+        notices.Post(() =>
+        {
+            interrogationUI?.ShowClueNotification(clue.playerName);
+            interrogationUI?.UpdateCluesList(DiscoveredClues());
+            interrogationUI?.SetEvidenceOptions(DiscoveredClues());
+        });
     }
 
     private void OnContradictionDetected(string text)
     {
         Debug.Log($"[GameManager] Contradicción: {text}");
-        interrogationUI?.ShowContradictionNotification(text);
-        interrogationUI?.UpdateContradictionsList(
-            State.ContradictionClueIds.Select(id => conversationManager.DescribeContradiction(variant.Clue(id))).ToList());
+        notices.Post(() =>
+        {
+            interrogationUI?.ShowContradictionNotification(text);
+            interrogationUI?.UpdateContradictionsList(
+                State.ContradictionClueIds.Select(id => conversationManager.DescribeContradiction(variant.Clue(id))).ToList());
+        });
     }
 
     // ============================================

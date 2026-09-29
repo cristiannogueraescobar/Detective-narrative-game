@@ -77,6 +77,7 @@ public class InterrogationUI : MonoBehaviour
     private List<ClueData> evidenceOptions = new List<ClueData>();
     private Dictionary<string, string> conversationsBySuspect = new Dictionary<string, string>();
     private Dictionary<string, Texture2D> suspectImages = new Dictionary<string, Texture2D>();
+    private readonly List<string> visibleClueNames = new List<string>(); // Pistas del aviso en pantalla
 
     public void Initialize(GameManager gm)
     {
@@ -427,14 +428,20 @@ public class InterrogationUI : MonoBehaviour
     {
         if (clueNotification != null && clueNotificationText != null)
         {
-            clueNotificationText.text = $"PISTA DESCUBIERTA:\n{clueName}";
+            // Varias pistas seguidas se acumulan en el mismo aviso y reinician el temporizador
+            visibleClueNames.Add(clueName);
+            clueNotificationText.text = (visibleClueNames.Count == 1 ? "PISTA DESCUBIERTA:\n" : "PISTAS DESCUBIERTAS:\n") +
+                                        string.Join("\n", visibleClueNames);
             clueNotification.SetActive(true);
-            Invoke(nameof(HideClueNotification), 3f);
+            CancelInvoke(nameof(HideClueNotification));
+            Invoke(nameof(HideClueNotification), 3f + visibleClueNames.Count - 1);
         }
     }
 
     private void HideClueNotification()
     {
+        visibleClueNames.Clear();
+
         if (clueNotification != null)
             clueNotification.SetActive(false);
     }
