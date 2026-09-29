@@ -45,6 +45,7 @@ public class CharacterData
     public string shortName;      // "Daniel"
     public string roleLabel;      // "padre"
     public string portraitKey;    // Clave del retrato en InterrogationUI ("Padre", "Vecina"...)
+    public string artId;          // Nombre de los retratos por estado: Assets/Art/Portraits/<artId>_<estado>.png
     public string identity;       // "Eres Daniel Mendoza, 48 años, abogado. ..."
     public string speech;         // Cómo habla
     public string speechExample;  // Una frase de ejemplo
@@ -92,6 +93,7 @@ public class StoryData
 {
     public string id;             // "1"
     public string title;
+    public string victim;         // Nombre de pila de la víctima
     public string intro;          // Texto de la pantalla de introducción
     public string caseBrief;      // "EL CASO" en las fichas de personaje
     public List<CharacterData> cast = new List<CharacterData>();
@@ -108,11 +110,13 @@ public struct SuspectView
     public string id;
     public string displayName;
     public string portraitKey;
+    public string artId;
 
     public static SuspectView From(CharacterData character) => new SuspectView
     {
         id = character.id,
         displayName = character.DisplayName,
-        portraitKey = character.portraitKey
+        portraitKey = character.portraitKey,
+        artId = character.artId
     };
 }

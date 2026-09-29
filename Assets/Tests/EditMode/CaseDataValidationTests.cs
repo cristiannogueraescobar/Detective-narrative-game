@@ -7,8 +7,9 @@ using NUnit.Framework;
 /// </summary>
 public class CaseDataValidationTests
 {
-    // Ficha base (sin pruebas mostradas); el spec pide 250-350 palabras, con margen para la historia 3
-    private const int MaxPromptWords = 400;
+    // Ficha base (sin pruebas mostradas); el spec pide 250-350 palabras de contenido. Las reglas fijas
+    // (incluida la etiqueta de estado emocional, ~50 palabras) se suman a ese contenido.
+    private const int MaxPromptWords = 460;
 
     private static IEnumerable<TestCaseData> Variants()
     {

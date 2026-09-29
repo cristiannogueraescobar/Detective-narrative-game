@@ -153,6 +153,8 @@ public class GameManager : MonoBehaviour
         }
 
         questionsUsedToday++;
+        // El estado va antes que la respuesta: marca la velocidad de escritura y el retrato
+        interrogationUI?.SetEmotion(characterId, conversationManager.CurrentEmotion(characterId));
         interrogationUI?.AddToConversation(characterId, story.Character(characterId).DisplayName, asked, result.Text);
         notices.Flush();
         UpdateGameState();

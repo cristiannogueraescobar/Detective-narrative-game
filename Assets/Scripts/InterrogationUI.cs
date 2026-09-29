@@ -78,6 +78,10 @@ public class InterrogationUI : MonoBehaviour
     private Dictionary<string, string> conversationsBySuspect = new Dictionary<string, string>();
     private Dictionary<string, Texture2D> suspectImages = new Dictionary<string, Texture2D>();
     private readonly List<string> visibleClueNames = new List<string>(); // Pistas del aviso en pantalla
+    private readonly Dictionary<string, Emotion> emotionBySuspect = new Dictionary<string, Emotion>();
+    private EmotionPresenter emotionPresenter;
+    private Typewriter typewriter;
+    private static readonly Color PortraitPlaceholderColor = new Color(0.18f, 0.18f, 0.2f);
 
     public void Initialize(GameManager gm)
     {
@@ -132,6 +136,12 @@ public class InterrogationUI : MonoBehaviour
         suspectImages["Dueño del Bar"] = duenioBarGif;
 
         EnsureEvidenceDropdown();
+
+        // Reacciones por código: no necesitan nada en la escena
+        if (suspectImage != null)
+            emotionPresenter = suspectImage.GetComponent<EmotionPresenter>() ?? suspectImage.gameObject.AddComponent<EmotionPresenter>();
+        if (conversationText != null)
+            typewriter = conversationText.GetComponent<Typewriter>() ?? conversationText.gameObject.AddComponent<Typewriter>();
 
         if (clueNotification != null)
             clueNotification.SetActive(false);
@@ -257,6 +267,7 @@ public class InterrogationUI : MonoBehaviour
         if (!string.IsNullOrEmpty(currentSuspectId) && conversationText != null)
             conversationsBySuspect[currentSuspectId] = conversationText.text;
 
+        typewriter?.Complete();
         currentSuspectId = suspectId;
 
         if (conversationText != null)
@@ -265,24 +276,48 @@ public class InterrogationUI : MonoBehaviour
             conversationText.text = saved ?? "";
         }
 
-        SuspectView view = suspects.Find(v => v.id == suspectId);
-        UpdateSuspectImage(view.portraitKey);
+        UpdateSuspectImage(suspectId, instant: true);
     }
 
-    private void UpdateSuspectImage(string portraitKey)
+    /// <summary>
+    /// Estado emocional de un sospechoso (lo lee el gestor de conversación de la etiqueta oculta).
+    /// </summary>
+    public void SetEmotion(string suspectId, Emotion emotion)
+    {
+        emotionBySuspect[suspectId] = emotion;
+
+        if (suspectId == currentSuspectId)
+            UpdateSuspectImage(suspectId, instant: false);
+    }
+
+    private Emotion EmotionOf(string suspectId)
+    {
+        return suspectId != null && emotionBySuspect.TryGetValue(suspectId, out Emotion e) ? e : Emotion.Tranquilo;
+    }
+
+    /// <summary>
+    /// Retrato por estado (Assets/Art/Portraits/&lt;artId&gt;_&lt;estado&gt;.png), si no el retrato antiguo del
+    /// personaje, y si no un color plano. El tinte y el temblor del estado se aplican siempre.
+    /// </summary>
+    private void UpdateSuspectImage(string suspectId, bool instant)
     {
         if (suspectImage == null)
             return;
 
-        if (portraitKey != null && suspectImages.ContainsKey(portraitKey) && suspectImages[portraitKey] != null)
-        {
-            suspectImage.texture = suspectImages[portraitKey];
-            suspectImage.gameObject.SetActive(true);
-        }
-        else
-        {
-            suspectImage.gameObject.SetActive(false);
-        }
+        SuspectView view = suspects.Find(v => v.id == suspectId);
+        Emotion emotion = EmotionOf(suspectId);
+
+        Texture2D texture = null;
+        if (!string.IsNullOrEmpty(view.artId))
+            texture = ArtLibrary.LoadFirst(PortraitPaths.Candidates(view.artId, emotion));
+        if (texture == null && view.portraitKey != null && suspectImages.TryGetValue(view.portraitKey, out Texture2D legacy))
+            texture = legacy;
+        if (texture == null)
+            texture = ArtLibrary.Placeholder(PortraitPlaceholderColor);
+
+        suspectImage.texture = texture;
+        suspectImage.gameObject.SetActive(true);
+        emotionPresenter?.Apply(emotion, instant);
     }
 
     public void AddToConversation(string suspectId, string displayName, string question, string response)
@@ -293,8 +328,11 @@ public class InterrogationUI : MonoBehaviour
 
         if (suspectId == currentSuspectId && conversationText != null)
         {
+            // La respuesta se escribe letra a letra, a la velocidad del estado emocional; un toque la completa
+            int visibleBefore = typewriter != null ? typewriter.VisibleCount() : 0;
             conversationText.text += entry;
             conversationsBySuspect[suspectId] = conversationText.text;
+            typewriter?.Reveal(visibleBefore, EmotionStyle.For(EmotionOf(suspectId)).textSpeed);
         }
         else
         {

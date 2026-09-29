@@ -31,10 +31,12 @@ public class AIConversationManager : MonoBehaviour
     public event Action<ClueData> OnClueRevealed;
     public event Action<string> OnContradictionDetected; // Texto listo para mostrar
     public event Action<string> OnCharacterMentioned;    // Id del personaje mencionado
+    public event Action<string, Emotion> OnEmotionChanged; // (personaje, estado leído de la etiqueta)
 
     private ILLMProvider llmProvider;
     private readonly Dictionary<string, List<ChatMessage>> conversationHistory =
         new Dictionary<string, List<ChatMessage>>();
+    private readonly Dictionary<string, Emotion> emotions = new Dictionary<string, Emotion>();
 
     public StoryData Story { get; private set; }
     public InvestigationState State { get; private set; }
@@ -67,6 +69,7 @@ public class AIConversationManager : MonoBehaviour
         Story = story;
         State = new InvestigationState(variant);
         conversationHistory.Clear();
+        emotions.Clear();
     }
 
     /// <summary>
@@ -105,10 +108,23 @@ public class AIConversationManager : MonoBehaviour
             return result;
         }
 
+        // El historial guarda la respuesta con su etiqueta para que el modelo mantenga el formato;
+        // el análisis y la pantalla usan el texto limpio
         history.Add(new ChatMessage { role = "assistant", content = result.Text });
+        EmotionParse parsed = EmotionParser.Parse(result.Text);
+        string clean = string.IsNullOrWhiteSpace(parsed.text) ? "…" : parsed.text;
 
-        TurnOutcome outcome = TurnAnalyzer.Analyze(Story, State, characterId, result.Text, shownClue);
+        if (Application.isEditor && debugLogClueEvaluation && !parsed.wellFormed)
+            Debug.Log($"[Estado] {characterId}: etiqueta ausente o mal formada");
+
+        TurnOutcome outcome = TurnAnalyzer.Analyze(Story, State, characterId, clean, shownClue);
         LogEvaluation(characterId, outcome);
+
+        if (parsed.emotion.HasValue)
+        {
+            emotions[characterId] = parsed.emotion.Value;
+            OnEmotionChanged?.Invoke(characterId, parsed.emotion.Value);
+        }
 
         foreach (ClueData clue in outcome.newClues)
             OnClueRevealed?.Invoke(clue);
@@ -119,7 +135,15 @@ public class AIConversationManager : MonoBehaviour
         foreach (ClueData clue in outcome.newContradictions)
             OnContradictionDetected?.Invoke(DescribeContradiction(clue));
 
-        return result;
+        return LLMResult.Ok(clean);
+    }
+
+    /// <summary>
+    /// Último estado emocional de un sospechoso (tranquilo hasta que el modelo diga otra cosa).
+    /// </summary>
+    public Emotion CurrentEmotion(string characterId)
+    {
+        return emotions.TryGetValue(characterId, out Emotion emotion) ? emotion : Emotion.Tranquilo;
     }
 
     public string DescribeContradiction(ClueData clue)

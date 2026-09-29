@@ -1,0 +1,87 @@
+using System.Text.RegularExpressions;
+
+public enum Emotion
+{
+    Tranquilo,
+    Nervioso,
+    Asustado,
+    Enfadado,
+    Triste
+}
+
+public struct EmotionParse
+{
+    public string text;       // Respuesta sin la etiqueta, lista para mostrar y analizar
+    public Emotion? emotion;  // null si no hay etiqueta reconocible
+    public bool wellFormed;   // true solo con "[ESTADO: x]" y x válido
+}
+
+/// <summary>
+/// Lee y elimina la etiqueta oculta de estado emocional que el modelo añade al final de cada respuesta:
+/// "[ESTADO: tranquilo|nervioso|asustado|enfadado|triste]". Tolera mayúsculas, espacios y femenino.
+/// </summary>
+public static class EmotionParser
+{
+    public const string TagInstruction =
+        "Termina SIEMPRE con una línea aparte que diga cómo te sientes: [ESTADO: tranquilo], [ESTADO: nervioso], " +
+        "[ESTADO: asustado], [ESTADO: enfadado] o [ESTADO: triste].";
+
+    private static readonly Regex Bracketed = new Regex(@"\[\s*estado\s*:\s*([^\]\s]+)\s*\]", RegexOptions.IgnoreCase);
+    private static readonly Regex Bare = new Regex(@"(^|\n)\s*estado\s*:\s*(\S+)\s*$", RegexOptions.IgnoreCase);
+    private static readonly Regex Spaces = new Regex(@"[ \t]+");
+
+    public static EmotionParse Parse(string raw)
+    {
+        if (string.IsNullOrEmpty(raw))
+            return new EmotionParse { text = "" };
+
+        string word = null;
+        bool bracketed = false;
+
+        MatchCollection matches = Bracketed.Matches(raw);
+        string text = raw;
+
+        if (matches.Count > 0)
+        {
+            word = matches[matches.Count - 1].Groups[1].Value;
+            bracketed = true;
+            text = Bracketed.Replace(raw, "");
+        }
+        else
+        {
+            Match bare = Bare.Match(raw);
+            if (bare.Success)
+            {
+                word = bare.Groups[2].Value;
+                text = raw.Substring(0, bare.Index);
+            }
+        }
+
+        Emotion? emotion = word == null ? (Emotion?)null : Map(word);
+
+        return new EmotionParse
+        {
+            text = Spaces.Replace(text, " ").Trim(),
+            emotion = emotion,
+            wellFormed = bracketed && emotion.HasValue
+        };
+    }
+
+    private static Emotion? Map(string word)
+    {
+        string w = ClueDetector.Normalize(word).Trim('.', ',', ';', ':', '!', '?');
+
+        if (w.StartsWith("tranquil") || w.StartsWith("calmad"))
+            return Emotion.Tranquilo;
+        if (w.StartsWith("nervios"))
+            return Emotion.Nervioso;
+        if (w.StartsWith("asustad"))
+            return Emotion.Asustado;
+        if (w.StartsWith("enfadad") || w.StartsWith("enojad"))
+            return Emotion.Enfadado;
+        if (w.StartsWith("trist"))
+            return Emotion.Triste;
+
+        return null;
+    }
+}

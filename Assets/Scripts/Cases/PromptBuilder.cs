@@ -8,6 +8,10 @@ using System.Text;
 /// </summary>
 public static class PromptBuilder
 {
+    // Pistas para que la etiqueta de estado sea coherente con lo que se le pregunta
+    public const string EmotionGuide =
+        "Nervioso si tocan lo que te pone nervioso, enfadado o asustado si te acusan, triste si hablan de la víctima, tranquilo si la pregunta es neutra.";
+
     public static string Build(StoryData story, VariantData variant, string characterId, int day,
                                IEnumerable<ClueData> shownToCharacter, IEnumerable<ClueData> alreadyTold)
     {
@@ -77,7 +81,8 @@ public static class PromptBuilder
 
         sb.AppendLine($"HOY ES EL DÍA {day} DE LA INVESTIGACIÓN.");
         sb.Append("REGLAS: español, primera persona, 2 a 4 frases, sin asteriscos ni listas. " +
-                  "Nunca digas que eres una IA. No inventes horas, nombres ni hechos fuera de esta ficha.");
+                  "Nunca digas que eres una IA. No inventes horas, nombres ni hechos fuera de esta ficha.\n" +
+                  EmotionParser.TagInstruction + " " + EmotionGuide);
 
         return sb.ToString();
     }
