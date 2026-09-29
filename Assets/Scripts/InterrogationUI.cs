@@ -62,6 +62,10 @@ public class InterrogationUI : MonoBehaviour
     [Header("Acusacion")]
     [SerializeField] private TMP_Dropdown accusationDropdown;
     [SerializeField] private Button accuseButton;
+    [Header("Móvil")]
+    [Tooltip("Recoloca el interrogatorio para jugar en vertical con una mano (medidas en el tema)")]
+    [SerializeField] private bool applyMobileLayout = true;
+
     [Tooltip("Botón para volver al interrogatorio. Si se deja vacío se crea bajo el de acusar")]
     [SerializeField] private Button accusationBackButton;
 
@@ -139,6 +143,9 @@ public class InterrogationUI : MonoBehaviour
 
         EnsureEvidenceDropdown();
 
+        if (applyMobileLayout)
+            ApplyMobileLayout();
+
         // Reacciones por código: no necesitan nada en la escena
         if (suspectImage != null)
             emotionPresenter = suspectImage.GetComponent<EmotionPresenter>() ?? suspectImage.gameObject.AddComponent<EmotionPresenter>();
@@ -155,6 +162,26 @@ public class InterrogationUI : MonoBehaviour
         HideAllPanels();
 
         Debug.Log("[InterrogationUI] Inicializado - Todos los paneles ocultos");
+    }
+
+    private void ApplyMobileLayout()
+    {
+        InterrogationLayout.Apply(new InterrogationLayout.Elements
+        {
+            panel = interrogationPanel != null ? (RectTransform)interrogationPanel.transform : null,
+            hud = hudText != null ? hudText.rectTransform : null,
+            endDay = endDayButton != null ? (RectTransform)endDayButton.transform : null,
+            accuseNow = accuseNowButton != null ? (RectTransform)accuseNowButton.transform : null,
+            notebook = viewCluesButton != null ? (RectTransform)viewCluesButton.transform : null,
+            portrait = suspectImage != null ? suspectImage.rectTransform : null,
+            chat = conversationScroll != null ? (RectTransform)conversationScroll.transform : null,
+            waiting = waitingText != null ? waitingText.rectTransform : null,
+            suspect = suspectDropdown != null ? (RectTransform)suspectDropdown.transform : null,
+            evidence = evidenceDropdown != null ? (RectTransform)evidenceDropdown.transform : null,
+            question = questionInput != null ? (RectTransform)questionInput.transform : null,
+            send = askButton != null ? (RectTransform)askButton.transform : null,
+            clueNotice = clueNotification != null ? (RectTransform)clueNotification.transform : null
+        });
     }
 
     // ============================================

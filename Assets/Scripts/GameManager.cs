@@ -49,8 +49,14 @@ public class GameManager : MonoBehaviour
         conversationManager.OnContradictionDetected += OnContradictionDetected;
         conversationManager.OnCharacterMentioned += OnCharacterMentioned;
 
+        AudioListener.volume = GameSettings.Volume;
+
         if (interrogationUI != null)
+        {
+            // El tema se aplica a toda la UI antes de que se creen controles por código (que lo heredan)
+            ThemeApplier.Apply(interrogationUI.transform.root);
             interrogationUI.Initialize(this);
+        }
 
         SelectCase();
 

@@ -131,6 +131,9 @@ public class MenuManager : MonoBehaviour
     
     private void ShowSettings()
     {
+        if (settingsPanel != null)
+            SettingsPanel.Build(settingsPanel, () => gameManager?.RestartGame());
+
         ShowPanel(settingsPanel);
     }
     
