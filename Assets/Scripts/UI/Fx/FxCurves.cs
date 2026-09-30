@@ -172,7 +172,10 @@ public static class EndingReport
         sb.AppendLine($"{label("PISTAS INCRIMINATORIAS")}  {result.incriminatingFound}");
         sb.AppendLine($"{label("CONTRADICCIONES")}  {result.contradictions}");
         sb.AppendLine($"{label("EVIDENCIA")}  <b>{result.evidence}/{maxEvidence}</b>");
-        sb.AppendLine($"<size=80%>{label($"Hacen falta {InvestigationState.GoodThreshold} para una condena segura.")}</size>");
+        // Cuánto faltó, solo si acertaste sin pruebas suficientes (ganando o acusando a otro no aporta nada)
+        int missing = InvestigationState.GoodThreshold - result.evidence;
+        if ((result.ending == Ending.Bittersweet || result.ending == Ending.Insufficient) && missing > 0)
+            sb.AppendLine($"<size=80%>{label($"Con {missing} más de evidencia habría sido una condena segura.")}</size>");
         if (!string.IsNullOrEmpty(stats))
             sb.AppendLine(label(stats));
         sb.AppendLine();
