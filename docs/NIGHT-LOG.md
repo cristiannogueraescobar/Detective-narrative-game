@@ -640,6 +640,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
 - **20:09** Séptima revisión: nada serio; arreglado el único confirmado (continuar a mitad de día perdía el "Ayer:
   …": ahora se guarda) con test visto en rojo. EditMode 716/716, PlayMode 56/56.
 
+- **20:24** Ronda 27, cierre definitivo (las 9 variantes ×2, misma semilla que la 19, con reintento frío y marcas de la
+  rueda para el bot): **14/18 culpables** (15/18 en la 19: ruido), 2B 1/2; horas inventadas marcadas **3 de 530**
+  (8 en la 19; el reintento arregla 9 de 10). Pero 5 nombres inventados en una 3A: siempre "tía María" (la ficha
+  hablaba de "tu tía" en Granada sin nombre y el historial lo fijaba) → la tía se llama Remedios en las fichas
+  (validador y prompts 30/30). Ronda 28 (3A ×2, misma semilla): 0 nombres inventados, dice "tía Remedios".
+
 ## Ahora (día 3)
 - Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
   rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
