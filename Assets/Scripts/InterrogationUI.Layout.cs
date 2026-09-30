@@ -502,6 +502,17 @@ public partial class InterrogationUI
         UIComponents.GetOrAdd<GridFit>(lineup.gameObject);
 
         PutDropdown(accusationDropdown, column);
+        // "Prueba clave": un clon del selector de sospechoso (mismo aspecto y tamaño táctil)
+        if (accusationDropdown != null && keyClueDropdown == null)
+        {
+            GameObject clone = Instantiate(accusationDropdown.gameObject, column);
+            clone.name = "PruebaClaveDropdown (auto)";
+            keyClueDropdown = clone.GetComponent<TMP_Dropdown>();
+            keyClueDropdown.onValueChanged.RemoveAllListeners();
+            keyClueDropdown.ClearOptions();
+            keyClueDropdown.AddOptions(new List<string> { GameTexts.KeyClueNone });
+            PutDropdown(keyClueDropdown, column);
+        }
         LayoutKit.Put(accuseButton, column, height: 130f);
         LayoutKit.Label(accuseButton, "Acusar");
 

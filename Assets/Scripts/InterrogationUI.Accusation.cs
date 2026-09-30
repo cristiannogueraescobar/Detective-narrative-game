@@ -14,6 +14,19 @@ public partial class InterrogationUI
     // ============================================
 
     private int accusationContradictions;
+    private TMP_Dropdown keyClueDropdown; // "Prueba clave" (opcional): la pista que demuestra la acusación
+
+    private void FillKeyClueOptions()
+    {
+        if (keyClueDropdown == null)
+            return;
+        var options = new List<string> { GameTexts.KeyClueNone };
+        options.AddRange(evidenceOptions.ConvertAll(c => c.playerName));
+        keyClueDropdown.ClearOptions();
+        keyClueDropdown.AddOptions(options);
+        keyClueDropdown.SetValueWithoutNotify(0);
+        keyClueDropdown.gameObject.SetActive(evidenceOptions.Count > 0); // Sin pistas no hay nada que elegir
+    }
 
     // Lo que llevas a la acusación, bajo la pregunta (sin decir qué pista incrimina a quién). Se rehace al
     // cambiar de tema: el color va en el texto
@@ -31,6 +44,7 @@ public partial class InterrogationUI
         accusationOptions = options;
         accusationContradictions = contradictions;
         RefreshAccusationPrompt();
+        FillKeyClueOptions();
         // El título está dentro de la columna de la distribución: se busca en todo el panel
         if (accusationPanel != null)
         {
@@ -112,14 +126,17 @@ public partial class InterrogationUI
         if (accusationDropdown != null && accusationDropdown.value < accusationOptions.Count)
         {
             string accusedId = accusationOptions[accusationDropdown.value].id;
+            // La prueba clave (opcional): la opción 0 es "ninguna"
+            string keyClueId = keyClueDropdown != null && keyClueDropdown.value > 0 && keyClueDropdown.value <= evidenceOptions.Count
+                ? evidenceOptions[keyClueDropdown.value - 1].id : null;
             if (accuseButton != null)
                 accuseButton.interactable = false; // Un solo veredicto
             SoundManager.Play(Sfx.Accusation);
             SoundManager.PlayMusic(Music.None);
             if (fx != null)
-                fx.Deliberation(() => gameManager.MakeAccusation(accusedId));
+                fx.Deliberation(() => gameManager.MakeAccusation(accusedId, keyClueId));
             else
-                gameManager.MakeAccusation(accusedId);
+                gameManager.MakeAccusation(accusedId, keyClueId);
         }
     }
 
@@ -230,7 +247,7 @@ public partial class InterrogationUI
     }
 
     public void ShowAccusationResult(AccusationResult result, string accusedName, string culpritName,
-                                     int maxEvidence, string epilogue, string stats = null)
+                                     int maxEvidence, string epilogue, string stats = null, CaseSummary summary = null)
     {
         fx?.SetTension(false);
         ShowPanel(resultPanel);
@@ -263,7 +280,7 @@ public partial class InterrogationUI
         if (resultDetailsText == null)
             return;
 
-        resultDetailsText.text = EndingReport.Build(result, accusedName, culpritName, maxEvidence, epilogue, T, stats);
+        resultDetailsText.text = EndingReport.Build(result, accusedName, culpritName, maxEvidence, epilogue, T, stats, summary);
 
         if (fx != null && resultPanel != null && resultTitleText != null)
         {

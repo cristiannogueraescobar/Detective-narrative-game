@@ -101,7 +101,7 @@ public static class CaseSelect
             if (label == null || !label.TryGetComponent(out TMP_Text text))
                 continue;
             Ending? best = CaseRecords.Best(story.id);
-            text.text = best == null ? "SIN RESOLVER" : EndingStyle.For(best.Value, t).stamp;
+            text.text = GameTexts.RecordLabel(best, CaseRecords.BestRank(story.id), t);
             text.color = best == Ending.Good ? new Color32(46, 100, 50, 255) : (Color)t.paperInk;
         }
     }

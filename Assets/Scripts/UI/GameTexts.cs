@@ -67,6 +67,18 @@ public static class GameTexts
     public const string ThinkPrefix = "Piensas… ";
 
     /// <summary>
+    /// Etiqueta del expediente en la selección de caso: el mejor final y el mejor rango conseguidos.
+    /// </summary>
+    public static string RecordLabel(Ending? best, string rank, Theme t)
+    {
+        if (best == null)
+            return "SIN RESOLVER";
+        string stamp = EndingStyle.For(best.Value, t).stamp;
+        return string.IsNullOrEmpty(rank) ? stamp : $"{stamp} · {rank.ToUpperInvariant()}";
+    }
+    public const string KeyClueNone = "Prueba clave: ninguna (opcional)";
+
+    /// <summary>
     /// Botón "Pensar" de la libreta con su coste en preguntas del día.
     /// </summary>
     public static string ThinkLabel(int cost)

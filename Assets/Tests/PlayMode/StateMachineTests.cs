@@ -179,6 +179,37 @@ public class StateMachineTests
     }
 
     [UnityTest]
+    public IEnumerator ElFinalDaRangoPruebaClaveYLoQueSeEscapo()
+    {
+        yield return StartNewGame();
+        var game = Object.FindFirstObjectByType<GameManager>();
+        var ui = Object.FindFirstObjectByType<InterrogationUI>();
+        var manager = Object.FindFirstObjectByType<AIConversationManager>();
+        // Una pista que incrimina ya en la libreta, para elegirla como prueba clave
+        ClueData key = manager.State.Variant.clues.First(c => c.kind == ClueKind.Incriminates);
+        manager.State.Discover(key.id);
+        ui.SetEvidenceOptions(new List<ClueData> { key });
+
+        game.ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(0.3f);
+        var suspects = Find("AccusatonPanel").GetComponentsInChildren<TMP_Dropdown>(true);
+        TMP_Dropdown who = suspects.First(d => d.name != "PruebaClaveDropdown (auto)");
+        TMP_Dropdown keyDropdown = suspects.First(d => d.name == "PruebaClaveDropdown (auto)");
+        Assert.IsTrue(keyDropdown.gameObject.activeInHierarchy, "con pistas en la libreta se puede elegir la prueba clave");
+        who.value = who.options.FindIndex(o => o.text.StartsWith(manager.Story.Character(manager.State.Variant.culpritId).shortName));
+        keyDropdown.value = 1;
+
+        yield return Tap("Accusebutton");
+        yield return WaitUntil(() => Find("ResultPanel").activeInHierarchy, 10f, "el veredicto");
+        yield return new WaitForSecondsRealtime(0.3f);
+        string report = Find("ResultPanel").GetComponentsInChildren<TMP_Text>(true).Select(t => t.text).First(t => t.Contains("TU ACUSACIÓN"));
+        StringAssert.Contains("RANGO", report);
+        StringAssert.Contains(key.playerName, report, "el informe juzga la prueba clave");
+        StringAssert.Contains("SE TE ESCAPÓ", report, "y dice qué pistas faltaron");
+        Assert.IsNotNull(CaseRecords.BestRank(manager.Story.id), "el mejor rango queda apuntado");
+    }
+
+    [UnityTest]
     public IEnumerator CerrarAMitadDeUnaRespuestaNoGastaLaPregunta()
     {
         yield return StartNewGame();

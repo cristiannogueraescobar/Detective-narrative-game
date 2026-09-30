@@ -484,7 +484,7 @@ public class GameManager : MonoBehaviour
         GameSettings.Flush();
     }
 
-    public void MakeAccusation(string accusedId)
+    public void MakeAccusation(string accusedId, string keyClueId = null)
     {
         if (accusationMade)
             return;
@@ -496,13 +496,44 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"[GameManager] Acusación: {accusedId} → {result.ending} (evidencia {result.evidence})");
 
+        CaseSummary summary = BuildSummary(result, keyClueId);
+        CaseRecords.RecordRank(story.id, summary.rank);
+
         interrogationUI?.ShowAccusationResult(
             result,
             story.Character(accusedId).name,
             story.Character(variant.culpritId).name,
             InvestigationState.MaxEvidenceWithoutCulprit(variant),
             variant.epilogue,
-            GameTexts.CaseStats(Mathf.Min(currentDay, maxDays), State.DiscoveredClueIds.Count, variant.clues.Count));
+            GameTexts.CaseStats(Mathf.Min(currentDay, maxDays), State.DiscoveredClueIds.Count, variant.clues.Count),
+            summary);
+    }
+
+    /// <summary>
+    /// Resumen del caso para el final: rango, veredicto sobre la prueba clave y pistas que se escaparon (con quién
+    /// las sabía), para aprender a preguntar y dar ganas de rejugar la historia con otro culpable.
+    /// </summary>
+    private CaseSummary BuildSummary(AccusationResult result, string keyClueId)
+    {
+        ClueData key = keyClueId != null ? variant.clues.FirstOrDefault(c => c.id == keyClueId) : null;
+        bool keyRight = result.correct && key != null && key.kind == ClueKind.Incriminates;
+        string keyLine = null;
+        if (key != null)
+        {
+            keyLine = !result.correct ? $"Tu prueba clave, «{key.playerName}», no bastaba: señalabas a la persona equivocada."
+                    : key.exposesLie ? $"Tu prueba clave, «{key.playerName}», rompía su coartada. Así se cierra un caso."
+                    : key.kind == ClueKind.Incriminates ? $"Tu prueba clave, «{key.playerName}», le señalaba."
+                    : $"«{key.playerName}» no acusaba a nadie: no era la prueba que lo demostraba.";
+        }
+
+        var summary = new CaseSummary
+        {
+            rank = DetectiveRank.For(result.ending, keyRight, hintMemory.count, Mathf.Max(0, maxDays - currentDay)),
+            keyClueLine = keyLine
+        };
+        foreach (ClueData clue in variant.clues.Where(c => !State.IsDiscovered(c.id)))
+            summary.missed.Add($"{clue.playerName} (lo sabía {story.Character(clue.holder).shortName})");
+        return summary;
     }
 
     public bool CanAskMoreQuestions()

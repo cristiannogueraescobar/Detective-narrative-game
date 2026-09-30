@@ -33,6 +33,27 @@ public static class CaseRecords
     /// <summary>
     /// Apunta un final; solo se queda si es mejor que el que había.
     /// </summary>
+    /// <summary>
+    /// Mejor rango de detective en una historia (null si aún no se ha cerrado).
+    /// </summary>
+    public static string BestRank(string storyId)
+    {
+        int saved = (int)GameSettings.GetValue(RankKey(storyId), -1f);
+        return saved >= 0 && saved < DetectiveRank.Ranks.Length ? DetectiveRank.Ranks[saved] : null;
+    }
+
+    public static void RecordRank(string storyId, string rank)
+    {
+        int order = DetectiveRank.Order(rank);
+        if (order > DetectiveRank.Order(BestRank(storyId)))
+        {
+            GameSettings.SetValue(RankKey(storyId), order);
+            GameSettings.Flush();
+        }
+    }
+
+    private static string RankKey(string storyId) => $"casos.rango.{storyId}";
+
     public static void Record(string storyId, Ending ending)
     {
         Ending? best = Best(storyId);

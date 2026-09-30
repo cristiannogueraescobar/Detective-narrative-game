@@ -58,6 +58,15 @@ public class GameTextsTests
     }
 
     [Test]
+    public void ElExpedienteDiceElMejorFinalYElMejorRango()
+    {
+        Theme t = ThemeManager.Current;
+        Assert.AreEqual("SIN RESOLVER", GameTexts.RecordLabel(null, null, t));
+        Assert.AreEqual(EndingStyle.For(Ending.Good, t).stamp + " · SABUESO", GameTexts.RecordLabel(Ending.Good, "Sabueso", t));
+        Assert.AreEqual(EndingStyle.For(Ending.Bad, t).stamp, GameTexts.RecordLabel(Ending.Bad, null, t), "partidas anteriores al rango");
+    }
+
+    [Test]
     public void LasInstruccionesExplicanTodoElJuego()
     {
         string text = GameTexts.Instructions(ThemeManager.Current);
