@@ -174,6 +174,7 @@ public class GameManager : MonoBehaviour
         ApplyDifficulty(Difficulty.FromSave(data.difficulty));
         hintMemory = HintMemory.FromSave(data.hintsUsed, data.hintsGiven);
         notes = SuspectNotes.FromSave(data.suspectNotes);
+        caseForced = false; // Una partida guardada es un caso de verdad (aunque el inspector fuerce otro)
         accusationMade = false;
         unlocked.Clear();
         unlocked.AddRange(data.unlocked);
@@ -581,7 +582,8 @@ public class GameManager : MonoBehaviour
                                                 story.Character(variant.culpritId).shortName, result.correct),
             culprit = SuspectView.From(story.Character(variant.culpritId)),
             // Se llama después de RecordPlayed: esta ya cuenta como vista
-            replayLine = GameTexts.ReplayLine(CaseRecords.Unplayed(story.variants.Select(v => v.id)))
+            replayLine = GameTexts.ReplayLine(CaseRecords.Unplayed(story.variants.Select(v => v.id)
+                                                                     .Where(id => !caseForced || id != variant.id)))
         };
         foreach (ClueData clue in variant.clues.Where(c => !State.IsDiscovered(c.id)))
             summary.missed.Add($"{clue.playerName} (lo sabía {story.Character(clue.holder).shortName})");
