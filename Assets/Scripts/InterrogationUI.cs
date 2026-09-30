@@ -139,19 +139,7 @@ public class InterrogationUI : MonoBehaviour
         suspectImages["Cartero"] = carteroGif;
         suspectImages["Dueño del Bar"] = duenioBarGif;
 
-        EnsureEvidenceDropdown();
-
-        if (applyMobileLayout)
-        {
-            ApplyMobileLayout();
-
-            // Paneles secundarios: título arriba, contenido en el centro, botones abajo
-            foreach (GameObject panel in new[] { introPanel, resultPanel, accusationPanel, cluesPanel })
-            {
-                if (panel != null)
-                    MobilePanelLayout.Apply((RectTransform)panel.transform);
-            }
-        }
+        BuildLayout();
 
         // Lo que se anima cada fotograma, en su propio Canvas (rendimiento en móvil)
         UIPerformance.IsolateInOwnCanvas(suspectImage);
@@ -182,24 +170,321 @@ public class InterrogationUI : MonoBehaviour
         Debug.Log("[InterrogationUI] Inicializado - Todos los paneles ocultos");
     }
 
-    private void ApplyMobileLayout()
+    /// <summary>
+    /// Distribución móvil (vertical, una mano) de todos los paneles del juego con LayoutGroups reales.
+    /// Idempotente. La valida LayoutValidationTests a 1080 × 1920.
+    /// </summary>
+    public void BuildLayout()
     {
-        InterrogationLayout.Apply(new InterrogationLayout.Elements
+        EnsureEvidenceDropdown();
+        if (!applyMobileLayout)
+            return;
+
+        Transform root = interrogationPanel != null ? interrogationPanel.transform.root : transform.root;
+        ThemeApplier.Apply(root);
+
+        BuildInterrogationLayout();
+        BuildNotebookLayout();
+        BuildClueNoticeLayout();
+        BuildIntroLayout();
+        BuildAccusationLayout();
+        BuildResultLayout();
+
+        // Las capas se dibujan por encima del contenido del panel
+        if (cluesPanel != null)
+            cluesPanel.transform.SetAsLastSibling();
+    }
+
+    private void BuildInterrogationLayout()
+    {
+        if (interrogationPanel == null)
+            return;
+
+        RectTransform column = LayoutKit.Column((RectTransform)interrogationPanel.transform, out bool created);
+        if (!created)
+            return;
+
+        // Fila 1: día y preguntas + libreta
+        RectTransform hud = LayoutKit.Row(column, "HUD", 96f);
+        if (hudText != null)
         {
-            panel = interrogationPanel != null ? (RectTransform)interrogationPanel.transform : null,
-            hud = hudText != null ? hudText.rectTransform : null,
-            endDay = endDayButton != null ? (RectTransform)endDayButton.transform : null,
-            accuseNow = accuseNowButton != null ? (RectTransform)accuseNowButton.transform : null,
-            notebook = viewCluesButton != null ? (RectTransform)viewCluesButton.transform : null,
-            portrait = suspectImage != null ? suspectImage.rectTransform : null,
-            chat = conversationScroll != null ? (RectTransform)conversationScroll.transform : null,
-            waiting = waitingText != null ? waitingText.rectTransform : null,
-            suspect = suspectDropdown != null ? (RectTransform)suspectDropdown.transform : null,
-            evidence = evidenceDropdown != null ? (RectTransform)evidenceDropdown.transform : null,
-            question = questionInput != null ? (RectTransform)questionInput.transform : null,
-            send = askButton != null ? (RectTransform)askButton.transform : null,
-            clueNotice = clueNotification != null ? (RectTransform)clueNotification.transform : null
-        });
+            LayoutKit.Put(hudText, hud, flexibleWidth: 1f);
+            hudText.alignment = TextAlignmentOptions.MidlineLeft;
+            LayoutKit.OneLine(hudText, T.bodySize);
+        }
+        LayoutKit.Put(viewCluesButton, hud, width: 260f);
+        LayoutKit.Label(viewCluesButton, "Libreta");
+
+        // Fila 2: acciones del día, cada una con su sitio
+        RectTransform actions = LayoutKit.Row(column, "Acciones", 96f);
+        LayoutKit.Put(endDayButton, actions, flexibleWidth: 1f);
+        LayoutKit.Label(endDayButton, "Fin del día");
+        LayoutKit.Put(accuseNowButton, actions, flexibleWidth: 1f);
+        LayoutKit.Label(accuseNowButton, "Acusar");
+
+        // Retrato centrado, con su proporción
+        if (suspectImage != null)
+        {
+            RectTransform portraitBox = UIFactory.Container(column, "Retrato (auto)", Vector2.zero, Vector2.one);
+            LayoutKit.Size(portraitBox, height: T.portraitHeight);
+            var portrait = suspectImage.rectTransform;
+            portrait.SetParent(portraitBox, false);
+            portrait.anchorMin = Vector2.zero;
+            portrait.anchorMax = Vector2.one;
+            portrait.offsetMin = portrait.offsetMax = Vector2.zero;
+            portrait.localScale = Vector3.one;
+            var fitter = UIComponents.GetOrAdd<AspectRatioFitter>(suspectImage.gameObject);
+            fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+            fitter.aspectRatio = 0.75f;
+        }
+
+        // Chat: todo el hueco que queda, solo desplazamiento vertical
+        if (conversationScroll != null)
+        {
+            LayoutKit.Put(conversationScroll, column, height: 300f, flexibleHeight: 1f);
+            ConfigureChatScroll();
+        }
+
+        if (waitingText != null)
+        {
+            LayoutKit.Put(waitingText, column, height: 48f);
+            waitingText.alignment = TextAlignmentOptions.Center;
+            LayoutKit.OneLine(waitingText, T.secondarySize);
+        }
+
+        // Controles abajo, al alcance del pulgar
+        PutDropdown(suspectDropdown, column);
+        PutDropdown(evidenceDropdown, column);
+
+        RectTransform ask = LayoutKit.Row(column, "Pregunta", 120f);
+        if (questionInput != null)
+        {
+            LayoutKit.Put(questionInput, ask, flexibleWidth: 1f);
+            ConfigureQuestionInput();
+        }
+        LayoutKit.Put(askButton, ask, width: 220f);
+        LayoutKit.Label(askButton, "Enviar");
+    }
+
+    private void ConfigureChatScroll()
+    {
+        conversationScroll.horizontal = false;
+        conversationScroll.vertical = true;
+        if (conversationScroll.horizontalScrollbar != null)
+        {
+            conversationScroll.horizontalScrollbar.gameObject.SetActive(false);
+            conversationScroll.horizontalScrollbar = null;
+        }
+        conversationScroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
+
+        RectTransform viewport = conversationScroll.viewport;
+        if (viewport != null)
+        {
+            viewport.anchorMin = Vector2.zero;
+            viewport.anchorMax = Vector2.one;
+            viewport.offsetMin = viewport.offsetMax = Vector2.zero;
+        }
+
+        RectTransform content = conversationScroll.content;
+        if (content != null)
+        {
+            content.anchorMin = new Vector2(0f, 1f);
+            content.anchorMax = Vector2.one;
+            content.pivot = new Vector2(0.5f, 1f);
+            content.offsetMin = content.offsetMax = Vector2.zero;
+            var layout = UIComponents.GetOrAdd<VerticalLayoutGroup>(content.gameObject);
+            layout.padding = new RectOffset(16, 16, 8, 8);
+            layout.childControlWidth = layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+            UIComponents.GetOrAdd<ContentSizeFitter>(content.gameObject).verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+
+        if (conversationText != null)
+            LayoutKit.ScrollingText(conversationText);
+    }
+
+    private void ConfigureQuestionInput()
+    {
+        RectTransform area = questionInput.textViewport;
+        if (area != null)
+        {
+            area.anchorMin = Vector2.zero;
+            area.anchorMax = Vector2.one;
+            area.offsetMin = new Vector2(20f, 8f);
+            area.offsetMax = new Vector2(-20f, -8f);
+        }
+
+        if (questionInput.placeholder is TMP_Text placeholder)
+        {
+            placeholder.text = "Escribe tu pregunta…";
+            placeholder.rectTransform.anchorMin = Vector2.zero;
+            placeholder.rectTransform.anchorMax = Vector2.one;
+            placeholder.rectTransform.offsetMin = placeholder.rectTransform.offsetMax = Vector2.zero;
+            LayoutKit.OneLine(placeholder, T.bodySize);
+            placeholder.alignment = TextAlignmentOptions.MidlineLeft;
+        }
+
+        if (questionInput.textComponent != null)
+        {
+            questionInput.textComponent.rectTransform.anchorMin = Vector2.zero;
+            questionInput.textComponent.rectTransform.anchorMax = Vector2.one;
+            questionInput.textComponent.rectTransform.offsetMin = questionInput.textComponent.rectTransform.offsetMax = Vector2.zero;
+            questionInput.textComponent.alignment = TextAlignmentOptions.MidlineLeft;
+        }
+    }
+
+    private static void PutDropdown(TMP_Dropdown dropdown, RectTransform column)
+    {
+        if (dropdown == null)
+            return;
+
+        LayoutKit.Put(dropdown, column, height: 100f);
+
+        if (dropdown.captionText != null)
+        {
+            RectTransform label = dropdown.captionText.rectTransform;
+            label.anchorMin = Vector2.zero;
+            label.anchorMax = Vector2.one;
+            label.offsetMin = new Vector2(24f, 6f);
+            label.offsetMax = new Vector2(-72f, -6f); // Sitio para la flecha
+            LayoutKit.OneLine(dropdown.captionText, T.bodySize);
+            dropdown.captionText.alignment = TextAlignmentOptions.MidlineLeft;
+        }
+
+        if (dropdown.itemText != null)
+            LayoutKit.OneLine(dropdown.itemText, T.bodySize);
+
+        if (dropdown.template != null)
+        {
+            dropdown.template.anchorMin = new Vector2(0f, 0f);
+            dropdown.template.anchorMax = new Vector2(1f, 0f);
+            dropdown.template.pivot = new Vector2(0.5f, 1f);
+            dropdown.template.sizeDelta = new Vector2(0f, 600f);
+        }
+    }
+
+    private void BuildNotebookLayout()
+    {
+        if (cluesPanel == null)
+            return;
+
+        var panel = (RectTransform)cluesPanel.transform;
+        LayoutKit.Overlay(panel, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+
+        RectTransform column = LayoutKit.Column(panel, out bool created);
+        if (!created)
+            return;
+
+        Transform title = panel.Find("CluesTitleText");
+        if (title != null)
+            LayoutKit.Put(title, column, height: 110f);
+
+        if (contradictionsText != null)
+            contradictionsText.gameObject.SetActive(false); // Las contradicciones van en la libreta
+
+        LayoutKit.Scrollable(cluesText, column);
+
+        LayoutKit.Put(closeCluesButton, column, height: 110f);
+        LayoutKit.Label(closeCluesButton, "Cerrar");
+    }
+
+    private void BuildClueNoticeLayout()
+    {
+        if (clueNotification == null)
+            return;
+
+        var notice = (RectTransform)clueNotification.transform;
+        LayoutKit.Overlay(notice, new Vector2(0.05f, 1f), new Vector2(0.95f, 1f), new Vector2(0f, -470f), new Vector2(0f, -210f));
+
+        if (clueNotificationText != null)
+        {
+            RectTransform text = clueNotificationText.rectTransform;
+            text.anchorMin = Vector2.zero;
+            text.anchorMax = Vector2.one;
+            text.offsetMin = new Vector2(96f, 12f); // Sitio para el icono
+            text.offsetMax = new Vector2(-24f, -12f);
+            text.localScale = Vector3.one;
+            LayoutKit.MultiLine(clueNotificationText, T.bodySize);
+        }
+    }
+
+    private void BuildIntroLayout()
+    {
+        if (introPanel == null)
+            return;
+
+        RectTransform column = LayoutKit.Column((RectTransform)introPanel.transform, out bool created);
+        if (!created)
+            return;
+
+        if (caseTitleText != null)
+            LayoutKit.Put(caseTitleText, column, height: 150f);
+        LayoutKit.Scrollable(caseDescriptionText, column);
+        LayoutKit.Put(startButton, column, height: 130f);
+        LayoutKit.Label(startButton, "Empezar");
+    }
+
+    private void BuildAccusationLayout()
+    {
+        if (accusationPanel == null)
+            return;
+
+        var panel = (RectTransform)accusationPanel.transform;
+        RectTransform column = LayoutKit.Column(panel, out bool created);
+        if (!created)
+            return;
+
+        Transform title = panel.Find("AccusationTitleText");
+        if (title != null)
+            LayoutKit.Put(title, column, height: 140f);
+
+        Transform instructions = panel.Find("Text (TMP)");
+        if (instructions != null)
+        {
+            LayoutKit.Put(instructions, column, height: 200f);
+            if (instructions.TryGetComponent(out TMP_Text instructionsText))
+                LayoutKit.MultiLine(instructionsText, T.bodySize);
+        }
+
+        // Ilustración: ocupa el hueco que quede, sin deformarse
+        Transform group = panel.Find("SuspectsGroupImage");
+        if (group != null)
+        {
+            LayoutKit.Put(group, column, height: 0f, flexibleHeight: 1f);
+            UIComponents.GetOrAdd<LayoutElement>(group.gameObject).minHeight = 0f;
+            if (group.TryGetComponent(out Image image))
+                image.preserveAspect = true;
+        }
+
+        PutDropdown(accusationDropdown, column);
+        LayoutKit.Put(accuseButton, column, height: 130f);
+        LayoutKit.Label(accuseButton, "Acusar");
+
+        EnsureAccusationBackButton();
+    }
+
+    private void BuildResultLayout()
+    {
+        if (resultPanel == null)
+            return;
+
+        RectTransform column = LayoutKit.Column((RectTransform)resultPanel.transform, out bool created);
+        if (!created)
+            return;
+
+        if (resultTitleText != null)
+        {
+            LayoutKit.Put(resultTitleText, column, height: 180f);
+            LayoutKit.MultiLine(resultTitleText, T.headingSize);
+        }
+        LayoutKit.Scrollable(resultDetailsText, column);
+
+        RectTransform buttons = LayoutKit.Row(column, "Botones", 130f);
+        LayoutKit.Put(restartButton, buttons, flexibleWidth: 1f);
+        LayoutKit.Label(restartButton, "Reiniciar");
+        LayoutKit.Put(menuButton, buttons, flexibleWidth: 1f);
+        LayoutKit.Label(menuButton, "Menú");
     }
 
     // ============================================
@@ -243,6 +528,7 @@ public class InterrogationUI : MonoBehaviour
         {
             RectTransform rect = UIFactory.Container(introPanel.transform, "IntroFondo (auto)", Vector2.zero, Vector2.one);
             rect.SetAsFirstSibling();
+            UIComponents.GetOrAdd<LayoutElement>(rect.gameObject).ignoreLayout = true;
             introBackground = rect.gameObject.AddComponent<UnityEngine.UI.RawImage>();
             introBackground.raycastTarget = false;
             ParallaxLayer.AddTo(introBackground);
@@ -254,6 +540,7 @@ public class InterrogationUI : MonoBehaviour
             rect.pivot = new Vector2(0.5f, 1f);
             rect.sizeDelta = new Vector2(0f, 480f);
             rect.SetSiblingIndex(1);
+            UIComponents.GetOrAdd<LayoutElement>(rect.gameObject).ignoreLayout = true;
             introHeader = rect.gameObject.AddComponent<UnityEngine.UI.RawImage>();
             introHeader.raycastTarget = false;
         }
@@ -279,6 +566,13 @@ public class InterrogationUI : MonoBehaviour
         var icon = rect.gameObject.AddComponent<UnityEngine.UI.RawImage>();
         icon.raycastTarget = false;
         icon.texture = ArtSlots.LoadOrPlaceholder(path, new Color(T.accent.r, T.accent.g, T.accent.b, 0.35f));
+
+        if (parent.GetComponent<Button>() != null)
+        {
+            TMP_Text label = parent.GetComponentInChildren<TMP_Text>(true);
+            if (label != null)
+                label.rectTransform.offsetMin = new Vector2(56f + 2f * T.spacing, label.rectTransform.offsetMin.y);
+        }
     }
 
     public Dictionary<string, string> ExportConversations(out string shared)
@@ -404,7 +698,7 @@ public class InterrogationUI : MonoBehaviour
             return;
 
         SelectSuspect(suspects[index].id);
-        StartCoroutine(ForceScrollToBottom());
+        RunRoutine(ForceScrollToBottom());
     }
 
     private void SelectSuspect(string suspectId)
@@ -476,7 +770,7 @@ public class InterrogationUI : MonoBehaviour
     {
         string entry = $"<color={Theme.Hex(T.playerName)}><b>TÚ:</b></color> {question}\n\n" +
                        $"<color={Theme.Hex(T.suspectName)}><b>{displayName.ToUpper()}:</b></color> {response}\n\n" +
-                       "─────────────────\n\n";
+                       "———————\n\n";
 
         if (suspectId == currentSuspectId && conversationText != null)
         {
@@ -487,7 +781,7 @@ public class InterrogationUI : MonoBehaviour
             if (typewriter != null)
             {
                 typewriter.Reveal(visibleBefore, EmotionStyle.For(EmotionOf(suspectId)).textSpeed);
-                StartCoroutine(FollowTyping());
+                RunRoutine(FollowTyping());
             }
         }
         else
@@ -500,7 +794,7 @@ public class InterrogationUI : MonoBehaviour
             evidenceDropdown.value = 0;
 
         SetInputEnabled(true);
-        StartCoroutine(ForceScrollToBottom());
+        RunRoutine(ForceScrollToBottom());
     }
 
     /// <summary>
@@ -516,7 +810,7 @@ public class InterrogationUI : MonoBehaviour
         else if (conversationText != null)
         {
             conversationText.text += notice;
-            StartCoroutine(ForceScrollToBottom());
+            RunRoutine(ForceScrollToBottom());
         }
     }
 
@@ -544,7 +838,14 @@ public class InterrogationUI : MonoBehaviour
             return;
 
         conversationText.text = conversations.CurrentText;
-        StartCoroutine(ForceScrollToBottom());
+        RunRoutine(ForceScrollToBottom());
+    }
+
+    // Las corrutinas solo existen en juego (el test de layout usa la UI en modo edición)
+    private void RunRoutine(IEnumerator routine)
+    {
+        if (Application.isPlaying && isActiveAndEnabled)
+            StartCoroutine(routine);
     }
 
     private IEnumerator ForceScrollToBottom()
@@ -577,7 +878,7 @@ public class InterrogationUI : MonoBehaviour
             yield return null;
         }
 
-        StartCoroutine(ForceScrollToBottom());
+        RunRoutine(ForceScrollToBottom());
     }
 
     private void KeepVisible(int visibleCharacters)
@@ -642,7 +943,7 @@ public class InterrogationUI : MonoBehaviour
 
     public void ShowError(string message)
     {
-        AppendNotice($"<color={Theme.Hex(T.danger)}>⚠ {message}</color>\n\n");
+        AppendNotice($"<color={Theme.Hex(T.danger)}>{message}</color>\n\n");
     }
 
     /// <summary>
@@ -700,7 +1001,7 @@ public class InterrogationUI : MonoBehaviour
 
     public void ShowContradictionNotification(string text)
     {
-        AppendNotice($"<color={Theme.Hex(T.contradiction)}>⚠ CONTRADICCIÓN: {text}</color>\n\n");
+        AppendNotice($"<color={Theme.Hex(T.contradiction)}>CONTRADICCIÓN: {text}</color>\n\n");
 
         // Destello del color de contradicción y sacudida del HUD
         UIAnimations.Flash(this, ContradictionOverlay(), T.contradiction, 0.25f);
@@ -801,7 +1102,7 @@ public class InterrogationUI : MonoBehaviour
 
     public void ShowSuspectUnlocked(string displayName)
     {
-        AppendNotice($"<color={Theme.Hex(T.success)}>✓ NUEVO SOSPECHOSO: {displayName}</color>\n\n");
+        AppendNotice($"<color={Theme.Hex(T.success)}>NUEVO SOSPECHOSO: {displayName}</color>\n\n");
     }
 
     public void ShowNotice(string message)
@@ -812,9 +1113,9 @@ public class InterrogationUI : MonoBehaviour
     public void ShowDayTransition(int newDay, string morningReport)
     {
         // El cambio de día se anota en todas las conversaciones, no solo en la abierta
-        string header = $"\n<size={T.secondarySize}><color={Theme.Hex(T.accent)}>═══════════════════</color></size>\n" +
+        string header = $"\n<size={T.secondarySize}><color={Theme.Hex(T.accent)}>———————————</color></size>\n" +
                         $"<size={T.headingSize}><b>DÍA {newDay}</b></size>\n" +
-                        $"<size={T.secondarySize}><color={Theme.Hex(T.accent)}>═══════════════════</color></size>\n\n";
+                        $"<size={T.secondarySize}><color={Theme.Hex(T.accent)}>———————————</color></size>\n\n";
 
         if (!string.IsNullOrEmpty(morningReport))
             header += $"<color={Theme.Hex(T.systemText)}><i>Parte de la mañana: {morningReport}</i></color>\n\n";
@@ -882,9 +1183,12 @@ public class InterrogationUI : MonoBehaviour
 
         ThemeApplier.Apply(clone.transform);
 
-        // Con la distribución móvil, el botón nuevo entra en la pila de botones de abajo
-        if (applyMobileLayout && accusationPanel != null)
-            MobilePanelLayout.Apply((RectTransform)accusationPanel.transform);
+        // En la columna de la acusación, debajo de "Acusar"
+        if (clone.transform.parent.GetComponent<VerticalLayoutGroup>() != null)
+        {
+            LayoutKit.Put(clone.transform, (RectTransform)clone.transform.parent, height: 130f);
+            LayoutKit.Label(accusationBackButton, "Volver");
+        }
     }
 
     public void OnAccuseClick()
@@ -909,19 +1213,19 @@ public class InterrogationUI : MonoBehaviour
             switch (result.ending)
             {
                 case Ending.Good:
-                    resultTitleText.text = "✓ CASO RESUELTO - FINAL BUENO";
+                    resultTitleText.text = "CASO RESUELTO: FINAL BUENO";
                     resultTitleText.color = T.success;
                     break;
                 case Ending.Bittersweet:
-                    resultTitleText.text = "⚠ ACERTASTE PERO SIN PRUEBAS";
+                    resultTitleText.text = "ACERTASTE, PERO SIN PRUEBAS";
                     resultTitleText.color = T.accent;
                     break;
                 case Ending.Insufficient:
-                    resultTitleText.text = "⚠ CULPABLE LIBRE POR FALTA DE PRUEBAS";
+                    resultTitleText.text = "CULPABLE LIBRE POR FALTA DE PRUEBAS";
                     resultTitleText.color = T.contradiction;
                     break;
                 default:
-                    resultTitleText.text = "✗ CASO NO RESUELTO - FINAL MALO";
+                    resultTitleText.text = "CASO NO RESUELTO: FINAL MALO";
                     resultTitleText.color = T.danger;
                     break;
             }

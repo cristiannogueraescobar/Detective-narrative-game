@@ -13,7 +13,7 @@ public class Theme : ScriptableObject
 
     [Header("Fondos y paneles")]
     public Color background = new Color32(15, 16, 18, 255);
-    public Color panel = new Color32(26, 27, 31, 245);
+    public Color panel = new Color32(26, 27, 31, 255);
     public Color panelBorder = new Color32(43, 44, 49, 255);
     public Color overlay = new Color32(0, 0, 0, 180);           // Fondo de ventanas modales
 
@@ -40,7 +40,7 @@ public class Theme : ScriptableObject
     public Color clue = new Color32(217, 164, 65, 255);
     public Color contradiction = new Color32(217, 140, 58, 255);
     public Color success = new Color32(110, 158, 106, 255);
-    public Color danger = new Color32(181, 72, 61, 255);
+    public Color danger = new Color32(224, 106, 94, 255); // ≥ 4.5:1 sobre el panel
     public Color placeholder = new Color32(46, 46, 51, 255);     // Arte que aún no existe
 
     [Header("Estados emocionales: tinte del retrato")]
@@ -95,7 +95,7 @@ public class Theme : ScriptableObject
 
     [Header("Distribución vertical (px a 1080 × 1920)")]
     public float hudHeight = 140f;
-    public float portraitHeight = 480f;
+    public float portraitHeight = 380f;
     public float bottomAreaHeight = 440f;
     public float padding = 32f;
     public float spacing = 16f;

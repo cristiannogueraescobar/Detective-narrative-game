@@ -108,6 +108,10 @@ public static class ThemeApplier
             if (role == UIRole.Auto && !isText && (graphic.TryGetComponent(out TMP_Dropdown _) || graphic.TryGetComponent(out TMP_InputField _)))
                 role = UIRole.Field;
 
+            // El fondo de un scroll (el chat) es un panel: sin esto conserva el gris claro de la escena
+            if (role == UIRole.Auto && !isText && graphic.TryGetComponent(out ScrollRect _))
+                role = UIRole.Panel;
+
             if (role == UIRole.Auto)
                 role = RoleFor(graphic.gameObject.name, button != null && graphic.gameObject == button.gameObject, isText, insideButton);
 
@@ -174,13 +178,50 @@ public static class ThemeApplier
         return button != null && RoleFor(button.gameObject.name, true, false, false) == UIRole.PrimaryButton;
     }
 
+    /// <summary>
+    /// Política de texto: ningún texto puede desbordar su caja ni bajar del mínimo legible.
+    /// - Dentro de un scroll: tamaño fijo, ajuste de línea, crece en alto.
+    /// - Texto que se escribe en un campo: tamaño fijo (el campo desplaza su contenido).
+    /// - Etiquetas de botón y desplegable, placeholder y textos secundarios (HUD): una línea, se reducen y ponen "…".
+    /// - Títulos y cuerpos en caja fija: varias líneas, se reducen y ponen "…".
+    /// </summary>
     private static void Style(TMP_Text text, TMP_FontAsset font, float size, Color color)
     {
         if (font != null)
             text.font = font;
-        text.enableAutoSizing = false;
-        text.fontSize = size;
         text.color = color;
+
+        TMP_InputField field = text.GetComponentInParent<TMP_InputField>(true);
+        if (field != null && field.textComponent == text)
+        {
+            text.enableAutoSizing = false;
+            text.fontSize = Mathf.Max(size, Theme.MinReadableSize);
+            return;
+        }
+
+        if (InsideScrollContent(text.transform))
+        {
+            LayoutKit.ScrollingText(text);
+            text.fontSize = Mathf.Max(size, Theme.MinReadableSize);
+            return;
+        }
+
+        bool oneLine = text.GetComponentInParent<TMP_Dropdown>(true) != null
+                       || text.GetComponentInParent<Button>(true) != null
+                       || (field != null && field.placeholder == text)
+                       || size <= ThemeManager.Current.secondarySize;
+
+        if (oneLine)
+            LayoutKit.OneLine(text, size);
+        else
+            LayoutKit.MultiLine(text, size);
+    }
+
+    private static bool InsideScrollContent(Transform t)
+    {
+        ScrollRect scroll = t.GetComponentInParent<ScrollRect>(true);
+        return scroll != null && scroll.content != null && t.IsChildOf(scroll.content)
+               && scroll.GetComponentInParent<TMP_Dropdown>(true) == null;
     }
 
     private static ColorBlock ButtonColors(Color normal, Color disabled)

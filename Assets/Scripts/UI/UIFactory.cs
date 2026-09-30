@@ -38,10 +38,10 @@ public static class UIFactory
         var go = new GameObject("Label", typeof(RectTransform));
         go.transform.SetParent(parent, false);
         var label = go.AddComponent<TextMeshProUGUI>();
+        label.font = DefaultFont();
         label.text = text;
-        label.fontSize = size;
         label.color = color;
-        label.enableWordWrapping = true;
+        LayoutKit.MultiLine(label, size);
         go.AddComponent<LayoutElement>().minHeight = size * 1.4f;
         return label;
     }
@@ -72,21 +72,17 @@ public static class UIFactory
         go.transform.SetParent(parent, false);
         go.AddComponent<LayoutElement>().minHeight = 72f;
 
-        // Sustituir el Text de uGUI por TextMeshPro
-        Text legacy = go.GetComponentInChildren<Text>(true);
-        if (legacy != null)
-        {
-            GameObject labelGo = legacy.gameObject;
-            UnityEngine.Object.DestroyImmediate(legacy);
-            var label = labelGo.AddComponent<TextMeshProUGUI>();
-            label.text = text;
-            label.fontSize = theme.bodySize;
-            label.color = theme.textPrimary;
-        }
-
         var background = go.transform.Find("Background") as RectTransform;
         if (background != null)
+        {
+            background.anchorMin = background.anchorMax = new Vector2(0f, 0.5f);
+            background.pivot = new Vector2(0f, 0.5f);
+            background.anchoredPosition = Vector2.zero;
             background.sizeDelta = new Vector2(56f, 56f);
+        }
+
+        TMP_Text toggleLabel = ReplaceLabel(go, text, new Vector2(56f + theme.spacing, 0f));
+        toggleLabel.alignment = TextAlignmentOptions.MidlineLeft;
         Tint(background, theme.panelBorder);
         Tint(go.transform.Find("Background/Checkmark"), theme.accent);
 
@@ -104,21 +100,50 @@ public static class UIFactory
         go.transform.SetParent(parent, false);
         go.AddComponent<LayoutElement>().minHeight = 110f;
 
-        Text legacy = go.GetComponentInChildren<Text>(true);
-        if (legacy != null)
-        {
-            GameObject labelGo = legacy.gameObject;
-            UnityEngine.Object.DestroyImmediate(legacy);
-            var label = labelGo.AddComponent<TextMeshProUGUI>();
-            label.text = text;
-            label.alignment = TextAlignmentOptions.Center;
-        }
+        ReplaceLabel(go, text, Vector2.zero);
 
         var button = go.GetComponent<Button>();
         button.onClick.AddListener(() => onClick());
         go.AddComponent<ThemeRole>().role = primary ? UIRole.PrimaryButton : UIRole.SecondaryButton;
         ThemeApplier.Apply(go.transform);
+        LayoutKit.Label(button, null);
         return button;
+    }
+
+    /// <summary>
+    /// Fuente de los textos creados por código: la del tema o, si no hay, la predeterminada de TextMeshPro.
+    /// </summary>
+    public static TMP_FontAsset DefaultFont()
+    {
+        return ThemeManager.Current.bodyFont != null ? ThemeManager.Current.bodyFont : TMP_Settings.defaultFontAsset;
+    }
+
+    /// <summary>
+    /// Sustituye la etiqueta que crea DefaultControls (sea Text de uGUI o TMP sin fuente) por una TMP propia,
+    /// estirada dentro del control a partir de 'leftInset'.
+    /// </summary>
+    private static TMP_Text ReplaceLabel(GameObject control, string text, Vector2 leftInset)
+    {
+        foreach (Text legacy in control.GetComponentsInChildren<Text>(true))
+            UnityEngine.Object.DestroyImmediate(legacy.gameObject);
+        foreach (TMP_Text old in control.GetComponentsInChildren<TMP_Text>(true))
+            UnityEngine.Object.DestroyImmediate(old.gameObject);
+
+        var labelObject = new GameObject("Label (auto)", typeof(RectTransform));
+        var rect = (RectTransform)labelObject.transform;
+        rect.SetParent(control.transform, false);
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = new Vector2(16f + leftInset.x, 6f);
+        rect.offsetMax = new Vector2(-16f, -6f);
+
+        var label = labelObject.AddComponent<TextMeshProUGUI>();
+        label.font = DefaultFont();
+        label.text = text;
+        label.color = ThemeManager.Current.textPrimary;
+        label.alignment = TextAlignmentOptions.Center;
+        LayoutKit.OneLine(label, ThemeManager.Current.bodySize);
+        return label;
     }
 
     private static void Tint(Transform target, Color color)

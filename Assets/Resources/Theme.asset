@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Theme
   m_EditorClassIdentifier: Detective::Theme
   background: {r: 0.05882353, g: 0.0627451, b: 0.07058824, a: 1}
-  panel: {r: 0.101960786, g: 0.105882354, b: 0.12156863, a: 0.9607843}
+  panel: {r: 0.101960786, g: 0.105882354, b: 0.12156863, a: 1}
   panelBorder: {r: 0.16862746, g: 0.17254902, b: 0.19215687, a: 1}
   overlay: {r: 0, g: 0, b: 0, a: 0.7058824}
   textPrimary: {r: 0.9098039, g: 0.8862745, b: 0.8392157, a: 1}
@@ -32,7 +32,7 @@ MonoBehaviour:
   clue: {r: 0.8509804, g: 0.6431373, b: 0.25490198, a: 1}
   contradiction: {r: 0.8509804, g: 0.54901963, b: 0.22745098, a: 1}
   success: {r: 0.43137255, g: 0.61960787, b: 0.41568628, a: 1}
-  danger: {r: 0.70980394, g: 0.28235295, b: 0.23921569, a: 1}
+  danger: {r: 0.8784314, g: 0.41568628, b: 0.36862746, a: 1}
   placeholder: {r: 0.18039216, g: 0.18039216, b: 0.2, a: 1}
   calmTint: {r: 1, g: 1, b: 1, a: 1}
   nervousTint: {r: 1, g: 0.96, b: 0.86, a: 1}
@@ -59,7 +59,7 @@ MonoBehaviour:
   contradictionAnimDuration: 0.5
   typewriterCharsPerSecond: 45
   hudHeight: 140
-  portraitHeight: 480
+  portraitHeight: 380
   bottomAreaHeight: 440
   padding: 32
   spacing: 16

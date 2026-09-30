@@ -48,14 +48,7 @@ public class MenuManager : MonoBehaviour
 
         SetUpContinueButton();
 
-        if (applyMobileLayout)
-        {
-            foreach (GameObject panel in new[] { mainMenuPanel, instructionsPanel, settingsPanel, aboutPanel })
-            {
-                if (panel != null)
-                    MobilePanelLayout.Apply((RectTransform)panel.transform);
-            }
-        }
+        BuildLayout();
         
         if (instructionsButton != null)
             UIComponents.SetOnlyListener(instructionsButton, ShowInstructions);
@@ -134,6 +127,116 @@ public class MenuManager : MonoBehaviour
         TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
         if (label != null)
             label.text = text;
+    }
+
+    /// <summary>
+    /// Distribución móvil de los paneles del menú. Idempotente; la usa también el test de layout.
+    /// </summary>
+    public void BuildLayout()
+    {
+        if (!applyMobileLayout)
+            return;
+
+        if (mainMenuPanel != null)
+            ThemeApplier.Apply(mainMenuPanel.transform.root);
+
+        if (settingsPanel != null)
+            SettingsPanel.Build(settingsPanel, () => gameManager?.RestartGame());
+
+        BuildMainMenu();
+        BuildPage(instructionsPanel, "InstructionsTitleText", "InstructionsText", backFromInstructionsButton);
+        BuildPage(aboutPanel, "AboutTitleText", "InstructionsText", backFromAboutButton);
+        BuildPage(settingsPanel, "SettingsTitleText", "AjustesControles", backFromSettingsButton);
+    }
+
+    private void BuildMainMenu()
+    {
+        if (mainMenuPanel == null)
+            return;
+
+        var panel = (RectTransform)mainMenuPanel.transform;
+        RectTransform column = LayoutKit.Column(panel, out bool created);
+        if (!created)
+            return;
+
+        Theme t = ThemeManager.Current;
+        Transform title = panel.Find("GameTitleText");
+        if (title != null)
+        {
+            LayoutKit.Put(title, column, height: 380f);
+            if (title.TryGetComponent(out TMP_Text titleText))
+            {
+                LayoutKit.MultiLine(titleText, t.titleSize * 1.4f);
+                titleText.alignment = TextAlignmentOptions.Center;
+            }
+        }
+
+        LayoutKit.Spacer(column, 1f);
+
+        Transform continueButton = panel.Find("ContinueButton (auto)");
+        if (continueButton != null)
+        {
+            LayoutKit.Put(continueButton, column, height: 130f);
+            LayoutKit.Label(continueButton.GetComponent<Button>(), null);
+        }
+
+        PutMenuButton(playButton, column, continueButton != null ? "Nueva partida" : "Jugar");
+        PutMenuButton(instructionsButton, column, "Instrucciones");
+        PutMenuButton(settingsButton, column, "Ajustes");
+        PutMenuButton(aboutButton, column, "Acerca de");
+        PutMenuButton(quitButton, column, "Salir");
+
+        LayoutKit.Spacer(column, 0.3f);
+    }
+
+    private static void PutMenuButton(Button button, RectTransform column, string label)
+    {
+        if (button == null)
+            return;
+
+        LayoutKit.Put(button, column, height: 130f);
+        LayoutKit.Label(button, label);
+    }
+
+    /// <summary>
+    /// Página de menú: título arriba, contenido en el centro (con scroll si es texto) y "Volver" abajo.
+    /// </summary>
+    private static void BuildPage(GameObject pageObject, string titleName, string contentName, Button back)
+    {
+        if (pageObject == null)
+            return;
+
+        var panel = (RectTransform)pageObject.transform;
+        RectTransform column = LayoutKit.Column(panel, out bool created);
+        if (!created)
+            return;
+
+        Transform title = panel.Find(titleName);
+        if (title != null)
+        {
+            LayoutKit.Put(title, column, height: 150f);
+            if (title.TryGetComponent(out TMP_Text titleText))
+                LayoutKit.MultiLine(titleText, ThemeManager.Current.titleSize);
+        }
+
+        Transform content = panel.Find(contentName);
+        if (content != null && content.gameObject.activeSelf)
+        {
+            if (content.TryGetComponent(out TMP_Text text))
+                LayoutKit.Scrollable(text, column);
+            else
+                LayoutKit.Put(content, column, height: 300f, flexibleHeight: 1f);
+        }
+        else
+        {
+            LayoutKit.Spacer(column, 1f);
+        }
+
+        if (back != null)
+        {
+            LayoutKit.Put(back, column, height: 130f);
+            LayoutKit.Label(back, "Volver");
+        }
     }
 
     private void OnContinueClicked()
