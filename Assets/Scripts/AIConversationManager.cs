@@ -237,9 +237,10 @@ public class AIConversationManager : MonoBehaviour
     public bool RetryInventedTimes { get; set; } = true;
 
     /// <summary>
-    /// El reintento por horas, más frío (A/B de la ronda 20 con el bot: ver NIGHT-LOG).
+    /// El reintento por horas, más frío: arregla 10 de 11 horas inventadas frente a 5 de 9 (A/B de la ronda 20 con
+    /// el bot, 12 + 12 partidas; ver NIGHT-LOG).
     /// </summary>
-    public bool CoolTimeRetry { get; set; }
+    public bool CoolTimeRetry { get; set; } = true;
     public const float CoolRetryTemperature = 0.3f;
 
     // Contadores para las mediciones del bot (no afectan al juego)

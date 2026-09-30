@@ -224,3 +224,6 @@ Víctima: Paula Romero Navarro, 15 años. Pasaba el fin de semana con su padre e
 | 3C_pisadas | Javier (padre) | incrimina |  | el domingo encontraste en la ceniza del quemadero huellas de botas pequeñas, de mujer; tú calzas un 44. |
 | 3C_bar | Javier (padre) | descarta a `padre` | sí | Estuviste en el bar Casino de 19:30 a 22:00, el camarero lo sabe; volviste borracho y no entraste a ver a Paula. |
 
+## Horas inventadas: reintento más frío (día 3, ronda 20)
+A/B con el bot (3B, 1C, 3A; 12 + 12 partidas): con el reintento a temperatura 0,3 se arreglan 10 de 11 respuestas
+con horas inventadas (antes 5 de 9). Activado por defecto (`AIConversationManager.CoolTimeRetry`).

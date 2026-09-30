@@ -41,7 +41,7 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 2. **Jugabilidad:** "Pensar", dificultad, prueba clave, rango, **tus notas** por sospechoso, **los partes en la libreta**, la rueda **tacha a quien está descartado**, rejugar trae **otro culpable**. Bot: primera pista 10,3 → 6,9 preguntas, resueltas 44 → 72 %.
 3. **Aspecto y sonido:** retratos 2.5D, post-proceso noir (contraste medido después), arte y motivo musical por historia, ficha policial en el final; todo reversible desde el tema.
 4. **Accesibilidad:** WCAG 2.2 AA auditado y **lector de pantalla** (TalkBack/VoiceOver), también en los enlaces de la libreta.
-5. **Calidad:** cinco revisiones independientes, todos los hallazgos importantes arreglados con test en rojo primero; tests EditMode 549 → 713, PlayMode 20 → 54; build de Windows con prueba de humo OK.
+5. **Calidad:** cinco revisiones independientes, todos los hallazgos importantes arreglados con test en rojo primero; tests EditMode 549 → 714, PlayMode 20 → 54; build de Windows con prueba de humo OK.
 6. **Bloqueante para Android:** ningún proveedor LLM funciona tal cual en el móvil (decisión 1). APK sin generar (falta el módulo).
 
 ## 2. Galería antes / después
@@ -70,9 +70,9 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 
 | Métrica | Antes (inicio del día) | Ahora |
 |---|---|---|
-| Tests EditMode | 549 | **713** |
+| Tests EditMode | 549 | **714** |
 | Tests PlayMode (sin capturas) | 20 | **54** |
-| Horas inventadas por qwen (A/B, 18+18 partidas) | 27 / 619 respuestas | **7 / 630** (−74 %), latencia igual |
+| Horas inventadas por qwen (A/B, 18+18 partidas) | 27 / 619 respuestas | **7 / 630** (−74 %), latencia igual; el reintento frío arregla 91 % (antes 56 %) |
 | Primera pista (bot, preguntas) | 10,3 (8,6 antes de B2) | **6,9** con Pensar |
 | Partidas sin ninguna pista (bot) | 2 de 18 | **0** |
 | Partidas resueltas (bot) | 44-56 % | **72 %** con Pensar |
@@ -155,6 +155,9 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 15. **Variantes ya vistas**: se apuntan desde esta versión. Quien jugase antes verá otra vez "otros dos culpables"
     y puede repetir una variante una vez. Aceptado porque el juego no está publicado; si hiciera falta, se podrían
     sembrar desde los mejores finales por historia (solo por historia, no por variante).
+16. **Reintento por horas inventadas a temperatura 0,3** (antes, la misma del personaje): A/B con el bot, arregla 10
+    de 11 frente a 5 de 9, sin cambio en culpables ni latencia. Solo afecta a esa segunda llamada; se desactiva con
+    `AIConversationManager.CoolTimeRetry = false`.
 
 ## 7. Pendientes
 - APK de Android (instalar el módulo) y medir el post-proceso en un móvil real (estimado 1-2 ms).
@@ -166,7 +169,7 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 
 ## 8. Cómo probarlo en Unity (en este orden)
 1. Abrir el proyecto con **Unity 6000.3.2f1** y esperar a que importe (la primera vez tarda).
-2. *Window → General → Test Runner* → **EditMode → Run All** (713 en verde).
+2. *Window → General → Test Runner* → **EditMode → Run All** (714 en verde).
 3. **PlayMode → Run All** (54 en verde; las capturas están marcadas *Explicit* y no corren solas).
 4. Para jugar con qwen: `ollama serve` y `ollama pull qwen2.5:7b-instruct`.
 5. Abrir `Assets/Scenes/Game.unity` → **Play** con la ventana *Game* en 1080×1920:

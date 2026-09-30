@@ -109,7 +109,7 @@ public class AIConversationFlowTests
     [Test]
     public void ElReintentoPorHorasFrioBajaLaTemperatura()
     {
-        manager.CoolTimeRetry = true;
+        Assert.IsTrue(manager.CoolTimeRetry, "activado por defecto (ronda 20: 10 de 11 frente a 5 de 9)");
         provider.results.Enqueue(LLMResult.Ok("La vi en el salón a las 21:47. [ESTADO: tranquilo]"));
         provider.results.Enqueue(LLMResult.Ok("La vi en el salón, no me fijé en la hora. [ESTADO: tranquilo]"));
 
