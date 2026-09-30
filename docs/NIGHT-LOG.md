@@ -650,6 +650,11 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   partidas nunca se le ha inventado uno (siempre "la tía de Sofía"); el resto ya tiene nombre o es un personaje.
   Sin cambios.
 
+- **20:32** Build de Windows rehecha con lo último: SMOKE OK. Ronda 29 al azar (1B, 3B, 3A; semilla 2929): **5/6**;
+  4 horas inventadas, todas con la misma forma: "no me fijé en la hora, pero creo que sobre las 23:30" (obedece la
+  nota y aun así da una hora aproximada) → ronda 30: A/B de una nota más estricta ("sin dar ninguna hora
+  aproximada"; apagada por defecto hasta ver los datos). Acumulado al azar: 56/74.
+
 ## Ahora (día 3)
 - Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
   rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
