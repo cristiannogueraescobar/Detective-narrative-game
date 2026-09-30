@@ -108,6 +108,16 @@ public class AIConversationManager : MonoBehaviour
         LLMResult result = await llmProvider.SendAsync(systemPrompt,
             ConversationWindow.Last(history, MaxHistoryMessages), maxTokens, temperature);
 
+        // El modelo a veces repite palabra por palabra su respuesta anterior (suena a máquina): se pide otra vez,
+        // una sola, con algo más de variedad. Si vuelve a repetir, se acepta: nunca se bloquea la partida.
+        if (result.Success && IsRepeat(history, result.Text))
+        {
+            LLMResult retry = await llmProvider.SendAsync(systemPrompt,
+                ConversationWindow.Last(history, MaxHistoryMessages), maxTokens, Mathf.Min(1f, temperature + RepeatRetryTemperatureBoost));
+            if (retry.Success)
+                result = retry;
+        }
+
         if (!result.Success)
         {
             // Quitar la pregunta para no dejar dos mensajes "user" seguidos al reintentar
@@ -171,6 +181,22 @@ public class AIConversationManager : MonoBehaviour
             conversationHistory[pair.Key] = new List<ChatMessage>(pair.Value);
         foreach (var pair in savedEmotions)
             emotions[pair.Key] = pair.Value;
+    }
+
+    public const float RepeatRetryTemperatureBoost = 0.25f;
+
+    // ¿La respuesta nueva es la misma que la última de este personaje (sin contar la etiqueta de estado)?
+    private static bool IsRepeat(List<ChatMessage> history, string answer)
+    {
+        for (int i = history.Count - 1; i >= 0; i--)
+        {
+            if (history[i].role != "assistant")
+                continue;
+            string previous = EmotionParser.Parse(history[i].content).text;
+            string current = EmotionParser.Parse(answer).text;
+            return !string.IsNullOrWhiteSpace(current) && string.Equals(previous?.Trim(), current.Trim(), System.StringComparison.OrdinalIgnoreCase);
+        }
+        return false;
     }
 
     public Emotion CurrentEmotion(string characterId)

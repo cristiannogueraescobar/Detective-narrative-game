@@ -14,12 +14,16 @@ public class AIConversationFlowTests
         public readonly Queue<LLMResult> results = new Queue<LLMResult>();
         public int lastHistoryCount;
         public string lastFirstRole;
+        public float lastTemperature;
+        public int calls;
 
         public string DisplayName => "Falso";
 
         public Task<LLMResult> SendAsync(string systemPrompt, IReadOnlyList<ChatMessage> history, int maxTokens, float temperature)
         {
             lastHistoryCount = history.Count;
+            lastTemperature = temperature;
+            calls++;
             lastFirstRole = history.Count > 0 ? history[0].role : null;
             return Task.FromResult(results.Count > 0 ? results.Dequeue() : LLMResult.Ok("Sin más. [ESTADO: tranquilo]"));
         }
@@ -52,6 +56,35 @@ public class AIConversationFlowTests
     private LLMResult Ask(string characterId, string question, ClueData shown = null)
     {
         return manager.AskSuspect(characterId, question, 1, shown).GetAwaiter().GetResult();
+    }
+
+    [Test]
+    public void UnaRespuestaIdenticaALaAnteriorSePideOtraVez()
+    {
+        provider.results.Enqueue(LLMResult.Ok("Estuve en casa toda la noche. [ESTADO: nervioso]"));
+        provider.results.Enqueue(LLMResult.Ok("Estuve en casa toda la noche. [ESTADO: nervioso]"));
+        provider.results.Enqueue(LLMResult.Ok("Ya se lo he dicho: no salí de casa. [ESTADO: enfadado]"));
+
+        Ask("a", "¿Dónde estaba?");
+        int before = provider.calls;
+        LLMResult second = Ask("a", "¿Y a las once?");
+
+        Assert.AreEqual(before + 2, provider.calls, "se repite la petición una vez");
+        Assert.AreEqual("Ya se lo he dicho: no salí de casa.", second.Text);
+        Assert.Greater(provider.lastTemperature, AIConversationManager.DefaultTemperature, "con algo más de variedad");
+    }
+
+    [Test]
+    public void SiVuelveARepetirSeQuedaConLaRespuesta()
+    {
+        for (int i = 0; i < 3; i++)
+            provider.results.Enqueue(LLMResult.Ok("Estuve en casa. [ESTADO: nervioso]"));
+
+        Ask("a", "¿Dónde estaba?");
+        LLMResult second = Ask("a", "¿Seguro?");
+
+        Assert.IsTrue(second.Success);
+        Assert.AreEqual("Estuve en casa.", second.Text, "un solo reintento: nunca bloquea la partida");
     }
 
     [Test]
