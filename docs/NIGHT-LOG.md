@@ -666,6 +666,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   final: 4/72 (5 %), igual que la primera sonda con la regla (5 %; la segunda dio 2 %). El informe citaba solo el 2 %
   → corregido a "23 → 2-5 %" en informe, README, GAME-DESIGN y COHERENCE (Logs/premisas/premisas-cierre.md).
 
+- **21:16** Calibración de pistas con la build final (48 pistas): 36/48, media 80 % (83 % esta mañana: dentro del
+  ruido de 3 intentos), **pero 3A_granada bajó a 3/6 por culpa mía**: con la tía con nombre, qwen dice "en casa de
+  tía Remedios" sin "mi" ni "Granada" y las anclas no casaban → anclas ampliadas (remedios, nerea, hugo, toda la
+  jornada) y esas respuestas reales fijadas como muestras (test). Recalibrada: **6/6 (100 %)**; 3B_noche 6/6.
+  Lección: cambiar el texto de una ficha exige recalibrar sus pistas, aunque sea un nombre.
+
 ## Ahora (día 3)
 - Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
   rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
