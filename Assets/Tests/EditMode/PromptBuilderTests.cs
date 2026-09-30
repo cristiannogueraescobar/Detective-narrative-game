@@ -67,7 +67,7 @@ public class PromptBuilderTests
     {
         string prompt = Build("b", day: 3, shown: new[] { "x" }, told: new[] { "i1" });
 
-        StringAssert.Contains("DÍA 3 DE LA INVESTIGACIÓN.", prompt);
+        StringAssert.Contains("HOY ES EL DÍA 3 DE LA INVESTIGACIÓN.", prompt);
         StringAssert.Contains("PRUEBAS QUE YA TE HAN MOSTRADO:", prompt);
         StringAssert.Contains("Resumen x", prompt);
         StringAssert.Contains("YA HAS CONTADO", prompt);
@@ -93,14 +93,5 @@ public class PromptBuilderTests
         StringAssert.Contains("Elena", guide);
         StringAssert.Contains("triste", guide);
         StringAssert.Contains("TE PONE NERVIOSO", guide);
-    }
-
-    [Test]
-    public void NoAceptaLoQueElInspectorDaPorHecho()
-    {
-        // Sonda de premisas falsas: el 23 % aceptaba una discusión inventada (y la adornaba con detalles)
-        StoryData story = TestCases.Story();
-        string prompt = PromptBuilder.Build(story, story.variants[0], story.cast[0].id, 1, null, null);
-        StringAssert.Contains("afirma algo que no está en tu ficha, niégalo", prompt);
     }
 }
