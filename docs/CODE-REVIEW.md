@@ -126,3 +126,26 @@ confirmaría una captura). El comentario dice "sin coste por fotograma" pero hay
 | 13 | **Ajustado** | `disabledAlpha` 0,45 → 0,6 (encima del gris del ColorBlock el botón casi desaparecía); comentario corregido (sí hay una comparación por fotograma) | LayoutValidationTests (estados de botón) |
 
 Suites tras la pasada: ver docs/NIGHT-LOG.md (entrada de la resolución).
+
+---
+
+# Revisión de código (día 3, tarde)
+Segunda revisión independiente, sobre `git diff 0054001..HEAD` (lector de pantalla, ficha policial, cabecera en
+pantallas alargadas, flechas, textos). **0 críticos, 3 importantes, 8 menores.** Resolución en una pasada, con test:
+
+| # | Sev. | Hallazgo | Estado |
+|---|---|---|---|
+| 1 | Importante | "Pantalla nueva" se decidía por la primera etiqueta (el HUD): tras cada respuesta el foco del lector saltaba arriba y cortaba el anuncio | **Arreglado**: por el primer control, y nunca en los 1,5 s siguientes a un anuncio (test CambiarElHudNoEsCambiarDePantalla) |
+| 2 | Importante | Jerarquía nueva con cualquier cambio: el lector perdía el foco (p. ej. al mover un deslizador) | **Arreglado**: un nodo por objeto; textos, valores y estados se actualizan en el sitio y solo se insertan o quitan los que cambian (test UnDeslizadorConservaSuNodoAlCambiarDeValor) |
+| 3 | Importante (dudoso) | Origen de `frame` sin comprobar | **Confirmado arriba-izquierda** (el manual de Unity usa `worldBound` de UI Toolkit, que va así); test LosMarcosTienenElOrigenArriba |
+| 4 | Menor | La firma no incluía la identidad: nodos atados a objetos destruidos | **Arreglado** por el n.º 2 (id de instancia; acciones que comprueban el objeto) |
+| 5 | Menor | Sin zonas desplazables: lo de fuera de un scroll (la ficha policial, el chat antiguo) era inalcanzable | **Arreglado**: nodo ScrollView con desplazamiento por páginas (test ElExpedienteEsUnaZonaDesplazable) |
+| 6 | Menor | El recorte a 60 textos podía quitar títulos | **Arreglado**: se ordena primero y solo se recortan los mensajes más antiguos del chat |
+| 7 | Menor | Solo el CanvasGroup más cercano; no el alfa del texto | **Arreglado**: se multiplican todos los grupos (respetando ignoreParentGroups) y el alfa propio (test UnTextoTransparenteNoSeLee) |
+| 8 | Menor | Muchas reservas de memoria cada 0,5 s con el lector encendido | **Reducido**: esquinas, listas, PointerEventData y Regex reutilizados; el rectángulo se calcula una vez por elemento |
+| 9 | Menor | Rótulo de casillas/deslizadores leído dos veces; lambdas sin null; sin OnDestroy | **Arreglado** (el rótulo usado no se lee aparte; el del deslizador es el texto justo encima) |
+| 10 | Menor | La escala de letra del sistema se leía en cada consulta | **Arreglado**: una vez, en perezoso |
+| 11 | Menor | La cabecera medía el lienzo raíz (con muesca) y el test usaba un lienzo que ningún móvil da | **Arreglado**: por proporción dentro del área segura; test con `LayoutPreview.CanvasSize(1080, 2400)` |
+
+Aparte: en batchmode la "pantalla" del editor es 640×480 apaisada (el chat se queda sin alto); los tests del lector
+lo tienen en cuenta.

@@ -2,14 +2,17 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// En pantallas más altas que la de referencia (1080 × 1920), la cabecera del interrogatorio (retrato y controles)
-/// se lleva una parte del alto que sobra (Theme.tallScreenHeaderShare); el resto sigue yendo al chat. Sin esto,
-/// en un 20:9 el chat recién empezado dejaba una franja vacía en el centro. Se recalcula al cambiar el tamaño.
+/// En pantallas más alargadas que la de referencia (9:16, 1080 × 1920), la cabecera del interrogatorio (retrato y
+/// controles) se lleva una parte del alto que sobra (Theme.tallScreenHeaderShare); el resto sigue yendo al chat.
+/// Sin esto, en un 20:9 el chat recién empezado dejaba una franja vacía en el centro. Se mide dentro del área
+/// segura (sin barra de estado ni muesca) y por proporción, porque el CanvasScaler (match 0,5) no da 1080 de ancho
+/// en un móvil alargado. Se recalcula al cambiar el tamaño.
 /// </summary>
 [ExecuteAlways]
 public class TallScreenHeader : MonoBehaviour
 {
     public const float ReferenceHeight = 1920f;
+    public const float ReferenceWidth = 1080f;
 
     public LayoutElement header;
     public LayoutElement portrait;
@@ -40,9 +43,12 @@ public class TallScreenHeader : MonoBehaviour
     {
         if (header == null)
             return;
-        Canvas canvas = GetComponentInParent<Canvas>();
-        float screen = canvas != null ? ((RectTransform)canvas.rootCanvas.transform).rect.height : ReferenceHeight;
-        float height = baseHeight + Mathf.Max(0f, screen - ReferenceHeight) * ThemeManager.Current.tallScreenHeaderShare;
+        // El área disponible (el padre de la columna: el área segura) comparada con una 9:16 del mismo ancho
+        var area = transform.parent as RectTransform;
+        if (area == null || area.rect.width <= 0f)
+            return;
+        float extra = area.rect.height - area.rect.width * ReferenceHeight / ReferenceWidth;
+        float height = baseHeight + Mathf.Max(0f, extra) * ThemeManager.Current.tallScreenHeaderShare;
         if (Mathf.Approximately(height, applied))
             return;
         applied = height;
