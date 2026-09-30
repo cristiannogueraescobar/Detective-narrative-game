@@ -193,6 +193,10 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   Estados: triste 40 % · nervioso 39 % · tranquilo 15 %. Build final en Builds/Windows-final, SMOKE OK.
   Reporte rápido enviado al usuario a petición suya.
 
+- 10:05 Ronda 10: los tests en una copia limpia de la rama (worktree en HEAD): EditMode 549/549, PlayMode 20/20;
+  nada depende de archivos sin subir. Horas inventadas de la definitiva: casi todas rutinas aproximadas
+  ("me acosté sobre las 23:00"); las dañinas son avistamientos inventados (anotado en el informe).
+
 ## Ahora
 - Rondas finales (10+): revisión de toda la rama (subagente), bot definitivo de 18 partidas (semilla 59),
   informe y galería finales, build final, borrar el worktree.

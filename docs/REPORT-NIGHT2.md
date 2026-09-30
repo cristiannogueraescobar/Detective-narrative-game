@@ -278,7 +278,7 @@ abre Unity y deja que reimporte. Game View a **1080x1920 (vertical)**; después 
 
 ## Cifras finales
 
-- **Tests:** EditMode **549/549** en verde; PlayMode **20/20** en verde (más 14 pruebas de captura *Explicit*, que
+- **Tests:** EditMode **549/549** en verde; PlayMode **20/20** en verde (también en una copia limpia de la rama) (más 14 pruebas de captura *Explicit*, que
   solo corren a mano). Al empezar la noche eran 316.
 - **Revisiones de código:** 9 por tramos más una de toda la rama con el modelo más capaz, todas con subagente.
   Ninguna encontró fallos críticos ni importantes al final; los menores se arreglaron con test o se anotaron.
