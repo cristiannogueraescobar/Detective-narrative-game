@@ -20,7 +20,7 @@ your own words; show a clue from your notebook to the suspect you think is lying
 |---|---|---|
 | *La hija perfecta* | A family house in Santiago de Compostela | Elena, 12 |
 | *Noche de verano* | A Galician coastal village during the summer fair | Sofía, 19 |
-| *Humo y silencio* | An olive farm in Jaén | Paula, 14 |
+| *Humo y silencio* | An olive farm in Jaén | Paula, 15 (missing) |
 
 **How a question works**
 1. You type a question (or tap one of the suggested openers) and, optionally, attach a clue as evidence.
