@@ -81,7 +81,10 @@ public static class PlaythroughChecks
         }
 
         Match confession = ConfessionPattern.Match(text);
-        if (confession.Success && !IsNegated(text, confession.Index))
+        // "Sí, fui yo" contestando a "¿fuiste tú quien fue a…?" no es confesar el crimen
+        bool echoesQuestion = confession.Success && confession.Value.StartsWith("fui yo", System.StringComparison.OrdinalIgnoreCase)
+                              && Fold(question ?? "").Contains("fuiste tu");
+        if (confession.Success && !echoesQuestion && !IsNegated(text, confession.Index))
         {
             if (!speakerIsCulprit)
                 findings.Add(new Finding { kind = Kind.FalseConfession, detail = confession.Value });

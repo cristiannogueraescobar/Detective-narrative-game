@@ -67,6 +67,9 @@ public class PlaythroughChecksTests
         CollectionAssert.DoesNotContain(Kinds("A las 23:05 fui yo quien entré para comprobar cómo estaba.", culprit: true),
             PlaythroughChecks.Kind.UnmotivatedConfession);
         CollectionAssert.Contains(Kinds("Sí. Fui yo.", culprit: true), PlaythroughChecks.Kind.UnmotivatedConfession);
+        var kinds = PlaythroughChecks.Check("Sí, fui yo. Estaba cerrada.", Sheet, false, 0, 0, null, "¿Fuiste tú quien fue a la comisaría?")
+            .Select(f => f.kind);
+        CollectionAssert.DoesNotContain(kinds, PlaythroughChecks.Kind.FalseConfession, "contestar «¿fuiste tú…?» no es confesar");
     }
 
     [Test]
