@@ -81,4 +81,20 @@ public class BriefingAndNotebookTests
         StringAssert.Contains("Aún no hay pistas", notebook);
         StringAssert.Contains("Ninguna contradicción", notebook);
     }
+
+    // Ronda 5: la libreta apunta la versión de cada uno cuando ya le has interrogado (para comparar con las pistas)
+    [Test]
+    public void LaLibretaApuntaLaVersionDeQuienYaHasInterrogado()
+    {
+        StoryData story = TestCases.Story();
+        var state = new InvestigationState(story.variants[0]);
+        string versionA = story.variants[0].Role("a").version;
+        string versionB = story.variants[0].Role("b").version;
+
+        string notebook = Notebook.Format(story, state, new[] { "a", "b" }, new Dictionary<string, Emotion>(), c => "x",
+            onPaper: true, interviewed: new[] { "a" });
+
+        StringAssert.Contains(versionA, notebook, "a ya ha hablado: su versión queda apuntada");
+        StringAssert.DoesNotContain(versionB, notebook, "a b aún no le has preguntado");
+    }
 }

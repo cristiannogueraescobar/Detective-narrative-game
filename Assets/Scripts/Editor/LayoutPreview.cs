@@ -117,7 +117,8 @@ public static class LayoutPreview
         state.UpdateContradictions();
         ui.UpdateNotebook(Notebook.Format(variantStory, state, variantStory.cast.Select(c => c.id),
             variantStory.cast.ToDictionary(c => c.id, c => Emotion.Enfadado),
-            c => $"La versión de alguien («una cita larga de su mentira») choca con: {c.playerName}", onPaper: true));
+            c => $"La versión de alguien («una cita larga de su mentira») choca con: {c.playerName}", onPaper: true,
+            interviewed: variantStory.cast.Select(c => c.id))); // Peor caso: todas las versiones apuntadas
 
         ShowEnding(ui, Ending.Insufficient);
         ui.ShowAccusationPanel(suspects, canGoBack: true, contradictions: 12); // Cifras de dos dígitos: la línea más larga

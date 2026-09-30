@@ -42,7 +42,7 @@ public static class Notebook
 
     public static string Format(StoryData story, InvestigationState state, IEnumerable<string> unlocked,
                                 IReadOnlyDictionary<string, Emotion> emotions, Func<ClueData, string> describeContradiction,
-                                bool onPaper = false)
+                                bool onPaper = false, IEnumerable<string> interviewed = null)
     {
         Theme t = ThemeManager.Current;
         // Sobre el papel de la libreta, tintas oscuras (los colores del tema no se leerían sobre crema)
@@ -78,6 +78,7 @@ public static class Notebook
         if (onPaper)
             sb.AppendLine("<i><size=85%>Toca un nombre para ir a interrogar.</size></i>");
         var unlockedSet = new HashSet<string>(unlocked);
+        var interviewedSet = new HashSet<string>(interviewed ?? Enumerable.Empty<string>());
         foreach (CharacterData character in story.cast.Where(c => unlockedSet.Contains(c.id)))
         {
             // En la libreta de papel, el nombre lleva a interrogar a esa persona
@@ -92,6 +93,12 @@ public static class Notebook
                 line += $" — <color={Theme.Hex(successColor)}>pista de descarte: {clearing.playerName}</color>";
 
             sb.AppendLine(line);
+
+            // Lo que dice que hizo, en cuanto ha contestado algo: el jugador lo compara con sus pistas (si una
+            // pista choca con la versión de alguien, enseñársela es como se destapa una mentira)
+            CharacterRole role = state.Variant.roles.FirstOrDefault(r => r.characterId == character.id);
+            if (interviewedSet.Contains(character.id) && !string.IsNullOrEmpty(role?.version))
+                sb.AppendLine($"<indent=6%><i><size=90%>Dice: «{role.version}»</size></i></indent>");
         }
 
         return sb.ToString().TrimEnd();
