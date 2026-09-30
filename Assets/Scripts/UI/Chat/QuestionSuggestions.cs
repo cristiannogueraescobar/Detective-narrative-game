@@ -26,7 +26,7 @@ public static class QuestionSuggestions
         return new[]
         {
             "¿Dónde estabas cuando pasó?",
-            $"¿Cuándo viste o hablaste con {who} por última vez?",
+            $"¿Cuándo supiste de {who} por última vez?",
             "¿Viste u oíste algo raro?"
         };
     }

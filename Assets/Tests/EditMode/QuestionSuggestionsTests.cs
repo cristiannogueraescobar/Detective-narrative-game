@@ -33,9 +33,9 @@ public class QuestionSuggestionsTests
     public void SonLasQueMasPistasDestapan()
     {
         // Sonda de sugerencias (Logs/sugerencias.md, 360 respuestas): "¿Qué relación tenías con…?" destapó 1 pista;
-        // "¿Cuándo viste o hablaste con … por última vez?", 9 (y 3 que ninguna otra abre)
+        // "¿Cuándo supiste de … por última vez?", 14 (Logs/sugerencias-2.md), más corta y mejor que "viste o hablaste con" (7)
         string[] all = QuestionSuggestions.For("Sofía");
-        CollectionAssert.Contains(all, "¿Cuándo viste o hablaste con Sofía por última vez?");
+        CollectionAssert.Contains(all, "¿Cuándo supiste de Sofía por última vez?");
         Assert.IsFalse(all.Any(q => q.Contains("relación")));
     }
 
