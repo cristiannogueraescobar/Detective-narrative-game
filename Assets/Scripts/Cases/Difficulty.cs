@@ -51,7 +51,7 @@ public static class Difficulty
     {
         switch (level)
         {
-            case DifficultyLevel.Historia: return "7 preguntas al día. Pensar es gratis.";
+            case DifficultyLevel.Historia: return "7 preguntas al día. Pensar no gasta preguntas; abusar baja el rango.";
             case DifficultyLevel.Veterano: return "4 preguntas al día. Sin ayudas.";
             default: return "5 preguntas al día. Pensar cuesta una pregunta.";
         }

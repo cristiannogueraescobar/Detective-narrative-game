@@ -112,7 +112,7 @@ Víctima: Sofía Vargas, 19 años, estudiante de Periodismo. Salió sola del bar
 | `bar` | Marcos Rial | dueño del bar | desde el día 1 |
 | `cartero` | Andrés Souto | cartero | desde el día 1 |
 | `detective` | Inspector Ruiz | inspector | desde el día 1 |
-| `vecina` | Maruxa Pena | vecina | cuando lo mencionan (alias: maruxa, la de la curva, casa de la curva, vecina), cuando el jugador pregunta por «curva», «vecin», «testig», «madrug», «furgoneta», «vehicul», «coche», «quien vio», «maruxa» o, si no, el día 2 (parte: «Una patrulla recorre la carretera de la costa: la vecina de la casa de la curva pide hablar con el inspector.») |
+| `vecina` | Maruxa Pena | vecina | cuando lo mencionan (alias: maruxa, la de la curva, casa de la curva, vecina), cuando el jugador pregunta por «curva», «vecin», «testig», «furgoneta», «quien vio», «maruxa» o, si no, el día 2 (parte: «Una patrulla recorre la carretera de la costa: la vecina de la casa de la curva pide hablar con el inspector.») |
 
 ### 2A · culpable: Marcos Rial (dueño del bar)
 
@@ -172,7 +172,7 @@ Víctima: Paula Romero Navarro, 15 años. Pasaba el fin de semana con su padre e
 |---|---|---|---|
 | `padre` | Javier Romero | padre | desde el día 1 |
 | `madre` | Lucía Navarro | madre | desde el día 1 |
-| `hermano` | Álex Romero | hermano | cuando lo mencionan (alias: alex, hermano), cuando el jugador pregunta por «hermano», «alex», «mensaje», «whatsapp», «movil de paula», «ultima vez», «con quien hablaba», «supiste de» o, si no, el día 2 (parte: «El hermano de Paula llega al cuartel desde Granada con el móvil en la mano: quiere enseñarle algo.») |
+| `hermano` | Álex Romero | hermano | cuando lo mencionan (alias: alex, hermano), cuando el jugador pregunta por «hermano», «alex», «mensaje», «whatsapp», «movil de paula», «con quien hablaba» o, si no, el día 2 (parte: «El hermano de Paula llega al cuartel desde Granada con el móvil en la mano: quiere enseñarle algo.») |
 | `vecina` | Encarna Molina | vecina | cuando lo mencionan (alias: encarna, vecina, finca de al lado), cuando el jugador pregunta por «vecin», «finca de al lado», «caballo», «cancela», «pozo», «quien vio», «encarna» o, si no, el día 3 (parte: «La Guardia Civil toma declaración en las fincas vecinas: la dueña de la de al lado vio humo el sábado.») |
 
 ### 3A · culpable: Javier Romero (padre)

@@ -170,8 +170,13 @@ public class EmotionPresenter : MonoBehaviour
 
         if (ownMaterial == null || ownMaterial.shader != shader)
         {
-            if (ownMaterial != null)
-                DestroyImmediate(ownMaterial);
+            if (ownMaterial != null) // Cambio plano ↔ relieve (o alto contraste): el material anterior sobra
+            {
+                if (Application.isPlaying)
+                    Destroy(ownMaterial);
+                else
+                    DestroyImmediate(ownMaterial);
+            }
             ownMaterial = new Material(shader) { name = "Retrato (emoción)", hideFlags = HideFlags.DontSave };
         }
         if (graded)

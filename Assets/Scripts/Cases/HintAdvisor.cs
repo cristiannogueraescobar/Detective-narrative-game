@@ -17,12 +17,33 @@ public class Hint
 }
 
 /// <summary>
-/// Qué ayudas se han dado ya en esta partida (pista → nivel).
+/// Qué ayudas se han dado ya en esta partida (pista → nivel) y cuántas contaban (las que apuntan a una pista).
+/// Se guarda con la partida: tras "Continuar", la siguiente ayuda sigue donde se quedó.
 /// </summary>
 public class HintMemory
 {
     public readonly Dictionary<string, int> given = new Dictionary<string, int>();
     public int count;
+
+    /// <summary>
+    /// "pista:nivel" por cada ayuda dada (formato del guardado).
+    /// </summary>
+    public List<string> ToSave()
+    {
+        return given.Select(kv => kv.Key + ":" + kv.Value).ToList();
+    }
+
+    public static HintMemory FromSave(int count, IEnumerable<string> entries)
+    {
+        var memory = new HintMemory { count = System.Math.Max(0, count) };
+        foreach (string entry in entries ?? Enumerable.Empty<string>())
+        {
+            int colon = entry != null ? entry.LastIndexOf(':') : -1;
+            if (colon > 0 && int.TryParse(entry.Substring(colon + 1), out int level))
+                memory.given[entry.Substring(0, colon)] = System.Math.Max(1, System.Math.Min(2, level));
+        }
+        return memory;
+    }
 }
 
 public static class HintAdvisor
@@ -40,8 +61,7 @@ public static class HintAdvisor
             .ThenBy(c => c.isSecret ? 1 : 0)
             .ToList();
 
-        memory.count++;
-        if (candidates.Count == 0)
+        if (candidates.Count == 0) // Un aviso, no una ayuda: no cuenta para el rango ni se cobra
         {
             return new Hint
             {
@@ -57,6 +77,7 @@ public static class HintAdvisor
                         ?? candidates[0];
         int next = memory.given.TryGetValue(clue.id, out int previous) ? System.Math.Min(2, previous + 1) : 1;
         memory.given[clue.id] = next;
+        memory.count++;
 
         string who = story.cast.First(c => c.id == clue.holder).shortName;
         if (next == 1)

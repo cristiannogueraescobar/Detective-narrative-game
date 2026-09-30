@@ -158,9 +158,6 @@ public static class GameSettings
     }
 
     /// <summary>
-    /// Nivel de tamaño del texto: 0 normal, 1 grande, 2 muy grande.
-    /// </summary>
-    /// <summary>
     /// Dificultad de los casos nuevos (una partida a medias conserva la suya).
     /// </summary>
     public static DifficultyLevel Difficulty
@@ -173,6 +170,9 @@ public static class GameSettings
         }
     }
 
+    /// <summary>
+    /// Nivel de tamaño del texto: 0 normal, 1 grande, 2 muy grande.
+    /// </summary>
     public static int TextSizeLevel
     {
         get => Mathf.Clamp(Mathf.RoundToInt(store.Get(TextSizeKey, 0f)), 0, TextScales.Length - 1);

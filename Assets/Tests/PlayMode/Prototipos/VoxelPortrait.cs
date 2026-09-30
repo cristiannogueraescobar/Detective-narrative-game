@@ -5,6 +5,7 @@ using UnityEngine;
 /// Retrato en vóxeles (prototipo C3): reduce el encuadre del retrato a una rejilla de columnas × filas, levanta
 /// un cubo por celda opaca (más hondo cuanto más lejos del borde: volumen de cuerpo) y dibuja la malla con una
 /// cámara propia sobre una textura. El archivo original no se toca; todo se crea en memoria.
+/// Descartado en C3 (ver docs/DESIGN-CRITIQUE.md): vive con las pruebas, fuera del juego y de la build.
 /// </summary>
 public static class VoxelPortrait
 {

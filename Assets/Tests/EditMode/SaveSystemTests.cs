@@ -237,4 +237,15 @@ public class SaveSystemTests
         CollectionAssert.AreEqual(new[] { "Parte", "M1" }, copy.EntriesOf("madre").Select(e => e.text).ToArray());
         CollectionAssert.AreEqual(new[] { "Parte" }, copy.CurrentEntries.Select(e => e.text).ToArray());
     }
+
+    [Test]
+    public void GuardaElNivelDeCadaAyuda()
+    {
+        SaveData data = Sample();
+        data.hintsGiven.Add("1A_puerta:2");
+
+        Assert.IsTrue(SaveSystem.TryDeserialize(SaveSystem.Serialize(data), out SaveData loaded));
+
+        CollectionAssert.AreEqual(new[] { "1A_puerta:2" }, loaded.hintsGiven);
+    }
 }

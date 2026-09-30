@@ -104,6 +104,9 @@ public static class BotPlayer
         try
         {
             Options options = ParseArgs(Environment.GetCommandLineArgs());
+            // Contadores estáticos: desde el menú del editor se sumarían de una ejecución a otra
+            AIConversationManager.InventedTimeRetries = 0;
+            AIConversationManager.InventedTimeRetriesImproved = 0;
             Run(options);
         }
         catch (Exception e)

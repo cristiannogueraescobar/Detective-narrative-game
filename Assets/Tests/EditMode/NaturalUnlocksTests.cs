@@ -75,4 +75,21 @@ public class NaturalUnlocksTests
         StringAssert.Contains("BAJO PRESIÓN:", innocent);
         StringAssert.DoesNotContain("CÓMO SOSTIENES LA MENTIRA", innocent);
     }
+
+    // Revisión D3 n.º 7 (medido con el bot: el hermano de la historia 3 aparecía el día 1 en 8 de 12 partidas):
+    // las preguntas de ejemplo y las de ambiente no traen a nadie; hay que preguntar por lo que ese personaje sabe
+    [Test]
+    public void LasPreguntasDeEjemploNoDesbloqueanANadie()
+    {
+        foreach (StoryData story in CaseLibrary.Stories)
+        {
+            var start = story.cast.Where(c => c.startsUnlocked).Select(c => c.id).ToArray();
+            var questions = QuestionSuggestions.For(story.victim).Concat(new[]
+            {
+                "¿Qué hiciste esa madrugada?", "¿A qué hora volviste en coche?", "¿Tienes vehículo?"
+            });
+            foreach (string q in questions)
+                CollectionAssert.IsEmpty(NaturalUnlocks.TriggeredBy(story, start, q), $"historia {story.id}: «{q}»");
+        }
+    }
 }

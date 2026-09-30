@@ -190,4 +190,17 @@ public class NoirPostFxTests
         target.Release();
         Assert.IsEmpty(failures, string.Join(", ", failures));
     }
+
+    // Revisión D3 n.º 5: recargar la escena no deja perfiles de post-proceso colgados
+    [UnityTest]
+    public IEnumerator RecargarLaEscenaNoAcumulaPerfiles()
+    {
+        int before = Resources.FindObjectsOfTypeAll<VolumeProfile>().Length;
+        for (int i = 0; i < 3; i++)
+        {
+            yield return SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
+            yield return null;
+        }
+        Assert.LessOrEqual(Resources.FindObjectsOfTypeAll<VolumeProfile>().Length, before);
+    }
 }

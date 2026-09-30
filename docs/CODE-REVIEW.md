@@ -107,5 +107,22 @@ confirmaría una captura). El comentario dice "sin coste por fotograma" pero hay
 - Retrato 2.5D: materiales cacheados, respaldo plano sin shader, `target 2.0`, 9 lecturas de textura (GLES3/Vulkan ok).
 - Selector de prueba clave; herramientas del editor generadas desde los datos reales.
 
-## Resolución
-(se completa en la pasada de arreglos, abajo)
+## Resolución (misma tarde, una sola pasada; cada arreglo con su test visto en rojo y luego en verde)
+
+| # | Estado | Qué se hizo | Test |
+|---|---|---|---|
+| 1 | **Arreglado** | "Insuficiente" se queda en "Agente"; los días de sobra solo premian finales bien cerrados | DetectiveRankTests (5 casos nuevos) |
+| 2 | **Arreglado** | Primero se cambia al sospechoso y luego se escribe el aviso: queda en el chat que se ve | StateMachineTests.LaAyudaConcretaQuedaEnElChatDeQuienSabeAlgo (Play) |
+| 3 | **Arreglado** | El desbloqueo por tema ocurre solo con respuesta, dentro de la cola diferida (el aviso sale tras la respuesta) | StateMachineTests.UnaPreguntaFallidaNoDesbloqueaANadie (Play) |
+| 4 | **Arreglado** | `HintMemory` se guarda ("pista:nivel", `SaveData.hintsGiven`); solo cuentan y se cobran las ayudas con pista; Historia avisa de que abusar baja el rango | HintAdvisorTests (2), SaveSystemTests |
+| 5 | **Arreglado** | Un solo perfil (`sharedProfile`), destruido con su Volume; `Refresh` solo si cambia el estado del filtro | NoirPostFxTests.RecargarLaEscenaNoAcumulaPerfiles (Play) |
+| 6 | **Arreglado** | Doble lectura 12/24 h también en cifras; lo que el personaje ya dijo cuenta como conocido; el reintento no acepta una repetición; contadores del bot a cero en cada ejecución | TimeCheckTests (4), AIConversationFlowTests (2) |
+| 7 | **Arreglado (medido)** | Con el bot, el hermano (historia 3) salía el día 1 en 8/12 partidas: la pregunta de ejemplo "¿Cuándo supiste de Paula por última vez?" contenía sus raíces. Quitadas "ultima vez", "supiste de" (hermano) y "madrug", "coche", "vehicul" (vecina, historia 2) | NaturalUnlocksTests.LasPreguntasDeEjemploNoDesbloqueanANadie |
+| 8 | **Arreglado** | `Destroy` en juego, `DestroyImmediate` solo en el editor | (cubierto por LitPortraitTests) |
+| 9 | **Arreglado** | Los seis comentarios vuelven a su miembro | — |
+| 10 | **Arreglado** | Instrucciones con las cifras de `Difficulty`; el expediente con `maxDays`; `questionsPerDay` ya no es serializado | GameTextsTests.InstruccionesConLasCifrasDeLaDificultad |
+| 11 | **Arreglado** | `VoxelPortrait` y `VoxelLit.shader` movidos a `Assets/Tests/PlayMode/Prototipos/` (fuera del juego y de la build) | Captura C3 sigue funcionando |
+| 12 | **Arreglado** | `morningReports ?? new string[0]` | NarrativeValidatorTests.SinPartesDeLaMananaNoRompe |
+| 13 | **Ajustado** | `disabledAlpha` 0,45 → 0,6 (encima del gris del ColorBlock el botón casi desaparecía); comentario corregido (sí hay una comparación por fotograma) | LayoutValidationTests (estados de botón) |
+
+Suites tras la pasada: ver docs/NIGHT-LOG.md (entrada de la resolución).

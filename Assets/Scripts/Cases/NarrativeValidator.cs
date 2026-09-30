@@ -63,9 +63,10 @@ public static class NarrativeValidator
 
         // Partes de la mañana (desde el día 2): ni pistas gratis ni señalar al culpable
         CharacterData culprit = story.cast.First(ch => ch.id == v.culpritId);
-        for (int day = 2; day <= v.morningReports.Length; day++)
+        string[] reports = v.morningReports ?? new string[0];
+        for (int day = 2; day <= reports.Length; day++)
         {
-            string report = v.morningReports[day - 1] ?? "";
+            string report = reports[day - 1] ?? "";
             if (report.Length == 0)
                 continue;
             string normalized = ClueDetector.Normalize(report);

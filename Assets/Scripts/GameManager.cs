@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Configuración")]
     [SerializeField] private int maxDays = 7;
-    [SerializeField] private int questionsPerDay = 5;
+    private int questionsPerDay = 5; // Lo fija la dificultad (ApplyDifficulty)
 
     [Header("Debug (solo editor)")]
     [Tooltip("Fuerza historia y variante. Se ignora fuera del editor")]
@@ -108,6 +108,7 @@ public class GameManager : MonoBehaviour
             questionsUsedToday = questionsUsedToday,
             difficulty = (int)difficulty,
             hintsUsed = hintMemory.count,
+            hintsGiven = hintMemory.ToSave(),
             currentSuspect = interrogationUI != null ? interrogationUI.CurrentSuspectId : null,
             unlocked = new List<string>(unlocked),
             discovered = new List<string>(State.DiscoveredClueIds),
@@ -142,7 +143,7 @@ public class GameManager : MonoBehaviour
         currentDay = data.day;
         questionsUsedToday = data.questionsUsedToday;
         ApplyDifficulty(Difficulty.FromSave(data.difficulty));
-        hintMemory = new HintMemory { count = System.Math.Max(0, data.hintsUsed) };
+        hintMemory = HintMemory.FromSave(data.hintsUsed, data.hintsGiven);
         accusationMade = false;
         unlocked.Clear();
         unlocked.AddRange(data.unlocked);
@@ -216,7 +217,7 @@ public class GameManager : MonoBehaviour
 
     public void ShowCaseIntro()
     {
-        interrogationUI?.ShowCaseIntro(story.id, story.title, CaseBriefing.Format(story, questionsPerDay));
+        interrogationUI?.ShowCaseIntro(story.id, story.title, CaseBriefing.Format(story, questionsPerDay, maxDays));
     }
 
     /// <summary>
@@ -248,10 +249,6 @@ public class GameManager : MonoBehaviour
         }
 
         requestInFlight = true;
-
-        // Preguntar por un tema lleva a quien lo conoce ("¿alguna vecina vio algo?" → la vecina)
-        foreach (string id in NaturalUnlocks.TriggeredBy(story, unlocked, question).ToList())
-            Unlock(id, $"Tu pregunta te pone sobre la pista de {story.Character(id).name}.");
         notices.BeginDefer();
         bool answered = false;
 
@@ -283,6 +280,10 @@ public class GameManager : MonoBehaviour
 
             questionsUsedToday++;
             answered = true;
+            // Preguntar por un tema lleva a quien lo conoce ("¿alguna vecina vio algo?" → la vecina); solo si la
+            // pregunta llegó, y el aviso sale después de la respuesta (cola diferida)
+            foreach (string id in NaturalUnlocks.TriggeredBy(story, unlocked, question).ToList())
+                Unlock(id, $"Tu pregunta te pone sobre la pista de {story.Character(id).name}.");
             // El estado va antes que la respuesta: marca la velocidad de escritura y el retrato
             interrogationUI?.SetEmotion(characterId, conversationManager.CurrentEmotion(characterId));
             RefreshNotebook();
@@ -425,9 +426,6 @@ public class GameManager : MonoBehaviour
     // ACUSACIÓN
     // ============================================
 
-    /// <summary>
-    /// Se puede volver a interrogar desde la acusación mientras queden días y no se haya acusado.
-    /// </summary>
     private void ApplyDifficulty(DifficultyLevel level)
     {
         difficulty = level;
@@ -451,12 +449,16 @@ public class GameManager : MonoBehaviour
             return new Hint { text = "Hoy ya no te quedan preguntas para pararte a pensar. Mañana será otro día." };
 
         Hint hint = HintAdvisor.Next(story, State, unlocked, hintMemory);
-        questionsUsedToday += cost;
+        if (hint.clueId != null) // "Ya lo tienes todo" o "alguien que no conoces" son avisos: no se cobran
+            questionsUsedToday += cost;
         UpdateGameState();
         SaveGame();
         return hint;
     }
 
+    /// <summary>
+    /// Se puede volver a interrogar desde la acusación mientras queden días y no se haya acusado.
+    /// </summary>
     public bool CanCancelAccusation => !accusationMade && currentDay <= maxDays;
 
     private void ShowAccusationPanel()

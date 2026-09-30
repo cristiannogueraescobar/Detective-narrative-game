@@ -396,6 +396,18 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   de humo **SMOKE OK**; la prueba ahora comprueba también el arte de las historias y el shader de relieve en la
   build. **Bloque E: HECHO CUANDO cumplido salvo el APK** (sin módulo Android en este PC; documentado).
 
+- **12:47** Ronda final 1: capturas 1080×2400 revisadas (retratos 2.5D en la rueda, intros, deslizadores, avisos: bien).
+  Bot en 3 variantes al azar (1A, 2B, 1B; semilla 101): 6 partidas sin errores, sin nombres inventados ni
+  confesiones, primera pista a las 6,0 preguntas, 3/6 resueltas. 2B perdida dos veces: **culpa del bot** (tenía
+  furgoneta + manguera + las imágenes que descartaban a Marcos y acusó a Marcos; una vez sin decisión válida).
+  Galería antes/después: 20 hojas (docs/screenshots/2026-09-30/galeria, Tools/make_gallery_dia3.py).
+- **12:55** D3: la revisión independiente llegó → docs/CODE-REVIEW.md (0 críticos, 2 importantes, 11 menores).
+- **13:02** D3 resuelto: los 13 hallazgos arreglados en una pasada, cada uno con su test en rojo primero (tabla en
+  CODE-REVIEW.md). Importantes: el rango ya no contradice el final; la ayuda concreta queda en el chat que se ve.
+  El n.º 7 medido con el bot (hermano de la historia 3 el día 1 en 8/12 partidas por la pregunta de ejemplo) y
+  corregido con un test que impide que ninguna pregunta de ejemplo desbloquee a nadie. COHERENCE.md regenerada.
+  EditMode 666/666, PlayMode 36/36. **Bloque D: HECHO CUANDO cumplido.**
+
 ## Ahora (día 3)
-- Esperando la revisión de D3; mientras, primera RONDA FINAL (capturas 1920/2400 + crítica, diff, validador + bot
-  en 3 variantes, recorrido mental de jugador nuevo).
+- Ronda final 2: bot para comprobar los desbloqueos tras el n.º 7; capturas tras los cambios; recorrido mental.
+  Informe intermedio a las ~16:10.

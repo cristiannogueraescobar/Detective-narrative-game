@@ -139,7 +139,10 @@ public static class GameTexts
             "Con «Mostrar prueba» enseñas una pista de tu libreta junto a la pregunta. Enséñasela a quien creas que miente y mira cómo reacciona: " +
             "si choca con su versión, es una contradicción.\n\n" +
             h("DÍAS Y PREGUNTAS") + "\n" +
-            "Cada día tienes cinco preguntas (siete en Historia, cuatro en Veterano; se elige en Ajustes). Cuando las gastes, pulsa «Fin del día»: por la mañana llega un parte con novedades. " +
+            $"Cada día tienes {NumberWord(Difficulty.QuestionsPerDay(DifficultyLevel.Detective))} preguntas " +
+            $"({NumberWord(Difficulty.QuestionsPerDay(DifficultyLevel.Historia))} en Historia, " +
+            $"{NumberWord(Difficulty.QuestionsPerDay(DifficultyLevel.Veterano))} en Veterano; se elige en Ajustes). " +
+            "Cuando las gastes, pulsa «Fin del día»: por la mañana llega un parte con novedades. " +
             "No todos están disponibles al principio: aparecen cuando alguien los menciona, cuando preguntas por lo que ellos saben (la vecina, la curva, los caballos…) o cuando la policía los trae.\n\n" +
             h("LA LIBRETA") + "\n" +
             "Las pistas, las contradicciones y cómo está cada sospechoso se apuntan solos en la libreta. Algunas pistas descartan a alguien: léelas bien. " +

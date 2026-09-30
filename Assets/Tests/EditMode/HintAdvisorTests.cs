@@ -98,4 +98,32 @@ public class HintAdvisorTests
         Assert.AreEqual("i1", hint.clueId);
         Assert.AreEqual("¿Qué vio al salir?", hint.question);
     }
+
+    // Revisión D3 n.º 4: solo cuentan (y bajan el rango) las ayudas que apuntan a una pista
+    [Test]
+    public void SinPistaALaQueApuntarNoCuentaComoAyuda()
+    {
+        foreach (string id in new[] { "i1", "i2", "i3", "d", "ctx", "x" })
+            state.Discover(id);
+        foreach (ClueData c in story.variants[0].clues)
+            state.Discover(c.id);
+
+        Hint hint = Next("a", "b", "c");
+
+        Assert.IsNull(hint.clueId);
+        Assert.AreEqual(0, memory.count);
+    }
+
+    [Test]
+    public void LaMemoriaDeAyudasSobreviveAlGuardado()
+    {
+        Hint first = Next("a", "b");
+        HintMemory restored = HintMemory.FromSave(memory.count, memory.ToSave());
+
+        Hint second = HintAdvisor.Next(story, state, new[] { "a", "b" }, restored);
+
+        Assert.AreEqual(first.clueId, second.clueId);
+        Assert.AreEqual(2, second.level, "tras Continuar, la siguiente es la concreta, no otra vez la vaga");
+        Assert.AreEqual(2, restored.count);
+    }
 }

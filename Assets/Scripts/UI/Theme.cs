@@ -61,7 +61,7 @@ public class Theme : ScriptableObject
     [Range(0f, 1f)] public float titleBandAlpha = 0.55f; // Banda bajo el subtítulo del menú (0 = sin banda)
 
     [Header("Estados de botón")]
-    [Range(0.2f, 1f)] public float disabledAlpha = 0.45f;   // Desactivado: se apaga
+    [Range(0.2f, 1f)] public float disabledAlpha = 0.6f;    // Desactivado: se apaga (encima del gris del ColorBlock: no más, o el botón desaparece)
     [Range(0.9f, 1f)] public float pressedScale = 0.98f;    // Pulsado: se hunde un poco (no con "Reducir animaciones")
     public Color placeholder = new Color32(46, 46, 51, 255);     // Arte que aún no existe
 
@@ -148,8 +148,8 @@ public class Theme : ScriptableObject
     public Color postShadowTone = new Color(0.42f, 0.47f, 0.55f);   // Sombras frías
     public Color postHighlightTone = new Color(0.58f, 0.54f, 0.47f); // Luces cálidas (lámpara)
     public float deliberationSeconds = 2.2f;                    // Pausa antes del veredicto
-    [Range(0f, 1f)] public float roomBrightness = 0.38f;
-    [Range(0f, 1f)] public float introArtBrightness = 0.8f;     // Arte de cada historia detrás del expediente        // Sala de interrogatorios detrás del chat
+    [Range(0f, 1f)] public float roomBrightness = 0.38f;        // Sala de interrogatorios detrás del chat
+    [Range(0f, 1f)] public float introArtBrightness = 0.8f;     // Arte de cada historia detrás del expediente
     public Color story1Tint = new Color(0.85f, 0.92f, 1.05f);  // Casa en Santiago: fría
     public Color story2Tint = new Color(1.05f, 0.9f, 0.8f);    // Noche de verano en la costa: cálida
     public Color story3Tint = new Color(1.0f, 0.85f, 0.65f);   // Finca y humo: ámbar

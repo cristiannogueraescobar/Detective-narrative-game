@@ -19,7 +19,10 @@ public static class TimeCheck
         HashSet<int> knownMinutes = MinutesIn(known);
         foreach (Match m in DigitTime.Matches(answer))
         {
-            if (!knownMinutes.Contains(Minutes(m)) && !result.Contains(m.Value))
+            // "5:30" puede ser la de la mañana o la de la tarde: vale si alguna de las dos es conocida
+            int minutes = Minutes(m);
+            bool known12 = Hour(m) <= 12 && knownMinutes.Contains((minutes + 720) % 1440);
+            if (!knownMinutes.Contains(minutes) && !known12 && !result.Contains(m.Value))
                 result.Add(m.Value);
         }
         return result;
@@ -35,7 +38,11 @@ public static class TimeCheck
     {
         var result = new HashSet<int>();
         foreach (Match m in DigitTime.Matches(text ?? ""))
+        {
             result.Add(Minutes(m));
+            if (Hour(m) <= 12) // "5:30" en la ficha también cubre "17:30" en la respuesta
+                result.Add((Minutes(m) + 720) % 1440);
+        }
         foreach (Match m in WordTime.Matches(text ?? ""))
         {
             int hour = System.Array.IndexOf(HourWords, m.Groups[1].Value.ToLowerInvariant()); // 0..11
@@ -52,6 +59,8 @@ public static class TimeCheck
         }
         return result;
     }
+
+    private static int Hour(Match m) => int.Parse(m.Groups[1].Value);
 
     private static int Minutes(Match m)
     {

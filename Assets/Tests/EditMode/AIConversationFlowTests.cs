@@ -123,6 +123,32 @@ public class AIConversationFlowTests
         Assert.AreEqual(1, provider.calls);
     }
 
+    // Revisión D3 n.º 6: una hora que el personaje ya dijo (y se aceptó) no provoca otro reintento cada vez
+    [Test]
+    public void LaHoraQueElPersonajeYaDijoNoProvocaOtroReintento()
+    {
+        provider.results.Enqueue(LLMResult.Ok("A las 21:47 cené. [ESTADO: tranquilo]"));
+        provider.results.Enqueue(LLMResult.Ok("A las 21:47 cené, ya se lo he dicho. [ESTADO: tranquilo]"));
+        Ask("a", "¿Qué hizo?");
+        int before = provider.calls;
+
+        provider.results.Enqueue(LLMResult.Ok("Lo repito: a las 21:47 estaba cenando. [ESTADO: nervioso]"));
+        Ask("a", "¿Seguro?");
+
+        Assert.AreEqual(before + 1, provider.calls, "sin reintento: esa hora ya es parte de su versión");
+    }
+
+    [Test]
+    public void ElReintentoPorHorasNoAceptaUnaRepeticion()
+    {
+        provider.results.Enqueue(LLMResult.Ok("Estuve en casa toda la noche. [ESTADO: tranquilo]"));
+        Ask("a", "¿Dónde estuvo?");
+        provider.results.Enqueue(LLMResult.Ok("La vi a las 21:47. [ESTADO: tranquilo]"));
+        provider.results.Enqueue(LLMResult.Ok("Estuve en casa toda la noche. [ESTADO: tranquilo]"));
+
+        Assert.AreEqual("La vi a las 21:47.", Ask("a", "¿Y la vio?").Text, "mejor una hora dudosa que repetir lo mismo");
+    }
+
     [Test]
     public void ElReintentoPorHorasSePuedeDesactivar()
     {

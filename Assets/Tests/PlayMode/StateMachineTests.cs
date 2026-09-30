@@ -298,4 +298,55 @@ public class StateMachineTests
         yield return null;
         StringAssert.Contains("DÍA 2", Hud, "confirmar dos veces no se salta un día");
     }
+
+    // Revisión D3 n.º 2: la ayuda concreta de "Pensar" se lee en el chat del sospechoso al que te lleva
+    [UnityTest]
+    public IEnumerator LaAyudaConcretaQuedaEnElChatDeQuienSabeAlgo()
+    {
+        GameSettings.Difficulty = (int)DifficultyLevel.Historia; // Pensar gratis: no gasta preguntas
+        yield return StartNewGame();
+        var ui = Object.FindFirstObjectByType<InterrogationUI>();
+        var dropdown = Find("SuspectDropdown").GetComponent<TMP_Dropdown>();
+
+        ui.OnThinkClick(); // Nivel 1: "Quizá X sabe más de lo que ha contado."
+        yield return null;
+        string first = ui.Conversations.CurrentEntries.Last().text;
+        StringAssert.Contains("sabe más", first);
+
+        // Nos vamos a alguien que NO es quien sabe algo
+        int other = Enumerable.Range(0, dropdown.options.Count)
+            .First(k => !first.Contains(dropdown.options[k].text.Split(' ')[0]));
+        dropdown.value = other;
+        yield return null;
+        string wrongId = ui.CurrentSuspectId;
+
+        ui.OnThinkClick(); // Nivel 2: "Prueba a preguntarle a X: «…»", cambia de sospechoso
+        yield return null;
+
+        Assert.AreNotEqual(wrongId, ui.CurrentSuspectId, "la ayuda concreta lleva a quien sabe algo");
+        Assert.IsTrue(ui.Conversations.CurrentEntries.Any(e => e.text != null && e.text.Contains("Prueba a preguntarle")),
+                      "el aviso está en el chat que se ve");
+        Assert.IsFalse(ui.Conversations.EntriesOf(wrongId).Any(e => e.text != null && e.text.Contains("Prueba a preguntarle")),
+                       "y no en el que se deja atrás");
+    }
+
+    // Revisión D3 n.º 3: preguntar por un tema desbloquea a quien lo sabe solo si la pregunta llega de verdad
+    [UnityTest]
+    public IEnumerator UnaPreguntaFallidaNoDesbloqueaANadie()
+    {
+        yield return StartNewGame();
+        var dropdown = Find("SuspectDropdown").GetComponent<TMP_Dropdown>();
+        int before = dropdown.options.Count;
+
+        provider.results.Enqueue(LLMResult.Fail("No se pudo conectar con Ollama."));
+        Find("QuestionInput").GetComponent<TMP_InputField>().text = "¿Alguna vecina vio algo desde la ventana?";
+        yield return Tap("AskButton");
+        yield return WaitUntil(() => CanAsk, 5f, "el aviso de fallo");
+        yield return null;
+        Assert.AreEqual(before, dropdown.options.Count, "la vecina sigue sin aparecer: la pregunta no llegó");
+
+        yield return AskAndWait("¿Alguna vecina vio algo desde la ventana?");
+        yield return new WaitForSecondsRealtime(0.5f);
+        Assert.Greater(dropdown.options.Count, before, "con la respuesta, sí");
+    }
 }

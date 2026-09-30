@@ -5,7 +5,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Estados de botón que se ven de un vistazo: pulsado se hunde un poco (salvo con "Reducir animaciones") y
 /// desactivado se apaga (opacidad del tema). El color de cada estado lo pone el ColorBlock (ThemeApplier).
-/// Solo actúa al pulsar y cuando cambia "interactable" (sin coste por fotograma mientras no cambie nada).
+/// Coste mínimo: al pulsar, y en Update solo una comparación de "interactable" (uGUI no avisa cuando cambia).
 /// </summary>
 [RequireComponent(typeof(Button))]
 public class ButtonStateFx : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler

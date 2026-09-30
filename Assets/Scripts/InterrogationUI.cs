@@ -101,8 +101,8 @@ public partial class InterrogationUI : MonoBehaviour
     private RectTransform suggestionsBox; // Preguntas de ejemplo en un chat sin empezar
     private readonly List<TMP_Text> suggestionLabels = new List<TMP_Text>();
     private string victimName;
-    private TMP_Text accusationPromptText;
-    private Button thinkButton;              // "Pensar" en la libreta  // Pregunta de la acusación y resumen de la libreta
+    private TMP_Text accusationPromptText;   // Pregunta de la acusación y resumen de la libreta
+    private Button thinkButton;              // "Pensar" en la libreta
     private string pendingSuspectId;
     private int questionsUsedToday;
     private int questionsPerDay = 5;
@@ -959,15 +959,16 @@ public partial class InterrogationUI : MonoBehaviour
             return;
 
         HideCluesPanel();
-        AppendNotice(ChatEntry.System(ChatEntryKind.Notice, GameTexts.ThinkPrefix + hint.text));
+        // La concreta lleva primero a quien sabe algo: el aviso tiene que quedar en el chat que se va a ver
         if (hint.level == 2 && hint.holderId != null)
         {
             int who = suspects.FindIndex(v => v.id == hint.holderId);
             if (who >= 0 && suspectDropdown != null && suspectDropdown.interactable)
                 suspectDropdown.value = who;
-            if (hint.question != null && questionInput != null && string.IsNullOrEmpty(questionInput.text))
-                questionInput.text = hint.question;
         }
+        AppendNotice(ChatEntry.System(ChatEntryKind.Notice, GameTexts.ThinkPrefix + hint.text));
+        if (hint.level == 2 && hint.question != null && questionInput != null && string.IsNullOrEmpty(questionInput.text))
+            questionInput.text = hint.question;
     }
 
     private void OnNotebookLink(string link)

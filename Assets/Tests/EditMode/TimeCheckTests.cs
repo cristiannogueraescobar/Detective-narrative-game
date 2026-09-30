@@ -46,4 +46,19 @@ public class TimeCheckTests
         CollectionAssert.IsEmpty(TimeCheck.Unknown("No me fijé en la hora, inspector.", Sheet));
         CollectionAssert.IsEmpty(TimeCheck.Unknown(null, Sheet));
     }
+
+    // Revisión D3 n.º 6: "las 5:30 de la tarde" es la misma hora que "17:30"
+    [TestCase("La vi a las 5:30, ya de tarde.", "Fichó a las 17:30.")]
+    [TestCase("La vi a las 17:30.", "Salió a las 5:30 de la tarde.")]
+    [TestCase("Serían las 12:10.", "Volvió a las 00:10.")]
+    public void DoceHorasYVeinticuatroSonLaMismaHora(string answer, string known)
+    {
+        CollectionAssert.IsEmpty(TimeCheck.Unknown(answer, known));
+    }
+
+    [Test]
+    public void UnaHoraDeVerdadInventadaSigueSaliendo()
+    {
+        CollectionAssert.AreEqual(new[] { "21:45" }, TimeCheck.Unknown("La vi a las 21:45.", "Fichó a las 17:30."));
+    }
 }

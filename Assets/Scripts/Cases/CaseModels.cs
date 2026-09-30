@@ -98,10 +98,6 @@ public class VariantData
 }
 
 /// <summary>
-/// Un momento de la línea temporal real de una variante: quién estaba dónde y haciendo qué. "~22:30" = aproximado
-/// (no cuenta para "dos sitios a la vez"). Solo la usa el validador narrativo; no llega a las fichas.
-/// </summary>
-/// <summary>
 /// Cómo aparece un personaje bloqueado: por un tema de las preguntas del jugador o, si nadie lo trae, con un parte
 /// de la mañana el día indicado (NaturalUnlocks).
 /// </summary>
@@ -114,6 +110,10 @@ public class UnlockTrigger
     public string fallbackText;
 }
 
+/// <summary>
+/// Un momento de la línea temporal real de una variante: quién estaba dónde y haciendo qué. "~22:30" = aproximado
+/// (no cuenta para "dos sitios a la vez"). Solo la usa el validador narrativo; no llega a las fichas.
+/// </summary>
 public class TimelineEvent
 {
     public string time;

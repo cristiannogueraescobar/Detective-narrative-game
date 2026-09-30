@@ -147,4 +147,13 @@ public class GameTextsTests
         Assert.AreEqual("Seguir con este caso", GameTexts.NewGameNo, "el botón de cancelar dice lo que hace");
         StringAssert.Contains("caso", GameTexts.NewGameConfirm);
     }
+
+    // Revisión D3 n.º 10: las instrucciones sacan las cifras de la dificultad, no las repiten a mano
+    [Test]
+    public void InstruccionesConLasCifrasDeLaDificultad()
+    {
+        string text = GameTexts.Instructions(ThemeManager.Current);
+        StringAssert.Contains(GameTexts.NumberWord(Difficulty.QuestionsPerDay(DifficultyLevel.Historia)) + " en Historia", text);
+        StringAssert.Contains(GameTexts.NumberWord(Difficulty.QuestionsPerDay(DifficultyLevel.Veterano)) + " en Veterano", text);
+    }
 }

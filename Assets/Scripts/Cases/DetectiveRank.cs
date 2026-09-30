@@ -2,7 +2,7 @@ using System;
 
 /// <summary>
 /// Rango del detective al cerrar un caso: el final manda; la prueba clave y acusar con días de sobra suben, y
-/// muchas ayudas bajan. Acusar a la persona equivocada nunca pasa de "Novato".
+/// muchas ayudas bajan. Acusar a la persona equivocada nunca pasa de "Novato"; sin pruebas suficientes, "Agente".
 /// </summary>
 public static class DetectiveRank
 {
@@ -12,6 +12,9 @@ public static class DetectiveRank
     {
         if (ending == Ending.Bad)
             return Ranks[0];
+        // Culpable pero sin pruebas: ni la intuición ni la prisa suben el rango al lado de "pruebas insuficientes"
+        if (ending == Ending.Insufficient)
+            return Ranks[1];
 
         int points = ending == Ending.Good ? 3 : ending == Ending.Bittersweet ? 2 : 1;
         if (keyClueRight)

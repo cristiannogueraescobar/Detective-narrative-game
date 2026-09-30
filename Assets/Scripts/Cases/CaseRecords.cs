@@ -31,9 +31,6 @@ public static class CaseRecords
     }
 
     /// <summary>
-    /// Apunta un final; solo se queda si es mejor que el que había.
-    /// </summary>
-    /// <summary>
     /// Mejor rango de detective en una historia (null si aún no se ha cerrado).
     /// </summary>
     public static string BestRank(string storyId)
@@ -54,6 +51,9 @@ public static class CaseRecords
 
     private static string RankKey(string storyId) => $"casos.rango.{storyId}";
 
+    /// <summary>
+    /// Apunta un final; solo se queda si es mejor que el que había.
+    /// </summary>
     public static void Record(string storyId, Ending ending)
     {
         Ending? best = Best(storyId);

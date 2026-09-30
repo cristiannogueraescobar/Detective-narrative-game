@@ -17,6 +17,8 @@ public static class NoirPostFx
 
     public static Volume Volume { get; private set; }
 
+    private static bool? lastApplied; // Último estado aplicado: los cambios de ajustes que no lo tocan no hacen nada
+
     /// <summary>
     /// Cámara de la escena (la principal, o la primera que dibuja en pantalla: la de Game no lleva etiqueta).
     /// </summary>
@@ -46,9 +48,16 @@ public static class NoirPostFx
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // GameSettings.UseStore (tests) vacía los suscriptores: se vuelve a enganchar en cada escena
-        GameSettings.Changed -= Refresh;
-        GameSettings.Changed += Refresh;
+        GameSettings.Changed -= OnSettingsChanged;
+        GameSettings.Changed += OnSettingsChanged;
         Refresh();
+    }
+
+    // Arrastrar un deslizador de volumen dispara Changed en cada valor: solo se rehace si cambia el filtro
+    private static void OnSettingsChanged()
+    {
+        if (lastApplied != Enabled)
+            Refresh();
     }
 
     public static void Refresh()
@@ -58,6 +67,7 @@ public static class NoirPostFx
             return;
 
         bool on = Enabled;
+        lastApplied = on;
         if (camera.TryGetComponent(out UniversalAdditionalCameraData data) || on)
             camera.GetUniversalAdditionalCameraData().renderPostProcessing = on;
 
@@ -83,7 +93,7 @@ public static class NoirPostFx
         {
             Volume.enabled = on;
             if (on)
-                Configure(Volume.profile, ThemeManager.Current);
+                Configure(Volume.sharedProfile, ThemeManager.Current); // sharedProfile: .profile haría un clon que nadie borra
         }
     }
 
@@ -100,7 +110,22 @@ public static class NoirPostFx
         profile.Add<ColorAdjustments>();
         profile.Add<SplitToning>();
         volume.sharedProfile = profile;
+        go.AddComponent<OwnedProfile>().profile = profile; // Se destruye con la escena
         return volume;
+    }
+
+    /// <summary>
+    /// El perfil creado en memoria vive lo que vive su Volume (si no, cada recarga de escena dejaba uno colgado).
+    /// </summary>
+    private class OwnedProfile : MonoBehaviour
+    {
+        public VolumeProfile profile;
+
+        private void OnDestroy()
+        {
+            if (profile != null)
+                Destroy(profile);
+        }
     }
 
     private static void Configure(VolumeProfile profile, Theme t)

@@ -140,4 +140,13 @@ public class NarrativeValidatorTests
         var issues = NarrativeValidator.Validate(story, v);
         Assert.IsEmpty(issues, string.Join("\n", issues.Select(i => $"[{i.rule}] {i.detail}")));
     }
+
+    // Revisión D3 n.º 12: una variante sin partes de la mañana se valida sin romperse
+    [Test]
+    public void SinPartesDeLaMananaNoRompe()
+    {
+        StoryData story = TestCases.Story();
+        story.variants[0].morningReports = null;
+        Assert.DoesNotThrow(() => NarrativeValidator.Validate(story, story.variants[0]));
+    }
 }
