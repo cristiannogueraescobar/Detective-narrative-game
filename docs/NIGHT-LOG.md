@@ -676,6 +676,16 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   secreto de Álex en 3A → fuera de las anclas. EditMode 716/716. 3A_granada recalibrada: 5/6 (83 %, como esta
   mañana). PlayMode 56/56, build de Windows y **SMOKE OK** con el código final.
 
+## Sesión extra (21:30 → 23:30): análisis, sin cambios de código
+- **Android (decisión 1)** → `docs/ANDROID-OPTIONS.md`. Medido aquí con las pruebas del juego: qwen2.5 1,5B acepta
+  el 72 % de las premisas falsas y suelta bien 15/48 pistas; 3B, 18 % y 22/48 (7B: 2-5 % y 36-39/48) → hoy no
+  hay modelo en el móvil viable. Una petición = 1 219 tokens de ficha + historial. Recomendación: Ollama del PC por
+  wifi para probar ya; Claude Haiku 4.5 detrás de un proxy para publicar (~0,04-0,07 $ por caso), con recalibración.
+- **Rendimiento** → `docs/PERFORMANCE-AUDIT.md` (finecomb no está disponible en la sesión: auditoría a mano, con
+  un banco de pruebas temporal no subido). CPU del juego por pregunta ≈ 1,6-2,2 ms frente a 640-900 ms del modelo;
+  el más caro, `TimeCheck` (0,5 ms). Cinco mejoras priorizadas; la que se nota es el streaming (decisión tuya).
+  Nota: `GC.GetAllocatedBytesForCurrentThread` da 0 en el Mono de Unity (memoria medida por el montón).
+
 ## Ahora (día 3)
 - Día cerrado: 31 rondas con el bot, 7 revisiones, suites en verde, build final con SMOKE OK, informe cerrado.
 - Worktree temporal del bot (C:\Dev\dng-bot) borrado (`git worktree remove --force` + `prune`); todo en origin.
