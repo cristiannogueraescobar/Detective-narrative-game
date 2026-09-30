@@ -372,7 +372,11 @@ public class StateMachineTests
         Tutorial.Reset();
         foreach (string id in new[] { Tutorial.Ask, Tutorial.Days, Tutorial.Evidence, Tutorial.Contradiction })
             Tutorial.MarkSeen(id);
-        yield return StartNewGame();
+        // Historia 1: todas las versiones de inocentes se pueden apuntar desde el principio (en la 3, la de Lucía
+        // nombra a Álex, que empieza bloqueado, y espera: es lo correcto, pero no sirve para este test)
+        yield return Tap("PlayButton");
+        yield return Tap("Caso 1");
+        yield return Tap("StartButton");
         // La versión del culpable no se apunta hasta que cuenta su mentira: se pregunta a inocentes hasta que haya una
         var manager = Object.FindFirstObjectByType<AIConversationManager>();
         var dropdown = Find("SuspectDropdown").GetComponent<TMP_Dropdown>();
