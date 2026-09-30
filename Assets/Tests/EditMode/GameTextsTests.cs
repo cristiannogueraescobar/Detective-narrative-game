@@ -28,6 +28,13 @@ public class GameTextsTests
         Assert.AreEqual(expected, GameTexts.AccusationSummary(clues, contradictions));
     }
 
+    [TestCase(1, "¿Terminar el día? Te queda 1 pregunta y se perderá.")]
+    [TestCase(3, "¿Terminar el día? Te quedan 3 preguntas y se perderán.")]
+    public void TerminarElDiaAvisaDeLasQueQuedan(int remaining, string expected)
+    {
+        Assert.AreEqual(expected, GameTexts.EndDayConfirm(remaining));
+    }
+
     [Test]
     public void LasInstruccionesExplicanTodoElJuego()
     {

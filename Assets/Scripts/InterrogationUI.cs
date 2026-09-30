@@ -403,9 +403,18 @@ public partial class InterrogationUI : MonoBehaviour
         gameManager.AskQuestion(currentSuspectId, question, shownClueId);
     }
 
+    private const string EndDayDialog = "ConfirmarFinDelDia";
+
     public void OnEndDayClick()
     {
-        gameManager.EndDay();
+        int remaining = questionsPerDay - questionsUsedToday;
+        if (remaining <= 0 || interrogationPanel == null)
+        {
+            gameManager.EndDay();
+            return;
+        }
+        ConfirmDialog.Show(interrogationPanel.transform, EndDayDialog, GameTexts.EndDayConfirm(remaining),
+            GameTexts.EndDayYes, GameTexts.EndDayNo, () => gameManager.EndDay());
     }
 
     // NUEVO: Método para acusar antes del día 7
@@ -527,6 +536,8 @@ public partial class InterrogationUI : MonoBehaviour
     /// </summary>
     public bool HandleBack()
     {
+        if (interrogationPanel != null && ConfirmDialog.Hide(interrogationPanel.transform, EndDayDialog))
+            return true;
         if (cluesPanel != null && cluesPanel.activeInHierarchy)
         {
             HideCluesPanel();

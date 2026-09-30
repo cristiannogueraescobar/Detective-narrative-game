@@ -21,6 +21,19 @@ public static class GameTexts
         return available > 0 ? $"{NoEvidence} · {available} en la libreta" : NoEvidence;
     }
 
+    /// <summary>
+    /// Aviso antes de terminar el día con preguntas sin gastar (un toque por error no debe costar el día).
+    /// </summary>
+    public static string EndDayConfirm(int remaining)
+    {
+        return remaining == 1
+            ? "¿Terminar el día? Te queda 1 pregunta y se perderá."
+            : $"¿Terminar el día? Te quedan {remaining} preguntas y se perderán.";
+    }
+
+    public const string EndDayYes = "Terminar el día";
+    public const string EndDayNo = "Seguir preguntando";
+
     public const string SuggestionsHint = "Puedes empezar por…";
     public const string PlayAgain = "Jugar otra vez";
     public const string MainMenu = "Menú principal";

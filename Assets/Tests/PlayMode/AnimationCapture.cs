@@ -343,5 +343,10 @@ public class AnimationCapture
         fx.Hint(Tutorial.TextOf(Tutorial.Days), (RectTransform)Find("EndDayButton").transform, null, null);
         yield return new WaitForSecondsRealtime(0.6f);
         Shot("tutorial_dias");
+
+        Find("Indicacion (auto)")?.SetActive(false);
+        Find("EndDayButton").GetComponent<Button>().onClick.Invoke();
+        yield return new WaitForSecondsRealtime(0.4f);
+        Shot("dialogo_fin_del_dia");
     }
 }

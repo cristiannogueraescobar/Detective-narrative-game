@@ -257,6 +257,7 @@ public class GameSmokeTests
     {
         yield return StartNewGame();
         yield return Click("EndDayButton");
+        yield return Click("Terminar el día"); // Quedaban preguntas: se confirma
         yield return new WaitForSecondsRealtime(0.2f);
 
         GameObject card = Find("Nuevo dia (auto)");
@@ -270,6 +271,44 @@ public class GameSmokeTests
         yield return new WaitForSecondsRealtime(0.5f);
         Assert.IsTrue(Find("Nuevo dia (auto)") == null, "la hoja se cierra con toques");
         Assert.GreaterOrEqual(Rows("Dia (auto)").Count, 2, "el chat tiene el día 1 y el día 2");
+    }
+
+    [UnityTest]
+    public IEnumerator FinDelDiaConPreguntasPendientesPideConfirmacion()
+    {
+        yield return StartNewGame();
+        yield return Click("EndDayButton");
+        GameObject dialog = Find("ConfirmarFinDelDia");
+        Assert.IsTrue(dialog != null && dialog.activeInHierarchy, "un toque por error no gasta el día");
+        StringAssert.Contains("DÍA 1", Find("HudText").GetComponent<TMP_Text>().GetParsedText());
+        StringAssert.Contains("5 preguntas", dialog.GetComponentInChildren<TMP_Text>().text);
+
+        // Atrás cierra el aviso y seguimos en el día 1
+        Assert.IsTrue(Object.FindFirstObjectByType<InterrogationUI>().HandleBack());
+        yield return null;
+        Assert.IsFalse(dialog.activeInHierarchy);
+        StringAssert.Contains("DÍA 1", Find("HudText").GetComponent<TMP_Text>().GetParsedText());
+
+        yield return Click("EndDayButton");
+        yield return Click("Seguir preguntando");
+        Assert.IsFalse(dialog.activeInHierarchy);
+        StringAssert.Contains("DÍA 1", Find("HudText").GetComponent<TMP_Text>().GetParsedText());
+
+        yield return Click("EndDayButton");
+        yield return Click("Terminar el día");
+        yield return null;
+        StringAssert.Contains("DÍA 2", Find("HudText").GetComponent<TMP_Text>().GetParsedText());
+    }
+
+    [UnityTest]
+    public IEnumerator SinPreguntasFinDelDiaNoPregunta()
+    {
+        yield return StartNewGame();
+        Object.FindFirstObjectByType<InterrogationUI>().UpdateGameState(1, 7, 5, 5);
+        yield return Click("EndDayButton");
+        GameObject dialog = Find("ConfirmarFinDelDia");
+        Assert.IsTrue(dialog == null || !dialog.activeInHierarchy, "con el día gastado no hay nada que perder");
+        StringAssert.Contains("DÍA 2", Find("HudText").GetComponent<TMP_Text>().GetParsedText());
     }
 
     [UnityTest]
