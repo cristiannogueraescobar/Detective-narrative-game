@@ -235,7 +235,7 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     id = "3A_audios", playerName = "Audios de voz", holder = "madre", kind = ClueKind.Incriminates,
                     summary = "Javier le mandó audios a Lucía: 'Si me quitas a la niña, no la vuelves a ver'. La vista de custodia era el lunes.",
-                    topic = "si Javier te había amenazado",
+                    topic = "si Javier te había amenazado o cómo era tu relación con él estas semanas",
                     fact = "«Javier me mandó audios la semana pasada: 'Si me quitas a la niña, no la vuelves a ver'. Y el lunes era la vista.»",
                     anchors = new[]
                     {
@@ -585,7 +585,7 @@ Tienes 7 días para descubrir qué pasó.",
                     fact = "«Encarna está obsesionada con Paula: tiene fotos suyas junto a las de su hija muerta, Rocío, y le regalaba ropa de Rocío. Me da miedo.»",
                     anchors = new[]
                     {
-                        new[] { "foto", "ropa", "obsesion", "vigilaba", "pendiente de" },
+                        new[] { "foto", "ropa", "obsesion", "vigilaba", "pendiente de", "era como", "como si fuera", "se parec", "igual que" },
                         new[] { "rocio", "hija muerta", "hija fallecida" }
                     },
                     calibrationQuestions = new[] { "¿Qué opina de Encarna, la vecina?", "¿Qué relación tenía Paula con Encarna?" },
@@ -593,9 +593,10 @@ Tienes 7 días para descubrir qué pasó.",
                     {
                         "Tiene fotos de Paula junto a las de su hija muerta, Rocío.",
                         "Le regalaba ropa de Rocío. A mí me daba miedo.",
-                        "Paula y Encarna se llevaban bien, pero Encarna la vigilaba demasiado. Me daba miedo por lo de Rocío."
+                        "Paula y Encarna se llevaban bien, pero Encarna la vigilaba demasiado. Me daba miedo por lo de Rocío.",
+                        "Encarna siempre intentaba acercarse a Paula y me decía que era como Rocío, su hija fallecida."
                     },
-                    sampleMisses = new[] { "Encarna es una vecina amable, poco más." }
+                    sampleMisses = new[] { "Encarna es una vecina amable, poco más.", "Encarna perdió a su hija Rocío hace años, la pobre." }
                 },
                 new ClueData
                 {

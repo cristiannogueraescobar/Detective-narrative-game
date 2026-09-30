@@ -12,7 +12,8 @@ public static class PromptBuilder
     public static string EmotionGuide(string victim)
     {
         string who = string.IsNullOrEmpty(victim) ? "la víctima" : victim;
-        return $"Triste si te hablan de {who}, nervioso si tocan lo que te pone nervioso, enfadado o asustado si te acusan, tranquilo si la pregunta es neutra.";
+        return $"Si te preguntan por {who} (cómo era, qué le pasó, qué sientes), tu estado es triste, o nervioso si ocultas algo sobre ella; nunca tranquilo. " +
+               "Nervioso si tocan lo que te pone nervioso, enfadado o asustado si te acusan, tranquilo solo si la pregunta es neutra.";
     }
 
     public static string Build(StoryData story, VariantData variant, string characterId, int day,
@@ -84,7 +85,8 @@ public static class PromptBuilder
 
         sb.AppendLine($"HOY ES EL DÍA {day} DE LA INVESTIGACIÓN.");
         sb.Append("REGLAS: español, primera persona, 2 a 4 frases, sin asteriscos ni listas. " +
-                  "Nunca digas que eres una IA. No inventes horas, nombres ni hechos fuera de esta ficha.\n" +
+                  "Nunca digas que eres una IA. No inventes nombres ni hechos fuera de esta ficha. " +
+                  "Solo das horas que estén en esta ficha; si no sabes la hora exacta, di que no te fijaste.\n" +
                   EmotionParser.TagInstruction + " " + EmotionGuide(story.victim));
 
         return sb.ToString();

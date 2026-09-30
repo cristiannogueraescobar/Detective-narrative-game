@@ -602,8 +602,8 @@ Tienes 7 días.",
                 {
                     id = "2C_gps", playerName = "El GPS de Correos", holder = "cartero", kind = ClueKind.Clears, clears = "cartero",
                     summary = "La furgoneta de Correos tiene GPS: a las 5:15 Andrés estaba en la nacional camino de la oficina.",
-                    topic = "quién puede confirmar dónde estabas",
-                    fact = "«La furgoneta de Correos lleva GPS: a las 5:15 yo estaba en la nacional, camino de la oficina. Compruébelo.»",
+                    topic = "quién o qué puede confirmar dónde estabas, o cómo demostrar tus horarios",
+                    fact = "«Mírelo en el GPS de la furgoneta de Correos: a las 5:15 me sitúa en la nacional, camino de la oficina. Compruébelo.»",
                     anchors = new[]
                     {
                         new[] { "gps", "localizador" },
