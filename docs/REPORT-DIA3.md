@@ -41,7 +41,7 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 2. **Jugabilidad:** "Pensar", dificultad, prueba clave, rango, **tus notas** por sospechoso, **los partes en la libreta**, la rueda **tacha a quien está descartado**, rejugar trae **otro culpable**. Bot: primera pista 10,3 → 6,9 preguntas, resueltas 44 → 72 %.
 3. **Aspecto y sonido:** retratos 2.5D, post-proceso noir (contraste medido después), arte y motivo musical por historia, ficha policial en el final; todo reversible desde el tema.
 4. **Accesibilidad:** WCAG 2.2 AA auditado y **lector de pantalla** (TalkBack/VoiceOver), también en los enlaces de la libreta.
-5. **Calidad:** cinco revisiones independientes, todos los hallazgos importantes arreglados con test en rojo primero; tests EditMode 549 → 714, PlayMode 20 → 54; build de Windows con prueba de humo OK.
+5. **Calidad:** seis revisiones independientes, todos los hallazgos importantes arreglados con test en rojo primero; tests EditMode 549 → 715, PlayMode 20 → 54; build de Windows con prueba de humo OK.
 6. **Bloqueante para Android:** ningún proveedor LLM funciona tal cual en el móvil (decisión 1). APK sin generar (falta el módulo).
 
 ## 2. Galería antes / después
@@ -70,7 +70,7 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 
 | Métrica | Antes (inicio del día) | Ahora |
 |---|---|---|
-| Tests EditMode | 549 | **714** |
+| Tests EditMode | 549 | **715** |
 | Tests PlayMode (sin capturas) | 20 | **54** |
 | Horas inventadas por qwen (A/B, 18+18 partidas) | 27 / 619 respuestas | **7 / 630** (−74 %), latencia igual; el reintento frío arregla 91 % (antes 56 %) |
 | Primera pista (bot, preguntas) | 10,3 (8,6 antes de B2) | **6,9** con Pensar |
@@ -82,9 +82,9 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 | Incoherencias narrativas conocidas | 17 (auditoría) | 0 abiertas; validador en verde en las 9 variantes |
 | Basura por fotograma del juego (reposo) | ≤ 0 B | ≤ 0 B (tras C3/C4/D1) |
 | Contraste mínimo de texto tras el post-proceso | — | 6,08:1 (todos los pares suben) |
-| Hallazgos de revisión abiertos | — | 2 anotados de 44 (cinco revisiones independientes; decisión 15 y un menor de rendimiento) |
+| Hallazgos de revisión abiertos | — | 4 anotados de 50 (seis revisiones independientes; decisión 15, uno de rendimiento y dos del bot/preview) |
 | Lector de pantalla | no | **sí** (jerarquía, acciones y anuncios; probado en el editor, falta un móvil real) |
-| Bot con variantes al azar (culpable) | — | **45/56** en nueve rondas; la 2B, 0/12 en rondas fijas (techo de qwen como detective, no del caso: su pista clave sale 10/10 al preguntarla) |
+| Bot con variantes al azar (culpable) | — | **48/62** en diez rondas; la 2B, 0/12 en rondas fijas (techo de qwen como detective, no del caso: su pista clave sale 10/10 al preguntarla) |
 | Las 9 variantes, cierre (bot, 18 partidas) | — | **15/18 (83 %)**, primera pista 5,7; horas inventadas 1,5 % de respuestas |
 | Rejugar una historia repite la solución | 1 de cada 3 | **nunca** mientras queden variantes sin ver |
 | Partes de la mañana | se leían una vez | **en la libreta** |
@@ -93,7 +93,7 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 - **superpowers:test-driven-development** en todo el código (cada arreglo de la revisión: test en rojo → verde).
 - **design:design-critique** (C1, docs/DESIGN-CRITIQUE.md), **design:ux-copy** (C6, glosario y tabla de textos) y
   **design:accessibility-review** (auditoría WCAG 2.2 AA en las rondas finales).
-- **Subagentes**: auditoría editorial (A2), investigación con búsqueda web (B1) y **cinco revisiones de código
+- **Subagentes**: auditoría editorial (A2), investigación con búsqueda web (B1) y **seis revisiones de código
   independientes** (D3 y rondas finales), cada una sobre lo cambiado desde la anterior.
 - **Búsqueda web**: juegos de detectives (RESEARCH.md), nivel de API de Google Play (E), libretas de deducción
   (→ tus notas), reseñas de juegos de interrogatorio con IA y bucles de "un caso más" (→ A/B de preguntas,
@@ -169,7 +169,7 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 
 ## 8. Cómo probarlo en Unity (en este orden)
 1. Abrir el proyecto con **Unity 6000.3.2f1** y esperar a que importe (la primera vez tarda).
-2. *Window → General → Test Runner* → **EditMode → Run All** (714 en verde).
+2. *Window → General → Test Runner* → **EditMode → Run All** (715 en verde).
 3. **PlayMode → Run All** (54 en verde; las capturas están marcadas *Explicit* y no corren solas).
 4. Para jugar con qwen: `ollama serve` y `ollama pull qwen2.5:7b-instruct`.
 5. Abrir `Assets/Scenes/Game.unity` → **Play** con la ventana *Game* en 1080×1920:

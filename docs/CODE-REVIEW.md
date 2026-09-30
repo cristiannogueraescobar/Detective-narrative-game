@@ -196,3 +196,17 @@ sola vez por caso, el último día, continuar una partida, el lector y que los t
 | 3 | Plausible | Quien ya jugó antes de esta versión verá otra vez "otros dos culpables" | **Aceptado** (aún no publicado): decisión 15 |
 | 4 | Plausible | Un caso forzado en el inspector se apuntaba como jugado en los ajustes reales | **Arreglado** |
 | 5 | Tests | Nada comprobaba que acusar apunte la variante ni la línea del informe | **Arreglado**: test de juego |
+
+# Revisión de código (día 3, sexta)
+Sexta revisión independiente, sobre `git diff f2b69b4..HEAD` (arreglos de la quinta, textos, caso peor del layout,
+reintento frío). **Ningún defecto para el jugador en la build.** Dio por buenos: altura del pie al rehacer la
+rueda, `TryFind`, que la temperatura fría solo toque el reintento por horas y que los tests nuevos no pasen en vacío.
+
+| # | Sev. | Hallazgo | Estado |
+|---|---|---|---|
+| 1 | Plausible | El pie alto (96) resta retrato a todas las celdas y ningún test lo medía | **Arreglado**: test de `GridFit` con 4-6 sospechosos (busto ≥ 200 px) |
+| 2 | Confirmado (editor) | Continuar una partida no reiniciaba la marca de caso forzado | **Arreglado** |
+| 3 | Confirmado (editor) | Con un caso forzado, el final contaba un culpable de más por ver | **Arreglado** |
+| 4 | Plausible (bot) | Un id de pista que contenga un nombre corto se resolvería a ese sospechoso | **Anotado** (solo el bot; los ids actuales no lo hacen) |
+| 5 | Confirmado, menor | El lector leía "Daniel tu descarte" sin separación | **Arreglado**: "(tu descarte)" entre paréntesis |
+| 6 | Bajo | Los partes del caso peor del layout no son necesariamente los más largos | **Anotado** |
