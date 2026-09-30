@@ -35,8 +35,22 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   Causa de títulos pequeños: GameManager reaplicaba el tema y pisaba tamaños → el tema ya no toca textos con
   TextStyle (test). Antes/después: 00-inicio/1080x1920_MainMenuPanel.png vs anim/menu_2500.png.
 
+- 02:35 FxLayer: ficha de pista que cae, destella y vuela a la libreta (+ contador), sello CONTRADICCIÓN con
+  destello y sacudida, hoja de calendario con el parte, viñeta y latido en la acusación, "El jurado delibera…",
+  finales con sello propio, tinte y línea temporal línea a línea, CONFIDENCIAL en el expediente, grano y viñeta.
+- 02:40 Intro como expediente sobre la sala de interrogatorios (arte que ya existía y no se usaba), iconos
+  generados (Tools/make_icons.py, archivos nuevos en Assets/Art/Icons).
+- 02:45 Sonido: SoundManager + AUDIO-NEEDED.md (probado contra el catálogo), clic en todos los botones.
+- 02:52 Ajustes: secciones con scroll, música/efectos, tamaño de texto en caliente, filtro noir, alto contraste
+  (AAA). Test de layout también con texto "muy grande". Bug: sprites generados tomados por ilustración.
+- 02:55 Bot ronda 1 (27 partidas): ver Logs/bot-playthroughs.md. Pistas flojas y emoción recalibradas.
+- 03:04 Instrucciones y Acerca de reescritos, HUD con "quedan N preguntas", tutorial de 4 indicaciones.
+- 03:08 Build de Windows OK + prueba de humo del .exe (SMOKE OK). Android: sin módulo → docs/BUILD.md.
+- 03:15 Retratos en plano medio (recorte medido del pixel art) y caras en el chat.
+
 ## Ahora
-- Efectos: pista (ficha a la libreta), contradicción (sello), cambio de día, acusación, finales, expediente, filtro noir.
+- Bot ronda 2 y recalibración (pistas 2C/3C, estados) con los últimos cambios.
+- Chat con conversación real larga (transcripción del bot) en captura.
 
 ## Después (orden)
 1. Layout: 3 rondas de render→revisión, safe area, zonas táctiles ≥ 48 px (añadir al test).
@@ -55,3 +69,8 @@ FINAL. Rondas de revisión.
 - Guardado v2: los guardados v1 se cargan, con cada conversación antigua como un bloque de texto.
 - Hora del juego: 09:00 + 2 h por pregunta (con un desfase para que no parezca un reloj), sin afectar a la lógica.
 - La pregunta del jugador aparece al enviar; si falla la petición, se retira y vuelve al campo.
+- Filtro noir ACTIVADO por defecto (grano 0,05, viñeta 0,45: sutil). Se quita en Ajustes.
+- No se ha tocado la capa de proveedores: la clave de Anthropic en Android y la URL de Ollama en móvil quedan
+  documentadas en docs/BUILD.md como pendientes.
+- Tamaño de las fichas: se mantuvo el límite de 460 palabras (test) acortando reglas en vez de subirlo.
+- Los retratos antiguos se muestran en plano medio (recorte), no de cuerpo entero.
