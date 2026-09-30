@@ -385,8 +385,8 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   (0,56-0,63 ms en las 4 combinaciones); en móvil se estima < 0,2 ms el relieve y 1-2 ms el post-proceso, que se
   quita con el ajuste "Filtro noir". Medir en Android real queda en Pendientes. Atlas/pooling revisados (documentado).
 
-- **12:45** D3 lanzado: revisión independiente en segundo plano (agente nuevo, modelo más capaz) sobre el diff del día.
-- **12:50** E (Android): AndroidSetup.cs aplica y versiona paquete provisional, IL2CPP ARM64, API 25-36 (Google Play
+- **12:36** D3 lanzado: revisión independiente en segundo plano (agente nuevo, modelo más capaz) sobre el diff del día.
+- **12:39** E (Android): AndroidSetup.cs aplica y versiona paquete provisional, IL2CPP ARM64, API 25-36 (Google Play
   exige 36 desde el 31-08-2026, investigado → RESEARCH.md), vertical, Internet, HTTP solo en desarrollo; BuildAndroid
   lo aplica solo. docs/ANDROID-BUILD.md. **Sin módulo Android en este PC: no hay APK.** Hallazgo importante: en el
   móvil ningún proveedor funciona tal cual (Ollama en localhost; la clave de Anthropic se lee de un archivo que no
