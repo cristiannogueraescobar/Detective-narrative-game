@@ -58,6 +58,8 @@ Diario minuto a minuto: `docs/NIGHT-LOG.md`. Tests: **EditMode y PlayMode en ver
   víctima se entristece; con lo cotidiano está tranquilo. Un cambio de cara vuelve a ser información.
 - **Un toque por error no cuesta un día.** "Fin del día" está al alcance del pulgar, justo bajo el selector de
   sospechoso. Con preguntas sin gastar pide confirmación; con el día gastado sigue siendo un solo toque.
+- **Nada se pierde sin preguntar.** Empezar otro caso con una investigación a medias pide confirmación; Atrás
+  siempre deshace un solo paso (primero una lista abierta, luego un aviso, luego la libreta).
 - **Decidir con información, sin chivatazos.** La acusación recuerda cuántas pistas y contradicciones llevas
   (o que acusar sin nada es una apuesta), sin decir cuáles incriminan a quién.
 
@@ -260,6 +262,7 @@ abre Unity y deja que reimporte. Game View a **1080x1920 (vertical)**; después 
    una apuesta"). Rueda de reconocimiento con los bustos; el que tocas se marca. "Volver" (o Esc) vuelve y
    recupera la música del caso. Acusa: "El jurado delibera…" y el final con su sello y la línea temporal.
 9. **Jugar otra vez** → selección de caso: el expediente muestra el mejor final que sacaste.
+   Con una partida a medias, elegir otro caso pregunta antes de borrarla ("Cancelar" o Atrás no pierden nada).
 10. **Continuar**: cierra el juego a mitad de partida y vuelve: "Continuar · <caso>, día N" y el chat entero.
 11. **Build**: `Builds/Windows-final/Detectives.exe` (ver docs/BUILD.md: la ruta de siempre quedó bloqueada por
     Windows esta noche). Se abre como una ventana vertical de móvil (9:16); `-smoketest` para la prueba de humo.

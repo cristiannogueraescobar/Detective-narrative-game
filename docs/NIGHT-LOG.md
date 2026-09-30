@@ -179,6 +179,12 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   del 7B (horas y hechos inventados, en pendientes). 9ª revisión: sin problemas bloqueantes; sondas que fallan
   con Ollama apagado y -buildPath con nombre suelto, arreglados con test. Galería con las preguntas finales.
 
+- 09:45 Revisión de toda la rama (subagente, modelo más capaz): 0 críticos/importantes. Arreglados con test:
+  empezar otro caso con una partida a medias ahora pregunta antes de borrarla; el aviso de fin del día retira la
+  indicación del tutorial que lo tapaba; Atrás con una lista desplegable abierta solo cierra la lista. Decisión:
+  el caso raro "falla algo tras contar la pregunta" (excepción interna) queda anotado, sin cambio.
+  Tests 549/549 + PlayMode 20/20.
+
 ## Ahora
 - Rondas finales (10+): revisión de toda la rama (subagente), bot definitivo de 18 partidas (semilla 59),
   informe y galería finales, build final, borrar el worktree.
