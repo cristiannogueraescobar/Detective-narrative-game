@@ -67,6 +67,17 @@ public static class GameTexts
     public const string ThinkPrefix = "Piensas… ";
 
     /// <summary>
+    /// Línea de gancho del expediente: quién era la víctima (la primera frase del parte, sin lo que pasó).
+    /// </summary>
+    public static string CaseHook(StoryData story)
+    {
+        string summary = story.victimSummary ?? "";
+        int end = summary.IndexOf(". ", System.StringComparison.Ordinal);
+        string first = end >= 0 ? summary.Substring(0, end + 1) : summary;
+        return "Víctima: " + first.Trim();
+    }
+
+    /// <summary>
     /// Etiqueta del expediente en la selección de caso: el mejor final y el mejor rango conseguidos.
     /// </summary>
     public static string RecordLabel(Ending? best, string rank, Theme t)

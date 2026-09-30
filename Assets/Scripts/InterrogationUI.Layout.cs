@@ -143,6 +143,12 @@ public partial class InterrogationUI
         LayoutKit.Label(endDayButton, "Fin del día");
         LayoutKit.Put(accuseNowButton, side, height: Theme.MinTouchSize);
         LayoutKit.Label(accuseNowButton, "Acusar");
+        // Acusar es la acción más cara: aviso (texto de alerta), no reclamo; el dorado queda para Enviar
+        if (accuseNowButton != null)
+        {
+            UIComponents.GetOrAdd<ThemeRole>(accuseNowButton.gameObject).role = UIRole.DangerButton;
+            ThemeApplier.Apply(accuseNowButton.transform);
+        }
 
         // Chat: todo el hueco que queda, solo desplazamiento vertical
         if (conversationScroll != null)

@@ -202,11 +202,21 @@ public class MenuManager : MonoBehaviour
             }
         }
 
-        TMP_Text subtitle = UIFactory.Label(column, "Interrogatorios · Tres casos", t.secondarySize, t.textSecondary);
+        // El subtítulo va sobre una banda oscura suave: el dibujo es muy cargado justo ahí
+        RectTransform band = UIFactory.Container(column, "Subtitulo (banda)", Vector2.zero, Vector2.one);
+        var bandImage = band.gameObject.AddComponent<Image>();
+        bandImage.sprite = UISprites.Rounded(12);
+        bandImage.type = Image.Type.Sliced;
+        bandImage.color = new Color(t.background.r, t.background.g, t.background.b, t.titleBandAlpha);
+        bandImage.raycastTarget = false;
+        band.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
+        LayoutKit.Put(band, column, height: 64f);
+
+        TMP_Text subtitle = UIFactory.Label(band, "Interrogatorios · Tres casos", t.secondarySize, t.textPrimary);
         subtitle.name = "Subtitulo (auto)";
         subtitle.alignment = TextAlignmentOptions.Center;
         subtitle.characterSpacing = 6f;
-        LayoutKit.Put(subtitle, column, height: 56f);
+        LayoutKit.Overlay(subtitle.rectTransform, Vector2.zero, Vector2.one, new Vector2(24f, 0f), new Vector2(-24f, 0f));
         LayoutKit.OneLine(subtitle, t.secondarySize);
 
         LayoutKit.Spacer(column, 1f);

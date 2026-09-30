@@ -213,6 +213,31 @@ public class LayoutValidationTests
     }
 
     [Test]
+    public void EnElInterrogatorioElDoradoEsParaPreguntarNoParaAcusar()
+    {
+        LayoutPreview.ShowOnly(session, "InterrogationPanel");
+        Button accuse = LayoutPreview.Find(session, "AcuseNowButton").GetComponent<Button>();
+        Button ask = LayoutPreview.Find(session, "AskButton").GetComponent<Button>();
+        Assert.AreEqual(UIRole.DangerButton, accuse.GetComponent<ThemeRole>().role, "acusar es la acción más cara: aviso, no reclamo");
+        Assert.AreNotEqual(accuse.colors.normalColor, ask.colors.normalColor);
+        Assert.AreEqual(ThemeManager.Current.dangerOnButton, accuse.GetComponentInChildren<TMP_Text>().color);
+    }
+
+    [Test]
+    public void LosBotonesMarcanPulsadoYDesactivado()
+    {
+        Button ask = LayoutPreview.Find(session, "AskButton").GetComponent<Button>();
+        var fx = ask.GetComponent<ButtonStateFx>();
+        Assert.IsNotNull(fx, "cada botón del tema lleva sus estados");
+        ask.interactable = false;
+        fx.Refresh();
+        Assert.AreEqual(ThemeManager.Current.disabledAlpha, ask.GetComponent<CanvasGroup>().alpha, 0.01f);
+        ask.interactable = true;
+        fx.Refresh();
+        Assert.AreEqual(1f, ask.GetComponent<CanvasGroup>().alpha, 0.01f);
+    }
+
+    [Test]
     public void ChatSoloDesplazamientoVertical()
     {
         ScrollRect chat = LayoutPreview.Find(session, "ConversationScroll").GetComponent<ScrollRect>();

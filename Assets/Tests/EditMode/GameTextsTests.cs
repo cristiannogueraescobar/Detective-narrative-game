@@ -58,6 +58,17 @@ public class GameTextsTests
     }
 
     [Test]
+    public void ElExpedienteDiceQuienEsLaVictimaSinDestripar()
+    {
+        CaseLibrary.TryFind("1A", out StoryData story, out _);
+        string hook = GameTexts.CaseHook(story);
+        StringAssert.StartsWith("Víctima: Elena", hook);
+        StringAssert.DoesNotContain("112", hook, "solo la primera frase: quién era, no qué pasó");
+        foreach (StoryData s in CaseLibrary.Stories)
+            StringAssert.EndsWith(".", GameTexts.CaseHook(s));
+    }
+
+    [Test]
     public void ElExpedienteDiceElMejorFinalYElMejorRango()
     {
         Theme t = ThemeManager.Current;

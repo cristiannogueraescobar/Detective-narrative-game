@@ -10,6 +10,7 @@ public enum UIRole
     Panel,
     PrimaryButton,
     SecondaryButton,
+    DangerButton,    // Acción cara (acusar): fondo secundario, texto de aviso
     ButtonLabel,
     Title,
     Heading,
@@ -136,16 +137,19 @@ public static class ThemeApplier
                 {
                     button.colors = ButtonColors(theme.buttonPrimary, theme.buttonDisabled);
                     UIComponents.GetOrAdd<ClickSound>(button.gameObject);
+                    UIComponents.GetOrAdd<ButtonStateFx>(button.gameObject);
                     ShowColorNow(button);
                 }
                 Round(graphic, 16);
                 break;
             case UIRole.SecondaryButton:
+            case UIRole.DangerButton:
                 graphic.color = Color.white;
                 if (button != null)
                 {
                     button.colors = ButtonColors(theme.buttonSecondary, theme.buttonDisabled);
                     UIComponents.GetOrAdd<ClickSound>(button.gameObject);
+                    UIComponents.GetOrAdd<ButtonStateFx>(button.gameObject);
                     ShowColorNow(button);
                 }
                 Round(graphic, 16);
@@ -166,7 +170,8 @@ public static class ThemeApplier
                 graphic.color = theme.accent;
                 break;
             case UIRole.ButtonLabel:
-                Style((TMP_Text)graphic, theme.bodyFont, theme.bodySize, IsInPrimaryButton(graphic) ? theme.buttonPrimaryText : theme.buttonSecondaryText);
+                Style((TMP_Text)graphic, theme.bodyFont, theme.bodySize,
+                      IsInPrimaryButton(graphic) ? theme.buttonPrimaryText : IsInDangerButton(graphic) ? theme.dangerOnButton : theme.buttonSecondaryText);
                 break;
             case UIRole.Title:
                 Style((TMP_Text)graphic, theme.titleFont, theme.titleSize, theme.accent);
@@ -201,6 +206,12 @@ public static class ThemeApplier
             image.sprite = UISprites.Rounded(radius);
             image.type = Image.Type.Sliced;
         }
+    }
+
+    private static bool IsInDangerButton(Graphic label)
+    {
+        Button button = label.GetComponentInParent<Button>(true);
+        return button != null && button.TryGetComponent(out ThemeRole role) && role.role == UIRole.DangerButton;
     }
 
     private static bool IsInPrimaryButton(Graphic label)

@@ -42,6 +42,14 @@ public class Theme : ScriptableObject
     public Color contradiction = new Color32(217, 140, 58, 255);
     public Color success = new Color32(110, 158, 106, 255);
     public Color danger = new Color32(224, 106, 94, 255); // ≥ 4.5:1 sobre el panel
+
+    public Color dangerOnButton = new Color32(240, 138, 126, 255); // Texto de "Acusar" (5,7:1 sobre el botón)
+
+    [Range(0f, 1f)] public float titleBandAlpha = 0.55f; // Banda bajo el subtítulo del menú (0 = sin banda)
+
+    [Header("Estados de botón")]
+    [Range(0.2f, 1f)] public float disabledAlpha = 0.45f;   // Desactivado: se apaga
+    [Range(0.9f, 1f)] public float pressedScale = 0.98f;    // Pulsado: se hunde un poco (no con "Reducir animaciones")
     public Color placeholder = new Color32(46, 46, 51, 255);     // Arte que aún no existe
 
     [Header("Estados emocionales: tinte del retrato")]
@@ -86,6 +94,7 @@ public class Theme : ScriptableObject
     public float headingSize = 52f;
     public float bodySize = 40f;
     public float secondarySize = 32f;
+    public float reportSize = 36f;   // Parte de la mañana en el chat
 
     [Header("Duraciones (s)")]
     public float panelFadeDuration = 0.25f;

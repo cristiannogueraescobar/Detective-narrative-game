@@ -66,8 +66,13 @@ public static class CaseSelect
             name.fontStyle = FontStyles.Bold;
             LayoutKit.OneLine(name, t.headingSize);
 
-            TMP_Text place = Text(card, "Lugar", story.place, t.secondarySize, t.paperText, new Vector2(0f, 0.05f), new Vector2(1f, 0.42f));
+            TMP_Text place = Text(card, "Lugar", story.place, t.secondarySize, t.paperText, new Vector2(0f, 0.22f), new Vector2(1f, 0.42f));
             LayoutKit.MultiLine(place, t.secondarySize);
+
+            // Gancho: quién era la víctima (el expediente ya no queda medio vacío)
+            TMP_Text hook = Text(card, "Victima", GameTexts.CaseHook(story), t.secondarySize, t.paperInk, new Vector2(0f, 0.04f), new Vector2(1f, 0.22f));
+            hook.fontStyle = FontStyles.Italic;
+            LayoutKit.MultiLine(hook, t.secondarySize);
 
             // Mejor final: un sello pequeño en la esquina
             TMP_Text best = Text(card, "Mejor final", "", t.secondarySize * 0.95f, t.paperInk, new Vector2(0.55f, 0.7f), new Vector2(1f, 0.93f));

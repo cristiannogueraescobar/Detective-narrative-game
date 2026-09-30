@@ -642,9 +642,10 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
         row.heading.fontStyle = FontStyles.Bold;
         TextStyle.Set(row.heading, TextStyle.Mode.Scrolling, T.headingSize);
 
-        row.body = NewText(root, "Parte", T.secondarySize, T.systemText, TextAlignmentOptions.Center);
-        row.body.fontStyle = FontStyles.Italic;
-        TextStyle.Set(row.body, TextStyle.Mode.Scrolling, T.secondarySize);
+        // El parte es contenido del caso, no un aviso: recto, algo más grande y en el color del texto principal
+        row.body = NewText(root, "Parte", T.reportSize, T.textPrimary, TextAlignmentOptions.Center);
+        row.body.fontStyle = FontStyles.Normal;
+        TextStyle.Set(row.body, TextStyle.Mode.Scrolling, T.reportSize);
         return row;
     }
 

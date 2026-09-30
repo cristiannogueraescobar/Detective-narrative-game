@@ -72,6 +72,7 @@ public static class ThemeManager
         t.success = new Color32(140, 210, 130, 255);
         t.contradiction = new Color32(255, 170, 80, 255);
         t.danger = new Color32(255, 120, 108, 255);
+        t.dangerOnButton = new Color32(255, 170, 160, 255);
         t.grainIntensity = 0f;
         t.vignetteIntensity = Mathf.Min(source.vignetteIntensity, 0.2f);
 
