@@ -28,7 +28,7 @@ public static class ConfirmDialog
             box.pivot = new Vector2(0.5f, 0.5f);
             var boxImage = box.gameObject.AddComponent<Image>();
             boxImage.color = theme.panel; // Más oscura que el botón secundario: "Cancelar" se ve como botón
-            boxImage.sprite = UISprites.Rounded(20);
+            boxImage.sprite = UISprites.Rounded(ThemeManager.Current.RadiusLarge);
             boxImage.type = Image.Type.Sliced;
             boxImage.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
             UIFactory.VerticalLayout(box, theme.spacing, theme.padding);

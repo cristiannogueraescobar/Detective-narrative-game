@@ -45,7 +45,7 @@ public static class CaseSelect
             RectTransform card = UIFactory.Container(column, "Caso " + story.id, Vector2.zero, Vector2.one);
             LayoutKit.Size(card, height: 250f, flexibleHeight: 1f);
             var paper = card.gameObject.AddComponent<Image>();
-            paper.sprite = UISprites.Rounded(14);
+            paper.sprite = UISprites.Rounded(ThemeManager.Current.RadiusMedium);
             paper.type = Image.Type.Sliced;
             paper.color = t.paper;
             var button = card.gameObject.AddComponent<Button>();

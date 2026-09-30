@@ -111,7 +111,7 @@ public partial class InterrogationUI
             chip.sizeDelta = new Vector2(headerHeight * 0.72f, 50f);
             UIComponents.GetOrAdd<LayoutElement>(chip.gameObject).ignoreLayout = true;
             var chipImage = chip.gameObject.AddComponent<Image>();
-            chipImage.sprite = UISprites.Rounded(25);
+            chipImage.sprite = UISprites.Rounded(ThemeManager.Current.RadiusPill);
             chipImage.type = Image.Type.Sliced;
             chipImage.color = new Color(0f, 0f, 0f, 0.8f);
             chipImage.raycastTarget = false;

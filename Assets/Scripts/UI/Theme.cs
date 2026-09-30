@@ -45,6 +45,18 @@ public class Theme : ScriptableObject
 
     public Color dangerOnButton = new Color32(240, 138, 126, 255); // Texto de "Acusar" (5,7:1 sobre el botón)
 
+    [Header("Radios (escala única)")]
+    public int radiusTiny = 6;      // Marcas pequeñas (casillas, gotas de sudor)
+    public int radiusSmall = 12;    // Bandas, fichas de pista
+    public int radiusMedium = 16;   // Botones y tarjetas
+    public int radiusLarge = 20;    // Diálogos, burbujas, hojas
+    public int radiusPill = 36;     // Píldoras y contadores
+    public int RadiusTiny => radiusTiny;
+    public int RadiusSmall => radiusSmall;
+    public int RadiusMedium => radiusMedium;
+    public int RadiusLarge => radiusLarge;
+    public int RadiusPill => radiusPill;
+
     [Range(0f, 1f)] public float titleBandAlpha = 0.55f; // Banda bajo el subtítulo del menú (0 = sin banda)
 
     [Header("Estados de botón")]

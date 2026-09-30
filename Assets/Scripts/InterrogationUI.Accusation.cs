@@ -175,7 +175,7 @@ public partial class InterrogationUI
             SuspectView view = options[i];
             RectTransform cell = UIFactory.Container(lineup, "Sospechoso " + view.shortName, Vector2.zero, Vector2.one);
             var card = cell.gameObject.AddComponent<Image>();
-            card.sprite = UISprites.Rounded(16);
+            card.sprite = UISprites.Rounded(ThemeManager.Current.RadiusMedium);
             card.type = Image.Type.Sliced;
             card.color = T.panelBorder;
             var button = cell.gameObject.AddComponent<Button>();

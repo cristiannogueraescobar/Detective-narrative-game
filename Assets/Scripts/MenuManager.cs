@@ -205,7 +205,7 @@ public class MenuManager : MonoBehaviour
         // El subtítulo va sobre una banda oscura suave: el dibujo es muy cargado justo ahí
         RectTransform band = UIFactory.Container(column, "Subtitulo (banda)", Vector2.zero, Vector2.one);
         var bandImage = band.gameObject.AddComponent<Image>();
-        bandImage.sprite = UISprites.Rounded(12);
+        bandImage.sprite = UISprites.Rounded(ThemeManager.Current.RadiusSmall);
         bandImage.type = Image.Type.Sliced;
         bandImage.color = new Color(t.background.r, t.background.g, t.background.b, t.titleBandAlpha);
         bandImage.raycastTarget = false;

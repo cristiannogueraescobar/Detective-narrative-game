@@ -34,7 +34,7 @@ de botón poco marcados.
 |---|---|---|---|
 | Botones | Los del menú usan la fuente de máquina de escribir; el resto, la de texto. | Se mantiene a propósito: el menú es la "portada". Todo lo demás usa la de texto. | Se queda |
 | Estados de botón | Pulsado y desactivado se distinguen poco del normal (solo cambia un poco el tono). | Pulsado: más oscuro y 2 % más pequeño; desactivado: 45 % de opacidad. Valores en el tema. | Arreglado |
-| Radios | Botones, tarjetas y burbujas usan radios parecidos pero no iguales. | Una escala en el tema (pequeño 12 / medio 20) y usarla en todo. | Pendiente |
+| Radios | Botones, tarjetas y burbujas usan radios parecidos pero no iguales. | Una escala en el tema (pequeño 12 / medio 20) y usarla en todo. | Arreglado: escala en el tema (6 · 12 · 16 · 20 · 36), sin radios sueltos en el código |
 
 ## Accesibilidad
 - **Contraste:** todos los textos pasan WCAG AA (test automático en todos los paneles, en normal, "Muy grande" y

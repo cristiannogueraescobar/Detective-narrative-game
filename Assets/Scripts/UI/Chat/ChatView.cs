@@ -387,7 +387,7 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
         RectTransform pill = UIFactory.Container(hit, "Pildora", new Vector2(0f, 0.5f), new Vector2(1f, 0.5f));
         pill.sizeDelta = new Vector2(0f, 72f);
         var pillImage = pill.gameObject.AddComponent<Image>();
-        pillImage.sprite = UISprites.Rounded(36);
+        pillImage.sprite = UISprites.Rounded(ThemeManager.Current.RadiusPill);
         pillImage.type = Image.Type.Sliced;
         pillImage.color = T.accent;
         pillImage.raycastTarget = false;
@@ -489,7 +489,7 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
         // Burbuja: fondo redondeado que se ajusta al texto
         RectTransform bubble = NewRect(root, "Globo");
         row.background = bubble.gameObject.AddComponent<Image>();
-        row.background.sprite = UISprites.Rounded(24);
+        row.background.sprite = UISprites.Rounded(ThemeManager.Current.RadiusLarge);
         row.background.type = Image.Type.Sliced;
         var inner = bubble.gameObject.AddComponent<VerticalLayoutGroup>();
         inner.padding = new RectOffset(28, 28, 16, 20);
@@ -565,7 +565,7 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
 
         RectTransform card = NewRect(root, "Tarjeta");
         row.background = card.gameObject.AddComponent<Image>();
-        row.background.sprite = UISprites.Rounded(20);
+        row.background.sprite = UISprites.Rounded(ThemeManager.Current.RadiusLarge);
         row.background.type = Image.Type.Sliced;
         var inner = card.gameObject.AddComponent<VerticalLayoutGroup>();
         inner.padding = new RectOffset(24, 24, 14, 14);

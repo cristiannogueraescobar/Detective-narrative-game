@@ -140,7 +140,7 @@ public static class ThemeApplier
                     UIComponents.GetOrAdd<ButtonStateFx>(button.gameObject);
                     ShowColorNow(button);
                 }
-                Round(graphic, 16);
+                Round(graphic, theme.RadiusMedium);
                 break;
             case UIRole.SecondaryButton:
             case UIRole.DangerButton:
@@ -152,7 +152,7 @@ public static class ThemeApplier
                     UIComponents.GetOrAdd<ButtonStateFx>(button.gameObject);
                     ShowColorNow(button);
                 }
-                Round(graphic, 16);
+                Round(graphic, theme.RadiusMedium);
                 break;
             case UIRole.Field:
                 Selectable owner = graphic.GetComponentInParent<Selectable>(true);

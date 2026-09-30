@@ -104,7 +104,7 @@ public static class UIFactory
             check.anchorMax = Vector2.one;
             check.offsetMin = new Vector2(10f, 10f);
             check.offsetMax = new Vector2(-10f, -10f);
-            mark.sprite = UISprites.Rounded(6);
+            mark.sprite = UISprites.Rounded(ThemeManager.Current.RadiusTiny);
             mark.type = Image.Type.Sliced;
             mark.color = theme.accent;
             mark.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;

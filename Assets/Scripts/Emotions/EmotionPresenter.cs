@@ -214,7 +214,7 @@ public class EmotionPresenter : MonoBehaviour
         dr.anchorMin = dr.anchorMax = new Vector2(Random.Range(0.36f, 0.64f), Random.Range(band.x, band.y));
         dr.sizeDelta = new Vector2(9f, 14f);
         var di = go.AddComponent<Image>();
-        di.sprite = UISprites.Rounded(6);
+        di.sprite = UISprites.Rounded(ThemeManager.Current.RadiusTiny);
         di.type = Image.Type.Sliced;
         di.color = new Color(0.85f, 0.93f, 1f, 0f);
         di.raycastTarget = false;

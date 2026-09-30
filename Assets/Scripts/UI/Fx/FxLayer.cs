@@ -227,7 +227,7 @@ public class FxLayer : MonoBehaviour
         card.anchorMin = card.anchorMax = new Vector2(0.5f, 0.72f);
         card.sizeDelta = new Vector2(820f, 250f);
         var paper = card.gameObject.AddComponent<Image>();
-        paper.sprite = UISprites.Rounded(10);
+        paper.sprite = UISprites.Rounded(ThemeManager.Current.RadiusSmall);
         paper.type = Image.Type.Sliced;
         paper.color = T.paper;
         paper.raycastTarget = false;
@@ -346,7 +346,7 @@ public class FxLayer : MonoBehaviour
         page.anchorMin = page.anchorMax = new Vector2(0.5f, 0.62f);
         page.sizeDelta = new Vector2(440f, 480f);
         var pageImage = page.gameObject.AddComponent<Image>();
-        pageImage.sprite = UISprites.Rounded(18);
+        pageImage.sprite = UISprites.Rounded(ThemeManager.Current.RadiusLarge);
         pageImage.type = Image.Type.Sliced;
         pageImage.color = T.paper;
         pageImage.raycastTarget = false;
@@ -357,7 +357,7 @@ public class FxLayer : MonoBehaviour
         header.anchorMax = Vector2.one;
         header.offsetMin = header.offsetMax = Vector2.zero;
         var headerImage = header.gameObject.AddComponent<Image>();
-        headerImage.sprite = UISprites.Rounded(18);
+        headerImage.sprite = UISprites.Rounded(ThemeManager.Current.RadiusLarge);
         headerImage.type = Image.Type.Sliced;
         headerImage.color = T.calendarRed;
         headerImage.raycastTarget = false;
@@ -606,7 +606,7 @@ public class FxLayer : MonoBehaviour
         card.anchorMin = card.anchorMax = new Vector2(0.5f, 0.5f);
         card.sizeDelta = new Vector2(Mathf.Min(900f, root.rect.width - 64f), 0f);
         var cardImage = card.gameObject.AddComponent<Image>();
-        cardImage.sprite = UISprites.Rounded(20);
+        cardImage.sprite = UISprites.Rounded(ThemeManager.Current.RadiusLarge);
         cardImage.type = Image.Type.Sliced;
         cardImage.color = T.paper;
         var layout = card.gameObject.AddComponent<VerticalLayoutGroup>();
@@ -675,7 +675,7 @@ public class FxLayer : MonoBehaviour
     {
         RectTransform rect = NewRect(row, label);
         var image = rect.gameObject.AddComponent<Image>();
-        image.sprite = UISprites.Rounded(14);
+        image.sprite = UISprites.Rounded(ThemeManager.Current.RadiusSmall);
         image.type = Image.Type.Sliced;
         image.color = background;
         var button = rect.gameObject.AddComponent<Button>();
