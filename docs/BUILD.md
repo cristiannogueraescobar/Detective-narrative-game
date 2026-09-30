@@ -7,13 +7,19 @@
 ```
 
 Sale en `Builds/Windows/Detectives.exe` (≈124 MB). También desde el menú **Detective → Build de Windows**.
-Se abre como una **ventana vertical 9:16** al 90 % del alto de la pantalla, como un móvil (`DesktopWindow`;
-en un monitor de 2560x1600, ventana de 810x1440). En móvil y en el editor no cambia nada.
+Se abre como una **ventana vertical 9:16** al 85 % del alto de la pantalla, como un móvil (`DesktopWindow`;
+en un monitor de 2560x1600, ventana de 765x1360). En móvil y en el editor no cambia nada.
 Prueba de humo del ejecutable (arranca, comprueba escena, tema y arte, y se cierra):
 
 ```
 Builds\Windows\Detectives.exe -batchmode -nographics -smoketest -logFile smoke.log
 ```
+
+**Ruta alternativa:** `-buildPath Builds/Windows-final/Detectives.exe`. Esta noche Windows empezó a negar la
+escritura de `Builds/Windows/Detectives.exe` ("Acceso denegado" al copiar, incluso en una carpeta recién creada y
+sin ningún proceso del juego abierto; con cualquier otro nombre o carpeta funciona). Sin permisos de administrador
+no pude ver qué lo bloquea (¿el antivirus tras matar el juego a la fuerza?). **La build final está en
+`Builds/Windows-final/Detectives.exe`.** Tras reiniciar el PC la ruta de siempre debería volver a funcionar.
 
 El log debe acabar con `SMOKE OK`. Resultado de la noche: **SMOKE OK**, sin errores.
 

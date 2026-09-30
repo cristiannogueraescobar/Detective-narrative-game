@@ -9,7 +9,7 @@ using UnityEngine;
 /// Builds por línea de comandos (batchmode):
 ///   Unity -batchmode -nographics -projectPath . -executeMethod BuildScript.BuildWindows -quit
 ///   Unity -batchmode -nographics -projectPath . -executeMethod BuildScript.BuildAndroid -quit   (necesita el módulo Android)
-/// Salida en Builds/. Las escenas son las activas de Build Settings (solo Game.unity).
+/// Salida en Builds/ (o en la ruta de "-buildPath"). Las escenas son las activas de Build Settings (solo Game.unity).
 /// </summary>
 public static class BuildScript
 {
@@ -18,14 +18,24 @@ public static class BuildScript
     [MenuItem("Detective/Build de Windows")]
     public static void BuildWindows()
     {
-        Build(BuildTarget.StandaloneWindows64, "Builds/Windows/Detectives.exe");
+        Build(BuildTarget.StandaloneWindows64, OutputPath(Environment.GetCommandLineArgs(), "Builds/Windows/Detectives.exe"));
     }
 
     [MenuItem("Detective/Build de Android (APK)")]
     public static void BuildAndroid()
     {
         EditorUserBuildSettings.buildAppBundle = false;
-        Build(BuildTarget.Android, "Builds/Android/Detectives.apk");
+        Build(BuildTarget.Android, OutputPath(Environment.GetCommandLineArgs(), "Builds/Android/Detectives.apk"));
+    }
+
+    /// <summary>
+    /// Ruta de salida: la de siempre, o la de "-buildPath &lt;ruta&gt;" si se pasa por línea de comandos (p. ej. si el
+    /// sistema bloquea la ruta habitual).
+    /// </summary>
+    public static string OutputPath(string[] args, string fallback)
+    {
+        int i = Array.IndexOf(args, "-buildPath");
+        return i >= 0 && i + 1 < args.Length && !string.IsNullOrWhiteSpace(args[i + 1]) ? args[i + 1] : fallback;
     }
 
     public const string AppIconPath = "Assets/Art/Icons/app_icon.png";
