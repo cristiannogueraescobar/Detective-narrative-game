@@ -191,4 +191,66 @@ public class AnimationCapture
             yield return Frames("final_" + e.ToString().ToLowerInvariant(), 0.15f, 0.5f, 2.5f, 7f);
         }
     }
+
+    // Conversación real: una transcripción del jugador bot (Logs/bot/1A_1.md), con sus días y pruebas
+    private static List<ChatEntry> FromTranscript(string path)
+    {
+        var entries = new List<ChatEntry>();
+        var turn = new System.Text.RegularExpressions.Regex(@"^\*\*D(\d+) → ([^\[:*]+?)(?: \[muestra ([^\]]+)\])?:\*\* (.*)$");
+        int day = 0, q = 0;
+        string who = null;
+        foreach (string line in File.ReadAllLines(path))
+        {
+            var m = turn.Match(line);
+            if (m.Success)
+            {
+                int d = int.Parse(m.Groups[1].Value);
+                if (d != day)
+                {
+                    if (day > 0)
+                        entries.Add(ChatEntry.Day(d, "Parte de la mañana del día " + d + "."));
+                    day = d;
+                    q = 0;
+                }
+                who = m.Groups[2].Value.Trim();
+                entries.Add(ChatEntry.Player(m.Groups[4].Value, m.Groups[3].Success ? m.Groups[3].Value : null, GameClock.TimeOf(q, 5)));
+            }
+            else if (line.StartsWith("> ") && who != null)
+            {
+                string answer = System.Text.RegularExpressions.Regex.Replace(line.Substring(2), @"\s*\*\([^)]*\)\*\s*$", "");
+                entries.Add(ChatEntry.Suspect(who, answer, GameClock.TimeOf(q, 5)));
+                q++;
+            }
+        }
+        return entries;
+    }
+
+    [UnityTest]
+    public IEnumerator ChatLargo()
+    {
+        const string path = "Logs/bot/1A_1.md";
+        Assume.That(File.Exists(path), "falta la transcripción del bot");
+        Tutorial.SkipAll();
+        yield return ToInterrogation();
+        List<ChatEntry> entries = FromTranscript(path);
+        var chat = Find("ConversationScroll").GetComponent<ChatView>();
+        var scroll = chat.GetComponent<ScrollRect>();
+
+        chat.Show(entries);
+        yield return new WaitForSecondsRealtime(0.5f);
+        Shot("chatlargo_abajo");
+        foreach (float p in new[] { 0.66f, 0.33f, 1f })
+        {
+            scroll.verticalNormalizedPosition = p;
+            yield return null;
+            yield return null;
+            Shot($"chatlargo_{Mathf.RoundToInt(p * 100):000}");
+        }
+
+        // Llega una respuesta nueva mientras el jugador está leyendo arriba: no se le mueve, sale "Nuevos mensajes"
+        entries.Add(ChatEntry.Suspect("Daniel", "Ya se lo he dicho, inspector: aquella noche no salí de mi cuarto.", "17:22"));
+        chat.Show(entries, typeLast: true);
+        yield return new WaitForSecondsRealtime(0.4f);
+        Shot("chatlargo_nuevo_mensaje");
+    }
 }

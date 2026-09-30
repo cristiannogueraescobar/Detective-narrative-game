@@ -99,8 +99,10 @@ public class LayoutValidationTests
         Rect endDay = WorldRect(LayoutPreview.Find(session, "EndDayButton"));
         Rect accuse = WorldRect(LayoutPreview.Find(session, "AcuseNowButton"));
 
-        Assert.AreEqual(endDay.center.y, accuse.center.y, 1f, "Fin del día y Acusar en la misma fila");
-        Assert.LessOrEqual(endDay.xMax, accuse.xMin + Tolerance, "sin pisarse");
+        Assert.IsFalse(endDay.Overlaps(new Rect(accuse.x + Tolerance, accuse.y + Tolerance, accuse.width - 2 * Tolerance, accuse.height - 2 * Tolerance)),
+            "Fin del día y Acusar no comparten sitio");
+        Assert.GreaterOrEqual(endDay.height, Theme.MinTouchSize - Tolerance);
+        Assert.GreaterOrEqual(accuse.height, Theme.MinTouchSize - Tolerance);
     }
 
     // ---------- Recorrido ----------

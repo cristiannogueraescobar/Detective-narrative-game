@@ -225,18 +225,16 @@ public class InterrogationUI : MonoBehaviour
         LayoutKit.Put(viewCluesButton, hud, width: 260f);
         LayoutKit.Label(viewCluesButton, "Libreta");
 
-        // Fila 2: acciones del día, cada una con su sitio
-        RectTransform actions = LayoutKit.Row(column, "Acciones", Theme.MinTouchSize);
-        LayoutKit.Put(endDayButton, actions, flexibleWidth: 1f);
-        LayoutKit.Label(endDayButton, "Fin del día");
-        LayoutKit.Put(accuseNowButton, actions, flexibleWidth: 1f);
-        LayoutKit.Label(accuseNowButton, "Acusar");
+        // Cabecera: retrato en plano medio a la izquierda; a su derecha, a quién interrogas y las acciones del día
+        // (cada una con su sitio). Así el chat se queda con la mayor parte de la pantalla.
+        float headerHeight = 3f * Theme.MinTouchSize + 2f * T.spacing;
+        RectTransform header = LayoutKit.Row(column, "Cabecera", headerHeight);
+        header.GetComponent<HorizontalLayoutGroup>().childForceExpandWidth = false;
 
-        // Retrato centrado, con su proporción
         if (suspectImage != null)
         {
-            RectTransform portraitBox = UIFactory.Container(column, "Retrato (auto)", Vector2.zero, Vector2.one);
-            LayoutKit.Size(portraitBox, height: T.portraitHeight);
+            RectTransform portraitBox = UIFactory.Container(header, "Retrato (auto)", Vector2.zero, Vector2.one);
+            LayoutKit.Size(portraitBox, width: headerHeight * 0.75f);
             var portrait = suspectImage.rectTransform;
             portrait.SetParent(portraitBox, false);
             portrait.anchorMin = Vector2.zero;
@@ -247,6 +245,19 @@ public class InterrogationUI : MonoBehaviour
             fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
             fitter.aspectRatio = 0.75f;
         }
+
+        RectTransform side = UIFactory.Container(header, "Controles (auto)", Vector2.zero, Vector2.one);
+        LayoutKit.Size(side, flexibleWidth: 1f);
+        var sideLayout = side.gameObject.AddComponent<VerticalLayoutGroup>();
+        sideLayout.spacing = T.spacing;
+        sideLayout.childControlWidth = sideLayout.childControlHeight = true;
+        sideLayout.childForceExpandWidth = true;
+        sideLayout.childForceExpandHeight = false;
+        PutDropdown(suspectDropdown, side);
+        LayoutKit.Put(endDayButton, side, height: Theme.MinTouchSize);
+        LayoutKit.Label(endDayButton, "Fin del día");
+        LayoutKit.Put(accuseNowButton, side, height: Theme.MinTouchSize);
+        LayoutKit.Label(accuseNowButton, "Acusar");
 
         // Chat: todo el hueco que queda, solo desplazamiento vertical
         if (conversationScroll != null)
@@ -259,8 +270,7 @@ public class InterrogationUI : MonoBehaviour
         if (waitingText != null)
             waitingText.gameObject.SetActive(false);
 
-        // Controles abajo, al alcance del pulgar
-        PutDropdown(suspectDropdown, column);
+        // Abajo, al alcance del pulgar: la prueba que se muestra y la pregunta
         PutDropdown(evidenceDropdown, column);
 
         RectTransform ask = LayoutKit.Row(column, "Pregunta", 120f);
