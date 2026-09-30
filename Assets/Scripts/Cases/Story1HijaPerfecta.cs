@@ -97,7 +97,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 "El laboratorio confirma que el somnífero es zolpidem, el mismo que toma alguien de la casa.",
                 "Elena tenía a su nombre un fondo de herencia de sus padres biológicos. Lo administraba la familia.",
                 "Cuando llegó la policía, en la mesilla de Elena no había nada. Alguien recogió el cuarto antes.",
-                "Un agente recuerda que la puerta de Elena tenía la cerradura por fuera. ¿Por qué?",
+                "Un agente recuerda que la puerta del cuarto de Elena tiene cerradura. ¿Quién la cerró esa noche?",
                 "La familia pide que se entregue el cuerpo. Mañana hay que cerrar la investigación."
             },
             roles = new List<CharacterRole>
@@ -184,7 +184,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 new ClueData
                 {
                     id = "1A_taza", playerName = "La taza de la mesilla", holder = "madre", kind = ClueKind.Incriminates,
-                    summary = "Carmen vio una taza de cacao a medio beber en la mesilla de Elena. Elena nunca tomaba cacao de noche y en casa solo lo prepara Daniel.",
+                    summary = "Carmen vio una taza de cacao a medio beber en la mesilla de Elena; cuando llegó la policía ya no estaba. Elena nunca tomaba cacao de noche y en casa solo lo prepara Daniel.",
                     topic = "la habitación de Elena o lo que viste al entrar",
                     fact = "al entrar en el cuarto viste en la mesilla una taza de cacao a medio beber. Elena nunca tomaba cacao por la noche y en casa el cacao solo lo prepara Daniel.",
                     anchors = new[]
@@ -243,14 +243,14 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 {
                     id = "1A_papeles", playerName = "Papeles del despacho", holder = "hermano", kind = ClueKind.Incriminates,
                     summary = "Elena le enseñó a Lucas fotos de extractos del banco del despacho de Daniel: decía que su padre le había robado 'su dinero'.",
-                    topic = "lo que Elena te contó de papá, o si tenía algún secreto",
+                    topic = "lo que Elena te contó de papá o de su dinero, o si tenía algún secreto",
                     fact = "hace una semana Elena te enseñó fotos de unos extractos del banco del despacho de papá y te dijo que papá le había robado su herencia.",
                     anchors = new[]
                     {
                         new[] { "extracto", "papeles", "banco", "cuentas", "despacho" },
                         new[] { "dinero", "herencia", "robado", "robo" }
                     },
-                    calibrationQuestions = new[] { "¿Tenía Elena algún problema o secreto estos últimos días?", "¿Te contó Elena algo sobre tu padre?" },
+                    calibrationQuestions = new[] { "¿Tenía Elena algún problema o secreto estos últimos días?", "¿Te contó Elena algo sobre tu padre?", "¿Sabes algo de la herencia de Elena o de los papeles del despacho de tu padre?" },
                     sampleHits = new[]
                     {
                         "Elena me enseñó unas fotos de extractos del banco, tío, decía que papá le había robado su dinero.",
@@ -283,8 +283,8 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 new ClueData
                 {
                     id = "1A_frasco", playerName = "El frasco medio vacío", holder = "madre", kind = ClueKind.Clears, clears = "madre", isSecret = true,
-                    summary = "Carmen se durmió a las 22:00 con su pastilla. Su frasco de zolpidem, abierto hacía una semana, estaba casi vacío: faltaban pastillas que ella no tomó.",
-                    topic = "tus pastillas para dormir",
+                    summary = "Carmen se durmió a las 22:00 con su pastilla. Su frasco de zolpidem, abierto hacía una semana, estaba casi vacío: alguien de la casa cogió las pastillas que acabaron en la sangre de Elena.",
+                    topic = "tus pastillas para dormir o el zolpidem",
                     fact = "Tu frasco de zolpidem, que abriste hace una semana, estaba casi vacío por la mañana: faltaban muchas pastillas que tú no tomaste.",
                     anchors = new[]
                     {
@@ -294,7 +294,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     calibrationQuestions = new[]
                     {
                         "¿Toma usted alguna medicación para dormir? || No me convence. Sé que me oculta algo sobre sus pastillas. Dígame la verdad.",
-                        "¿Qué pasó con sus pastillas para dormir esa noche? || Insisto: sé que me oculta algo. Dígame la verdad."
+                        "¿Qué pasó con sus pastillas para dormir esa noche? || Insisto: sé que me oculta algo. Dígame la verdad.", "¿Es suyo el zolpidem de la casa? || Insisto: sé que me oculta algo sobre ese frasco."
                     },
                     sampleHits = new[]
                     {
@@ -319,12 +319,12 @@ Tienes 7 días para descubrir qué pasó esa noche.",
             culpritId = "madre",
             epilogue = "Carmen Vidal llevaba dos años inventando enfermedades a Elena y dándole medicación que no necesitaba: necesitaba ser la madre abnegada. " +
                        "Cuando Elena empezó a decir que no estaba enferma y pidió otro médico, Carmen le dio a las 21:40 el triple de su 'medicación del corazón'. " +
-                       "Se quedó sentada junto a su cama, sin llamar a nadie, hasta las 23:15. Lucas la oyó suplicar a través de la pared; Amparo vio la luz encendida de 22:00 a 23:15e.",
+                       "Se quedó sentada junto a su cama, sin llamar a nadie, hasta las 23:15. Lucas la oyó suplicar a través de la pared; Amparo vio la luz encendida de 22:00 a 23:15.",
             morningReports = new[]
             {
                 "",
                 "El forense sitúa la muerte hacia las 22:40. Elena tenía en sangre un fármaco para el corazón en dosis muy alta.",
-                "El pediatra de guardia recuerda que Elena pasaba mucho por urgencias. Pedirá su historial.",
+                "El pediatra de guardia recuerda que Elena pasaba mucho por urgencias, siempre con su madre. Pedirá su historial.",
                 "El colegio confirma que Elena habló con su tutora la semana pasada. No quieren dar detalles por teléfono.",
                 "El restaurante donde Daniel dice que cenó no tiene ninguna reserva a su nombre.",
                 "La autopsia indica que Elena tardó en morir. Alguien pudo pedir ayuda antes.",
@@ -382,7 +382,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     knowledge = new[]
                     {
                         MentionAmparo,
-                        "Mamá siempre está con médicos y pastillas para Elena."
+                        "Mamá siempre está con médicos y pastillas para Elena; papá quiso pedir una segunda opinión y discutieron."
                     },
                     version = "Estuve en mi cuarto con los cascos casi toda la noche, jugando; solo me los quité un momento.",
                     secret = "Fumas porros a escondidas en tu cuarto y no quieres que tus padres lo sepan.",
@@ -495,14 +495,14 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 {
                     id = "1B_tutora", playerName = "Otro médico", holder = "hermano", kind = ClueKind.Incriminates,
                     summary = "Elena le contó a Lucas que había pedido a su tutora ir a otro médico: decía que no estaba enferma y que las pastillas la mareaban.",
-                    topic = "si Elena te contó algo estos días",
+                    topic = "si Elena te contó algo estos días o por qué habló con su tutora",
                     fact = "hace unos días Elena te contó que le había pedido a su tutora del colegio que la llevaran a otro médico, porque ella decía que no estaba enferma y que las pastillas la mareaban.",
                     anchors = new[]
                     {
                         new[] { "otro medico", "cambiar de medico", "no estaba enferma", "no estoy enferma" },
                         new[] { "mareaban", "marean", "tutora", "profesora", "colegio", "pastillas" }
                     },
-                    calibrationQuestions = new[] { "¿Te contó Elena algo estos últimos días?", "¿Elena se quejaba de algo?" },
+                    calibrationQuestions = new[] { "¿Te contó Elena algo estos últimos días?", "¿Elena se quejaba de algo?", "¿Sabes por qué Elena fue a hablar con su tutora del colegio?" },
                     sampleHits = new[]
                     {
                         "Elena me dijo que le había pedido a su tutora ir a otro médico, que ella no estaba enferma.",
@@ -519,7 +519,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     fact = "Estuviste de 21:00 a 23:00 en casa de Marta, una compañera del bufete; ella y el portero pueden confirmarlo.",
                     anchors = new[]
                     {
-                        new[] { "marta" },
+                        new[] { "marta", "amante", "otra mujer", "una aventura con", "ningun restaurante" },
                         new[] { "21:00", "23:00", "nueve", "once", "companera", "portero", "bufete" }
                     },
                     calibrationQuestions = new[]
@@ -556,8 +556,8 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 "",
                 "El forense: Elena murió hacia las 23:00 por un golpe en la cabeza. Pudo estar consciente un rato después del golpe.",
                 "No hay signos de que nadie entrara desde fuera. Lo que pasó, pasó dentro de la casa.",
-                "La compañía telefónica tardará en enviar el registro de llamadas de la familia.",
-                "Nadie encuentra el móvil de Elena en su cuarto.",
+                "La compañía telefónica tardará en enviar el registro de llamadas de la familia. Habrá que saber quién llamó a quién antes de las 23:15.",
+                "Nadie encuentra el móvil de Elena en su cuarto. Elena nunca se separaba de él.",
                 "Un compañero de Lucas en el instituto habla de 'pastillas' y luego se calla.",
                 "La familia pide que se entregue el cuerpo. Mañana hay que cerrar la investigación."
             },
@@ -602,7 +602,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     },
                     version = "Estuve en el despacho hasta tarde. Llegué a casa a las 23:00, subí a ver a Elena y no respiraba. A las 23:15 llamé al 112.",
                     secret = "En realidad llegaste a casa a las 22:15. Viste a Elena acostada con un chichón y decidiste no llevarla al hospital para no montar un drama. Te sientes culpable y proteges a tu hijo.",
-                    admitsWhen = "el inspector insiste o te dice que va a pedir el registro de llamadas",
+                    admitsWhen = "el inspector insiste, te dice que alguien vio tu coche llegar antes de las 23:00 o que va a pedir el registro de llamadas",
                     nervousAbout = "la hora a la que llegaste y tu móvil.",
                     ifAccused = "Te indignas, hablas de presunción de inocencia y exiges un abogado.",
                     doesNotKnow = "Qué hacía Lucas en el instituto."
@@ -613,7 +613,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     knowledge = new[]
                     {
                         MentionAmparo,
-                        "Lucas y Elena discutían mucho; ella decía que él vendía sus pastillas del TDAH."
+                        "Lucas y Elena discutían mucho últimamente; no sé por qué, algo del instituto."
                     },
                     version = "Estaba de guardia. Volvía a casa cuando Daniel me llamó, pasadas las 23:15; llegué a las 23:20, con la ambulancia en la puerta.",
                     secret = "Aceptaste esa guardia extra para no estar en casa con Daniel: vuestro matrimonio va mal y te sientes culpable.",
@@ -681,9 +681,9 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 new ClueData
                 {
                     id = "1C_pantalla", playerName = "La pantalla rota", holder = "madre", kind = ClueKind.Incriminates,
-                    summary = "Carmen encontró el móvil de Elena, con la pantalla rota, debajo de la cama de Lucas.",
+                    summary = "Al día siguiente Carmen encontró el móvil de Elena, con la pantalla rota, debajo de la cama de Lucas, y no se lo dijo a nadie. Elena nunca se separaba de él.",
                     topic = "el móvil de Elena",
-                    fact = "esa misma noche encontraste el móvil de Elena en el cuarto de Lucas, debajo de la cama, con la pantalla rota. Elena nunca soltaba su móvil.",
+                    fact = "a la mañana siguiente, al recoger el cuarto de Lucas, encontraste debajo de su cama el móvil de Elena con la pantalla rota. No se lo has dicho a nadie porque te da miedo lo que significa; si el inspector te pregunta por el móvil, se lo cuentas. Elena nunca soltaba su móvil.",
                     anchors = new[]
                     {
                         new[] { "movil", "telefono" },
@@ -701,7 +701,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 {
                     id = "1C_llamada", playerName = "Una llamada corta", holder = "padre", kind = ClueKind.Incriminates, isSecret = true,
                     summary = "Lucas llamó a Daniel a las 21:52, llorando: 'Elena se ha caído, pero está bien'. Daniel llegó a casa a las 22:15, no a las 23:00.",
-                    topic = "las llamadas de esa noche",
+                    topic = "las llamadas de esa noche o a qué hora llegaste de verdad a casa",
                     fact = "Lucas te llamó a las 21:52 llorando: 'Elena se ha caído por la escalera, pero está bien'. Por eso llegaste a casa a las 22:15, no a las 23:00.",
                     anchors = new[]
                     {
@@ -711,7 +711,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     calibrationQuestions = new[]
                     {
                         "¿Recibió alguna llamada esa noche? || Voy a pedir el registro de llamadas de su móvil. Dígame la verdad ahora.",
-                        "¿A qué hora llegó realmente a casa? || Insisto, no me lo creo. ¿Qué pasó antes de las 23:00?"
+                        "¿A qué hora llegó realmente a casa? || Insisto, no me lo creo. ¿Qué pasó antes de las 23:00?", "La vecina vio su coche llegar a las diez y cuarto. ¿Quién le avisó para que volviera?"
                     },
                     sampleHits = new[]
                     {
