@@ -42,7 +42,7 @@ public static class SuggestionProbe
             ClueCalibrator.Options options = ClueCalibrator.ParseArgs(args);
             if (!args.Contains("-tries"))
                 options.tries = 1;
-            Run(options);
+            exitCode = PremiseCalibrator.ExitCode(Run(options));
         }
         catch (Exception e)
         {
@@ -52,7 +52,7 @@ public static class SuggestionProbe
         EditorApplication.Exit(exitCode);
     }
 
-    public static void Run(ClueCalibrator.Options options)
+    public static int Run(ClueCalibrator.Options options)
     {
         var hits = new Dictionary<int, List<string>>(); // Índice de pregunta → pistas destapadas ("2C_gps")
         int asked = 0;
@@ -61,7 +61,10 @@ public static class SuggestionProbe
             foreach (string id in options.variantIds)
             {
                 if (!CaseLibrary.TryFind(id, out StoryData story, out VariantData variant))
+                {
+                    Console.WriteLine($"[Sugerencias] Variante desconocida: {id}");
                     continue;
+                }
                 string[] questions = Candidates(story.victim);
                 foreach (CharacterData character in story.cast)
                 {
@@ -111,5 +114,6 @@ public static class SuggestionProbe
         Directory.CreateDirectory(Path.GetDirectoryName(ReportPath));
         File.WriteAllText(ReportPath, sb.ToString(), new UTF8Encoding(false));
         Console.WriteLine($"[Sugerencias] Informe: {Path.GetFullPath(ReportPath)}");
+        return asked;
     }
 }

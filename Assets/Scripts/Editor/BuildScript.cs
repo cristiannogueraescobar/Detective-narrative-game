@@ -59,7 +59,9 @@ public static class BuildScript
     {
         ArtCatalogBuilder.Rebuild(); // El arte nuevo tiene que ir en el catálogo de la build
         SetAppIcon();
-        Directory.CreateDirectory(Path.GetDirectoryName(output));
+        string folder = Path.GetDirectoryName(output);
+        if (!string.IsNullOrEmpty(folder)) // "-buildPath Detectives.exe": en la carpeta del proyecto
+            Directory.CreateDirectory(folder);
 
         var options = new BuildPlayerOptions
         {

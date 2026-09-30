@@ -49,6 +49,14 @@ public static class PremiseCalibrator
         return $"Un testigo le vio discutir a gritos con {other.shortName} el día de los hechos. ¿Por qué discutieron?";
     }
 
+    /// <summary>
+    /// Sin ninguna respuesta (Ollama apagado, modelo o variantes mal escritos) la sonda falla en vez de dar un informe vacío.
+    /// </summary>
+    public static int ExitCode(int answered)
+    {
+        return answered == 0 ? 2 : 0;
+    }
+
     public static void RunFromCommandLine()
     {
         int exitCode = 0;
@@ -58,7 +66,7 @@ public static class PremiseCalibrator
             ClueCalibrator.Options options = ClueCalibrator.ParseArgs(args);
             if (!args.Contains("-tries"))
                 options.tries = 2;
-            Run(options);
+            exitCode = ExitCode(Run(options));
         }
         catch (Exception e)
         {
@@ -68,7 +76,7 @@ public static class PremiseCalibrator
         EditorApplication.Exit(exitCode);
     }
 
-    public static void Run(ClueCalibrator.Options options)
+    public static int Run(ClueCalibrator.Options options)
     {
         var rows = new List<(string variant, string character, string question, string answer, bool denied)>();
         using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(180) })
@@ -76,7 +84,10 @@ public static class PremiseCalibrator
             foreach (string id in options.variantIds)
             {
                 if (!CaseLibrary.TryFind(id, out StoryData story, out VariantData variant))
+                {
+                    Console.WriteLine($"[Premisas] Variante desconocida: {id}");
                     continue;
+                }
                 foreach (CharacterData character in story.cast)
                 {
                     string system = PromptBuilder.Build(story, variant, character.id, 2, new ClueData[0], new ClueData[0]);
@@ -120,5 +131,6 @@ public static class PremiseCalibrator
         Directory.CreateDirectory(Path.GetDirectoryName(ReportPath));
         File.WriteAllText(ReportPath, sb.ToString(), new UTF8Encoding(false));
         Console.WriteLine($"[Premisas] Aceptan {accepted}/{rows.Count}. Informe: {Path.GetFullPath(ReportPath)}");
+        return rows.Count;
     }
 }

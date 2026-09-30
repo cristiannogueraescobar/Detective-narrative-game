@@ -29,4 +29,12 @@ public class PremiseCalibratorTests
         StringAssert.Contains(story.cast[1].shortName, q);
         StringAssert.DoesNotContain(story.cast[0].shortName + " ", q);
     }
+
+    [Test]
+    public void SinNingunaRespuestaLaSondaFalla()
+    {
+        // Con Ollama apagado todas las peticiones fallan: un informe vacío no puede salir como éxito
+        Assert.AreEqual(2, PremiseCalibrator.ExitCode(0));
+        Assert.AreEqual(0, PremiseCalibrator.ExitCode(5));
+    }
 }
