@@ -29,11 +29,13 @@ public class TallScreenLayoutTests
     [Test]
     public void ElRetratoCreceEnPantallasAlargadasYNoEnLasNormales()
     {
-        float normal = HeaderHeight(new Vector2(1080f, 1920f));
-        float tall = HeaderHeight(new Vector2(1080f, 2400f));
+        // Lienzos de verdad (CanvasScaler con match 0,5): un 1080x2400 da ~966x2147, no 1080x2400
+        Vector2 phone = LayoutPreview.CanvasSize(1080f, 2400f);
+        float normal = HeaderHeight(LayoutPreview.CanvasSize(1080f, 1920f));
+        float tall = HeaderHeight(phone);
 
-        float expected = (2400f - 1920f) * ThemeManager.Current.tallScreenHeaderShare;
-        Assert.AreEqual(normal + expected, tall, 2f, "el retrato se lleva su parte del alto extra");
+        float expected = (phone.y - phone.x * 1920f / 1080f) * ThemeManager.Current.tallScreenHeaderShare;
+        Assert.AreEqual(normal + expected, tall, 12f, "el retrato se lleva su parte del alto que sobra por la proporción");
         Assert.Greater(tall, normal + 100f);
     }
 
@@ -45,7 +47,7 @@ public class TallScreenLayoutTests
         theme.tallScreenHeaderShare = 0f;
         try
         {
-            Assert.AreEqual(HeaderHeight(new Vector2(1080f, 1920f), theme), HeaderHeight(new Vector2(1080f, 2400f), theme), 1f);
+            Assert.AreEqual(HeaderHeight(LayoutPreview.CanvasSize(1080f, 1920f), theme), HeaderHeight(LayoutPreview.CanvasSize(1080f, 2400f), theme), 1f);
         }
         finally
         {

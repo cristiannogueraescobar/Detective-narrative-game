@@ -195,12 +195,19 @@ public static class GameSettings
         return fontScale >= 1.7f ? 2 : fontScale >= 1.3f ? 1 : 0;
     }
 
+    private static float systemFontScale = -1f;
+
+    // Se lee una vez (en Android es una llamada nativa y TextSizeLevel se consulta en cada texto que aparece)
     private static float SystemFontScale
     {
         get
         {
-            float scale = UnityEngine.Accessibility.AccessibilitySettings.fontScale;
-            return scale > 0f ? scale : 1f;
+            if (systemFontScale < 0f)
+            {
+                float scale = UnityEngine.Accessibility.AccessibilitySettings.fontScale;
+                systemFontScale = scale > 0f ? scale : 1f;
+            }
+            return systemFontScale;
         }
     }
 

@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.Accessibility;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using TMPro;
+using UnityEngine.UI;
 
 /// <summary>
 /// Lector de pantalla (TalkBack / VoiceOver) con el módulo de accesibilidad de Unity 6: con el lector activado,
@@ -29,7 +31,8 @@ public class ScreenReaderTests
         Tutorial.SkipAll();
         AssistiveSupport.screenReaderStatusOverride = AssistiveSupport.ScreenReaderStatusOverride.ForceEnabled;
         yield return SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
-        yield return new WaitForSecondsRealtime(ScreenReader.RefreshSeconds + 0.3f);
+        // El menú entra con fundido: lo que aún es transparente no se lee (a propósito)
+        yield return new WaitForSecondsRealtime(2.5f);
     }
 
     [UnityTearDown]
@@ -99,5 +102,77 @@ public class ScreenReaderTests
         StringAssert.Contains("La luz del pasillo", ScreenReader.LastAnnouncement);
         StringAssert.Contains("Pista nueva", ScreenReader.LastAnnouncement);
         yield return null;
+    }
+
+    // ---- Revisión de la tarde ----
+
+    private static IEnumerator Refresh()
+    {
+        yield return new WaitForSecondsRealtime(ScreenReader.RefreshSeconds + 0.3f);
+    }
+
+    private static IEnumerator Activate(string label)
+    {
+        AccessibilityNode node = Nodes().First(n => n.label == label);
+        Assert.IsTrue(ScreenReader.Invoke(node), label);
+        yield return Refresh();
+    }
+
+    [UnityTest]
+    public IEnumerator LosMarcosTienenElOrigenArriba()
+    {
+        // Como en UI Toolkit (worldBound): y crece hacia abajo. "Jugar" está en la mitad de abajo del menú
+        AccessibilityNode play = Nodes().First(n => n.label == "Jugar");
+        Assert.Greater(play.frame.y, Screen.height * 0.4f);
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator CambiarElHudNoEsCambiarDePantalla()
+    {
+        yield return Activate("Jugar");
+        yield return Activate("Caso al azar");
+        yield return Activate("Empezar");
+        int screens = ScreenReader.ScreenChanges;
+
+        var hud = Object.FindObjectsByType<TMP_Text>(FindObjectsSortMode.None).First(t => t.name == "HudText");
+        hud.text = "DÍA 1 DE 7  ·  QUEDAN 4 PREGUNTAS";
+        yield return Refresh();
+
+        Assert.AreEqual(screens, ScreenReader.ScreenChanges, "una respuesta no manda el foco arriba");
+        Assert.IsTrue(Nodes().Any(n => n.label.Contains("QUEDAN 4")), "pero el texto nuevo sí está");
+    }
+
+    [UnityTest]
+    public IEnumerator UnDeslizadorConservaSuNodoAlCambiarDeValor()
+    {
+        yield return Activate("Ajustes");
+        AccessibilityNode volume = Nodes().First(n => n.role == AccessibilityRole.Slider && n.label == "Volumen general");
+        string before = volume.value;
+        // Deslizar hacia abajo sobre el nodo, como con TalkBack (el volumen empieza al 100 %)
+        Assert.IsTrue(ScreenReader.Step(volume, before == "0 %" ? +1 : -1));
+        yield return Refresh();
+
+        Assert.IsTrue(Nodes().Any(n => ReferenceEquals(n, volume)), "el mismo nodo: el lector no pierde el foco");
+        Assert.AreNotEqual(before, volume.value, "y su valor al día");
+    }
+
+    // En batchmode la "pantalla" es 640x480 apaisada y el chat se queda sin alto; el expediente sí se ve y se desplaza
+    [UnityTest]
+    public IEnumerator ElExpedienteEsUnaZonaDesplazable()
+    {
+        yield return Activate("Jugar");
+        yield return Activate("Caso al azar");
+        Assert.IsTrue(Nodes().Any(n => n.role == AccessibilityRole.ScrollView), "el lector puede desplazar el expediente");
+    }
+
+    [UnityTest]
+    public IEnumerator UnTextoTransparenteNoSeLee()
+    {
+        var subtitle = Object.FindObjectsByType<TMP_Text>(FindObjectsSortMode.None).First(t => t.text.Contains("Tres casos"));
+        Color c = subtitle.color;
+        subtitle.color = new Color(c.r, c.g, c.b, 0f);
+        yield return Refresh();
+        Assert.IsFalse(Nodes().Any(n => n.label.Contains("Tres casos")));
     }
 }

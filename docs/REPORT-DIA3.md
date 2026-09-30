@@ -51,6 +51,7 @@ tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se comple
 | Partidas resueltas (bot) | 44-56 % | **72 %** con Pensar |
 | Detección de pistas (calibración, 48 pistas) | 80-85 % | 83 % con fichas más ricas (540 palabras) |
 | 2C_gps (la pista que falló en 0c) | 60 % | **85 %** (10 intentos) |
+| Premisas falsas aceptadas (sonda de 72) | 23 % | **2 %** (sin perder pistas ni estados) |
 | Incoherencias narrativas conocidas | 17 (auditoría) | 0 abiertas; validador en verde en las 9 variantes |
 | Basura por fotograma del juego (reposo) | ≤ 0 B | ≤ 0 B (tras C3/C4/D1) |
 | Contraste mínimo de texto tras el post-proceso | — | 6,08:1 (todos los pares suben) |
@@ -93,7 +94,8 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
    la historia (REAL-CASES.md). Recomiendo cambiarle el nombre.
 5. **Ritmo de la vecina**: aparece pronto y lleva la pista decisiva en 4 variantes (coherente, pero hace el caso
    más fácil). Tras el día de hoy llega por tema o por el parte del día 2-3.
-6. **Fichas de hasta 540 palabras** (antes 460): medido sin pérdida en pistas, estados ni premisas.
+6. **Fichas de hasta 565 palabras** (antes 460): 540 por la profundidad de los personajes y +25 por la regla contra
+   premisas falsas; medido las dos veces sin pérdida en pistas ni estados.
 7. **Dificultad por defecto: Detective** (5 preguntas, "Pensar" cuesta una). Historia: 7 y gratis; Veterano: 4 y
    sin ayudas.
 8. **Efectos visuales activados por defecto** (retratos 2.5D, post-proceso): se quitan con `Theme.portraitLit`,
@@ -110,7 +112,6 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 - APK de Android (instalar el módulo) y medir el post-proceso en un móvil real (estimado 1-2 ms).
 - El proveedor LLM del móvil (punto 1 de las decisiones).
 - Arte definitivo (retratos nuevos por emoción, intros, cabeceras) y audio definitivo (ART-NEEDED / AUDIO-NEEDED).
-- Preguntas capciosas: qwen acepta premisas falsas ~22 % de las veces (limitación conocida, COHERENCE.md).
 - Firma de publicación (keystore fuera del repositorio).
 
 ## 8. Cómo probarlo en Unity (en este orden)

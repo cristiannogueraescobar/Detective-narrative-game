@@ -455,6 +455,15 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   Foco visible con teclado/mando (WCAG 2.4.7) sin que el botón tocado se quede encendido (FocusVisibleTests).
   Galería regenerada (21 hojas). Revisión independiente de la tarde en curso. EditMode 681/681, PlayMode 40/40.
 
+- **14:31** Revisión independiente de la tarde (0 críticos, 3 importantes, 8 menores) → CODE-REVIEW.md, todo resuelto
+  con test: el lector de pantalla ya no manda el foco arriba tras cada respuesta, conserva los nodos (y el foco) al
+  cambiar textos o valores, tiene zonas desplazables, respeta la transparencia; origen de los marcos confirmado
+  con el manual; la cabecera alta se mide por proporción en el área segura con el lienzo real de un 20:9.
+  **Lógica: premisas falsas 22 % → 2 %** con la regla "si el inspector da por hecho algo que no está en tu ficha, di
+  que no te consta; lo que sí está, confírmalo" (medido en el worktree: pistas 42/48 y 83 % igual, 3A_audios 5/6,
+  estados 95 % igual). Presupuesto de ficha 540 → 565 (medido con las fichas completas). COHERENCE.md: cerrada.
+  Detector de confesiones del bot: "solo fui yo" ya no cuenta. EditMode 681/681, PlayMode 45/45.
+
 ## Ahora (día 3)
 - Ronda final 2: bot para comprobar los desbloqueos tras el n.º 7; capturas tras los cambios; recorrido mental.
   Informe intermedio a las ~16:10.

@@ -11,7 +11,9 @@ public class CaseDataValidationTests
     // 540 solo si la calibración de pistas y estados lo aguanta (docs/NIGHT-LOG.md, día 3).
     // Ficha base (sin pruebas mostradas); el spec pide 250-350 palabras de contenido. Las reglas fijas
     // (incluida la etiqueta de estado emocional, ~50 palabras) se suman a ese contenido.
-    private const int MaxPromptWords = 540;
+    // Día 3, tarde: la regla contra premisas falsas (+25 palabras) se midió con las fichas completas, de hasta 562
+    // palabras: premisas 22 % → 2 %, pistas 42/48 y 83 % (igual), estados 95 % coherentes (igual) → 565.
+    private const int MaxPromptWords = 565;
 
     private static IEnumerable<TestCaseData> Variants()
     {
