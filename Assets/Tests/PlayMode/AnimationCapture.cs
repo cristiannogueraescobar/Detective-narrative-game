@@ -311,6 +311,27 @@ public class AnimationCapture
     }
 
     [UnityTest]
+    public IEnumerator TextoMuyGrande()
+    {
+        Tutorial.SkipAll();
+        int before = GameSettings.TextSizeLevel;
+        GameSettings.TextSizeLevel = 2;
+        try
+        {
+            yield return ToInterrogation();
+            yield return new WaitForSecondsRealtime(0.8f);
+            Shot("texto_grande_interrogatorio");
+            UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+            yield return new WaitForSecondsRealtime(2f);
+            Shot("texto_grande_acusacion");
+        }
+        finally
+        {
+            GameSettings.TextSizeLevel = before;
+        }
+    }
+
+    [UnityTest]
     public IEnumerator Desplegable()
     {
         Tutorial.SkipAll();

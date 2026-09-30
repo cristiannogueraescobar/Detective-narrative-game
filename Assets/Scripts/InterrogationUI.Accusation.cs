@@ -21,7 +21,7 @@ public partial class InterrogationUI
     {
         if (accusationPromptText == null)
             return;
-        accusationPromptText.text = $"{GameTexts.AccusationPrompt}\n<size=80%><color={Theme.Hex(T.textSecondary)}>" +
+        accusationPromptText.text = $"{GameTexts.AccusationPrompt}\n<size=90%><color={Theme.Hex(T.textSecondary)}>" +
                                     $"{GameTexts.AccusationSummary(evidenceOptions.Count, accusationContradictions)}</color></size>";
     }
 
