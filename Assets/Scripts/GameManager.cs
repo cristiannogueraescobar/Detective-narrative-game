@@ -52,7 +52,11 @@ public class GameManager : MonoBehaviour
         notes.TryGetValue(characterId, out SuspectNote current);
         notes[characterId] = SuspectNotes.Next(current);
         RefreshNotebook();
-        SaveGame();
+        // Con una pregunta en marcha el historial lleva la pregunta sin respuesta: se guarda al terminar el turno
+        if (requestInFlight)
+            saveAfterRequest = true;
+        else
+            SaveGame();
     }
     private int questionsUsedToday = 0;
     private bool accusationMade;
@@ -257,6 +261,7 @@ public class GameManager : MonoBehaviour
     }
 
     private bool requestInFlight;
+    private bool saveAfterRequest; // Algo cambió durante la pregunta (una nota): guardar al terminar
 
     public async void AskQuestion(string characterId, string question, string shownClueId)
     {
@@ -327,8 +332,9 @@ public class GameManager : MonoBehaviour
                 notices.Discard();
 
             UpdateGameState();
-            if (answered)
+            if (answered || saveAfterRequest)
                 SaveGame();
+            saveAfterRequest = false;
         }
     }
 
@@ -556,6 +562,8 @@ public class GameManager : MonoBehaviour
         {
             rank = DetectiveRank.For(result.ending, keyRight, hintMemory.count, Mathf.Max(0, maxDays - currentDay)),
             keyClueLine = keyLine,
+            notesLine = SuspectNotes.EndingLine(notes.TryGetValue(variant.culpritId, out SuspectNote culpritNote) ? culpritNote : SuspectNote.Ninguna,
+                                                story.Character(variant.culpritId).shortName, result.correct),
             culprit = SuspectView.From(story.Character(variant.culpritId))
         };
         foreach (ClueData clue in variant.clues.Where(c => !State.IsDiscovered(c.id)))

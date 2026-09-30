@@ -415,14 +415,56 @@ public class StateMachineTests
         links.onLink(Notebook.NoteLinkPrefix + id); // descartado
         yield return null;
         string notebook = Find("CluesPanel").GetComponentsInChildren<TMP_Text>(true).Select(t => t.text).First(t => t.Contains("SOSPECHOSOS"));
-        StringAssert.Contains("tu nota: descartado", notebook);
+        StringAssert.Contains("tu nota: descarte", notebook);
 
         Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
         yield return new WaitForSecondsRealtime(0.3f);
         GameObject cell = Find("Sospechoso " + shortName);
         Assert.IsNotNull(cell);
-        Assert.Less(cell.GetComponent<CanvasGroup>().alpha, 1f, "descartado: atenuado en la rueda (pero se puede elegir)");
+        Assert.Less(cell.transform.Find("Marco").GetComponent<CanvasGroup>().alpha, 1f, "descartado: el retrato atenuado en la rueda (pero se puede elegir)");
+        Assert.IsNull(cell.GetComponent<CanvasGroup>(), "el anillo de selección y el nombre, a todo color");
         Assert.IsTrue(cell.GetComponent<Button>().interactable);
         StringAssert.Contains("(tu descarte)", cell.GetComponentInChildren<TMP_Text>().text, "sin género: vale para cualquiera");
+    }
+
+    // Revisión ronda 11: tocar la nota mientras el sospechoso "escribe" no guarda medio turno (la pregunta sin
+    // respuesta se quedaría en el historial guardado); la nota se guarda al llegar la respuesta
+    [UnityTest]
+    public IEnumerator UnaNotaDuranteUnaPreguntaNoGuardaMedioTurno()
+    {
+        yield return StartNewGame();
+        var game = Object.FindFirstObjectByType<GameManager>();
+        string id = Object.FindFirstObjectByType<AIConversationManager>().Story.cast.First(c => c.startsUnlocked).id;
+        provider.delayMs = 1500;
+        Find("QuestionInput").GetComponent<TMP_InputField>().text = "¿Dónde estaba a las diez?";
+        yield return Tap("AskButton");
+        yield return new WaitForSecondsRealtime(0.3f);
+        Assert.IsFalse(CanAsk, "la pregunta está en marcha");
+
+        game.CycleNote(id);
+        if (SaveSystem.TryLoad(out SaveData during))
+            Assert.IsFalse(during.histories.Any(h => h.messages.Count > 0 && h.messages[h.messages.Count - 1].role == "user"),
+                "ningún historial guardado acaba en una pregunta sin respuesta");
+
+        yield return WaitUntil(() => CanAsk, 8f, "la respuesta");
+        Assert.IsTrue(SaveSystem.TryLoad(out SaveData after));
+        CollectionAssert.Contains(after.suspectNotes, id + ":1", "la nota se guarda con la respuesta");
+    }
+
+    // Revisión ronda 11: las notas vuelven con "Continuar"
+    [UnityTest]
+    public IEnumerator LasNotasVuelvenAlContinuar()
+    {
+        yield return StartNewGame();
+        string id = Object.FindFirstObjectByType<AIConversationManager>().Story.cast.First(c => c.startsUnlocked).id;
+        Object.FindFirstObjectByType<GameManager>().CycleNote(id);
+        yield return AskAndWait("¿Dónde estaba?");
+
+        yield return LoadGame();
+        yield return Tap("ContinueButton (auto)");
+        yield return null;
+        var game = Object.FindFirstObjectByType<GameManager>();
+        Assert.IsTrue(game.Notes.TryGetValue(id, out SuspectNote note));
+        Assert.AreEqual(SuspectNote.Sospechoso, note);
     }
 }

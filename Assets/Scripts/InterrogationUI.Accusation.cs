@@ -207,9 +207,10 @@ public partial class InterrogationUI
             bool cleared = gameManager != null && gameManager.Notes.TryGetValue(view.id, out SuspectNote note)
                            && note == SuspectNote.Descartado;
             if (cleared)
-                cell.gameObject.AddComponent<CanvasGroup>().alpha = 0.45f;
+                frame.gameObject.AddComponent<CanvasGroup>().alpha = 0.45f;
 
-            TMP_Text name = UIFactory.Label(cell, cleared ? $"<s>{view.shortName}</s> (tu descarte)" : view.shortName, T.bodySize, T.textPrimary);
+            TMP_Text name = UIFactory.Label(cell, cleared ? $"<s>{view.shortName}</s> (tu descarte)" : view.shortName, T.bodySize,
+                                            cleared ? T.textSecondary : T.textPrimary);
             name.alignment = TextAlignmentOptions.Center;
             name.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
             var nameRect = name.rectTransform;

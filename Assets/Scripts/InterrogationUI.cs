@@ -1020,7 +1020,9 @@ public partial class InterrogationUI : MonoBehaviour
         {
             string id = link.Substring(Notebook.NoteLinkPrefix.Length);
             SuspectView view = suspects.Find(v => v.id == id);
-            return string.IsNullOrEmpty(view.displayName) ? text : $"Nota sobre {view.displayName}: {text}";
+            const string prefix = "tu nota: ";
+            string what = text.StartsWith(prefix) ? text.Substring(prefix.Length) : text;
+            return string.IsNullOrEmpty(view.displayName) ? text : $"Nota sobre {view.displayName}: {what}";
         }
         if (link.StartsWith(Notebook.SuspectLinkPrefix))
             return $"Interrogar a {text}";
