@@ -613,5 +613,6 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   interfaz.
 
 ## Ahora (día 3)
-- A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
-  rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
+- Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
+  rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
+- Queda: rondas ligeras hasta ~22:00, cierre del informe, borrar el worktree del bot y push final.
