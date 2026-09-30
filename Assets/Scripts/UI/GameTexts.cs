@@ -13,6 +13,14 @@ public static class GameTexts
     public const string SettingsTitle = "AJUSTES";
     public const string NotebookTitle = "LIBRETA";
     public const string NoEvidence = "Mostrar prueba: ninguna";
+    /// <summary>
+    /// Opción "ninguna" del selector de pruebas; con pistas en la libreta recuerda que se pueden enseñar.
+    /// </summary>
+    public static string NoEvidenceWith(int available)
+    {
+        return available > 0 ? $"{NoEvidence} · {available} en la libreta" : NoEvidence;
+    }
+
     public const string SuggestionsHint = "Puedes empezar por…";
     public const string PlayAgain = "Jugar otra vez";
     public const string MainMenu = "Menú principal";

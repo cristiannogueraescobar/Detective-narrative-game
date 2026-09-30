@@ -11,6 +11,14 @@ public class GameTextsTests
         Assert.AreEqual(expected, GameTexts.Hud(day, max, used, perDay));
     }
 
+    [TestCase(0, "Mostrar prueba: ninguna")]
+    [TestCase(1, "Mostrar prueba: ninguna · 1 en la libreta")]
+    [TestCase(4, "Mostrar prueba: ninguna · 4 en la libreta")]
+    public void SinPruebaElegidaDiceCuantasHay(int available, string expected)
+    {
+        Assert.AreEqual(expected, GameTexts.NoEvidenceWith(available));
+    }
+
     [Test]
     public void LasInstruccionesExplicanTodoElJuego()
     {

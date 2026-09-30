@@ -964,8 +964,13 @@ public partial class InterrogationUI : MonoBehaviour
         if (evidenceDropdown == null)
             return;
 
-        var options = new List<string> { NoEvidenceOption };
+        var options = new List<string> { GameTexts.NoEvidenceWith(discovered.Count) };
         options.AddRange(discovered.ConvertAll(c => c.playerName));
+
+        // Una prueba nueva que enseñar: el selector da un pequeño salto para que se note
+        bool grew = discovered.Count > evidenceDropdown.options.Count - 1 && evidenceDropdown.options.Count > 0;
+        if (grew && Application.isPlaying && isActiveAndEnabled)
+            UIAnimations.Pop(this, evidenceDropdown.transform);
 
         int previous = evidenceDropdown.value;
         evidenceDropdown.ClearOptions();
