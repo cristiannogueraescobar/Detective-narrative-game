@@ -40,7 +40,7 @@
       "unlocks": [
         {
           "id": "vecina",
-          "playerStems": [ "vecin", "enfrente", "ventana", "cortina", "testig", "desde fuera", "alguien vio", "amparo" ],
+          "playerStems": [ "vecin", "enfrente", "ventana", "testig", "desde fuera", "alguien vio", "alguien oy", "amparo" ],
           "fallbackDay": 2,
           "fallbackText": "Una vecina de enfrente se presenta en comisaría: dice que esa noche no durmió y quiere hablar."
         }
