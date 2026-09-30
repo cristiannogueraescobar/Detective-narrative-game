@@ -269,7 +269,7 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   205 commits sin subir (patrones de claves de Anthropic, GitHub, AWS, contraseñas, claves privadas);
   anthropic_api_key.txt ignorado. Push de feature/noche2 y feature/dia3 a origin.
 
-- 10:55 0c (skill: superpowers TDD + subagente de análisis, modelo más capaz): los 9 fallos del bot definitivo.
+- 10:20 0c (skill: superpowers TDD + subagente de análisis, modelo más capaz): los 9 fallos del bot definitivo.
   8 son sobre todo culpa del bot (tenía pistas suficientes y acusó mal, ignoró pistas de descarte o repitió la
   misma pregunta ~30 veces); 1 es del juego (2C_1: dos pistas dichas y no detectadas). Arreglos del juego, con
   la frase real del bot como ejemplo positivo en los tests (RED→GREEN):
