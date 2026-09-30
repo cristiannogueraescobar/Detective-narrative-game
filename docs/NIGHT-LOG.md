@@ -476,5 +476,5 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   ahora en los tres desplegables). La ficha policial suena con un sello suave al caer. EditMode 683/683.
 
 ## Ahora (día 3)
-- Ronda final 2: bot para comprobar los desbloqueos tras el n.º 7; capturas tras los cambios; recorrido mental.
-  Informe intermedio a las ~16:10.
+- A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
+  rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
