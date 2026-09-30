@@ -546,6 +546,15 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   ronda 13 para medirlo. De paso: el bot a veces ponía el id de una pista como sospechoso (5 turnos perdidos) → va
   a quien la sabe. Build de Windows rehecha: SMOKE OK. Galería: hoja 23 (notas).
 
+- **17:32** Ronda 13 (mismas variantes y semilla que la rama base de la 12, ahora el bot lee los partes): culpables
+  5/12 → 6/12, ruido; **2B sigue 0/4**. Diagnóstico de la 2B: la ⚡ (fichaje de Andrés, la tiene Ruiz) sale 10/10
+  cuando se pregunta por los horarios del cartero (calibración) y a veces sin preguntar; el bot casi no pregunta
+  a Ruiz y se obsesiona con Marcos, hasta citar la pista que lo descarta como prueba contra él. Es el techo de
+  razonamiento de qwen 7B como detective, no un caso injusto → sin cambios en la historia. Para el jugador sí:
+  **la rueda marca a quien descarta una pista ya encontrada** ("<s>Marcos</s> (pista de descarte)", las palabras
+  de la libreta; se puede elegir igual). Tests: InvestigationState.IsClearedByClue (visto en rojo) y uno de juego.
+  EditMode 708/708, PlayMode 52/52. Acumulado del bot hoy: 52/80 culpables (35/44 al azar + 17/36 en la 12-13, con la 2B: 0/12).
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
