@@ -185,6 +185,9 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   el caso raro "falla algo tras contar la pregunta" (excepción interna) queda anotado, sin cambio.
   Tests 549/549 + PlayMode 20/20.
 
+- 09:42 ART-NEEDED: los estados de retrato pedidos por personaje salen ahora de los datos (frecuencias tras la
+  guía nueva, ~1.500 respuestas): p. ej. Javier, Maruxa y Álex piden "triste" en vez de "enfadado".
+
 ## Ahora
 - Rondas finales (10+): revisión de toda la rama (subagente), bot definitivo de 18 partidas (semilla 59),
   informe y galería finales, build final, borrar el worktree.
