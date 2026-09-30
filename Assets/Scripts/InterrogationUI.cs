@@ -215,6 +215,25 @@ public class InterrogationUI : MonoBehaviour
         if (!created)
             return;
 
+        // Ambiente: la sala de interrogatorios, muy oscura, detrás de todo (sin deformar)
+        Texture2D room = ArtLibrary.Load(ArtSlots.DefaultIntroBackground);
+        if (room != null)
+        {
+            RectTransform roomRect = UIFactory.Container(interrogationPanel.transform, "Sala (auto)", Vector2.zero, Vector2.one);
+            roomRect.SetAsFirstSibling();
+            UIComponents.GetOrAdd<LayoutElement>(roomRect.gameObject).ignoreLayout = true;
+            var roomImage = roomRect.gameObject.AddComponent<RawImage>();
+            roomImage.texture = room;
+            roomImage.raycastTarget = false;
+            ArtGrading.Apply(roomImage, ArtGrading.Kind.Background);
+            roomImage.color = new Color(T.roomBrightness, T.roomBrightness, T.roomBrightness, 1f);
+            var roomFit = roomRect.gameObject.AddComponent<AspectRatioFitter>();
+            roomFit.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+            roomFit.aspectRatio = (float)room.width / room.height;
+            UIComponents.GetOrAdd<RectMask2D>(interrogationPanel);
+            UIPerformance.IsolateInOwnCanvas(roomImage);
+        }
+
         // Fila 1: día y preguntas + libreta
         RectTransform hud = LayoutKit.Row(column, "HUD", Theme.MinTouchSize);
         if (hudText != null)
@@ -320,6 +339,13 @@ public class InterrogationUI : MonoBehaviour
             conversationScroll.horizontalScrollbar = null;
         }
         conversationScroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
+
+        // El chat deja ver la sala detrás (las burbujas llevan su propio fondo)
+        if (conversationScroll.TryGetComponent(out Image chatBackground))
+        {
+            chatBackground.color = new Color(0f, 0f, 0f, 0.2f);
+            UIComponents.GetOrAdd<ThemeRole>(chatBackground.gameObject).role = UIRole.Ignore;
+        }
         LayoutKit.StyleScrollbar(conversationScroll.verticalScrollbar);
 
         RectTransform viewport = conversationScroll.viewport;
