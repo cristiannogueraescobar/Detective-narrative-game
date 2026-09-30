@@ -55,6 +55,10 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
 - 03:30 Revisión de código con subagente: 8 hallazgos (0 críticos), todos corregidos con test.
 - 03:40 Etiqueta de estado en el retrato, vibración (ajuste), libreta de papel, "Continuar · caso, día N".
 
+- 03:45 Rendimiento (PlayMode): 0 B de basura por fotograma del juego en menú e interrogatorio.
+- 03:47 HUD con números resaltados; sin preguntas, "Fin del día" pasa a principal. "Nuevos mensajes" verificado.
+- 03:55 Selección de caso: expedientes por historia con el mejor final conseguido; la variante sigue al azar.
+
 ## Ahora
 - Bot ronda 3 (9 variantes × 2) con todo lo último; después, rondas de revisión (FINAL).
 
