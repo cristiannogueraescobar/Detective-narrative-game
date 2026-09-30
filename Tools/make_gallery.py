@@ -14,6 +14,7 @@ os.makedirs(out, exist_ok=True)
 PAIRS = [
     ('menu', '00-inicio/1080x1920_MainMenuPanel.png', 'anim/menu_2500.png'),
     ('interrogatorio', '00-inicio/1080x1920_InterrogationPanel.png', 'anim/chatlargo_abajo.png'),
+    ('interrogatorio_inicio', '00-inicio/1080x1920_InterrogationPanel.png', 'anim/panel_interrogatorio.png'),
     ('intro', '00-inicio/1080x1920_IntroPanel.png', 'anim/panel_intro.png'),
     ('acusacion', '00-inicio/1080x1920_AccusatonPanel.png', 'anim/panel_acusacion.png'),
     ('libreta', '00-inicio/1080x1920_CluesPanel.png', 'final/1080x1920_CluesPanel.png'),
