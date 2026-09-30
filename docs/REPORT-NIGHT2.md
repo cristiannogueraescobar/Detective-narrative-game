@@ -122,7 +122,8 @@ hechos con preguntas capciosas y acabar acusando por algo inventado.
 
 **Pero** con cualquiera de las dos reglas la madre de 3A empezó a negar que Javier la amenazase ("No, nunca me
 ha amenazado… solo un mensaje preocupante") y la pista 3A_audios (una de las flojas que había que subir) volvió a
-fallar; sin la regla pasa en todas las mediciones. **Decisión conservadora: regla revertida.** La ficha es la
+fallar; sin la regla pasa en todas las mediciones. Una tercera redacción más estrecha ("dice que **hiciste**")
+no la rompe (18/20) pero tampoco hace nada (23 %). **Decisión conservadora: regla revertida.** La ficha es la
 misma que midió las pistas al 84–85 %. Queda como pendiente con los datos: `Logs/premisas/`.
 
 ### Calibración de estados emocionales (144 respuestas, 4 tipos de pregunta)
