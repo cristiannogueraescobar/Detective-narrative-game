@@ -133,4 +133,62 @@ public class AnimationCapture
             yield return Frames("emocion_" + e.ToString().ToLowerInvariant(), 0.05f, 0.2f, 0.45f, 1.5f);
         }
     }
+
+    [UnityTest]
+    public IEnumerator Intro()
+    {
+        yield return Click("PlayButton");
+        yield return Frames("intro", 0.2f, 1.5f, 4f, 8f);
+    }
+
+    [UnityTest]
+    public IEnumerator Pista()
+    {
+        yield return ToInterrogation();
+        var ui = UnityEngine.Object.FindFirstObjectByType<InterrogationUI>();
+        ui.ShowClueNotification("La taza de la mesilla");
+        ui.ShowClueNotification("Lo que vio la ventana");
+        yield return Frames("pista", 0.1f, 0.3f, 0.6f, 0.9f, 1.8f, 2.6f, 2.9f, 4.5f);
+    }
+
+    [UnityTest]
+    public IEnumerator Contradiccion()
+    {
+        yield return ToInterrogation();
+        var ui = UnityEngine.Object.FindFirstObjectByType<InterrogationUI>();
+        ui.ShowContradictionNotification("La versión de Daniel («subí a las once») choca con: Lo que vio la ventana");
+        yield return Frames("contradiccion", 0.05f, 0.12f, 0.2f, 0.35f, 0.8f, 1.9f);
+    }
+
+    [UnityTest]
+    public IEnumerator NuevoDia()
+    {
+        yield return ToInterrogation();
+        UnityEngine.Object.FindFirstObjectByType<GameManager>().EndDay();
+        yield return Frames("dia", 0.1f, 0.5f, 0.75f, 1.0f, 2.5f, 6f);
+    }
+
+    [UnityTest]
+    public IEnumerator Acusacion()
+    {
+        yield return ToInterrogation();
+        UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+        yield return Frames("acusacion", 0.1f, 1.5f, 4f);
+        UnityEngine.Object.FindFirstObjectByType<InterrogationUI>().OnAccuseClick();
+        yield return Frames("veredicto", 0.3f, 1.2f, 2.9f, 3.4f, 5f, 8f);
+    }
+
+    [UnityTest]
+    public IEnumerator Finales()
+    {
+        yield return ToInterrogation();
+        var ui = UnityEngine.Object.FindFirstObjectByType<InterrogationUI>();
+        VariantData variant = CaseLibrary.AllVariants().First().variant;
+        foreach (Ending e in new[] { Ending.Good, Ending.Bittersweet, Ending.Insufficient, Ending.Bad })
+        {
+            var result = new AccusationResult { ending = e, correct = e != Ending.Bad, evidence = e == Ending.Good ? 6 : 2, incriminatingFound = 3, contradictions = 1 };
+            ui.ShowAccusationResult(result, "Daniel Mendoza", "Daniel Mendoza", 7, variant.epilogue);
+            yield return Frames("final_" + e.ToString().ToLowerInvariant(), 0.15f, 0.5f, 2.5f, 7f);
+        }
+    }
 }

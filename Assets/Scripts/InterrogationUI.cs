@@ -87,6 +87,10 @@ public class InterrogationUI : MonoBehaviour
     private readonly Dictionary<string, Emotion> emotionBySuspect = new Dictionary<string, Emotion>();
     private EmotionPresenter emotionPresenter;
     private ChatView chat;
+    private FxLayer fx;                  // Efectos (solo en juego)
+    private int unseenClues;             // Pistas nuevas desde la última vez que se abrió la libreta
+    private TMP_Text clueBadge;
+    private int maxDaysValue = 7;
     private ChatEntry pendingQuestion;   // Pregunta enviada que aún espera respuesta
     private string pendingSuspectId;
     private int questionsUsedToday;
@@ -135,6 +139,9 @@ public class InterrogationUI : MonoBehaviour
         }
 
         BuildLayout();
+
+        if (Application.isPlaying && interrogationPanel != null)
+            fx = FxLayer.Ensure(interrogationPanel.GetComponentInParent<Canvas>());
 
         // Lo que se anima cada fotograma, en su propio Canvas (rendimiento en móvil)
         UIPerformance.IsolateInOwnCanvas(suspectImage);
@@ -513,13 +520,28 @@ public class InterrogationUI : MonoBehaviour
             // El parte del caso se escribe como el de la mañana; un toque lo completa
             Typewriter briefing = UIComponents.GetOrAdd<Typewriter>(caseDescriptionText.gameObject);
             if (briefing.isActiveAndEnabled)
+            {
+                briefing.OnFinished -= StampConfidential;
+                briefing.OnFinished += StampConfidential;
                 briefing.Reveal(0, 1f);
+            }
         }
 
         Debug.Log("[InterrogationUI] Caso cargado: " + title);
     }
 
     public string CurrentSuspectId => currentSuspectId;
+
+    private GameObject confidentialStamp;
+
+    // Sello "CONFIDENCIAL" sobre el expediente, una vez escrito el parte
+    private void StampConfidential()
+    {
+        if (fx == null || introPanel == null || !introPanel.activeInHierarchy || confidentialStamp != null)
+            return;
+        confidentialStamp = fx.Stamp("CONFIDENCIAL", T.danger, angle: -12f, fontSize: 64f,
+            parent: (RectTransform)introPanel.transform, anchor: new Vector2(0.72f, 0.86f), hold: -1f);
+    }
 
     private UnityEngine.UI.RawImage introBackground;
     private UnityEngine.UI.RawImage introHeader;
@@ -845,6 +867,7 @@ public class InterrogationUI : MonoBehaviour
     {
         questionsUsedToday = questionsUsed;
         questionsPerDay = questionsMax;
+        maxDaysValue = maxDays;
 
         if (hudText != null)
         {
@@ -925,6 +948,13 @@ public class InterrogationUI : MonoBehaviour
 
     public void ShowClueNotification(string clueName)
     {
+        SetClueBadge(unseenClues + 1);
+        if (fx != null)
+        {
+            fx.ClueCard(clueName, viewCluesButton != null ? (RectTransform)viewCluesButton.transform : null);
+            return;
+        }
+
         if (clueNotification != null && clueNotificationText != null)
         {
             // Varias pistas seguidas se acumulan en el mismo aviso y reinician el temporizador
@@ -950,15 +980,65 @@ public class InterrogationUI : MonoBehaviour
     {
         AppendNotice(ChatEntry.System(ChatEntryKind.Contradiction, text));
 
-        // Destello del color de contradicción y sacudida del HUD
+        if (fx != null)
+        {
+            // Sello de tinta que golpea: en el impacto, destello y sacudida de la pantalla
+            RectTransform shaken = interrogationPanel != null ? (RectTransform)interrogationPanel.transform : null;
+            fx.Stamp("CONTRADICCIÓN", T.danger, angle: -9f, hold: 1.3f, onImpact: () =>
+            {
+                fx.Flash(T.contradiction, 0.12f);
+                if (shaken != null)
+                    fx.Shake(shaken, 14f, 0.35f);
+            });
+            return;
+        }
+
+        // Sin capa de efectos: destello del color de contradicción y sacudida del HUD
         UIAnimations.Flash(this, ContradictionOverlay(), T.contradiction, 0.25f);
         if (hudText != null)
             UIAnimations.Shake(this, hudText.rectTransform, 12f, T.contradictionAnimDuration);
     }
 
+    /// <summary>
+    /// Contador de pistas sin ver sobre el botón de la libreta (se crea la primera vez).
+    /// </summary>
+    private void SetClueBadge(int count)
+    {
+        unseenClues = count;
+        if (viewCluesButton == null)
+            return;
+
+        if (clueBadge == null)
+        {
+            RectTransform badge = UIFactory.Container(viewCluesButton.transform, "Contador (auto)", Vector2.one, Vector2.one);
+            badge.pivot = new Vector2(0.5f, 0.5f);
+            badge.sizeDelta = new Vector2(52f, 52f);
+            badge.anchoredPosition = new Vector2(-10f, -10f);
+            var dot = badge.gameObject.AddComponent<UnityEngine.UI.Image>();
+            dot.sprite = UISprites.Circle();
+            dot.color = T.danger;
+            dot.raycastTarget = false;
+            badge.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
+
+            clueBadge = UIFactory.Label(badge, "", T.secondarySize, Color.white);
+            clueBadge.alignment = TextAlignmentOptions.Center;
+            clueBadge.fontStyle = FontStyles.Bold;
+            clueBadge.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
+            var rect = clueBadge.rectTransform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+            LayoutKit.OneLine(clueBadge, T.secondarySize);
+        }
+
+        clueBadge.text = count > 9 ? "9+" : count.ToString();
+        clueBadge.transform.parent.gameObject.SetActive(count > 0);
+    }
+
     // ARREGLADO: Panel de pistas
     private void ShowCluesPanel()
     {
+        SetClueBadge(0);
         if (cluesPanel != null)
         {
             cluesPanel.SetActive(true);
@@ -1065,6 +1145,7 @@ public class InterrogationUI : MonoBehaviour
         RefreshConversationView();
 
         SetInputEnabled(true);
+        fx?.DayCard(newDay, maxDaysValue, morningReport);
     }
 
     // ============================================
@@ -1075,6 +1156,7 @@ public class InterrogationUI : MonoBehaviour
     {
         ShowPanel(accusationPanel);
         accusationOptions = options;
+        fx?.SetTension(true, accusationPanel != null ? (RectTransform)accusationPanel.transform : null);
         EnsureAccusationBackButton();
         if (accusationBackButton != null)
             accusationBackButton.gameObject.SetActive(canGoBack);
@@ -1095,6 +1177,7 @@ public class InterrogationUI : MonoBehaviour
     /// </summary>
     public void ShowInterrogation()
     {
+        fx?.SetTension(false);
         ShowPanel(interrogationPanel);
         SetInputEnabled(true);
         RefreshConversationView();
@@ -1139,7 +1222,13 @@ public class InterrogationUI : MonoBehaviour
     {
         if (accusationDropdown != null && accusationDropdown.value < accusationOptions.Count)
         {
-            gameManager.MakeAccusation(accusationOptions[accusationDropdown.value].id);
+            string accusedId = accusationOptions[accusationDropdown.value].id;
+            if (accuseButton != null)
+                accuseButton.interactable = false; // Un solo veredicto
+            if (fx != null)
+                fx.Deliberation(() => gameManager.MakeAccusation(accusedId));
+            else
+                gameManager.MakeAccusation(accusedId);
         }
     }
 
@@ -1147,66 +1236,53 @@ public class InterrogationUI : MonoBehaviour
     // RESULTADO (MEJORADO)
     // ============================================
 
+    private GameObject endingStamp;
+
     public void ShowAccusationResult(AccusationResult result, string accusedName, string culpritName,
                                      int maxEvidence, string epilogue)
     {
+        fx?.SetTension(false);
         ShowPanel(resultPanel);
+        EndingStyle style = EndingStyle.For(result.ending, T);
 
         if (resultTitleText != null)
         {
-            switch (result.ending)
+            resultTitleText.text = style.title.ToUpperInvariant();
+            resultTitleText.color = style.ink;
+        }
+
+        // Cada final tiñe la escena con su color
+        if (resultPanel != null)
+        {
+            Transform existing = resultPanel.transform.Find("Tinte final (auto)");
+            RectTransform grade = existing != null ? (RectTransform)existing
+                : UIFactory.Container(resultPanel.transform, "Tinte final (auto)", Vector2.zero, Vector2.one);
+            if (existing == null)
             {
-                case Ending.Good:
-                    resultTitleText.text = "CASO RESUELTO: FINAL BUENO";
-                    resultTitleText.color = T.success;
-                    break;
-                case Ending.Bittersweet:
-                    resultTitleText.text = "ACERTASTE, PERO SIN PRUEBAS";
-                    resultTitleText.color = T.accent;
-                    break;
-                case Ending.Insufficient:
-                    resultTitleText.text = "CULPABLE LIBRE POR FALTA DE PRUEBAS";
-                    resultTitleText.color = T.contradiction;
-                    break;
-                default:
-                    resultTitleText.text = "CASO NO RESUELTO: FINAL MALO";
-                    resultTitleText.color = T.danger;
-                    break;
+                grade.SetSiblingIndex(0);
+                UIComponents.GetOrAdd<LayoutElement>(grade.gameObject).ignoreLayout = true;
+                grade.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
+                grade.gameObject.AddComponent<UnityEngine.UI.Image>().raycastTarget = false;
             }
+            grade.GetComponent<UnityEngine.UI.Image>().color = style.grade;
         }
 
         if (resultDetailsText == null)
             return;
 
-        string text = $"<b>TU ACUSACIÓN:</b> {accusedName}\n";
-        text += $"<b>VERDADERO CULPABLE:</b> {culpritName}\n\n";
-        text += $"<b>PISTAS INCRIMINATORIAS:</b> {result.incriminatingFound}\n";
-        text += $"<b>CONTRADICCIONES DEL CULPABLE:</b> {result.contradictions}\n";
-        text += $"<b>EVIDENCIA:</b> {result.evidence}/{maxEvidence} (hacen falta {InvestigationState.GoodThreshold} para una condena segura)\n\n";
+        resultDetailsText.text = EndingReport.Build(result, accusedName, culpritName, maxEvidence, epilogue, T);
 
-        switch (result.ending)
+        if (fx != null && resultPanel != null && resultTitleText != null)
         {
-            case Ending.Good:
-                text += $"<color={Theme.Hex(T.success)}><b>¡EXCELENTE TRABAJO!</b></color>\n";
-                text += "Las pruebas y las contradicciones no dejan lugar a dudas. El culpable es condenado.\n\n";
-                break;
-            case Ending.Bittersweet:
-                text += $"<color={Theme.Hex(T.accent)}><b>ACERTASTE PERO...</b></color>\n";
-                text += "Identificaste al culpable, pero la defensa encuentra huecos. El juicio será largo e incierto.\n\n";
-                break;
-            case Ending.Insufficient:
-                text += $"<color={Theme.Hex(T.contradiction)}><b>INSUFICIENTE EVIDENCIA</b></color>\n";
-                text += "Tu intuición era correcta, pero sin pruebas el sospechoso queda en libertad.\n\n";
-                break;
-            default:
-                text += $"<color={Theme.Hex(T.danger)}><b>INVESTIGACIÓN FALLIDA</b></color>\n";
-                text += result.ignoredClearingClue
-                    ? "Acusaste a alguien a quien tus propias pistas descartaban. Ignoraste pruebas.\n\n"
-                    : "Acusaste a la persona equivocada. El verdadero culpable sigue libre.\n\n";
-                break;
+            // El sello del final hace de título; el informe se descubre línea a línea
+            if (endingStamp != null)
+                Destroy(endingStamp);
+            resultTitleText.text = "";
+            RectTransform shaken = (RectTransform)resultPanel.transform;
+            endingStamp = fx.Stamp(style.stamp, style.ink, angle: -5f, fontSize: 80f, parent: resultTitleText.rectTransform,
+                anchor: new Vector2(0.5f, 0.5f), hold: -1f,
+                onImpact: () => fx.Shake(shaken, result.ending == Ending.Bad ? 16f : 8f, 0.3f));
+            UIComponents.GetOrAdd<StepReveal>(resultDetailsText.gameObject).Play(0.9f);
         }
-
-        text += $"<b>LO QUE PASÓ DE VERDAD:</b>\n{epilogue}";
-        resultDetailsText.text = text;
     }
 }

@@ -87,6 +87,82 @@ public static class UISprites
         return circle;
     }
 
+    private static readonly Dictionary<long, Sprite> outlines = new Dictionary<long, Sprite>();
+    private static Sprite vignette;
+
+    /// <summary>
+    /// Contorno redondeado (marco de los sellos), en 9 partes.
+    /// </summary>
+    public static Sprite RoundedOutline(int radius, int thickness)
+    {
+        radius = Mathf.Clamp(radius, 4, 64);
+        thickness = Mathf.Clamp(thickness, 1, radius);
+        long key = radius * 1000L + thickness;
+        if (outlines.TryGetValue(key, out Sprite cached) && cached != null)
+            return cached;
+
+        int size = radius * 2 + 4;
+        var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+        {
+            name = $"Contorno {radius}-{thickness} (auto)", wrapMode = TextureWrapMode.Clamp, hideFlags = HideFlags.DontSave
+        };
+        var pixels = new Color32[size * size];
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                float cx = Mathf.Clamp(x + 0.5f, radius, size - radius);
+                float cy = Mathf.Clamp(y + 0.5f, radius, size - radius);
+                float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(cx, cy));
+                float outer = Mathf.Clamp01(radius - d + 0.5f);
+                float inner = Mathf.Clamp01(d - (radius - thickness) + 0.5f);
+                pixels[y * size + x] = new Color32(255, 255, 255, (byte)(outer * inner * 255f));
+            }
+        }
+        texture.SetPixels32(pixels);
+        texture.Apply(false, true);
+        float b = radius + 1;
+        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f, 0,
+            SpriteMeshType.FullRect, new Vector4(b, b, b, b));
+        sprite.name = texture.name;
+        sprite.hideFlags = HideFlags.DontSave;
+        outlines[key] = sprite;
+        return sprite;
+    }
+
+    /// <summary>
+    /// Viñeta: transparente en el centro, opaca en los bordes (se estira a la pantalla).
+    /// </summary>
+    public static Sprite Vignette()
+    {
+        if (vignette != null)
+            return vignette;
+
+        const int size = 128;
+        var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+        {
+            name = "Viñeta (auto)", wrapMode = TextureWrapMode.Clamp, hideFlags = HideFlags.DontSave
+        };
+        var pixels = new Color32[size * size];
+        float r = size / 2f;
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(r, r)) / r;
+                float a = Mathf.Clamp01((d - 0.55f) / 0.6f);
+                a = a * a * (3f - 2f * a);
+                pixels[y * size + x] = new Color32(255, 255, 255, (byte)(a * 255f));
+            }
+        }
+        texture.SetPixels32(pixels);
+        texture.Apply(false, true);
+        vignette = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
+        vignette.name = texture.name;
+        vignette.hideFlags = HideFlags.DontSave;
+        return vignette;
+    }
+
     private static Sprite radial;
     private static Sprite gradient;
 

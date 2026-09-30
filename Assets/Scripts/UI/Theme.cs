@@ -95,7 +95,16 @@ public class Theme : ScriptableObject
     public float contradictionAnimDuration = 0.5f;
     public float typewriterCharsPerSecond = 45f;
 
+    [Header("Papel (fichas de pista, calendario, expediente)")]
+    public Color paper = new Color32(233, 223, 199, 255);
+    public Color paperText = new Color32(38, 33, 28, 255);
+    public Color paperInk = new Color32(128, 52, 40, 255);     // Tinta roja de sellos y rótulos sobre papel
+    public Color calendarRed = new Color32(150, 45, 38, 255);
+
     [Header("Ambiente (menú, filtro noir)")]
+    [Range(0f, 0.3f)] public float grainIntensity = 0.07f;
+    [Range(0f, 1f)] public float vignetteIntensity = 0.45f;
+    public float deliberationSeconds = 2.2f;                    // Pausa antes del veredicto
     public Color lampGlow = new Color(1f, 0.78f, 0.45f, 0.22f);  // Halo de la lámpara del menú
     public float titleIntroDuration = 1.6f;                      // Entrada del título del menú
 
