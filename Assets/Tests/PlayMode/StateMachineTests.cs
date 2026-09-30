@@ -207,6 +207,16 @@ public class StateMachineTests
         StringAssert.Contains(key.playerName, report, "el informe juzga la prueba clave");
         StringAssert.Contains("SE TE ESCAPÓ", report, "y dice qué pistas faltaron");
         Assert.IsNotNull(CaseRecords.BestRank(manager.Story.id), "el mejor rango queda apuntado");
+
+        // Ronda final 3: el expediente se cierra con la ficha policial del culpable de verdad
+        GameObject card = Find(Mugshot.Name);
+        Assert.IsNotNull(card, "ficha del culpable al final del informe");
+        Assert.IsTrue(card.activeInHierarchy);
+        Assert.IsNotNull(card.GetComponentInChildren<RawImage>(true).texture, "con su retrato");
+        string culprit = manager.Story.Character(manager.State.Variant.culpritId).name;
+        StringAssert.Contains(culprit, card.GetComponentInChildren<TMP_Text>(true).text);
+        Assert.AreEqual(Find("ResultPanel").GetComponentsInChildren<TMP_Text>(true).First(t => t.text.Contains("TU ACUSACIÓN")).transform.parent,
+                        card.transform.parent, "dentro del informe (se desplaza con él, nunca lo tapa)");
     }
 
     [UnityTest]

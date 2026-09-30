@@ -294,5 +294,15 @@ public partial class InterrogationUI
                 onImpact: () => fx.Shake(shaken, result.ending == Ending.Bad ? 16f : 8f, 0.3f));
             UIComponents.GetOrAdd<StepReveal>(resultDetailsText.gameObject).Play(0.9f);
         }
+
+        // El expediente se cierra con la ficha policial del culpable de verdad (aparece al terminar el informe)
+        if (summary != null && summary.culprit.id != null)
+        {
+            (Texture2D portrait, bool legacy) = PortraitOf(summary.culprit, Emotion.Tranquilo);
+            bool placeholder = portrait == null || portrait.name.Contains("Placeholder");
+            Mugshot.Show(resultDetailsText, placeholder ? null : portrait,
+                legacy ? PortraitCrops.Bust(summary.culprit.portraitKey) : PortraitCrops.Full, legacy,
+                $"CULPABLE\n{culpritName}");
+        }
     }
 }
