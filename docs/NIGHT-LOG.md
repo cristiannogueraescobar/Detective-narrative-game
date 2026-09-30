@@ -637,6 +637,9 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   marcadas. Con la 25: **2B 3/8 frente a 0/20** sin las marcas. El dato más claro de la tarde: tachar en la rueda a
   quien descarta una pista cambia la acusación de quien la mira. Galería regenerada con las capturas de las 19:58.
 
+- **20:09** Séptima revisión: nada serio; arreglado el único confirmado (continuar a mitad de día perdía el "Ayer:
+  …": ahora se guarda) con test visto en rojo. EditMode 716/716, PlayMode 56/56.
+
 ## Ahora (día 3)
 - Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
   rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
