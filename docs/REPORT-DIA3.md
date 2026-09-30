@@ -5,6 +5,37 @@ tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se comple
 
 ---
 
+## Informe intermedio (6 h: 10:09 → 16:09)
+
+**Estado:** bloques 0, A, B, C, D y E terminados (su "HECHO CUANDO" cumplido o documentado: el APK de Android
+necesita el módulo, que este PC no tiene). Desde ~12:45, rondas finales. Todo en `origin/feature/dia3`; `main`
+intacta. Build de Windows con todo lo de hoy: SMOKE OK.
+
+**Rondas finales hasta ahora (sobre lo de los bloques):**
+- Tres revisiones de código independientes (13 + 11 + 8 hallazgos, ninguno crítico): todos resueltos, cada uno con
+  su test en rojo antes del arreglo.
+- Lógica: preguntas capciosas 22 % → 2 % (medido, sin perder pistas ni estados); respuestas en chino y etiquetas
+  de estado con erratas que salían en el chat (encontradas por el bot) arregladas; desbloqueos que ya no dispara
+  la pregunta de ejemplo (medido).
+- Jugabilidad: la libreta apunta lo que ha dicho cada uno (sin enseñar la mentira del culpable antes de tiempo),
+  con indicación del tutorial; "Pensar" y la prueba clave explicados donde hacen falta; rango honesto.
+- Aspecto y sonido: ficha policial del culpable, pared de alturas en la rueda, retrato más grande en 20:9,
+  desplegables que se abren bien, motivo musical propio en cada historia.
+- Accesibilidad: auditoría WCAG 2.2 AA, lector de pantalla (TalkBack/VoiceOver), foco visible, flechas legibles.
+- Bot con variantes al azar: 29/38 partidas resueltas en las seis rondas con bot (26/32 en las cinco últimas), sin rupturas de
+  personaje ni confesiones.
+
+**Tests:** EditMode 700/700, PlayMode 47/47 (inicio del día: 549 / 20).
+
+**Errores míos, corregidos:** un `git add docs` subió ~300 MB de capturas en bruto (commit `ff30092`; retiradas en el
+siguiente, historia remota sin reescribir: ver Decisiones, punto 12); un script dejó finales de línea dobles en
+BotPlayer.cs (normalizado).
+
+**Lo siguiente:** más rondas finales (capturas y crítica, revisión del diff, bot en variantes al azar, recorrido de
+jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
+
+---
+
 ## 1. Resumen ejecutivo
 1. **Lógica:** validador narrativo (9 reglas) en las 9 variantes, 17 incoherencias corregidas, línea temporal de
    cada variante, desbloqueos naturales por tema y máquina de estados con tests de toques reales.

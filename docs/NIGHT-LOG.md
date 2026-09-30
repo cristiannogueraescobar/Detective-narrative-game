@@ -511,6 +511,9 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   regenerada; build de Windows con todo: SMOKE OK. El lector de pantalla habría leído las cifras de la pared
   ("190, 180…"): componente Decorative que el lector salta (test).
 
+- **16:09** **CHECKPOINT 6 h**: "Informe intermedio" en docs/REPORT-DIA3.md y push de seguridad. Ronda 8 (bot 3A,
+  3B, 2A): 5/6 resueltas, 0 reintentos por idioma, latencia media 839 ms.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
