@@ -78,8 +78,15 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   nueva fuente dinámica (asset nuevo, la original intacta) y el test de glifos ahora detecta letras de otra
   familia. Enlace de la libreta bloqueado sin entrada y sin teclado en móvil.
 
+- 05:10 Fuente de rótulos congelada a estática (Latin-1 + puntuación del juego): sin crecer en ejecución.
+- 05:20 Fundido al entrar en el expediente desde la selección de caso.
+- 05:33 Tinte de ambiente por historia (intro y fondo de la sala, también al continuar); margen lateral en los
+  textos con scroll para que la cursiva no se corte.
+- 05:35 Revisión en tableta (4:3): todos los paneles bien. Cuelgue al salir en -nographics: 1-3/12, en ventana
+  0/6 y en la build 0/25; documentado en BUILD.md (no afecta al jugador).
+
 ## Ahora
-- Ronda 3: mensajes de error amables (Ollama apagado), build final, más pulido.
+- Ronda 4: bot en 3 variantes al azar sobre HEAD, crítica de diseño, revisión de código.
 
 ## Después (orden)
 1. Layout: 3 rondas de render→revisión, safe area, zonas táctiles ≥ 48 px (añadir al test).
