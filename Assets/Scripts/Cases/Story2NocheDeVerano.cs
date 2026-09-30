@@ -508,7 +508,9 @@ Tienes 7 días.",
                 new CharacterRole
                 {
                     characterId = "cartero",
-                    knowledge = new[] { MentionMaruxa, "Esa madrugada llevabas un certificado urgente para la comisaría." },
+                    // Aquí Maruxa solo se nombra (la desbloquea): si "ve pasar a todo el mundo", el modelo la ofrece
+                    // como testigo en vez del GPS de la furgoneta, que es la pista de esta variante
+                    knowledge = new[] { "Maruxa, la de la casa de la curva, madruga mucho.", "Esa madrugada llevabas un certificado urgente para la comisaría." },
                     version = "A las 5:15 entré en la oficina de Correos, como siempre.",
                     secret = "Guardas en casa postales que nunca llegaste a entregar; te da vergüenza que se sepa.",
                     admitsWhen = "el inspector insiste",
