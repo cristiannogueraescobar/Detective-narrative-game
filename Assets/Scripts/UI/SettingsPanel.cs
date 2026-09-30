@@ -60,6 +60,15 @@ public class SettingsPanel : MonoBehaviour
         UIFactory.Toggle(list, "Vibración", GameSettings.Vibration, v => GameSettings.Vibration = v);
 
         Section(list, "PARTIDA");
+        Button tutorial = null;
+        tutorial = UIFactory.Button(list, "Repetir el tutorial", false, () =>
+        {
+            Tutorial.Reset();
+            TMP_Text label = tutorial.GetComponentInChildren<TMP_Text>();
+            if (label != null)
+                label.text = "Tutorial activado: sale en la próxima partida";
+        });
+        tutorial.name = "RepetirTutorial";
         UIFactory.Button(list, "Reiniciar partida", false, AskRestart);
     }
 
