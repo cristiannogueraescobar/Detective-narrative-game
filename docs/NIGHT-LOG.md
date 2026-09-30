@@ -470,6 +470,11 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   bajo su nombre; las instrucciones lo explican ("si una pista no cuadra con lo que alguien dice, enséñasela").
   Medición en curso: A/B con el bot (semilla 59, 18 + 18, -noVersions) mirando contradicciones y resueltas.
 
+- **14:51** Ronda 5, capturas de pantallas no revisadas hoy (Acerca de, tutoriales, avisos, desplegable abierto):
+  la lista del desplegable se abría desplazada con la primera opción cortada — las opciones medían 48 dp pero el
+  contenido de la plantilla seguía en 28 px y uGUI calculaba un hueco negativo. Arreglado (el validador lo exige
+  ahora en los tres desplegables). La ficha policial suena con un sello suave al caer. EditMode 683/683.
+
 ## Ahora (día 3)
 - Ronda final 2: bot para comprobar los desbloqueos tras el n.º 7; capturas tras los cambios; recorrido mental.
   Informe intermedio a las ~16:10.
