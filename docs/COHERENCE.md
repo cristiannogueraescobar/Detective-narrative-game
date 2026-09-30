@@ -50,21 +50,21 @@ Víctima: Elena Mendoza, 12 años, adoptada a los tres. Murió en su cama; a las
 | `padre` | Daniel Mendoza | padre | desde el día 1 |
 | `madre` | Carmen Vidal | madre | desde el día 1 |
 | `hermano` | Lucas Mendoza | hermano | desde el día 1 |
-| `vecina` | Rosario Gil | vecina | cuando lo mencionan (alias: rosario, vecina, la de enfrente), cuando el jugador pregunta por «vecin», «enfrente», «ventana», «cortina», «testig», «desde fuera», «alguien vio», «rosario» o, si no, el día 2 (parte: «Una vecina de enfrente se presenta en comisaría: dice que esa noche no durmió y quiere hablar.») |
+| `vecina` | Amparo Gil | vecina | cuando lo mencionan (alias: amparo, vecina, la de enfrente), cuando el jugador pregunta por «vecin», «enfrente», «ventana», «cortina», «testig», «desde fuera», «alguien vio», «rosario» o, si no, el día 2 (parte: «Una vecina de enfrente se presenta en comisaría: dice que esa noche no durmió y quiere hablar.») |
 
 ### 1A · culpable: Daniel Mendoza (padre)
 
 - **Qué hizo y por qué (secreto):** Llevas un año sacando dinero de la herencia de Elena para tapar las deudas del bufete. Elena encontró los extractos en tu despacho y amenazó con contárselo a Carmen. A las 22:30 le subiste un cacao con el zolpidem de Carmen triturado y cerraste las cortinas y la puerta con llave.
 - **Su mentira:** «no entré en su cuarto» · versión: Esa noche no entré en el cuarto de Elena hasta las 23:05: se acostó sola a las diez. A las 23:05 fui a verla, no respiraba, y a las 23:15 llamé al 112.
 - **Si le muestran la prueba (versión B):** Admites que a las 22:30 entraste un momento a darle las buenas noches y a cerrar las cortinas, pero insistes en que estaba bien y en que no le diste nada.
-- **⚡ 1A_ventana** (Rosario (vecina)): a las 22:35 viste al padre, Daniel, en el cuarto de la niña cerrando las cortinas. Te extrañó porque él casi nunca entra en ese cuarto.
+- **⚡ 1A_ventana** (Amparo (vecina)): a las 22:35 viste al padre, Daniel, en el cuarto de la niña cerrando las cortinas. Te extrañó porque él casi nunca entra en ese cuarto.
 - **Validador narrativo:** sin problemas
 
 | Pista | Portador | Tipo | Secreta | Hecho |
 |---|---|---|---|---|
 | 1A_taza | Carmen (madre) | incrimina |  | al entrar en el cuarto viste en la mesilla una taza de cacao a medio beber. Elena nunca tomaba cacao por la noche y en casa el cacao solo lo prepara Daniel. |
 | 1A_puerta | Lucas (hermano) | incrimina |  | papá aporreaba la puerta de Elena; estaba cerrada con llave por fuera y sacó la llave de su bolsillo. Elena nunca cerraba con llave. |
-| ⚡ 1A_ventana | Rosario (vecina) | incrimina |  | a las 22:35 viste al padre, Daniel, en el cuarto de la niña cerrando las cortinas. Te extrañó porque él casi nunca entra en ese cuarto. |
+| ⚡ 1A_ventana | Amparo (vecina) | incrimina |  | a las 22:35 viste al padre, Daniel, en el cuarto de la niña cerrando las cortinas. Te extrañó porque él casi nunca entra en ese cuarto. |
 | 1A_papeles | Lucas (hermano) | incrimina |  | hace una semana Elena te enseñó fotos de unos extractos del banco del despacho de papá y te dijo que papá le había robado su herencia. |
 | 1A_partida | Lucas (hermano) | descarta a `hermano` |  | de 21:30 a 00:00 estuviste en una partida online con tus amigos; el juego guarda el registro. |
 | 1A_frasco | Carmen (madre) | descarta a `madre` | sí | Tu frasco de zolpidem, que abriste hace una semana, estaba casi vacío por la mañana: faltaban muchas pastillas que tú no tomaste. |
@@ -75,7 +75,7 @@ Víctima: Elena Mendoza, 12 años, adoptada a los tres. Murió en su cama; a las
 - **Su mentira:** «estaba perfecta; la encontré a las 23:10» · versión: Elena estaba perfectamente al acostarse, a las 21:30. Yo estuve en el salón leyendo. A las 23:10 subí a verla y la encontré así; a las 23:15 llamé al 112.
 - **Si le muestran la prueba (versión B):** Admites que subiste antes, sobre las 22:00, porque Elena se encontraba mal, y que te quedaste con ella pensando que se le pasaría. Dices que fue un error de juicio, nada más.
 - **⚡ 1B_pared** (Lucas (hermano)): sobre las 22:10 oíste a Elena llorar a través de la pared diciendo 'mamá, no quiero más'. Te habías quitado los cascos un momento.
-- **⚡ 1B_luz** (Rosario (vecina)): viste a la madre, Carmen, sentada junto a la cama de la niña, muy quieta, sin llamar a nadie, desde las 22:00 hasta las 23:15.
+- **⚡ 1B_luz** (Amparo (vecina)): viste a la madre, Carmen, sentada junto a la cama de la niña, muy quieta, sin llamar a nadie, desde las 22:00 hasta las 23:15.
 - **Validador narrativo:** sin problemas
 
 | Pista | Portador | Tipo | Secreta | Hecho |
@@ -83,7 +83,7 @@ Víctima: Elena Mendoza, 12 años, adoptada a los tres. Murió en su cama; a las
 | 1B_historial | Daniel (padre) | incrimina |  | en dos años Elena fue once veces a urgencias, siempre llevada por Carmen, y ningún especialista le encontró nada. |
 | 1B_receta | Daniel (padre) | incrimina |  | Carmen le recetó ella misma a Elena un medicamento para el corazón, y se puso furiosa cuando pediste una segunda opinión a un cardiólogo. |
 | ⚡ 1B_pared | Lucas (hermano) | incrimina |  | sobre las 22:10 oíste a Elena llorar a través de la pared diciendo 'mamá, no quiero más'. Te habías quitado los cascos un momento. |
-| ⚡ 1B_luz | Rosario (vecina) | incrimina |  | viste a la madre, Carmen, sentada junto a la cama de la niña, muy quieta, sin llamar a nadie, desde las 22:00 hasta las 23:15. |
+| ⚡ 1B_luz | Amparo (vecina) | incrimina |  | viste a la madre, Carmen, sentada junto a la cama de la niña, muy quieta, sin llamar a nadie, desde las 22:00 hasta las 23:15. |
 | 1B_tutora | Lucas (hermano) | incrimina |  | hace unos días Elena te contó que le había pedido a su tutora del colegio que la llevaran a otro médico, porque ella decía que no estaba enferma y que las pastillas la mareaban. |
 | 1B_cena | Daniel (padre) | descarta a `padre` | sí | Estuviste de 21:00 a 23:00 en casa de Marta, una compañera del bufete; ella y el portero pueden confirmarlo. |
 
@@ -92,12 +92,12 @@ Víctima: Elena Mendoza, 12 años, adoptada a los tres. Murió en su cama; a las
 - **Qué hizo y por qué (secreto):** Vendes en el instituto tus pastillas para el TDAH. Elena lo descubrió y te amenazó con contarlo. A las 21:45 discutisteis en la escalera, le quitaste el móvil a tirones, ella se cayó y se golpeó la cabeza. Parecía estar bien: la acostaste, fregaste el escalón con lejía y a las 21:52 llamaste a papá.
 - **Su mentira:** «estuve con los cascos, no oí nada» · versión: Estuve toda la noche en mi cuarto con los cascos puestos, jugando. No oí nada hasta que papá empezó a gritar.
 - **Si le muestran la prueba (versión B):** Admites que discutiste con Elena en la escalera y que ella se cayó, pero insistes en que fue un accidente y en que estaba bien y hablaba cuando la acostaste.
-- **⚡ 1C_gritos** (Rosario (vecina)): sobre las 21:45 oíste gritos de los dos chicos, Lucas y la niña, y luego un golpe seco. Justo después viste a Lucas parado en la ventana de la escalera, con las manos en la cabeza.
+- **⚡ 1C_gritos** (Amparo (vecina)): sobre las 21:45 oíste gritos de los dos chicos, Lucas y la niña, y luego un golpe seco. Justo después viste a Lucas parado en la ventana de la escalera, con las manos en la cabeza.
 - **Validador narrativo:** sin problemas
 
 | Pista | Portador | Tipo | Secreta | Hecho |
 |---|---|---|---|---|
-| ⚡ 1C_gritos | Rosario (vecina) | incrimina |  | sobre las 21:45 oíste gritos de los dos chicos, Lucas y la niña, y luego un golpe seco. Justo después viste a Lucas parado en la ventana de la escalera, con las manos en la cabeza. |
+| ⚡ 1C_gritos | Amparo (vecina) | incrimina |  | sobre las 21:45 oíste gritos de los dos chicos, Lucas y la niña, y luego un golpe seco. Justo después viste a Lucas parado en la ventana de la escalera, con las manos en la cabeza. |
 | 1C_lejia | Carmen (madre) | incrimina |  | al llegar a las 23:20 olía muchísimo a lejía en la escalera y la alfombra del tercer escalón estaba mojada, como recién fregada. En casa nadie friega a esas horas. |
 | 1C_pantalla | Carmen (madre) | incrimina |  | esa misma noche encontraste el móvil de Elena en el cuarto de Lucas, debajo de la cama, con la pantalla rota. Elena nunca soltaba su móvil. |
 | 1C_llamada | Daniel (padre) | incrimina | sí | Lucas te llamó a las 21:52 llorando: 'Elena se ha caído por la escalera, pero está bien'. Por eso llegaste a casa a las 22:15, no a las 23:00. |

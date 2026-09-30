@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 public class PlaythroughChecksTests
 {
-    private const string Sheet = "Eres Carmen Vidal. A las 22:00 te tomaste tu pastilla. Rosario vive enfrente. Daniel es tu marido.";
+    private const string Sheet = "Eres Carmen Vidal. A las 22:00 te tomaste tu pastilla. Amparo vive enfrente. Daniel es tu marido.";
 
     private static PlaythroughChecks.Kind[] Kinds(string response, bool culprit = false, int contradictions = 0, int shown = 0, string previous = null)
     {
@@ -13,7 +13,7 @@ public class PlaythroughChecksTests
     [Test]
     public void RespuestaNormalNoMarcaNada()
     {
-        CollectionAssert.IsEmpty(Kinds("Me tomé la pastilla a las 22:00 y me dormí. Daniel se quedó abajo con Rosario, creo."));
+        CollectionAssert.IsEmpty(Kinds("Me tomé la pastilla a las 22:00 y me dormí. Daniel se quedó abajo con Amparo, creo."));
     }
 
     [TestCase("Como IA, no puedo responder a eso.")]
@@ -63,7 +63,7 @@ public class PlaythroughChecksTests
     public void NombreQueNoEstaEnLaFicha()
     {
         CollectionAssert.Contains(Kinds("Eso se lo contó a su amiga Verónica, pregúntele a ella."), PlaythroughChecks.Kind.InventedName);
-        CollectionAssert.DoesNotContain(Kinds("Eso lo sabe Rosario, que vive enfrente."), PlaythroughChecks.Kind.InventedName);
+        CollectionAssert.DoesNotContain(Kinds("Eso lo sabe Amparo, que vive enfrente."), PlaythroughChecks.Kind.InventedName);
         CollectionAssert.DoesNotContain(Kinds("Mire, inspector. Dios sabe que la quería."), PlaythroughChecks.Kind.InventedName);
         CollectionAssert.DoesNotContain(Kinds("Me acosté tarde. ¿Puedes confirmarlo con mi agenda?"), PlaythroughChecks.Kind.InventedName);
     }
