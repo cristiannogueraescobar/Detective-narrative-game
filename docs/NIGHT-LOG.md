@@ -587,6 +587,11 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   incoherencias; 4 horas inventadas marcadas (el reintento arregló 6 de 8; residuo conocido), 1 reintento por
   idioma. Acumulado al azar: 45/56.
 
+- **18:30** Ronda 18. Recorrido de jugador nuevo: nada le decía que puede poner notas → la indicación de la libreta
+  señala «añadir nota» (24 palabras; el test pide ≤ 25, lo pillé en rojo con la primera versión). Captura y hoja
+  25. La validación de layout no veía las secciones nuevas (el caso peor no tenía notas ni partes) → incluidas;
+  77/77 en todos los tamaños de texto, y render del editor revisado a ojo. PlayMode 54/54.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
