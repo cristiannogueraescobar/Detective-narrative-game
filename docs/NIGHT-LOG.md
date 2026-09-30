@@ -48,9 +48,15 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
 - 03:08 Build de Windows OK + prueba de humo del .exe (SMOKE OK). Android: sin módulo → docs/BUILD.md.
 - 03:15 Retratos en plano medio (recorte medido del pixel art) y caras en el chat.
 
+- 03:18 Cabecera del interrogatorio: retrato en plano medio con sospechoso / Fin del día / Acusar al lado: el
+  chat pasa de ~36 % a ~60 % de la pantalla. Captura con una conversación real del bot (35 turnos).
+- 03:22 Rueda de reconocimiento en la acusación (bustos del caso, no la foto de grupo de la historia 1).
+- 03:26 Recalibración: víctima "triste" 36/36 (antes tranquilo 16/36); 3A 10/10, 3C 8/10; 2C sigue 5/10.
+- 03:30 Revisión de código con subagente: 8 hallazgos (0 críticos), todos corregidos con test.
+- 03:40 Etiqueta de estado en el retrato, vibración (ajuste), libreta de papel, "Continuar · caso, día N".
+
 ## Ahora
-- Bot ronda 2 y recalibración (pistas 2C/3C, estados) con los últimos cambios.
-- Chat con conversación real larga (transcripción del bot) en captura.
+- Bot ronda 3 (9 variantes × 2) con todo lo último; después, rondas de revisión (FINAL).
 
 ## Después (orden)
 1. Layout: 3 rondas de render→revisión, safe area, zonas táctiles ≥ 48 px (añadir al test).
@@ -74,3 +80,7 @@ FINAL. Rondas de revisión.
   documentadas en docs/BUILD.md como pendientes.
 - Tamaño de las fichas: se mantuvo el límite de 460 palabras (test) acortando reglas en vez de subirlo.
 - Los retratos antiguos se muestran en plano medio (recorte), no de cuerpo entero.
+- 2C_gps se queda en 5/10: la línea de Maruxa (sirve para desbloquearla) compite con el GPS al preguntar
+  "¿quién puede confirmarlo?". Meter el GPS en su versión hace que la ficha revele la pista sola (lo prohíbe
+  un test de datos). Se deja así: con "¿cómo sé que dice la verdad?" sale el GPS. Pendiente de decidir.
+- Vibración activada por defecto (solo en móvil).
