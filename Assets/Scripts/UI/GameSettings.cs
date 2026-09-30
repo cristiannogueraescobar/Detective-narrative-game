@@ -175,7 +175,8 @@ public static class GameSettings
     /// </summary>
     public static int TextSizeLevel
     {
-        get => Mathf.Clamp(Mathf.RoundToInt(store.Get(TextSizeKey, 0f)), 0, TextScales.Length - 1);
+        // Sin elegir todavía: el tamaño de letra del sistema (accesibilidad del móvil) decide el primero
+        get => Mathf.Clamp(Mathf.RoundToInt(store.Get(TextSizeKey, TextSizeForSystemScale(SystemFontScale))), 0, TextScales.Length - 1);
         set
         {
             store.Set(TextSizeKey, Mathf.Clamp(value, 0, TextScales.Length - 1));
@@ -184,6 +185,24 @@ public static class GameSettings
     }
 
     public static float TextScale => TextScales[TextSizeLevel];
+
+    /// <summary>
+    /// Nivel de texto que corresponde a la escala de letra del sistema (1 = normal): grande desde 1,3, muy grande
+    /// desde 1,7. Solo decide mientras el jugador no elija uno en Ajustes.
+    /// </summary>
+    public static int TextSizeForSystemScale(float fontScale)
+    {
+        return fontScale >= 1.7f ? 2 : fontScale >= 1.3f ? 1 : 0;
+    }
+
+    private static float SystemFontScale
+    {
+        get
+        {
+            float scale = UnityEngine.Accessibility.AccessibilitySettings.fontScale;
+            return scale > 0f ? scale : 1f;
+        }
+    }
 
     /// <summary>
     /// Texto más blanco, fondos más negros y bordes marcados.

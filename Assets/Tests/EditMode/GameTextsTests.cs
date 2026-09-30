@@ -172,4 +172,16 @@ public class GameTextsTests
         StringAssert.DoesNotContain("prueba clave", GameTexts.AccusationSummary(0, 0), "sin pistas no hay selector");
         StringAssert.DoesNotContain("prueba clave", GameTexts.AccusationPrompt);
     }
+
+    // Accesibilidad: el tamaño de letra del sistema decide el de la primera partida
+    [TestCase(1f, 0)]
+    [TestCase(1.15f, 0)]
+    [TestCase(1.3f, 1)]
+    [TestCase(1.5f, 1)]
+    [TestCase(1.8f, 2)]
+    [TestCase(2.2f, 2)]
+    public void ElTamanoDeLetraDelSistemaEligeElPrimero(float fontScale, int level)
+    {
+        Assert.AreEqual(level, GameSettings.TextSizeForSystemScale(fontScale));
+    }
 }

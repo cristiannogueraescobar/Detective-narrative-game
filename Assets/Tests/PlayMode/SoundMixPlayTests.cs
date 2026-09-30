@@ -12,6 +12,10 @@ public class SoundMixPlayTests
     public IEnumerator UnaPistaApartaLaMusicaYLuegoVuelve()
     {
         SoundManager.PlayMusic(Music.Menu);
+        // El SoundManager sobrevive entre tests: un golpe de un test anterior puede tener la música apartada aún
+        float end = Time.realtimeSinceStartup + SoundMix.MaxHold + SoundMix.Release + 1f;
+        while (SoundManager.MusicDuck < 1f && Time.realtimeSinceStartup < end)
+            yield return null;
         yield return new WaitForSecondsRealtime(0.2f);
         Assert.AreEqual(1f, SoundManager.MusicDuck, 1e-4, "sin golpes, entera");
 

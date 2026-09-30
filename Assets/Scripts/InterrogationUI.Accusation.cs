@@ -255,6 +255,7 @@ public partial class InterrogationUI
         SoundManager.PlayMusic(Music.None);
         SoundManager.Play(SoundCatalog.ForEnding(result.ending));
 
+        ScreenReader.Announce(style.title);
         if (resultTitleText != null)
         {
             resultTitleText.text = style.title.ToUpperInvariant();
