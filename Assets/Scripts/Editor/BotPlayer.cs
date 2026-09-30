@@ -42,6 +42,7 @@ public static class BotPlayer
         public bool topicQuestions;   // -topicQuestions: una pregunta corta sobre un tema (A/B del consejo, ronda 12)
         public bool coolTimeRetry = true; // -warmTimeRetry: reintento por horas a la temperatura normal (A/B, ronda 20)
         public bool lineupMarks = true;   // -noLineupMarks: al acusar no ve los tachados de la rueda (A/B, ronda 25)
+        public bool strictTimeNudge;      // -strictTimeNudge: la nota del reintento prohíbe la hora aproximada (A/B, ronda 30)
     }
 
     public class Turn
@@ -99,6 +100,7 @@ public static class BotPlayer
                 case "-coolTimeRetry": options.coolTimeRetry = true; break;
                 case "-warmTimeRetry": options.coolTimeRetry = false; break;
                 case "-noLineupMarks": options.lineupMarks = false; break;
+                case "-strictTimeNudge": options.strictTimeNudge = true; break;
                 case "-ollama": options.ollamaUrl = args[i + 1]; break;
                 case "-model": options.model = args[i + 1]; break;
             }
@@ -205,6 +207,7 @@ public static class BotPlayer
             manager.UseProvider(new SyncProvider(client, options));
             manager.RetryInventedTimes = options.timeRetry;
             manager.CoolTimeRetry = options.coolTimeRetry;
+            manager.StrictTimeNudge = options.strictTimeNudge;
             manager.StartCase(story, variant);
 
             var unlocked = new List<string>(story.cast.Where(c => c.startsUnlocked).Select(c => c.id));
