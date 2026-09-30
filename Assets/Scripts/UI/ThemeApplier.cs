@@ -175,7 +175,12 @@ public static class ThemeApplier
     private static bool IsInPrimaryButton(Graphic label)
     {
         Button button = label.GetComponentInParent<Button>(true);
-        return button != null && RoleFor(button.gameObject.name, true, false, false) == UIRole.PrimaryButton;
+        if (button == null)
+            return false;
+        // Un rol puesto a mano en el botón manda sobre el nombre
+        if (button.TryGetComponent(out ThemeRole role) && role.role != UIRole.Auto)
+            return role.role == UIRole.PrimaryButton;
+        return RoleFor(button.gameObject.name, true, false, false) == UIRole.PrimaryButton;
     }
 
     /// <summary>

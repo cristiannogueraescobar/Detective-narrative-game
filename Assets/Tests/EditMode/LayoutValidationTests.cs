@@ -135,6 +135,16 @@ public class LayoutValidationTests
             CheckOverlaysOnTop(rect, errors);
         }
 
+        // Zonas táctiles: 48 dp de lado como mínimo (las barras de scroll se arrastran con el contenido)
+        foreach (Selectable control in root.GetComponentsInChildren<Selectable>(false))
+        {
+            if (control is Scrollbar || !control.interactable || InsideScrollContent((RectTransform)control.transform))
+                continue;
+            Rect r = ((RectTransform)control.transform).rect;
+            if (r.width < Theme.MinTouchSize - Tolerance || r.height < Theme.MinTouchSize - Tolerance)
+                errors.Add($"zona táctil pequeña: {Path((RectTransform)control.transform)} {r.width:F0}x{r.height:F0} (mínimo {Theme.MinTouchSize})");
+        }
+
         // Placeholder de los campos de texto: no debe desbordar
         foreach (TMP_InputField field in root.GetComponentsInChildren<TMP_InputField>(false))
         {

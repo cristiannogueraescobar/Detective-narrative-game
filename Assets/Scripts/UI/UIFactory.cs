@@ -51,7 +51,14 @@ public static class UIFactory
         Theme theme = ThemeManager.Current;
         GameObject go = DefaultControls.CreateSlider(NoSprites);
         go.transform.SetParent(parent, false);
-        go.AddComponent<LayoutElement>().minHeight = 72f; // Área táctil cómoda
+        go.AddComponent<LayoutElement>().minHeight = Theme.MinTouchSize; // Área táctil de 48 dp; la pista es fina
+
+        // Pista fina centrada y tirador grande dentro de toda la zona táctil
+        Band(go.transform.Find("Background"), 16f, 0f);
+        Band(go.transform.Find("Fill Area"), 16f, 24f);
+        Band(go.transform.Find("Handle Slide Area"), 64f, 24f);
+        if (go.transform.Find("Handle Slide Area/Handle") is RectTransform handle)
+            handle.sizeDelta = new Vector2(48f, 0f);
 
         var slider = go.GetComponent<Slider>();
         slider.minValue = min;
@@ -70,7 +77,7 @@ public static class UIFactory
         Theme theme = ThemeManager.Current;
         GameObject go = DefaultControls.CreateToggle(NoSprites);
         go.transform.SetParent(parent, false);
-        go.AddComponent<LayoutElement>().minHeight = 72f;
+        go.AddComponent<LayoutElement>().minHeight = Theme.MinTouchSize;
 
         var background = go.transform.Find("Background") as RectTransform;
         if (background != null)
@@ -98,7 +105,7 @@ public static class UIFactory
         GameObject go = DefaultControls.CreateButton(NoSprites);
         go.name = primary ? "ConfirmButton" : "Button";
         go.transform.SetParent(parent, false);
-        go.AddComponent<LayoutElement>().minHeight = 110f;
+        go.AddComponent<LayoutElement>().minHeight = Theme.MinTouchSize;
 
         ReplaceLabel(go, text, Vector2.zero);
 
@@ -144,6 +151,17 @@ public static class UIFactory
         label.alignment = TextAlignmentOptions.Center;
         LayoutKit.OneLine(label, ThemeManager.Current.bodySize);
         return label;
+    }
+
+    // Franja horizontal centrada de alto fijo, con margen lateral
+    private static void Band(Transform target, float height, float sideInset)
+    {
+        if (!(target is RectTransform rect))
+            return;
+        rect.anchorMin = new Vector2(0f, 0.5f);
+        rect.anchorMax = new Vector2(1f, 0.5f);
+        rect.offsetMin = new Vector2(sideInset, -height / 2f);
+        rect.offsetMax = new Vector2(-sideInset, height / 2f);
     }
 
     private static void Tint(Transform target, Color color)

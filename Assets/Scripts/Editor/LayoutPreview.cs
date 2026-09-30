@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEditor;
@@ -9,7 +8,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Monta la UI de la escena real en modo edición, a un tamaño de lienzo concreto y con el contenido más largo
-/// posible. La usan el test de layout (LayoutValidationTests) y las capturas (Detective → Capturas de layout).
+/// posible. La usan el test de layout (LayoutValidationTests) y las capturas (ScreenshotTool).
 /// </summary>
 public static class LayoutPreview
 {
@@ -117,8 +116,7 @@ public static class LayoutPreview
             variantStory.cast.ToDictionary(c => c.id, c => Emotion.Enfadado),
             c => $"La versión de alguien («una cita larga de su mentira») choca con: {c.playerName}"));
 
-        var result = new AccusationResult { ending = Ending.Insufficient, correct = true, evidence = 2, incriminatingFound = 2, contradictions = 0 };
-        ui.ShowAccusationResult(result, "Inspector Ruiz", "Encarna Molina", 7, variant.epilogue);
+        ShowEnding(ui, Ending.Insufficient);
         ui.ShowAccusationPanel(suspects, canGoBack: true);
 
         // Conversación larga (vive en el scroll), con todos los tipos de aviso que pueden aparecer en ella
@@ -130,6 +128,29 @@ public static class LayoutPreview
         foreach (SuspectView s in suspects)
             ui.AddToConversation(s.id, s.displayName, "¿Dónde estaba usted entre las diez y las once de la noche del sábado?",
                 string.Join(" ", Enumerable.Repeat("respuesta larga del sospechoso", 40)));
+    }
+
+    /// <summary>
+    /// Deja el panel de resultado con un final concreto y el epílogo más largo.
+    /// </summary>
+    public static void ShowEnding(Session session, Ending ending)
+    {
+        ShowEnding(session.ui, ending);
+    }
+
+    private static void ShowEnding(InterrogationUI ui, Ending ending)
+    {
+        VariantData variant = CaseLibrary.AllVariants().Select(p => p.variant).OrderByDescending(v => v.epilogue.Length).First();
+        bool correct = ending != Ending.Bad;
+        var result = new AccusationResult
+        {
+            ending = ending,
+            correct = correct,
+            evidence = ending == Ending.Good ? 6 : ending == Ending.Bittersweet ? 3 : 1,
+            incriminatingFound = ending == Ending.Good ? 4 : 2,
+            contradictions = ending == Ending.Good ? 2 : 0
+        };
+        ui.ShowAccusationResult(result, correct ? "Encarna Molina" : "Inspector Ruiz", "Encarna Molina", 7, variant.epilogue);
     }
 
     // ---------- Mostrar un panel ----------
@@ -179,86 +200,5 @@ public static class LayoutPreview
     public static RectTransform Find(Session session, string name)
     {
         return session.canvas.GetComponentsInChildren<RectTransform>(true).FirstOrDefault(r => r.name == name);
-    }
-
-    // ---------- Capturas ----------
-
-    [MenuItem("Detective/Capturas de layout (Logs/layout)")]
-    public static void CaptureMenu()
-    {
-        if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-            return;
-        Capture();
-    }
-
-    /// <summary>
-    /// Batchmode (sin -nographics): -executeMethod LayoutPreview.CaptureFromCommandLine
-    /// </summary>
-    public static void CaptureFromCommandLine()
-    {
-        int code = 0;
-        try
-        {
-            Capture();
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogException(e);
-            code = 1;
-        }
-        EditorApplication.Exit(code);
-    }
-
-    private static void Capture()
-    {
-        const string folder = "Logs/layout";
-        Directory.CreateDirectory(folder);
-
-        var screens = new (string label, Vector2 size)[]
-        {
-            ("1080x1920", new Vector2(1080f, 1920f)),
-            ("1080x2340", CanvasSize(1080f, 2340f)),
-            ("1536x2048", CanvasSize(1536f, 2048f))
-        };
-
-        foreach (var screen in screens)
-        {
-            Session session = Open(screen.size);
-
-            var cameraObject = new GameObject("Captura", typeof(Camera));
-            var camera = cameraObject.GetComponent<Camera>();
-            camera.orthographic = true;
-            camera.orthographicSize = screen.size.y / 2f;
-            camera.aspect = screen.size.x / screen.size.y;
-            camera.transform.position = new Vector3(0f, 0f, -1000f);
-            camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = Color.magenta; // Lo que no cubra ningún panel salta a la vista
-            session.canvas.worldCamera = camera;
-
-            int width = Mathf.RoundToInt(screen.size.x / 2f);
-            int height = Mathf.RoundToInt(screen.size.y / 2f);
-            var target = new RenderTexture(width, height, 24);
-            camera.targetTexture = target;
-
-            foreach (string panel in Panels)
-            {
-                ShowOnly(session, panel);
-                camera.Render();
-
-                RenderTexture.active = target;
-                var image = new Texture2D(width, height, TextureFormat.RGB24, false);
-                image.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-                image.Apply();
-                RenderTexture.active = null;
-                File.WriteAllBytes($"{folder}/{screen.label}_{panel}.png", image.EncodeToPNG());
-                Object.DestroyImmediate(image);
-            }
-
-            camera.targetTexture = null;
-            Object.DestroyImmediate(target);
-            Close();
-        }
-
-        Debug.Log($"[Layout] Capturas en {Path.GetFullPath(folder)}");
     }
 }

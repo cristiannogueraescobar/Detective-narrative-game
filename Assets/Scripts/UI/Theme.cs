@@ -10,6 +10,7 @@ using UnityEngine;
 public class Theme : ScriptableObject
 {
     public const float MinReadableSize = 30f; // A 1080 de ancho, por debajo de esto no se lee bien en móvil
+    public const float MinTouchSize = 120f;   // 48 dp en un móvil de 1080 px (≈ 411 dp) de ancho
 
     [Header("Fondos y paneles")]
     public Color background = new Color32(15, 16, 18, 255);

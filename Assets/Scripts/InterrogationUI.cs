@@ -130,15 +130,6 @@ public class InterrogationUI : MonoBehaviour
             UIComponents.SetOnlyListener(closeCluesButton, HideCluesPanel);
         }
 
-        // Imágenes de sospechosos
-        suspectImages["Padre"] = padreGif;
-        suspectImages["Madre"] = madreGif;
-        suspectImages["Hermano"] = hermanoGif;
-        suspectImages["Vecina"] = vecinaGif;
-        suspectImages["Detective"] = detectiveGif;
-        suspectImages["Cartero"] = carteroGif;
-        suspectImages["Dueño del Bar"] = duenioBarGif;
-
         BuildLayout();
 
         // Lo que se anima cada fotograma, en su propio Canvas (rendimiento en móvil)
@@ -176,6 +167,15 @@ public class InterrogationUI : MonoBehaviour
     /// </summary>
     public void BuildLayout()
     {
+        // Imágenes de sospechosos (también en la vista previa del editor)
+        suspectImages["Padre"] = padreGif;
+        suspectImages["Madre"] = madreGif;
+        suspectImages["Hermano"] = hermanoGif;
+        suspectImages["Vecina"] = vecinaGif;
+        suspectImages["Detective"] = detectiveGif;
+        suspectImages["Cartero"] = carteroGif;
+        suspectImages["Dueño del Bar"] = duenioBarGif;
+
         EnsureEvidenceDropdown();
         if (!applyMobileLayout)
             return;
@@ -205,7 +205,7 @@ public class InterrogationUI : MonoBehaviour
             return;
 
         // Fila 1: día y preguntas + libreta
-        RectTransform hud = LayoutKit.Row(column, "HUD", 96f);
+        RectTransform hud = LayoutKit.Row(column, "HUD", Theme.MinTouchSize);
         if (hudText != null)
         {
             LayoutKit.Put(hudText, hud, flexibleWidth: 1f);
@@ -216,7 +216,7 @@ public class InterrogationUI : MonoBehaviour
         LayoutKit.Label(viewCluesButton, "Libreta");
 
         // Fila 2: acciones del día, cada una con su sitio
-        RectTransform actions = LayoutKit.Row(column, "Acciones", 96f);
+        RectTransform actions = LayoutKit.Row(column, "Acciones", Theme.MinTouchSize);
         LayoutKit.Put(endDayButton, actions, flexibleWidth: 1f);
         LayoutKit.Label(endDayButton, "Fin del día");
         LayoutKit.Put(accuseNowButton, actions, flexibleWidth: 1f);
@@ -276,6 +276,7 @@ public class InterrogationUI : MonoBehaviour
             conversationScroll.horizontalScrollbar = null;
         }
         conversationScroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
+        LayoutKit.StyleScrollbar(conversationScroll.verticalScrollbar);
 
         RectTransform viewport = conversationScroll.viewport;
         if (viewport != null)
@@ -306,6 +307,9 @@ public class InterrogationUI : MonoBehaviour
 
     private void ConfigureQuestionInput()
     {
+        // La escena traía la pregunta de ejemplo como texto escrito, no como placeholder
+        questionInput.SetTextWithoutNotify(string.Empty);
+
         RectTransform area = questionInput.textViewport;
         if (area != null)
         {
@@ -323,6 +327,8 @@ public class InterrogationUI : MonoBehaviour
             placeholder.rectTransform.offsetMin = placeholder.rectTransform.offsetMax = Vector2.zero;
             LayoutKit.OneLine(placeholder, T.bodySize);
             placeholder.alignment = TextAlignmentOptions.MidlineLeft;
+            placeholder.color = T.textSecondary;
+            placeholder.fontStyle = FontStyles.Italic;
         }
 
         if (questionInput.textComponent != null)
@@ -339,7 +345,7 @@ public class InterrogationUI : MonoBehaviour
         if (dropdown == null)
             return;
 
-        LayoutKit.Put(dropdown, column, height: 100f);
+        LayoutKit.Put(dropdown, column, height: Theme.MinTouchSize);
 
         if (dropdown.captionText != null)
         {
@@ -385,7 +391,7 @@ public class InterrogationUI : MonoBehaviour
 
         LayoutKit.Scrollable(cluesText, column);
 
-        LayoutKit.Put(closeCluesButton, column, height: 110f);
+        LayoutKit.Put(closeCluesButton, column, height: Theme.MinTouchSize);
         LayoutKit.Label(closeCluesButton, "Cerrar");
     }
 
@@ -1188,6 +1194,10 @@ public class InterrogationUI : MonoBehaviour
         {
             LayoutKit.Put(clone.transform, (RectTransform)clone.transform.parent, height: 130f);
             LayoutKit.Label(accusationBackButton, "Volver");
+
+            // Volver es la acción secundaria: no compite en color con "Acusar"
+            UIComponents.GetOrAdd<ThemeRole>(clone).role = UIRole.SecondaryButton;
+            ThemeApplier.Apply(clone.transform);
         }
     }
 

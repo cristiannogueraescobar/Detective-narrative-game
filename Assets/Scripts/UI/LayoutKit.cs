@@ -31,6 +31,7 @@ public static class LayoutKit
         layout.childControlWidth = layout.childControlHeight = true;
         layout.childForceExpandWidth = true;
         layout.childForceExpandHeight = false;
+        column.gameObject.AddComponent<SafeAreaFitter>(); // El fondo llega al borde; los controles no
         return column;
     }
 
@@ -145,6 +146,24 @@ public static class LayoutKit
         // Un Image transparente recoge el arrastre del dedo en toda el área
         area.gameObject.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
         return scroll;
+    }
+
+    /// <summary>
+    /// Barra de desplazamiento discreta: fina, pista casi invisible y tirador del color del borde.
+    /// </summary>
+    public static void StyleScrollbar(Scrollbar bar)
+    {
+        if (bar == null)
+            return;
+
+        Theme t = ThemeManager.Current;
+        var rect = (RectTransform)bar.transform;
+        rect.sizeDelta = new Vector2(12f, rect.sizeDelta.y);
+        if (bar.TryGetComponent(out Image track))
+            track.color = new Color(t.panelBorder.r, t.panelBorder.g, t.panelBorder.b, 0.35f);
+        if (bar.handleRect != null && bar.handleRect.TryGetComponent(out Image handle))
+            handle.color = t.textSecondary;
+        bar.colors = ColorBlock.defaultColorBlock;
     }
 
     /// <summary>
