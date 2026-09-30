@@ -32,6 +32,14 @@ public class PlaythroughChecksTests
     }
 
     [Test]
+    public void LaHoraQueDioElInspectorNoEsInventada()
+    {
+        var kinds = PlaythroughChecks.Check("Desde las 17:00 estuve en la finca.", Sheet, false, 0, 0, null,
+            "¿Qué hiciste desde las 17:00?").Select(f => f.kind);
+        CollectionAssert.DoesNotContain(kinds, PlaythroughChecks.Kind.InventedTime);
+    }
+
+    [Test]
     public void NombreQueNoEstaEnLaFicha()
     {
         CollectionAssert.Contains(Kinds("Eso se lo contó a su amiga Verónica, pregúntele a ella."), PlaythroughChecks.Kind.InventedName);

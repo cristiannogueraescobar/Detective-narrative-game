@@ -50,7 +50,7 @@ public static class PlaythroughChecks
     /// 'sheet': todo lo que el personaje sabe (su ficha completa y el parte del caso).
     /// </summary>
     public static List<Finding> Check(string response, string sheet, bool speakerIsCulprit, int contradictions,
-                                      int evidenceShownToSpeaker, string previousResponse)
+                                      int evidenceShownToSpeaker, string previousResponse, string question = null)
     {
         var findings = new List<Finding>();
         string text = response ?? "";
@@ -60,7 +60,9 @@ public static class PlaythroughChecks
         if (ai.Success)
             findings.Add(new Finding { kind = Kind.AiBreak, detail = ai.Value });
 
+        // Las horas que ya dijo el inspector en la pregunta no son inventadas
         HashSet<int> known = TimesIn(sheet);
+        known.UnionWith(TimesIn(question));
         foreach (Match m in DigitTime.Matches(text))
         {
             int minutes = int.Parse(m.Groups[1].Value) * 60 + int.Parse(m.Groups[2].Value);

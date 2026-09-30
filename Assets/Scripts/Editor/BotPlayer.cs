@@ -233,7 +233,7 @@ public static class BotPlayer
                         day = day, suspectId = decision.suspect, question = decision.question, evidenceId = decision.evidence,
                         answer = result.Text, emotion = emotion, newClues = new List<string>(turnClues),
                         findings = PlaythroughChecks.Check(result.Text, sheet, decision.suspect == variant.culpritId,
-                            manager.State.ContradictionClueIds.Count, manager.State.ShownTo(decision.suspect).Count(), previous)
+                            manager.State.ContradictionClueIds.Count, manager.State.ShownTo(decision.suspect).Count(), previous, decision.question)
                     });
                     lastAnswer[decision.suspect] = result.Text;
                     game.questionsUsed++;
