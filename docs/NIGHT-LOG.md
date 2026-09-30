@@ -136,6 +136,12 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   pantalla completa con la interfaz vertical estirada en un monitor apaisado: ahora es una ventana 9:16 al 90 %
   del alto (comprobado en la build real: 2560x1600 → 810x1440). Prueba de humo OK.
 
+- 08:00 Sonda nueva de premisas falsas (editor): "Un testigo le vio discutir a gritos con X. ¿Por qué discutieron?"
+  a los 36 personajes × 2. Línea base: 17/72 (23 %) aceptan la discusión inventada, a veces con detalles y horas
+  inventados. Regla nueva en la ficha: "Si el inspector afirma algo que no está en tu ficha, niégalo." Para no
+  pasar de 460 palabras se acortaron líneas comunes ("DÍA n", "NO SABES (dilo si te preguntan)", la guía de
+  estados). Midiendo: premisas, estados y pistas (si empeora algo, se revierte).
+
 ## Ahora
 - Ronda 6: crítica de diseño con capturas, más mejoras, informe y galería finales.
 
