@@ -178,6 +178,14 @@ public class LayoutValidationTests
     }
 
     [Test]
+    public void ElTituloDelMenuEsElNombreDelJuego()
+    {
+        // Un solo sitio para el nombre (GameTexts.GameName): renombrar el juego es cambiar una línea
+        TMP_Text title = LayoutPreview.Find(session, "GameTitleText").GetComponent<TMP_Text>();
+        Assert.AreEqual(GameTexts.GameName.ToUpperInvariant(), title.text);
+    }
+
+    [Test]
     public void ChatSoloDesplazamientoVertical()
     {
         ScrollRect chat = LayoutPreview.Find(session, "ConversationScroll").GetComponent<ScrollRect>();

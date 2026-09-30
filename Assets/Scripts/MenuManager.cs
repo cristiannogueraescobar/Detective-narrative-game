@@ -195,6 +195,7 @@ public class MenuManager : MonoBehaviour
                 // se deja crecer mucho y el autoajuste lo encaja en el ancho
                 LayoutKit.MultiLine(titleText, t.titleSize * 3.4f);
                 titleText.alignment = TextAlignmentOptions.Bottom; // Pegado al subtítulo
+                titleText.text = GameTexts.GameName.ToUpperInvariant(); // El nombre sale de un solo sitio
                 titleText.fontStyle = FontStyles.Normal; // Sin el subrayado de la escena
                 titleText.color = t.accent;
                 UIComponents.GetOrAdd<TitleIntro>(titleText.gameObject);

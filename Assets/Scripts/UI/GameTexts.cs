@@ -5,7 +5,7 @@ using UnityEngine;
 /// </summary>
 public static class GameTexts
 {
-    public const string GameName = "Detectives";
+    public const string GameName = "Detectives"; // Nombre visible del juego (menú, Acerca de); ver docs/REPORT-DIA3.md, "Decisiones para Cristian"
     public const string Tagline = "Interrogatorios · Tres casos";
 
     public const string InstructionsTitle = "CÓMO SE JUEGA";
