@@ -284,24 +284,24 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
 - 0d en curso: A/B del reintento por horas inventadas (18 + 18 partidas, semilla 59) en el worktree.
 - B1 hecho: docs/RESEARCH.md (subagente con búsqueda web; fuentes enlazadas, decisiones anotadas).
 
-- 10:30 0f/0g: el nombre llegó sin rellenar ("[NOMBRE]"): se queda "Detectives" (lo visible sale de
+- 10:24 0f/0g: el nombre llegó sin rellenar ("[NOMBRE]"): se queda "Detectives" (lo visible sale de
   GameTexts.GameName; el título del menú ya no está fijo en la escena) y productName "Casos" sigue decidiendo la
   carpeta de guardado: decisión para Cristian. README reescrito (inglés, portafolio; secciones personales intactas).
-- 10:35 A1 (skill: superpowers TDD): NarrativeValidator + 21 tests. Cada regla se demuestra rompiendo una
+- 10:28 A1 (skill: superpowers TDD): NarrativeValidator + 21 tests. Cada regla se demuestra rompiendo una
   historia válida; las 9 variantes pasan. Reglas: reparto 4–5; la mentira la contradice una pista ⚡ de un
   inocente; descartes válidos; partes sin pistas gratis ni spoiler; epílogo sin horas nuevas; una edad por
   persona; línea temporal (nadie en dos sitios; horas de las pistas en ella). Líneas temporales de las 9
   variantes en CaseTimelines.cs. TimeCheck entiende horas en letra ("las seis y media").
-- 10:45 A2 (subagente editor de novela negra): 17 incoherencias corregidas (docs/STORY-AUDIT.md), p. ej. el parte
+- 10:33 A2 (subagente editor de novela negra): 17 incoherencias corregidas (docs/STORY-AUDIT.md), p. ej. el parte
   de 2A decía que nadie había mirado la cámara que Ruiz sabe desenchufada; en 2C un inocente contradecía su
   propia coartada; en 1C Daniel hacía dos llamadas en el mismo minuto; 3B situaba Ayamonte en Portugal; en 3C el
   conocimiento libre de Lucía destripaba su secreto. Todo dentro de las 460 palabras.
-- 10:55 Checklist del usuario (añadida al bloque A) en docs/COHERENCE.md: veredicto por variante + matriz
+- 10:37 Checklist del usuario (añadida al bloque A) en docs/COHERENCE.md: veredicto por variante + matriz
   generada desde los datos (CoherenceReport). Todo ✓ tras los arreglos; limitaciones de qwen documentadas.
-- 11:05 A3: tabla de finales ampliada (0 evidencia, solo contradicción, umbrales) y StateMachineTests (7 tests
+- 10:42 A3: tabla de finales ampliada (0 evidencia, solo contradicción, umbrales) y StateMachineTests (7 tests
   con toques reales): sin preguntas, último día sin vuelta atrás, acusar el día 1 con doble toque, cerrar a
   mitad de respuesta, cambiar de sospechoso con petición en vuelo, Ollama caído y vuelta, dobles pulsaciones.
-  Tests: EditMode 590, PlayMode 27/27 (+14 capturas).
+  Tests: EditMode 589/589, PlayMode 27/27 (+14 capturas).
 
 ### BLOQUE A TERMINADO (HECHO CUANDO: ✓)
 - El validador pasa en las 9 variantes (con línea temporal); STORY-AUDIT.md y COHERENCE.md recogen lo encontrado
