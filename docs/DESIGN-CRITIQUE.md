@@ -66,3 +66,24 @@ Prototipos con los mismos retratos (padre, madre, vecina, cartero), capturas en
 Aplicado a los 12 personajes (todos usan los 7 retratos antiguos): interrogatorio, rueda de reconocimiento y
 mini-retrato del chat (que antes salía sin gradación). Las emociones conservan el relieve.
 **Reversible:** `Theme.portraitLit = false` devuelve el plano 2D; lámpara, relieve y contraluz son valores del tema.
+
+## C6: textos (skill ux-copy)
+Revisados los ~120 textos que ve el jugador (GameTexts, interfaz, tutorial, finales, errores). Principios:
+claro, breve, el mismo término para lo mismo, errores con "qué pasó + qué hacer", botones que dicen lo que hacen.
+
+| Dónde | Antes | Ahora | Por qué |
+|-------|-------|-------|---------|
+| Expediente y tutorial | "Tienes siete días y **cinco** preguntas cada día" (siempre) | El número de la dificultad elegida (siete / cinco / cuatro) | Era falso en Historia y Veterano |
+| Sin preguntas | "No te quedan preguntas hoy." + "La pregunta no se ha descontado." | "No te quedan preguntas hoy. Pulsa «Fin del día» para seguir mañana." | Dice qué hacer; la coletilla no venía a cuento |
+| Fallo al preguntar | "Error inesperado al procesar la pregunta." | "No se ha podido hacer la pregunta; inténtalo otra vez." (+ "no se ha descontado") | Sin jerga, con salida |
+| Fallo al mostrar | "Error inesperado al mostrar la respuesta." + "no se ha descontado" | "La respuesta no se ha podido mostrar. Si no la ves, vuelve a preguntar." | La pregunta SÍ se había gastado: el aviso mentía |
+| Reiniciar (Ajustes) | "¿Empezar una partida nueva?…" · "Sí, reiniciar" / "Cancelar" | El mismo aviso que el menú: "¿Empezar un caso nuevo?…" · "Empezar de nuevo" / "Seguir con este caso" | Un solo aviso; botones con la acción |
+| Aviso de pista | "PISTA DESCUBIERTA:" | "PISTA NUEVA:" | El mismo nombre que el sello |
+| Ajustes | "Filtro noir (grano y viñeta)" | "Filtro noir (grano, viñeta y color de cine)" | Ahora también gradúa el color (C4) |
+
+**Glosario (se usa siempre así):** *pista* (lo que apuntas en la libreta) · *prueba* (una pista que enseñas o con
+la que acusas) · *contradicción* (una mentira pillada) · *parte* (novedades de cada mañana) · *caso* (no
+"partida") · *Fin del día* (botón) / *Terminar el día* (confirmación).
+
+Además (WCAG 1.4.11): la parte vacía de los deslizadores tenía 1,5:1 con el fondo; ahora `Theme.sliderTrack`
+≥ 3:1 con fondo y panel (test).

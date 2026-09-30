@@ -186,7 +186,7 @@ public class SettingsPanel : MonoBehaviour
     private void AskRestart()
     {
         confirmation = ConfirmDialog.Show(transform, "ConfirmarReinicio",
-            "¿Empezar una partida nueva? Se perderá la investigación actual.", "Sí, reiniciar", "Cancelar",
+            GameTexts.NewGameConfirm, GameTexts.NewGameYes, GameTexts.NewGameNo,
             () => onRestart?.Invoke());
     }
 }

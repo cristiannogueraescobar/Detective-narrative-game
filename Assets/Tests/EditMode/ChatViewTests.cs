@@ -193,4 +193,17 @@ public class ChatViewTests
         Assert.IsFalse(face.material.HasProperty("_Saturation"), "el arte nuevo se ve tal cual");
         Object.DestroyImmediate(texture);
     }
+
+    [Test]
+    public void ElAvisoDeFalloSoloPrometeDevolverLaPreguntaSiEsVerdad()
+    {
+        session.ui.ShowRequestFailed("Ollama no responde.", "¿Dónde estaba?");
+        LayoutPreview.Rebuild((RectTransform)session.canvas.transform);
+        Assert.IsTrue(chat.GetComponentsInChildren<TMP_Text>(false).Any(t => t.text.Contains("no se ha descontado")));
+
+        session.ui.ShowRequestFailed(GameTexts.ShowAnswerFailed, "", refunded: false);
+        LayoutPreview.Rebuild((RectTransform)session.canvas.transform);
+        TMP_Text last = chat.GetComponentsInChildren<TMP_Text>(false).Last(t => t.text.Contains(GameTexts.ShowAnswerFailed));
+        StringAssert.DoesNotContain("no se ha descontado", last.text);
+    }
 }

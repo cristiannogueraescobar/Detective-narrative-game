@@ -62,7 +62,29 @@ public static class GameTexts
 
     public const string NewGameConfirm = "¿Empezar un caso nuevo? Se perderá la investigación que tienes a medias.";
     public const string NewGameYes = "Empezar de nuevo";
-    public const string NewGameNo = "Cancelar";
+    public const string NewGameNo = "Seguir con este caso";
+
+    // Errores: qué ha pasado y qué hacer (la coletilla "no se ha descontado" la pone la interfaz solo si es verdad)
+    public const string NoQuestionsLeft = "No te quedan preguntas hoy. Pulsa «Fin del día» para seguir mañana.";
+    public const string AskFailed = "No se ha podido hacer la pregunta; inténtalo otra vez.";
+    public const string ShowAnswerFailed = "La respuesta no se ha podido mostrar. Si no la ves, vuelve a preguntar.";
+
+    private static readonly string[] NumberWords =
+        { "cero", "una", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez" };
+
+    /// <summary>
+    /// "cinco" para 5; cifras a partir de 11. Para "N preguntas" y "N días" (femenino y masculino coinciden salvo el 1).
+    /// </summary>
+    public static string NumberWord(int n) => n >= 0 && n < NumberWords.Length ? NumberWords[n] : n.ToString();
+
+    /// <summary>
+    /// Reglas del expediente con los días y las preguntas de la dificultad elegida.
+    /// </summary>
+    public static string RulesLine(int days, int questionsPerDay)
+    {
+        return $"Tienes {NumberWord(days)} días y {NumberWord(questionsPerDay)} preguntas cada día. " +
+               "Encuentra pruebas y contradicciones antes de acusar.";
+    }
 
     public const string ThinkPrefix = "Piensas… ";
 

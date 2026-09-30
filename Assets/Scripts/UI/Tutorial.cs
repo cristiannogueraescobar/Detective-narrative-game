@@ -51,14 +51,14 @@ public static class Tutorial
             GameSettings.SetFlag(Prefix + id, false);
     }
 
-    public static string TextOf(string id)
+    public static string TextOf(string id, int questionsPerDay = 5)
     {
         switch (id)
         {
             case Ask:
                 return "Elige a quién interrogar y escribe tu pregunta (o toca una de ejemplo). Funcionan las concretas: horas, lugares, objetos.";
             case Days:
-                return "Tienes cinco preguntas al día. Cuando se acaben, pulsa «Fin del día» y a la mañana siguiente llegará un parte.";
+                return $"Tienes {GameTexts.NumberWord(questionsPerDay)} preguntas al día. Cuando se acaben, pulsa «Fin del día» y a la mañana siguiente llegará un parte.";
             case Evidence:
                 return "Las pistas se guardan en tu libreta. Con «Mostrar prueba» puedes enseñárselas a un sospechoso junto a tu pregunta.";
             default:

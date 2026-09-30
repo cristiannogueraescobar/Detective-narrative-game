@@ -365,5 +365,13 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   historia (nueva captura IntrosPorHistoria). El arte nuevo ya no pasa por la gradación del arte antiguo (salía casi
   negro): Theme.introArtBrightness. Cabeceras NO generadas a propósito (repetirían la escena). Iconos: ya estaban.
 
+- **13:15** C6 hecho (skill: ux-copy): ~120 textos revisados; tabla y glosario en DESIGN-CRITIQUE.md. Dos
+  errores de lógica escondidos en textos: el expediente y el tutorial decían "cinco preguntas" en cualquier
+  dificultad, y el aviso "no se ha descontado" salía también cuando la pregunta SÍ se había gastado. Errores con
+  qué hacer, un solo aviso de reinicio con botones de acción, "PISTA NUEVA" en todas partes. Deslizadores: la parte
+  vacía la repintaba el tema como fondo (1,5:1) → Theme.sliderTrack ≥ 3:1 (WCAG 1.4.11), test que lo cubre tras
+  ThemeApplier. EditMode 638/638, PlayMode 32/32. **Bloque C: HECHO CUANDO cumplido** (falta la galería antes/después
+  final, que va en el informe).
+
 ## Ahora (día 3)
-- C6 UX writing (todos los textos) + deslizadores (parte vacía casi invisible), luego D1 sonido.
+- D1 sonido sintetizado + mezcladores; D2 rendimiento (0 GC, coste de C3/C4); D3 revisión de código.

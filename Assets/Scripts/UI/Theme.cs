@@ -16,6 +16,7 @@ public class Theme : ScriptableObject
     public Color background = new Color32(15, 16, 18, 255);
     public Color panel = new Color32(26, 27, 31, 255);
     public Color panelBorder = new Color32(43, 44, 49, 255);
+    public Color sliderTrack = new Color32(110, 110, 118, 255); // Pista vacía de los deslizadores (≥ 3:1 con fondo y panel)
     public Color overlay = new Color32(0, 0, 0, 180);           // Fondo de ventanas modales
 
     [Header("Texto")]

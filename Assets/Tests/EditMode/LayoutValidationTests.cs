@@ -436,6 +436,24 @@ public class LayoutValidationTests
         return null;
     }
 
+    // WCAG 1.4.11: la pista de los deslizadores (lo que falta por llenar) se distingue del fondo y del panel
+    [Test]
+    public void PistaDeLosDeslizadoresVisible()
+    {
+        foreach (Theme theme in new[] { ThemeManager.Current, ThemeManager.HighContrastOf(ThemeManager.Current) })
+        {
+            Assert.GreaterOrEqual(Contrast(theme.sliderTrack, theme.background), 3f, theme.name + " sobre el fondo");
+            Assert.GreaterOrEqual(Contrast(theme.sliderTrack, theme.panel), 3f, theme.name + " sobre el panel");
+        }
+
+        // Y el tema no la repinta después (el nombre "Background" la hacía pasar por fondo)
+        var root = new GameObject("Raíz", typeof(RectTransform));
+        Slider slider = UIFactory.Slider(root.transform, 0f, 1f, 0.5f, v => { });
+        ThemeApplier.Apply(root.transform);
+        Assert.AreEqual(ThemeManager.Current.sliderTrack, slider.transform.Find("Background").GetComponent<Graphic>().color);
+        Object.DestroyImmediate(root);
+    }
+
     private static float Contrast(Color a, Color b)
     {
         float la = Luminance(a), lb = Luminance(b);

@@ -114,4 +114,37 @@ public class GameTextsTests
     {
         StringAssert.Contains("versión 1.2", GameTexts.About(ThemeManager.Current, "1.2"));
     }
+
+    // C6: las reglas dicen las preguntas de la dificultad elegida, no siempre cinco
+    [TestCase(7, "siete preguntas")]
+    [TestCase(5, "cinco preguntas")]
+    [TestCase(4, "cuatro preguntas")]
+    public void ReglasConLasPreguntasDeLaDificultad(int perDay, string expected)
+    {
+        StringAssert.Contains(expected, GameTexts.RulesLine(7, perDay));
+        StringAssert.Contains("siete días", GameTexts.RulesLine(7, perDay));
+        StringAssert.Contains(expected, Tutorial.TextOf(Tutorial.Days, perDay));
+        StringAssert.Contains(expected, CaseBriefing.Format(CaseLibrary.Stories[0], perDay));
+    }
+
+    [Test]
+    public void SinPreguntasDiceQueHacer()
+    {
+        StringAssert.Contains("Fin del día", GameTexts.NoQuestionsLeft);
+    }
+
+    [Test]
+    public void LosErroresDicenQueHacer()
+    {
+        StringAssert.Contains("inténtalo", GameTexts.AskFailed);
+        StringAssert.DoesNotContain("Error inesperado", GameTexts.AskFailed);
+        StringAssert.DoesNotContain("Error inesperado", GameTexts.ShowAnswerFailed);
+    }
+
+    [Test]
+    public void ReiniciarUsaElMismoAvisoQueEmpezarDeNuevo()
+    {
+        Assert.AreEqual("Seguir con este caso", GameTexts.NewGameNo, "el botón de cancelar dice lo que hace");
+        StringAssert.Contains("caso", GameTexts.NewGameConfirm);
+    }
 }

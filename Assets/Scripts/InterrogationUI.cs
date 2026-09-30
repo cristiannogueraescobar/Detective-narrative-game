@@ -392,7 +392,7 @@ public partial class InterrogationUI : MonoBehaviour
 
         if (!gameManager.CanAskMoreQuestions())
         {
-            ShowError("No te quedan preguntas hoy.");
+            ShowError(GameTexts.NoQuestionsLeft);
             return;
         }
 
@@ -584,7 +584,7 @@ public partial class InterrogationUI : MonoBehaviour
             yield break;
 
         Tutorial.MarkSeen(id);
-        fx.Hint(Tutorial.TextOf(id), target, null, Tutorial.SkipAll);
+        fx.Hint(Tutorial.TextOf(id, questionsPerDay), target, null, Tutorial.SkipAll);
     }
 
     /// <summary>
@@ -790,7 +790,7 @@ public partial class InterrogationUI : MonoBehaviour
     /// <summary>
     /// La petición al LLM falló: avisa, devuelve la pregunta al campo de texto y reactiva el input.
     /// </summary>
-    public void ShowRequestFailed(string message, string question)
+    public void ShowRequestFailed(string message, string question, bool refunded = true)
     {
         // La pregunta no llegó: su burbuja se retira y el texto vuelve al campo
         if (pendingQuestion != null)
@@ -801,7 +801,7 @@ public partial class InterrogationUI : MonoBehaviour
             RefreshConversationView();
         }
 
-        ShowError($"{message}\nLa pregunta no se ha descontado.");
+        ShowError(refunded ? $"{message}\nLa pregunta no se ha descontado." : message);
 
         if (questionInput != null && string.IsNullOrEmpty(questionInput.text))
             questionInput.text = question;
@@ -842,7 +842,7 @@ public partial class InterrogationUI : MonoBehaviour
         {
             // Varias pistas seguidas se acumulan en el mismo aviso y reinician el temporizador
             visibleClueNames.Add(clueName);
-            clueNotificationText.text = (visibleClueNames.Count == 1 ? "PISTA DESCUBIERTA:\n" : "PISTAS DESCUBIERTAS:\n") +
+            clueNotificationText.text = (visibleClueNames.Count == 1 ? "PISTA NUEVA:\n" : "PISTAS NUEVAS:\n") +
                                         string.Join("\n", visibleClueNames);
             clueNotification.SetActive(true);
             UIAnimations.CardFlip(this, clueNotification.transform);

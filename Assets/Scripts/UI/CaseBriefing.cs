@@ -8,7 +8,7 @@ using System.Text;
 /// </summary>
 public static class CaseBriefing
 {
-    public static string Format(StoryData story)
+    public static string Format(StoryData story, int questionsPerDay = 5)
     {
         Theme t = ThemeManager.Current;
         string heading(string text) => $"<color={Theme.Hex(t.accent)}><b>{text}</b></color>";
@@ -26,7 +26,7 @@ public static class CaseBriefing
         sb.AppendLine(heading("SITUACIÓN"));
         sb.AppendLine(story.situation);
         sb.AppendLine();
-        sb.Append($"<color={Theme.Hex(t.textSecondary)}><i>Tienes siete días y cinco preguntas cada día. Encuentra pruebas y contradicciones antes de acusar.</i></color>");
+        sb.Append($"<color={Theme.Hex(t.textSecondary)}><i>{GameTexts.RulesLine(7, questionsPerDay)}</i></color>");
         return sb.ToString();
     }
 }

@@ -216,7 +216,7 @@ public class GameManager : MonoBehaviour
 
     public void ShowCaseIntro()
     {
-        interrogationUI?.ShowCaseIntro(story.id, story.title, CaseBriefing.Format(story));
+        interrogationUI?.ShowCaseIntro(story.id, story.title, CaseBriefing.Format(story, questionsPerDay));
     }
 
     /// <summary>
@@ -243,7 +243,7 @@ public class GameManager : MonoBehaviour
 
         if (questionsUsedToday >= questionsPerDay)
         {
-            interrogationUI?.ShowRequestFailed("No te quedan preguntas hoy.", question);
+            interrogationUI?.ShowRequestFailed(GameTexts.NoQuestionsLeft, question, refunded: false);
             return;
         }
 
@@ -269,7 +269,7 @@ public class GameManager : MonoBehaviour
             catch (Exception e)
             {
                 Debug.LogException(e);
-                result = LLMResult.Fail("Error inesperado al procesar la pregunta.");
+                result = LLMResult.Fail(GameTexts.AskFailed);
             }
 
             interrogationUI?.ShowWaiting(false);
@@ -292,7 +292,7 @@ public class GameManager : MonoBehaviour
         {
             // Cualquier fallo al mostrar la respuesta: nunca dejar la entrada bloqueada
             Debug.LogException(e);
-            interrogationUI?.ShowRequestFailed("Error inesperado al mostrar la respuesta.", answered ? "" : question);
+            interrogationUI?.ShowRequestFailed(GameTexts.ShowAnswerFailed, answered ? "" : question, refunded: !answered);
         }
         finally
         {

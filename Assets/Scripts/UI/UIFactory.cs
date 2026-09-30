@@ -54,7 +54,7 @@ public static class UIFactory
         go.AddComponent<LayoutElement>().minHeight = Theme.MinTouchSize; // Área táctil de 48 dp; la pista es fina
 
         // Pista fina centrada y tirador grande dentro de toda la zona táctil
-        Band(go.transform.Find("Background"), 16f, 0f);
+        Band(go.transform.Find("Background"), 16f, 24f); // Mismo margen que el relleno: sin muñón gris a la izquierda
         Band(go.transform.Find("Fill Area"), 16f, 24f);
         Band(go.transform.Find("Handle Slide Area"), 64f, 24f);
         if (go.transform.Find("Handle Slide Area/Handle") is RectTransform handle)
@@ -66,7 +66,9 @@ public static class UIFactory
         slider.value = value;
         slider.onValueChanged.AddListener(onChange);
 
-        Tint(go.transform.Find("Background"), theme.panelBorder);
+        Tint(go.transform.Find("Background"), theme.sliderTrack); // WCAG 1.4.11: 3:1 con el fondo
+        // Por su nombre ("Background") el tema la pintaría como fondo: se queda con su color
+        go.transform.Find("Background").gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
         Tint(go.transform.Find("Fill Area/Fill"), theme.accent);
         Tint(go.transform.Find("Handle Slide Area/Handle"), theme.textPrimary);
         return slider;
