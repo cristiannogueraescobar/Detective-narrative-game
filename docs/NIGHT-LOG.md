@@ -565,6 +565,13 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   otra vez para descubrirlos" (o "Has visto todos…"), justo encima de "Jugar otra vez", que abre la selección de
   caso. En la tarjeta del expediente no cabía sin chocar con títulos largos. EditMode 712/712, PlayMode 52/52.
 
+- **17:53** Ronda 15. Recorrido de jugador nuevo: **los partes de la mañana solo se podían leer una vez** (en la
+  tarjeta del día; "los registros están en comisaría" es media pista) → la libreta los guarda al final ("PARTES DE
+  LA MAÑANA", día a día) y se refresca al empezar el día (antes solo con la siguiente respuesta). Tests en rojo
+  primero (EditMode y de juego) y captura limpia (`LibretaConPartes`). Copia: "otros dos culpables" en letra;
+  glosario al día. Bot al azar (1A, 2C, 3B; semilla 1515): 4/6 culpables, 0 respuestas marcadas.
+  EditMode 713/713, PlayMode 53/53. Acumulado del bot al azar: 39/50.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
