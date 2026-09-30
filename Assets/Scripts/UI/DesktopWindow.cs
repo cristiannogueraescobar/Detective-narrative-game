@@ -1,13 +1,13 @@
 using UnityEngine;
 
 /// <summary>
-/// En escritorio (la build de Windows) el juego se abre como una ventana vertical 9:16 al 90 % del alto de la
+/// En escritorio (la build de Windows) el juego se abre como una ventana vertical 9:16 al 85 % del alto de la
 /// pantalla, como un móvil: a pantalla completa en un monitor apaisado la interfaz vertical quedaba estirada.
 /// En móvil, en el editor y en batchmode (prueba de humo) no hace nada.
 /// </summary>
 public static class DesktopWindow
 {
-    private const float ScreenShare = 0.9f;
+    private const float ScreenShare = 0.85f; // Deja sitio a la barra de título y a la de tareas (portátil de 768 px)
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Apply()
