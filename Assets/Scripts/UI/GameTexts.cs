@@ -64,6 +64,7 @@ public static class GameTexts
     public const string NewGameConfirm = "¿Empezar un caso nuevo? Se perderá la investigación que tienes a medias.";
     public const string NewGameYes = "Empezar de nuevo";
     public const string NewGameNo = "Seguir con este caso";
+    public const string RestartButton = NewGameYes; // Botón de Ajustes: lo mismo que el aviso que abre
 
     // Errores: qué ha pasado y qué hacer (la coletilla "no se ha descontado" la pone la interfaz solo si es verdad)
     public const string NoQuestionsLeft = "No te quedan preguntas hoy. Pulsa «Fin del día» para seguir mañana.";

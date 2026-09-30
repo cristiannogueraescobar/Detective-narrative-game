@@ -71,7 +71,7 @@ public class SettingsPanel : MonoBehaviour
                 label.text = "Tutorial activado";
         });
         tutorial.name = "RepetirTutorial";
-        UIFactory.Button(list, "Reiniciar partida", false, AskRestart);
+        UIFactory.Button(list, GameTexts.RestartButton, false, AskRestart);
     }
 
     private static void Section(RectTransform list, string title)

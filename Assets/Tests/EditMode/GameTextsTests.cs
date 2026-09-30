@@ -190,4 +190,12 @@ public class GameTextsTests
     {
         StringAssert.Contains("lo que dice cada uno", GameTexts.Instructions(ThemeManager.Current));
     }
+
+    // Glosario (C6): "caso", no "partida"; el botón de Ajustes dice lo mismo que el aviso que abre
+    [Test]
+    public void ElBotonDeReinicioUsaElMismoTexto()
+    {
+        Assert.AreEqual(GameTexts.NewGameYes, GameTexts.RestartButton);
+        StringAssert.DoesNotContain("partida", GameTexts.RestartButton.ToLowerInvariant());
+    }
 }
