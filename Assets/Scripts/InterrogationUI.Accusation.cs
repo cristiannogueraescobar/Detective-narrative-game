@@ -220,7 +220,7 @@ public partial class InterrogationUI
                 frame.gameObject.AddComponent<CanvasGroup>().alpha = 0.45f;
 
             string reason = byClue ? "pista de descarte" : "tu descarte";
-            TMP_Text name = UIFactory.Label(cell, cleared ? $"<s>{view.shortName}</s>\n<size=80%>{reason}</size>" : view.shortName, T.bodySize,
+            TMP_Text name = UIFactory.Label(cell, cleared ? $"<s>{view.shortName}</s>\n<size=80%>({reason})</size>" : view.shortName, T.bodySize,
                                             cleared ? T.textSecondary : T.textPrimary);
             name.alignment = TextAlignmentOptions.Center;
             name.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;

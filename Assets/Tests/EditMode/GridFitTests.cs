@@ -23,4 +23,16 @@ public class GridFitTests
         Assert.AreEqual(0.75f, cell.x / (cell.y - 64f), 0.01f);
         Assert.GreaterOrEqual(cell.x, 120f);
     }
+
+    // Revisión 6: con alguien descartado el pie mide 96 (dos líneas); con el máximo de sospechosos de una historia en
+    // un móvil 16:9, los bustos siguen siendo grandes
+    [Test]
+    public void ConElPieAltoLosRetratosSiguenGrandes()
+    {
+        foreach (int count in new[] { 4, 5, 6 })
+        {
+            var (_, cell) = GridFit.Compute(count, new Vector2(1016f, 1000f), 16f, 96f, 120f);
+            Assert.GreaterOrEqual(cell.y - 96f - 8f, 200f, count + " sospechosos: busto de al menos 200 px");
+        }
+    }
 }
