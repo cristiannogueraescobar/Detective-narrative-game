@@ -689,3 +689,24 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
 ## Ahora (día 3)
 - Día cerrado: 31 rondas con el bot, 7 revisiones, suites en verde, build final con SMOKE OK, informe cerrado.
 - Worktree temporal del bot (C:\Dev\dng-bot) borrado (`git worktree remove --force` + `prune`); todo en origin.
+
+# Sesión A (01-10-2026, desde las 00:10) — feedback de Cristian tras jugar
+Rama `feature/sesion-a` (sale de `feature/dia3`); `main` sin tocar. Orden: 1 memoria → 2 lógica de pistas → 3
+retratos → 4 gráficos.
+
+## Bloque 1: "los sospechosos recuerdan la partida anterior"
+- **00:22** Reproducción primero (tests de juego con un proveedor que guarda todo lo que llega a Ollama): partida
+  1 con un marcador, luego **Jugar otra vez, Reiniciar desde Ajustes, Caso nuevo desde el menú y la misma
+  historia otra vez** → en los cuatro, historiales vacíos y el prompt de la partida 2 sin nada de la 1; **Continuar**
+  conserva solo esa partida. Revisado a mano: `StartCase` vacía historiales y estados; estado, "lo ya contado" y
+  pruebas mostradas cuelgan de un `InvestigationState` nuevo; notas y partes se reinician; el proveedor no guarda
+  nada ni usa el campo `context` de Ollama; `CaseLibrary` (estático) no se modifica en juego. **No hay fuga en el
+  código.**
+- Bot: ahora usa el mismo gestor en partidas seguidas (como "Caso nuevo") y comprueba que ninguna respuesta de la
+  partida anterior llega al modelo: 1A ×2 + 2B ×2 → **0 fugas** en 3 comprobaciones.
+- **Lo que vio Cristian** (hipótesis con datos): qwen dice "como ya le dije", "lo que ya te conté" **sin haber
+  hablado antes** en el 0,8 % de las primeras respuestas (11 de 1 342 en las rondas del día 3); con una variante
+  repetida (mismos hechos) parece que recuerda la partida anterior. Arreglo (tests en rojo primero): si es la
+  primera conversación con ese sospechoso y la respuesta finge memoria, se pide otra vez con una nota ("es la
+  primera vez que hablas con este inspector"); el bot marca `FalseMemory` si aun así pasa.
+  EditMode 723/723, PlayMode 61/61.
