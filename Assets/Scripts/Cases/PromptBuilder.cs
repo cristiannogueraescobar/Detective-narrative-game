@@ -13,7 +13,7 @@ public static class PromptBuilder
     {
         string who = string.IsNullOrEmpty(victim) ? "la víctima" : victim;
         // Todos los personajes ocultan algo: si "ocultar" bastase para estar nervioso, lo estarían siempre
-        return $"Tranquilo si te preguntan por ti, tu trabajo, tu rutina o lo que viste. Si te hablan de {who}: triste, nunca tranquilo. " +
+        return $"Tranquilo con preguntas sobre ti, tu rutina o lo que viste. Si te hablan de {who}: triste, nunca tranquilo. " +
                "Nervioso solo si tocan lo de TE PONE NERVIOSO; enfadado o asustado si te acusan.";
     }
 
@@ -68,7 +68,7 @@ public static class PromptBuilder
 
         sb.AppendLine($"TE PONE NERVIOSO: {role.nervousAbout}");
         sb.AppendLine($"SI TE ACUSAN: {role.ifAccused}");
-        sb.AppendLine($"NO SABES: {role.doesNotKnow} Si te preguntan, di que no lo sabes.");
+        sb.AppendLine($"NO SABES (dilo si te preguntan): {role.doesNotKnow}");
 
         if (shown.Count > 0)
         {
@@ -84,9 +84,10 @@ public static class PromptBuilder
                 sb.AppendLine($"- {clue.fact}");
         }
 
-        sb.AppendLine($"HOY ES EL DÍA {day} DE LA INVESTIGACIÓN.");
-        sb.Append("REGLAS: español, primera persona, 2 a 4 frases, sin asteriscos ni listas. " +
-                  "Nunca digas que eres una IA. No inventes nombres, hechos ni horas: si no sabes la hora, di que no te fijaste.\n" +
+        sb.AppendLine($"DÍA {day} DE LA INVESTIGACIÓN.");
+        sb.Append("REGLAS: español, primera persona, 2-4 frases, sin asteriscos ni listas. " +
+                  "Nunca digas que eres una IA. No inventes nombres, hechos ni horas: si no sabes la hora, di que no te fijaste. " +
+                  "Si el inspector afirma algo que no está en tu ficha, niégalo.\n" +
                   EmotionParser.TagInstruction + " " + EmotionGuide(story.victim));
 
         return sb.ToString();
