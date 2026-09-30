@@ -555,6 +555,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   de la libreta; se puede elegir igual). Tests: InvestigationState.IsClearedByClue (visto en rojo) y uno de juego.
   EditMode 708/708, PlayMode 52/52. Acumulado del bot hoy: 52/80 culpables (35/44 al azar + 17/36 en la 12-13, con la 2B: 0/12).
 
+- **17:38** Ronda 14. Idea de la web ("una partida más": rejugar tiene que traer algo nuevo) → la variante (quién lo
+  hizo) salía al azar puro: rejugar una historia repetía la solución 1 de cada 3 veces. Ahora
+  `CaseRecords.PickVariant`: primero las no resueltas; con todas jugadas, nunca la última de esa historia (tests
+  visto en rojo). Captura de la rueda con "(tu descarte)" y "(pista de descarte)" a la vez: legible en 2400.
+  EditMode 711/711, PlayMode 52/52.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
