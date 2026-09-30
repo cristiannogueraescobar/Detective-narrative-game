@@ -81,12 +81,17 @@ Informes completos en `Logs/` (`bot-final/`, `bot-baseline-0600/`, `bot-guia2/`,
 | Ronda 7 (3B, 3C, 2A) | 6 | 2/6 | 1,0 | 8 en 210 | 0 |
 | Ronda 8 (3C, 3A, 3B) | 6 | 2/6 | 1,0 | 6 en 210 | 0 |
 | Ronda 9 (2B, 1B, 1A) | 6 | 4/6 | 2,2 | 7 en 210 | 0 |
+| **Definitiva 09:50** (todo, semilla 59) | 18 | **9/18 (50 %)** | 1,8 | 26 en 630 (4,1 %) | 0*** |
 
 Con 18 partidas la tasa de acierto baila ±2 partidas de una ronda a otra: el detective también es qwen y sus
 preguntas cambian cada vez. Lo estable es que no hay rupturas de personaje ni confesiones sin motivo.
 
 \*\* Los dos "IA" que marcó el detector eran falsos positivos ("seguir las instrucciones" de un medicamento) o
 dudosos ("Lo siento, no puedo ayudarte con eso", dicho por un adolescente); el detector se afinó con tests.
+\*\*\* Uno marcado ("No puedo proporcionar un horario exacto, inspector") era falso positivo; corregido con test.
+
+Estados en la definitiva: triste 40 % · nervioso 39 % · tranquilo 15 % · enfadado 4 % · asustado 3 %. Informe:
+`Logs/bot-definitiva/`.
 
 \* En la ronda 1 el detector contaba también las horas que el propio inspector decía en la pregunta; corregido
 después (con test). Aun así la bajada es real: la regla "si no sabes la hora, di que no te fijaste" ayuda.
