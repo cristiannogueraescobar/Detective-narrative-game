@@ -53,3 +53,23 @@ acertado en el 56 %).
 Bot con las mismas semillas, antes y después: preguntas hasta la primera pista, turnos sin pista nueva,
 respuestas repetidas, % de partidas resueltas y duración. El bot usa "Pensar" igual que un jugador atascado
 (cuando lleva varias preguntas sin nada nuevo).
+
+### Resultado (30-09, semilla 59, 18 partidas por lado, qwen2.5:7b, reintento de horas activo)
+Mismo código y mismas semillas; lo único que cambia es `-noHints`. Registros en `Logs/dia3-b3/{sin,con}/`.
+
+| Métrica | Sin "Pensar" | Con "Pensar" | Cambio |
+|---------|-------------:|-------------:|--------|
+| Preguntas hasta la primera pista | 10,3 | **6,9** | −33 % |
+| Partidas sin ninguna pista | 2 | **0** | nadie se queda en blanco |
+| Turnos sin pista nueva | 96 % | **88 %** | −8 pp |
+| Respuestas repetidas | 0 | 1 | igual |
+| Partidas resueltas (culpable) | 44 % | **72 %** | +28 pp |
+| Latencia media por respuesta | 974 ms | 1085 ms | ruido de la máquina (misma capa LLM) |
+| Ayudas usadas | 0 | 100 (5,6 por partida) | — |
+
+Lectura: "Pensar" cumple su papel (desatascar), pero el bot la pide cada 4 turnos vacíos, más que un jugador.
+Por eso en dificultad Detective cuesta una pregunta y en Veterano no existe: la ayuda no puede ser gratis y
+constante. La prueba clave, el rango y el resumen del final no los mide el bot (no cambian lo que pregunta);
+se comprueban con tests (DetectiveRankTests, StateMachineTests) y con las capturas del final.
+Pendiente: el 88 % de turnos sin pista nueva sigue alto porque cuenta cada pregunta de ambiente; la métrica que
+importa al jugador (tiempo hasta la primera pista y partidas en blanco) es la que mejora.

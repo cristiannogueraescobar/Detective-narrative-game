@@ -354,6 +354,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   EditMode 630/630, PlayMode 32/32. Coste en móvil: se mide en D2.
   Visto de paso: la parte vacía de los deslizadores casi no se ve (WCAG 1.4.11, 3:1 en componentes) → C6/rondas.
 
+- **12:05** B3 medido (semilla 59, 18+18 partidas): con "Pensar" primera pista 10,3 → 6,9 preguntas, partidas en
+  blanco 2 → 0, turnos vacíos 96 → 88 %, resueltas 44 → 72 %. En GAME-DESIGN.md. **Bloque B: HECHO CUANDO cumplido**
+  (investigación, documento, 4 mejoras, medición antes/después).
+
 ## Ahora (día 3)
 - C5 arte procedural (fondos por historia, texturas, iconos, en archivos nuevos), luego C6.
   En segundo plano: B3 (bot con y sin "Pensar").
