@@ -188,4 +188,18 @@ public class GameSmokeTests
         Assert.IsTrue(Find("InterrogationPanel").activeInHierarchy);
         Assert.AreEqual(rows, Rows("Burbuja (auto)").Count, "las burbujas vuelven tal cual");
     }
+
+    [UnityTest]
+    public IEnumerator LaPrimeraPartidaEnsenaAPreguntarYSePuedeSaltar()
+    {
+        yield return StartNewGame();
+        yield return WaitUntil(() => Find("Indicacion (auto)") != null && Find("Indicacion (auto)").activeInHierarchy, 3f, "indicación de preguntar");
+
+        GameObject skip = Find("Indicacion (auto)").GetComponentsInChildren<Button>().First(b => b.name == "Saltar tutorial").gameObject;
+        skip.GetComponent<Button>().onClick.Invoke();
+        yield return null;
+
+        Assert.IsTrue(Find("Indicacion (auto)") == null, "la indicación se cierra");
+        Assert.IsTrue(Tutorial.Finished, "saltar apaga todo el tutorial");
+    }
 }

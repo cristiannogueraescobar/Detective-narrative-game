@@ -424,8 +424,10 @@ public class FxLayer : MonoBehaviour
             yield break;
         }
 
-        yield return UIAnimations.Animate(0.25f, t => group.alpha = t);
+        yield return UIAnimations.Animate(0.25f, t => { if (group != null) group.alpha = t; });
         yield return new WaitForSecondsRealtime(0.25f);
+        if (page == null)
+            yield break; // Se cerró con un toque antes de tiempo
 
         // La hoja del día anterior se arranca hacia arriba y aparece la nueva
         const float flip = 0.5f;
@@ -441,6 +443,8 @@ public class FxLayer : MonoBehaviour
             }
             page.localRotation = Quaternion.Euler(angle, 0f, 0f);
             yield return null;
+            if (page == null)
+                yield break;
         }
         page.localRotation = Quaternion.identity;
         number.text = day.ToString();
@@ -538,6 +542,146 @@ public class FxLayer : MonoBehaviour
             yield return null;
         }
         Destroy(veil.gameObject);
+    }
+
+    // ============================================
+    // TUTORIAL
+    // ============================================
+
+    private GameObject currentHint;
+
+    public bool HintVisible => currentHint != null;
+
+    /// <summary>
+    /// Indicación junto a 'target' (encima si está en la mitad de abajo, debajo si no), con un aro que late
+    /// alrededor. "Entendido" la cierra; "Saltar tutorial", también todas las siguientes.
+    /// </summary>
+    public GameObject Hint(string text, RectTransform target, Action onOk, Action onSkip)
+    {
+        if (currentHint != null)
+            Destroy(currentHint);
+
+        RectTransform holder = NewRect(root, "Indicacion (auto)");
+        Stretch(holder, 0f, 0f);
+        currentHint = holder.gameObject;
+        Canvas.ForceUpdateCanvases();
+
+        // Rectángulo del objetivo en el espacio de la capa
+        Rect goal = new Rect(root.rect.center, Vector2.zero);
+        if (target != null)
+        {
+            var corners = new Vector3[4];
+            target.GetWorldCorners(corners);
+            Vector2 min = root.InverseTransformPoint(corners[0]);
+            Vector2 max = root.InverseTransformPoint(corners[2]);
+            goal = Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+
+            RectTransform ring = NewRect(holder, "Aro");
+            ring.anchorMin = ring.anchorMax = new Vector2(0.5f, 0.5f);
+            ring.anchoredPosition = goal.center - root.rect.center;
+            ring.sizeDelta = goal.size + new Vector2(20f, 20f);
+            var ringImage = ring.gameObject.AddComponent<Image>();
+            ringImage.sprite = UISprites.RoundedOutline(18, 5);
+            ringImage.type = Image.Type.Sliced;
+            ringImage.color = T.accent;
+            ringImage.raycastTarget = false;
+            if (!Instant)
+                StartCoroutine(PulseRing(ringImage, holder.gameObject));
+        }
+
+        RectTransform card = NewRect(holder, "Tarjeta");
+        card.anchorMin = card.anchorMax = new Vector2(0.5f, 0.5f);
+        card.sizeDelta = new Vector2(Mathf.Min(900f, root.rect.width - 64f), 0f);
+        var cardImage = card.gameObject.AddComponent<Image>();
+        cardImage.sprite = UISprites.Rounded(20);
+        cardImage.type = Image.Type.Sliced;
+        cardImage.color = T.paper;
+        var layout = card.gameObject.AddComponent<VerticalLayoutGroup>();
+        layout.padding = new RectOffset(36, 36, 28, 24);
+        layout.spacing = 16f;
+        layout.childControlWidth = layout.childControlHeight = true;
+        layout.childForceExpandWidth = true;
+        layout.childForceExpandHeight = false;
+        card.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        TMP_Text body = NewText(card, text, T.bodySize, T.paperText);
+        body.alignment = TextAlignmentOptions.Left;
+        body.textWrappingMode = TextWrappingModes.Normal;
+        TextStyle.Set(body, TextStyle.Mode.Scrolling, T.bodySize);
+
+        RectTransform row = NewRect(card, "Botones");
+        var rowLayout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
+        rowLayout.spacing = 16f;
+        rowLayout.childControlWidth = rowLayout.childControlHeight = true;
+        rowLayout.childForceExpandWidth = true;
+        var rowElement = row.gameObject.AddComponent<LayoutElement>();
+        rowElement.minHeight = rowElement.preferredHeight = Theme.MinTouchSize;
+
+        HintButton(row, "Saltar tutorial", T.paperInk, new Color(0f, 0f, 0f, 0.06f), () =>
+        {
+            Destroy(holder.gameObject);
+            onSkip?.Invoke();
+        });
+        HintButton(row, "Entendido", T.buttonPrimaryText, T.buttonPrimary, () =>
+        {
+            Destroy(holder.gameObject);
+            onOk?.Invoke();
+        });
+
+        // Encima del objetivo si está en la mitad de abajo; debajo si está arriba
+        LayoutRebuilder.ForceRebuildLayoutImmediate(card);
+        float height = card.rect.height;
+        bool above = target == null || goal.center.y < root.rect.center.y;
+        float y = above ? goal.yMax + 40f + height / 2f : goal.yMin - 40f - height / 2f;
+        float half = root.rect.height / 2f;
+        y = Mathf.Clamp(y, root.rect.yMin + height / 2f + 24f, root.rect.yMax - height / 2f - 24f);
+        card.anchoredPosition = new Vector2(0f, y - root.rect.center.y);
+
+        // Flecha hacia el objetivo
+        if (target != null)
+        {
+            RectTransform arrow = NewRect(card, "Flecha");
+            arrow.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
+            arrow.anchorMin = arrow.anchorMax = new Vector2(0.5f, above ? 0f : 1f);
+            float x = Mathf.Clamp(goal.center.x - root.rect.center.x, -card.sizeDelta.x / 2f + 60f, card.sizeDelta.x / 2f - 60f);
+            arrow.anchoredPosition = new Vector2(x, 0f);
+            arrow.sizeDelta = new Vector2(34f, 34f);
+            arrow.localRotation = Quaternion.Euler(0f, 0f, 45f);
+            var arrowImage = arrow.gameObject.AddComponent<Image>();
+            arrowImage.color = T.paper;
+            arrowImage.raycastTarget = false;
+            arrow.SetAsFirstSibling();
+        }
+
+        if (!Instant)
+            UIAnimations.Pop(this, card);
+        return holder.gameObject;
+    }
+
+    private void HintButton(RectTransform row, string label, Color textColor, Color background, Action onClick)
+    {
+        RectTransform rect = NewRect(row, label);
+        var image = rect.gameObject.AddComponent<Image>();
+        image.sprite = UISprites.Rounded(14);
+        image.type = Image.Type.Sliced;
+        image.color = background;
+        var button = rect.gameObject.AddComponent<Button>();
+        button.targetGraphic = image;
+        button.onClick.AddListener(() => onClick());
+        rect.gameObject.AddComponent<ClickSound>();
+        TMP_Text text = NewText(rect, label, T.bodySize, textColor);
+        TextStyle.Set(text, TextStyle.Mode.OneLine, T.bodySize);
+        Stretch(text.rectTransform, 12f, 6f);
+    }
+
+    private IEnumerator PulseRing(Image ring, GameObject owner)
+    {
+        while (owner != null && ring != null)
+        {
+            float k = 0.55f + 0.45f * Mathf.Sin(Time.unscaledTime * 4f);
+            ring.color = new Color(T.accent.r, T.accent.g, T.accent.b, k);
+            yield return null;
+        }
     }
 
     // ============================================

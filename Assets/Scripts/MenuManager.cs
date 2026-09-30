@@ -144,6 +144,13 @@ public class MenuManager : MonoBehaviour
             SettingsPanel.Build(settingsPanel, () => gameManager?.RestartGame());
 
         BuildMainMenu();
+        Theme theme = ThemeManager.Current;
+        SetText(instructionsPanel, "InstructionsTitleText", GameTexts.InstructionsTitle);
+        SetText(instructionsPanel, "InstructionsText", GameTexts.Instructions(theme));
+        SetText(aboutPanel, "AboutTitleText", GameTexts.AboutTitle);
+        SetText(aboutPanel, "InstructionsText", GameTexts.About(theme, Application.version));
+        SetText(settingsPanel, "SettingsTitleText", GameTexts.SettingsTitle);
+
         BuildPage(instructionsPanel, "InstructionsTitleText", "InstructionsText", backFromInstructionsButton);
         BuildPage(aboutPanel, "AboutTitleText", "InstructionsText", backFromAboutButton);
         BuildPage(settingsPanel, "SettingsTitleText", "AjustesControles", backFromSettingsButton);
@@ -214,6 +221,17 @@ public class MenuManager : MonoBehaviour
         PutMenuButton(quitButton, column, "Salir");
 
         LayoutKit.Spacer(column, 0.3f);
+    }
+
+    // Textos de la interfaz desde GameTexts (la escena traía erratas y datos viejos)
+    private static void SetText(GameObject panel, string child, string text)
+    {
+        Transform t = panel != null ? panel.transform.Find(child) : null;
+        if (t != null && t.TryGetComponent(out TMP_Text tmp))
+        {
+            tmp.text = text;
+            tmp.richText = true;
+        }
     }
 
     private static void PutMenuButton(Button button, RectTransform column, string label)

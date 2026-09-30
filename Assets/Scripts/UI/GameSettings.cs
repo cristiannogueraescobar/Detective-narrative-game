@@ -148,4 +148,11 @@ public static class GameSettings
             Changed?.Invoke();
         }
     }
+
+    /// <summary>
+    /// Marcas sueltas que persisten (el tutorial, por ejemplo). No avisan a Changed.
+    /// </summary>
+    public static bool GetFlag(string key) => store.Get(key, 0f) > 0.5f;
+
+    public static void SetFlag(string key, bool value) => store.Set(key, value ? 1f : 0f);
 }

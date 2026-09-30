@@ -75,7 +75,7 @@ public class InterrogationUI : MonoBehaviour
     [SerializeField] private Button restartButton;
     [SerializeField] private Button menuButton;
 
-    private const string NoEvidenceOption = "— Sin prueba —";
+    private const string NoEvidenceOption = GameTexts.NoEvidence;
 
     private string currentSuspectId;
     private List<SuspectView> suspects = new List<SuspectView>();
@@ -91,6 +91,7 @@ public class InterrogationUI : MonoBehaviour
     private int unseenClues;             // Pistas nuevas desde la última vez que se abrió la libreta
     private TMP_Text clueBadge;
     private int maxDaysValue = 7;
+    private int dayValue = 1;
     private ChatEntry pendingQuestion;   // Pregunta enviada que aún espera respuesta
     private string pendingSuspectId;
     private int questionsUsedToday;
@@ -393,7 +394,11 @@ public class InterrogationUI : MonoBehaviour
 
         Transform title = panel.Find("CluesTitleText");
         if (title != null)
+        {
             LayoutKit.Put(title, column, height: 110f);
+            if (title.TryGetComponent(out TMP_Text titleText))
+                titleText.text = GameTexts.NotebookTitle;
+        }
 
         if (contradictionsText != null)
             contradictionsText.gameObject.SetActive(false); // Las contradicciones van en la libreta
@@ -459,7 +464,10 @@ public class InterrogationUI : MonoBehaviour
         {
             LayoutKit.Put(instructions, column, height: 200f);
             if (instructions.TryGetComponent(out TMP_Text instructionsText))
+            {
+                instructionsText.text = GameTexts.AccusationPrompt;
                 LayoutKit.MultiLine(instructionsText, T.bodySize);
+            }
         }
 
         // Ilustración: ocupa el hueco que quede, sin deformarse
@@ -497,9 +505,9 @@ public class InterrogationUI : MonoBehaviour
 
         RectTransform buttons = LayoutKit.Row(column, "Botones", 130f);
         LayoutKit.Put(restartButton, buttons, flexibleWidth: 1f);
-        LayoutKit.Label(restartButton, "Reiniciar");
+        LayoutKit.Label(restartButton, GameTexts.PlayAgain);
         LayoutKit.Put(menuButton, buttons, flexibleWidth: 1f);
-        LayoutKit.Label(menuButton, "Menú");
+        LayoutKit.Label(menuButton, GameTexts.MainMenu);
     }
 
     // ============================================
@@ -666,6 +674,7 @@ public class InterrogationUI : MonoBehaviour
         currentSuspectId = null;
         RefreshConversationView();
         gameManager.BeginInterrogation();
+        ShowTutorial(Tutorial.Ask, questionInput != null ? (RectTransform)questionInput.transform : null, 0.8f);
     }
 
     // ============================================
@@ -833,6 +842,32 @@ public class InterrogationUI : MonoBehaviour
             evidenceDropdown.value = 0;
 
         SetInputEnabled(true);
+        ShowTutorial(Tutorial.Days, endDayButton != null ? (RectTransform)endDayButton.transform : null, 2.5f);
+    }
+
+    // ============================================
+    // TUTORIAL
+    // ============================================
+
+    private void ShowTutorial(string id, RectTransform target, float delay)
+    {
+        if (fx == null || !Tutorial.ShouldShow(id))
+            return;
+        RunRoutine(TutorialAfter(id, target, delay));
+    }
+
+    private IEnumerator TutorialAfter(string id, RectTransform target, float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+
+        // Una cosa cada vez: espera a que acaben las fichas de pista y otras indicaciones
+        while (fx.HintVisible || fx.ClueCardsPending)
+            yield return null;
+        if (!Tutorial.ShouldShow(id) || interrogationPanel == null || !interrogationPanel.activeInHierarchy)
+            yield break;
+
+        Tutorial.MarkSeen(id);
+        fx.Hint(Tutorial.TextOf(id), target, null, Tutorial.SkipAll);
     }
 
     /// <summary>
@@ -898,10 +933,11 @@ public class InterrogationUI : MonoBehaviour
         questionsUsedToday = questionsUsed;
         questionsPerDay = questionsMax;
         maxDaysValue = maxDays;
+        dayValue = day;
 
         if (hudText != null)
         {
-            hudText.text = $"DÍA {day}/{maxDays}  |  PREGUNTAS: {questionsUsed}/{questionsMax}";
+            hudText.text = GameTexts.Hud(day, maxDays, questionsUsed, questionsMax);
         }
     }
 
@@ -980,6 +1016,7 @@ public class InterrogationUI : MonoBehaviour
     {
         SetClueBadge(unseenClues + 1);
         SoundManager.Play(Sfx.Clue);
+        ShowTutorial(Tutorial.Evidence, evidenceDropdown != null ? (RectTransform)evidenceDropdown.transform : null, 1f);
         if (fx != null)
         {
             fx.ClueCard(clueName, viewCluesButton != null ? (RectTransform)viewCluesButton.transform : null);
@@ -1016,6 +1053,7 @@ public class InterrogationUI : MonoBehaviour
             // Sello de tinta que golpea: en el impacto, destello y sacudida de la pantalla
             RectTransform shaken = interrogationPanel != null ? (RectTransform)interrogationPanel.transform : null;
             SoundManager.Play(Sfx.Contradiction);
+            ShowTutorial(Tutorial.Contradiction, viewCluesButton != null ? (RectTransform)viewCluesButton.transform : null, 2f);
             fx.Stamp("CONTRADICCIÓN", T.danger, angle: -9f, hold: 1.3f, onImpact: () =>
             {
                 fx.Flash(T.contradiction, 0.12f);
@@ -1189,6 +1227,9 @@ public class InterrogationUI : MonoBehaviour
     {
         ShowPanel(accusationPanel);
         accusationOptions = options;
+        Transform accusationTitle = accusationPanel != null ? accusationPanel.transform.Find("AccusationTitleText") : null;
+        if (accusationTitle != null && accusationTitle.TryGetComponent(out TMP_Text accusationTitleText))
+            accusationTitleText.text = GameTexts.AccusationTitle(dayValue >= maxDaysValue || !canGoBack);
         fx?.SetTension(true, accusationPanel != null ? (RectTransform)accusationPanel.transform : null);
         SoundManager.Play(Sfx.Heartbeat, 0.8f);
         SoundManager.PlayMusic(Music.Tension);

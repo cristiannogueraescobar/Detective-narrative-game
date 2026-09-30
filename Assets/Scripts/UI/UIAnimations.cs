@@ -80,7 +80,7 @@ public static class UIAnimations
         }
 
         host.StartCoroutine(Animate(ThemeManager.Current.clueAnimDuration,
-            t => target.localScale = Vector3.one * Mathf.LerpUnclamped(0.85f, 1f, Easing.OutBack(t))));
+            t => { if (target != null) target.localScale = Vector3.one * Mathf.LerpUnclamped(0.85f, 1f, Easing.OutBack(t)); }));
     }
 
     /// <summary>
@@ -98,8 +98,8 @@ public static class UIAnimations
         }
 
         host.StartCoroutine(Animate(ThemeManager.Current.cardFlipDuration,
-            t => target.localRotation = Quaternion.Euler(0f, Motion3D.CardFlip(t), 0f),
-            () => target.localRotation = Quaternion.identity));
+            t => { if (target != null) target.localRotation = Quaternion.Euler(0f, Motion3D.CardFlip(t), 0f); },
+            () => { if (target != null) target.localRotation = Quaternion.identity; }));
     }
 
     /// <summary>
@@ -113,8 +113,8 @@ public static class UIAnimations
         overlay.gameObject.SetActive(true);
         overlay.raycastTarget = false;
         host.StartCoroutine(Animate(ThemeManager.Current.contradictionAnimDuration,
-            t => overlay.color = new Color(color.r, color.g, color.b, maxAlpha * Easing.Pulse(t)),
-            () => overlay.gameObject.SetActive(false)));
+            t => { if (overlay != null) overlay.color = new Color(color.r, color.g, color.b, maxAlpha * Easing.Pulse(t)); },
+            () => { if (overlay != null) overlay.gameObject.SetActive(false); }));
     }
 
     /// <summary>
@@ -127,8 +127,8 @@ public static class UIAnimations
 
         Vector2 rest = target.anchoredPosition;
         host.StartCoroutine(Animate(duration,
-            t => target.anchoredPosition = rest + new Vector2(Mathf.Sin(t * 40f) * amplitude * (1f - t), 0f),
-            () => target.anchoredPosition = rest));
+            t => { if (target != null) target.anchoredPosition = rest + new Vector2(Mathf.Sin(t * 40f) * amplitude * (1f - t), 0f); },
+            () => { if (target != null) target.anchoredPosition = rest; }));
     }
 
     public static IEnumerator Animate(float duration, Action<float> step, Action done = null)
