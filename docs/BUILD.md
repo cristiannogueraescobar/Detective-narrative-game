@@ -15,9 +15,12 @@ Builds\Windows\Detectives.exe -batchmode -nographics -smoketest -logFile smoke.l
 
 El log debe acabar con `SMOKE OK`. Resultado de la noche: **SMOKE OK**, sin errores.
 
-Observado: en modo `-batchmode -nographics`, 1 de ~5 ejecuciones escribió `SMOKE OK` pero se quedó colgada al
-cerrarse ("abort_threads: Failed aborting…"), tras añadir el audio. Sin gráficos no hay dispositivo de audio; el
-`SoundManager` ahora para todo al salir. No se ha visto con ventana; si pasa al cerrar el juego normal, avísame.
+Observado (sin resolver, acotado): en `-batchmode -nographics`, entre 1 de cada 12 y 1 de cada 4 ejecuciones
+escriben `SMOKE OK` y luego no terminan de cerrarse (Unity ya ha hecho toda su limpieza). Con gráficos
+(`-batchmode` sin `-nographics`, lo más parecido a abrir el juego): **6/6 limpias**. Medido: la build de las 03:08
+0/25; las de después ~1/12–3/12, también sin audio; la bisección no es concluyente con esta frecuencia (los
+commits del rango no tocan hilos ni se ejecutan al arrancar). Si al cerrar el juego con ventana se quedara
+colgado, avísame: sería lo primero a mirar.
 
 Para usar Claude en la build, `anthropic_api_key.txt` va junto a `Detectives.exe`. Con Ollama, el servidor tiene
 que estar en `localhost:11434` del mismo PC.
