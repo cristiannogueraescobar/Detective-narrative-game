@@ -47,7 +47,7 @@ public class PromptBuilderTests
     {
         string prompt = Build("b");
 
-        StringAssert.Contains("LO CUENTAS SIN PROBLEMA SI TE PREGUNTAN POR EL TEMA, con tus palabras, en primera persona, completo y con la hora:", prompt);
+        StringAssert.Contains("LO CUENTAS SI TE PREGUNTAN POR EL TEMA, con tus palabras, completo y con la hora:", prompt);
     }
 
     [Test]
