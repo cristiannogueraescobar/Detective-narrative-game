@@ -306,6 +306,27 @@ public class AnimationCapture
         Shot("veredicto_ficha");
     }
 
+    // Ronda 9: las notas del jugador (una sospechosa, otra descartada) en la libreta y en la rueda
+    [UnityTest]
+    public IEnumerator NotasDelJugador()
+    {
+        Tutorial.SkipAll();
+        yield return ToInterrogation();
+        var manager = UnityEngine.Object.FindFirstObjectByType<GameManager>();
+        var ids = UnityEngine.Object.FindFirstObjectByType<AIConversationManager>().Story.cast
+            .Where(c => c.startsUnlocked).Select(c => c.id).ToList();
+        manager.CycleNote(ids[0]); // sospechoso
+        manager.CycleNote(ids[1]);
+        manager.CycleNote(ids[1]); // descartado
+        yield return Click("ViewCluesButton");
+        yield return new WaitForSecondsRealtime(0.8f);
+        Shot("notas_libreta");
+        yield return Click("CloseCluesButton");
+        manager.ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(2f);
+        Shot("notas_rueda");
+    }
+
     [UnityTest]
     public IEnumerator Finales()
     {
