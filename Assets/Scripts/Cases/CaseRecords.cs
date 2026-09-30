@@ -37,6 +37,9 @@ public static class CaseRecords
     {
         Ending? best = Best(storyId);
         if (best == null || Rank(ending) > Rank(best.Value))
+        {
             GameSettings.SetValue(Prefix + storyId, Rank(ending));
+            GameSettings.Flush(); // A disco ya: la partida guardada se acaba de borrar
+        }
     }
 }

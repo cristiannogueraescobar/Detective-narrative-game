@@ -270,6 +270,7 @@ public class InterrogationUI : MonoBehaviour
             labelRect.offsetMin = new Vector2(8f, 0f);
             labelRect.offsetMax = new Vector2(-8f, 0f);
             LayoutKit.OneLine(emotionLabel, T.secondarySize);
+            chip.gameObject.SetActive(false); // Se enseña cuando hay un sospechoso
         }
 
         RectTransform side = UIFactory.Container(header, "Controles (auto)", Vector2.zero, Vector2.one);
@@ -892,6 +893,7 @@ public class InterrogationUI : MonoBehaviour
 
         if (emotionLabel != null)
         {
+            emotionLabel.transform.parent.gameObject.SetActive(true);
             emotionLabel.text = emotion.ToString().ToUpperInvariant();
             emotionLabel.color = EmotionStyle.LabelColor(emotion);
         }
@@ -1005,6 +1007,22 @@ public class InterrogationUI : MonoBehaviour
         if (contradictionOverlay != null)
             contradictionOverlay.transform.SetAsLastSibling();
         return contradictionOverlay;
+    }
+
+    /// <summary>
+    /// Partida nueva sin recargar la escena (selección de caso tras un "Continuar" fallido): sin restos del caso
+    /// anterior en el chat, los estados, el sospechoso abierto ni el contador de pistas.
+    /// </summary>
+    public void ResetForNewCase()
+    {
+        chat?.Complete();
+        conversations.Clear();
+        emotionBySuspect.Clear();
+        currentSuspectId = null;
+        pendingQuestion = null;
+        pendingSuspectId = null;
+        SetClueBadge(0);
+        RefreshConversationView();
     }
 
     /// <summary>

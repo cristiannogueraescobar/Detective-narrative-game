@@ -45,6 +45,7 @@ public class PlaythroughChecksTests
         CollectionAssert.Contains(Kinds("Eso se lo contó a su amiga Verónica, pregúntele a ella."), PlaythroughChecks.Kind.InventedName);
         CollectionAssert.DoesNotContain(Kinds("Eso lo sabe Rosario, que vive enfrente."), PlaythroughChecks.Kind.InventedName);
         CollectionAssert.DoesNotContain(Kinds("Mire, inspector. Dios sabe que la quería."), PlaythroughChecks.Kind.InventedName);
+        CollectionAssert.DoesNotContain(Kinds("Me acosté tarde. ¿Puedes confirmarlo con mi agenda?"), PlaythroughChecks.Kind.InventedName);
     }
 
     [Test]

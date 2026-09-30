@@ -192,6 +192,7 @@ public class GameManager : MonoBehaviour
         currentDay = 1;
         questionsUsedToday = 0;
         accusationMade = false;
+        interrogationUI?.ResetForNewCase();
         SelectCase(storyId);
         SelectCaseUI();
     }

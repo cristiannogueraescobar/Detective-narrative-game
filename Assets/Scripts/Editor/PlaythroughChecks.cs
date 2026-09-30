@@ -27,7 +27,8 @@ public static class PlaythroughChecks
 
     private static readonly Regex DigitTime = new Regex(@"\b([01]?\d|2[0-3])[:.h]([0-5]\d)\b");
 
-    private static readonly Regex Capitalized = new Regex(@"(?<![.!?¿¡«""\n]\s)(?<!^)\b(\p{Lu}\p{Ll}{2,})\b");
+    // Palabra con mayúscula que no empieza frase (ni tras "¿", "¡", comillas o un punto)
+    private static readonly Regex Capitalized = new Regex(@"(?<![.!?¿¡«""\n]\s)(?<![¿¡«""])(?<!^)\b(\p{Lu}\p{Ll}{2,})\b");
 
     private static readonly HashSet<string> CommonCapitalized = new HashSet<string>(
         new[]

@@ -5,7 +5,7 @@ Uso: python Tools/make_gallery.py <carpeta de la fecha>   (p. ej. docs/screensho
 import os
 import sys
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 base = sys.argv[1] if len(sys.argv) > 1 else 'docs/screenshots/2026-09-30'
 out = os.path.join('docs', 'screenshots', 'galeria')
@@ -37,10 +37,16 @@ def load(rel, height=960):
     return im.resize((int(im.width * height / im.height), height))
 
 
+try:
+    FONT = ImageFont.truetype('arial.ttf', 18)
+except OSError:
+    FONT = ImageFont.load_default()
+
+
 def label(img, text):
     d = ImageDraw.Draw(img)
-    d.rectangle((0, 0, img.width, 26), fill=(0, 0, 0))
-    d.text((8, 6), text, fill=(255, 220, 120))
+    d.rectangle((0, 0, img.width, 28), fill=(0, 0, 0))
+    d.text((8, 4), text, fill=(255, 220, 120), font=FONT)
 
 
 made = []

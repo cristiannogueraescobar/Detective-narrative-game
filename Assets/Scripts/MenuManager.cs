@@ -366,10 +366,21 @@ public class MenuManager : MonoBehaviour
         return false;
     }
 
+    private Theme caseSelectTheme;
+
     private void BuildCaseSelect()
     {
+        // Se rehace si cambió el tema (alto contraste): sus colores se ponen al construirla
+        if (caseSelect != null && caseSelectTheme != ThemeManager.Current)
+        {
+            Destroy(caseSelect.gameObject);
+            caseSelect = null;
+        }
         if (caseSelect == null && mainMenuPanel != null)
+        {
             caseSelect = CaseSelect.Build((RectTransform)mainMenuPanel.transform, StartChosenCase, () => caseSelect.gameObject.SetActive(false));
+            caseSelectTheme = ThemeManager.Current;
+        }
     }
 
     private void StartChosenCase(string storyId)

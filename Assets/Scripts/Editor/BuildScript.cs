@@ -28,9 +28,27 @@ public static class BuildScript
         Build(BuildTarget.Android, "Builds/Android/Detectives.apk");
     }
 
+    public const string AppIconPath = "Assets/Art/Icons/app_icon.png";
+
+    /// <summary>
+    /// Icono de la aplicación (generado por Tools/make_app_icon.py) para todas las plataformas.
+    /// </summary>
+    public static void SetAppIcon()
+    {
+        var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(AppIconPath);
+        if (icon == null)
+        {
+            Debug.LogWarning($"[Build] Falta {AppIconPath}: la build usará el icono por defecto");
+            return;
+        }
+        PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.Unknown, new[] { icon }, IconKind.Any);
+        // productName ("Casos") no se toca: cambiarlo movería los guardados y los ajustes del jugador
+    }
+
     private static void Build(BuildTarget target, string output)
     {
         ArtCatalogBuilder.Rebuild(); // El arte nuevo tiene que ir en el catálogo de la build
+        SetAppIcon();
         Directory.CreateDirectory(Path.GetDirectoryName(output));
 
         var options = new BuildPlayerOptions

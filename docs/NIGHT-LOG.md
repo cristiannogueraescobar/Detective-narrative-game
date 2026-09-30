@@ -59,8 +59,12 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
 - 03:47 HUD con números resaltados; sin preguntas, "Fin del día" pasa a principal. "Nuevos mensajes" verificado.
 - 03:55 Selección de caso: expedientes por historia con el mejor final conseguido; la variante sigue al azar.
 
+- 03:58 Botón Atrás de Android. Respuestas repetidas palabra por palabra: un reintento (test).
+- 04:02 Calibración final de estados (último prompt): coherente 141/144; neutra tranquilo 34/36; víctima
+  triste 34/36; sensible nervioso 35/36. Icono de app generado (Tools/make_app_icon.py).
+
 ## Ahora
-- Bot ronda 3 (9 variantes × 2) con todo lo último; después, rondas de revisión (FINAL).
+- Segunda revisión de código (subagente) y ronda final del bot (9×2) sobre HEAD.
 
 ## Después (orden)
 1. Layout: 3 rondas de render→revisión, safe area, zonas táctiles ≥ 48 px (añadir al test).

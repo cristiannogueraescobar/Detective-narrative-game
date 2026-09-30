@@ -167,4 +167,14 @@ public class ChatViewTests
         Assert.IsEmpty(Bubbles());
         Assert.AreEqual(2, chat.RowCount);
     }
+
+    [Test]
+    public void UnCasoNuevoEmpiezaSinRestosDelAnterior()
+    {
+        Assert.IsFalse(session.ui.Conversations.IsEmpty, "la vista previa trae una conversación larga");
+        session.ui.ResetForNewCase();
+        Assert.IsTrue(session.ui.Conversations.IsEmpty);
+        Assert.IsNull(session.ui.CurrentSuspectId);
+        Assert.AreEqual(0, chat.RowCount);
+    }
 }
