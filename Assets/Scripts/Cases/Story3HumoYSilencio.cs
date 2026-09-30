@@ -259,14 +259,17 @@ Tienes 7 días para descubrir qué pasó.",
                     fact = "tu madre y tú pasasteis todo el sábado en casa de tu tía Remedios en Granada, a cien kilómetros; tu tía y tus primos, Nerea y Hugo, lo pueden decir.",
                     anchors = new[]
                     {
-                        new[] { "granada", "casa de mi tia" },
-                        new[] { "todo el sabado", "todo el dia", "mis primos", "mi tia" }
+                        // Con nombre, la tía sale sin "mi" y sin Granada ("en casa de tía Remedios"): calibración de las 21:14
+                        new[] { "granada", "casa de mi tia", "remedios" },
+                        new[] { "todo el sabado", "todo el dia", "toda la jornada", "mis primos", "nerea", "hugo", "mi tia" }
                     },
                     calibrationQuestions = new[] { "¿Dónde estuvisteis tu madre y tú el sábado?", "¿Alguien puede confirmar dónde estaba tu madre el sábado?" },
                     sampleHits = new[]
                     {
                         "Mi madre y yo estuvimos todo el sábado en Granada, en casa de mi tía.",
-                        "En Granada, con mis primos. Todo el día."
+                        "En Granada, con mis primos. Todo el día.",
+                        "Estuvimos en casa de tía Remedios toda la jornada, a cien kilómetros de la finca. Nerea y Hugo pueden corroborarlo.",
+                        "Sí, mi tía Remedios y mis primos Nerea y Hugo pueden confirmarlo. Nosotros pasamos todo el día en su casa."
                     },
                     sampleMisses = new[] { "No me acuerdo bien, estuvimos por ahí." }
                 }
