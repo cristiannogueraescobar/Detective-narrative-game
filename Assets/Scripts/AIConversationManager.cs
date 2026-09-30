@@ -120,6 +120,17 @@ public class AIConversationManager : MonoBehaviour
                 result = retry;
         }
 
+        // Otro idioma (qwen a veces se pasa al chino; en el historial arrastraría el resto de la partida): se pide
+        // otra vez en español, una sola, y se queda la que menos caracteres extraños tenga
+        if (result.Success && LanguageCheck.IsForeign(EmotionParser.Parse(result.Text).text))
+        {
+            LanguageRetries++;
+            LLMResult retry = await llmProvider.SendAsync(systemPrompt, Nudged(history, LanguageNudge), maxTokens, temperature);
+            if (retry.Success && LanguageCheck.ForeignCount(retry.Text) < LanguageCheck.ForeignCount(result.Text))
+                result = retry;
+            retried = true;
+        }
+
         // Una hora que no está en la ficha ni en lo que preguntó el inspector puede despistar al jugador: se pide
         // otra vez (una sola, y nunca después del reintento por repetición) y se queda la que menos horas inventa
         if (result.Success && !retried && RetryInventedTimes)
@@ -207,6 +218,8 @@ public class AIConversationManager : MonoBehaviour
 
     public const float RepeatRetryTemperatureBoost = 0.25f;
     public const string RepeatNudge = " (No repitas lo que ya has dicho: responde con otras palabras.)";
+    public const string LanguageNudge = " (Responde solo en español.)";
+    public static int LanguageRetries;
     public const string TimeNudge = " (Solo di horas que estén en tu ficha; si no sabes la hora, di que no te fijaste.)";
 
     /// <summary>

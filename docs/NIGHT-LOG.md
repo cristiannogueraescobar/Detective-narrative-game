@@ -481,6 +481,14 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   (Si-Fa# bajo La menor, Do-Sol bajo Mi eolio) → retocados al tono del motivo; un sed se llevó por delante el drone
   del menú y lo devolví (menu.wav idéntico al anterior). check_audio: todo bien.
 
+- **15:07** En el brazo "sin versiones" del A/B, una partida de 3A se fue al chino: el detective del bot (qwen)
+  escribió medio en chino, el sospechoso contestó en chino y el historial lo arrastró toda la partida (9
+  respuestas). El jugador no escribe en chino, pero qwen puede pasarse solo: **reintento por idioma** en
+  AIConversationManager (LanguageCheck: CJK, cirílico, árabe; una vez, "Responde solo en español", se queda la que
+  menos caracteres extraños tenga) + el bot vuelve a decidir si su pregunta sale en otro alfabeto. Tests (2).
+  BotPlayer.cs tenía finales de línea 
+ (una edición mía de la tarde): normalizado.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).

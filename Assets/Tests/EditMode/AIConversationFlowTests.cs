@@ -149,6 +149,30 @@ public class AIConversationFlowTests
         Assert.AreEqual("La vi a las 21:47.", Ask("a", "¿Y la vio?").Text, "mejor una hora dudosa que repetir lo mismo");
     }
 
+    // Ronda 5 (bot): qwen puede pasarse al chino y, con eso en el historial, seguir en chino toda la partida
+    [Test]
+    public void UnaRespuestaEnOtroIdiomaSePideOtraVezEnEspanol()
+    {
+        provider.results.Enqueue(LLMResult.Ok("我存放在一个专用的小棚子里。 [ESTADO: tranquilo]"));
+        provider.results.Enqueue(LLMResult.Ok("Las guardo en el cobertizo, junto al almacén. [ESTADO: tranquilo]"));
+
+        LLMResult answer = Ask("a", "¿Dónde guardas las garrafas?");
+
+        Assert.AreEqual(2, provider.calls, "se pide una vez más");
+        Assert.AreEqual("Las guardo en el cobertizo, junto al almacén.", answer.Text);
+        StringAssert.Contains("español", provider.lastUserMessage);
+        foreach (ChatMessage m in manager.Histories["a"])
+            Assert.IsFalse(LanguageCheck.IsForeign(m.content), "el chino no se queda en el historial");
+    }
+
+    [Test]
+    public void EnEspanolNoHayReintentoPorIdioma()
+    {
+        provider.results.Enqueue(LLMResult.Ok("Las guardo en el cobertizo, junto al almacén. [ESTADO: tranquilo]"));
+        Ask("a", "¿Dónde guardas las garrafas?");
+        Assert.AreEqual(1, provider.calls);
+    }
+
     [Test]
     public void ElReintentoPorHorasSePuedeDesactivar()
     {
