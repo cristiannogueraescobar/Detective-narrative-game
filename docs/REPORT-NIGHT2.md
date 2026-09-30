@@ -146,7 +146,31 @@ Cómo regenerarlas: `ScreenshotTool.CaptureFromCommandLine` (vista previa) y el 
 
 ---
 
-## 5. Qué rama probar y en qué orden
+## 5. Pendiente (lo que no está hecho o necesita tu decisión)
+
+- **APK de Android**: el módulo de Android no está instalado en este Unity. Pasos en `docs/BUILD.md`
+  (`BuildScript.BuildAndroid` ya existe). En el teléfono, además:
+  - **Ollama en `localhost` no existe**: hay que apuntar `OllamaSettings` a la IP del PC o usar Anthropic.
+  - **La clave de Anthropic** se lee de un archivo junto al .exe; en Android hace falta otro sitio.
+  
+  No he tocado la capa de proveedores (regla de la noche).
+- **Audio provisional**: todo lo que suena está sintetizado por código (no lo he podido escuchar). La lista de
+  lo que falta, con duración y tono, está en `AUDIO-NEEDED.md`: basta con soltar archivos con el mismo nombre.
+- **Arte por estado emocional**: el juego busca `Assets/Art/Portraits/<personaje>_<estado>.png`. Hoy usa los
+  retratos antiguos en plano medio y aplica tinte, postura y temblor.
+- **Horas inventadas**: qwen 7B aún dice alguna hora que no está en su ficha (3–6 % de las respuestas según la
+  partida). La regla ya está en la ficha; bajarlo más pediría otro modelo o más texto en fichas que ya están en
+  el límite de 460 palabras.
+- **El bot es un detective flojo**: acierta al culpable en la mitad o dos tercios de las partidas y descubre ~2
+  pistas de 5-6. Sirve para medir el juego, no su dificultad real para una persona.
+- **Cuelgue al salir en `-batchmode -nographics`**: en 1 de cada 4 a 12 ejecuciones del editor sin gráficos.
+  - En ventana: 0/6 cuelgues. En la build: 0/25.
+  - No afecta al jugador. Está documentado y acotado en `docs/BUILD.md`, sin causa encontrada.
+- **Capturas en bruto** (112 MB de PNG) en `docs/screenshots/2026-09-30/`, sin subir al repositorio. La galería
+  en JPEG (5 MB) sí está subida.
+- **`productName` sigue siendo "Casos"**: cambiarlo movería los guardados y ajustes del jugador. Es decisión tuya.
+
+## 6. Qué rama probar y en qué orden
 
 **Rama `feature/noche2`.** El proyecto principal (`C:\Dev\Detective-narrative-game`) ya está en esa rama;
 abre Unity y deja que reimporte. Game View a **1080x1920 (vertical)**; después prueba 1080x2400.
