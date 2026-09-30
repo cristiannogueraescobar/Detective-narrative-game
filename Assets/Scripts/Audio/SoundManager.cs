@@ -169,6 +169,15 @@ public class SoundManager : MonoBehaviour
         return source;
     }
 
+    // Al cerrar, todo el audio parado antes de que Unity apague el sistema de sonido
+    private void OnApplicationQuit()
+    {
+        if (fade != null)
+            StopCoroutine(fade);
+        foreach (AudioSource source in GetComponents<AudioSource>())
+            source.Stop();
+    }
+
     private void OnDestroy()
     {
         GameSettings.Changed -= ApplyVolumes;
