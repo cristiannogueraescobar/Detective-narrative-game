@@ -166,6 +166,12 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 - Firma de publicación (keystore fuera del repositorio).
 - Con el lector de pantalla activo, los enlaces de la libreta crean cadenas cada medio segundo (revisión 4, #6): medir en
   un Android modesto con TalkBack y, si se nota, cachear por texto.
+- Probar el lector de pantalla en un móvil real (TalkBack y VoiceOver): solo está probado en el editor.
+- Pruebas con personas: el bot falla la 2B y la mitad de la 2C porque se obsesiona con Marcos; saber si un jugador
+  cae en lo mismo (la rueda ya marca a quien descarta una pista) decidiría si la historia 2 necesita otra pista.
+- Horas inventadas: queda un 1-1,5 % de respuestas ("supongo que hacia las 19:30"); el reintento frío arregla 9 de
+  cada 10.
+- Menores anotados de las revisiones 5-6 (solo bot y vista previa del layout): CODE-REVIEW.md.
 
 ## 8. Cómo probarlo en Unity (en este orden)
 1. Abrir el proyecto con **Unity 6000.3.2f1** y esperar a que importe (la primera vez tarda).
