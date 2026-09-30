@@ -52,7 +52,7 @@ clues; show a clue to the suspect you think is lying; accuse once, naming your k
   found clue ruled out; replaying a story brings a culprit you haven't seen yet.
 - **Two LLM providers** behind one interface: Ollama (default, local, `qwen2.5:7b-instruct`) or Anthropic Claude.
 - **Robust to the model's quirks**: repeated answers and answers with invented times are asked once more
-  (invented times −74 %); suspects reject false premises in leading questions (22 % → 2 %); character sheets are
+  (invented times −74 %); suspects reject false premises in leading questions (23 % → 2-5 %); character sheets are
   kept under a measured word budget; a narrative validator checks timelines, lies, alibis and reports.
 - **Save / continue**, case records with your best ending, Android back button, Windows build that opens as a
   phone-shaped window.

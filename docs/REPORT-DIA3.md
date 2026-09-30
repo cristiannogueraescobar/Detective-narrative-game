@@ -38,7 +38,7 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 ---
 
 ## 1. Resumen ejecutivo
-1. **Lógica:** validador narrativo (9 reglas, 9 variantes, 17 incoherencias corregidas); qwen ya no acepta premisas falsas (22 → 2 %) ni se pasa al chino.
+1. **Lógica:** validador narrativo (9 reglas, 9 variantes, 17 incoherencias corregidas); qwen ya casi no acepta premisas falsas (23 → 2-5 %) ni se pasa al chino.
 2. **Jugabilidad:** "Pensar", dificultad, prueba clave, rango, **tus notas** por sospechoso, **los partes en la libreta** (y la tarjeta del día que reconoce lo de ayer), la rueda **tacha a quien está descartado**, rejugar trae **otro culpable**. Bot: primera pista 10,3 → 6,9 preguntas, resueltas 44 → 72 % (78 % en el cierre con las 9 variantes).
 3. **Aspecto y sonido:** retratos 2.5D, post-proceso noir (contraste medido después), arte y motivo musical por historia, ficha policial en el final; todo reversible desde el tema.
 4. **Accesibilidad:** WCAG 2.2 AA auditado y **lector de pantalla** (TalkBack/VoiceOver), también en los enlaces de la libreta.
@@ -79,7 +79,7 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 | Partidas resueltas (bot) | 44-56 % | **72 %** con Pensar |
 | Detección de pistas (calibración, 48 pistas) | 80-85 % | 83 % con fichas más ricas (540 palabras) |
 | 2C_gps (la pista que falló en 0c) | 60 % | **85 %** (10 intentos) |
-| Premisas falsas aceptadas (sonda de 72) | 23 % | **2 %** (sin perder pistas ni estados) |
+| Premisas falsas aceptadas (sonda de 72) | 23 % | **2-5 %** (tres sondas: 5, 2 y 5 % en el cierre; sin perder pistas ni estados) |
 | Incoherencias narrativas conocidas | 17 (auditoría) | 0 abiertas; validador en verde en las 9 variantes |
 | Basura por fotograma del juego (reposo) | ≤ 0 B | ≤ 0 B (tras C3/C4/D1) |
 | Contraste mínimo de texto tras el post-proceso | — | 6,08:1 (todos los pares suben) |

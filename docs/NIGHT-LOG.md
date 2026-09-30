@@ -662,6 +662,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   Nike…). Ronda 31 (3B ×2, misma semilla): 2/2, sin "Carlos"; queda una marca "Javier" que es el padre (falso
   positivo del comprobador). Validador y prompts 50/50.
 
+- **21:06** Cierre: suites 716/716 y 56/56, build de Windows con SMOKE OK. Sonda de premisas falsas con la build
+  final: 4/72 (5 %), igual que la primera sonda con la regla (5 %; la segunda dio 2 %). El informe citaba solo el 2 %
+  → corregido a "23 → 2-5 %" en informe, README, GAME-DESIGN y COHERENCE (Logs/premisas/premisas-cierre.md).
+
 ## Ahora (día 3)
 - Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
   rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
