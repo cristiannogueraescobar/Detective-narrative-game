@@ -621,6 +621,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   fichaje → confirmado: es el razonamiento del bot, no la información. El texto se queda (más claro para una
   persona, sin coste). 2B en el día: 0/20.
 
+- **19:47** Ronda 24. El 86-88 % de las preguntas no da nada nuevo y la tarjeta del día solo hablaba cuando no tenías
+  ninguna pista → ahora reconoce lo de ayer: "Ayer: dos pistas nuevas y una contradicción." (después del parte; al
+  continuar a mitad de día cuenta desde ahí). Tests en rojo primero (texto y de juego) y captura revisada (la
+  primera versión ponía la frase bajo "Parte de la mañana:", como si fuera del parte; corregido). Otra vez un sed
+  metió un salto real en una cadena: arreglado con Edit. EditMode 716/716, PlayMode 55/55.
+
 ## Ahora (día 3)
 - Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
   rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.

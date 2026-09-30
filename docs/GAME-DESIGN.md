@@ -102,3 +102,5 @@ importa al jugador (tiempo hasta la primera pista y partidas en blanco) es la qu
   jugadas, nunca la misma dos veces seguidas (antes, al azar: la misma solución 1 de cada 3 veces).
 - **Los partes de la mañana quedan en la libreta** para releerlos (antes solo en la tarjeta del día), y el
   informe final acaba con los culpables posibles que quedan por ver.
+- **La tarjeta del día reconoce lo de ayer** ("Ayer: dos pistas nuevas y una contradicción"): casi todas las
+  preguntas no dan nada nuevo, y el progreso se nota donde el día cambia.
