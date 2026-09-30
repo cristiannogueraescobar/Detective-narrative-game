@@ -345,7 +345,7 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   En los 12 personajes, rueda y mini-retratos del chat (antes sin gradación). Interruptor: Theme.portraitLit.
   Tests: LitPortraitTests (5) + ChatViewTests. EditMode 629/629 antes del último cambio. Skills: TDD.
 
-- **12:10** C4 hecho: NoirPostFx (URP) — con "Filtro noir" los lienzos raíz pasan a la cámara y un Volume global
+- **12:00** C4 hecho: NoirPostFx (URP) — con "Filtro noir" los lienzos raíz pasan a la cámara y un Volume global
   en memoria aplica contraste +6, saturación −8, virado frío/cálido y bloom solo por encima de gamma 0,95 (el papel,
   lo más claro del tema, es 0,91: el texto no brilla). Grano y viñeta siguen en FxLayer (respetan Reducir
   animaciones). Interruptores: ajuste "Filtro noir" y Theme.postFx. **Contraste medido después del post-proceso**
@@ -354,18 +354,18 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   EditMode 630/630, PlayMode 32/32. Coste en móvil: se mide en D2.
   Visto de paso: la parte vacía de los deslizadores casi no se ve (WCAG 1.4.11, 3:1 en componentes) → C6/rondas.
 
-- **12:05** B3 medido (semilla 59, 18+18 partidas): con "Pensar" primera pista 10,3 → 6,9 preguntas, partidas en
+- **12:02** B3 medido (semilla 59, 18+18 partidas): con "Pensar" primera pista 10,3 → 6,9 preguntas, partidas en
   blanco 2 → 0, turnos vacíos 96 → 88 %, resueltas 44 → 72 %. En GAME-DESIGN.md. **Bloque B: HECHO CUANDO cumplido**
   (investigación, documento, 4 mejoras, medición antes/después).
 
-- **12:40** C5 hecho: Tools/make_story_art.py (determinista) genera las 3 intros en pixel art 1/4 con paleta por
+- **12:18** C5 hecho: Tools/make_story_art.py (determinista) genera las 3 intros en pixel art 1/4 con paleta por
   historia y tramado Bayer: 1) urbanización con lluvia, ventana de Elena encendida, farola; 2) cala al amanecer,
   guirnaldas, faro, bar La Marea, una figura sola; 3) olivar, cortijo, camioneta y la columna de humo. Cielo oscuro
   arriba (el expediente se lee encima), la escena en el cuarto inferior. Cuatro iteraciones con capturas por
   historia (nueva captura IntrosPorHistoria). El arte nuevo ya no pasa por la gradación del arte antiguo (salía casi
   negro): Theme.introArtBrightness. Cabeceras NO generadas a propósito (repetirían la escena). Iconos: ya estaban.
 
-- **13:15** C6 hecho (skill: ux-copy): ~120 textos revisados; tabla y glosario en DESIGN-CRITIQUE.md. Dos
+- **12:28** C6 hecho (skill: ux-copy): ~120 textos revisados; tabla y glosario en DESIGN-CRITIQUE.md. Dos
   errores de lógica escondidos en textos: el expediente y el tutorial decían "cinco preguntas" en cualquier
   dificultad, y el aviso "no se ha descontado" salía también cuando la pregunta SÍ se había gastado. Errores con
   qué hacer, un solo aviso de reinicio con botones de acción, "PISTA NUEVA" en todas partes. Deslizadores: la parte
