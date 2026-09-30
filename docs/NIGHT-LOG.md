@@ -269,5 +269,20 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   205 commits sin subir (patrones de claves de Anthropic, GitHub, AWS, contraseñas, claves privadas);
   anthropic_api_key.txt ignorado. Push de feature/noche2 y feature/dia3 a origin.
 
+- 10:55 0c (skill: superpowers TDD + subagente de análisis, modelo más capaz): los 9 fallos del bot definitivo.
+  8 son sobre todo culpa del bot (tenía pistas suficientes y acusó mal, ignoró pistas de descarte o repitió la
+  misma pregunta ~30 veces); 1 es del juego (2C_1: dos pistas dichas y no detectadas). Arreglos del juego, con
+  la frase real del bot como ejemplo positivo en los tests (RED→GREEN):
+  - detección: 2B_manguera ("vino a lavarla"), 2C_puerto ("grabado algo importante… no se fiaba de la policía"),
+    2C_opel ("el inspector Ruiz con su coche"), mentira de Lucía en 3B ("estaba en Granada… toda la jornada");
+  - diseño: 1B_luz ahora destapa la mentira de la madre; Javier sabe que Lucía conduce un Ibiza rojo (en 3B nada
+    unía el coche rojo con ella); temas más amplios donde los testigos se cerraban (1A_ventana, Maruxa, 3C);
+    la versión de Lucas (1B) y la de Maruxa ya no contradicen sus propias pistas; Carmen (1A) no sabe quién cerró
+    el cuarto (se lo inventó y el bot acusó por eso). Tests 561/561.
+- 0e: la "ruptura" de 1C era "No puedo proporcionar un horario exacto, inspector": falso positivo, corregido con
+  test al final de la sesión anterior.
+- 0d en curso: A/B del reintento por horas inventadas (18 + 18 partidas, semilla 59) en el worktree.
+- B1 hecho: docs/RESEARCH.md (subagente con búsqueda web; fuentes enlazadas, decisiones anotadas).
+
 ## Ahora (día 3)
-- 0c: clasificar los 9 fallos del bot (subagente) · B1: investigación web (subagente, en paralelo).
+- 0f/0g: nombre del juego y README; luego A1 (validador narrativo).
