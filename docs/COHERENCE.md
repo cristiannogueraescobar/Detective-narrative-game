@@ -232,3 +232,4 @@ con horas inventadas (antes 5 de 9). Activado por defecto (`AIConversationManage
 "Tu tía" en Granada, sin nombre, hacía que qwen la llamara "tía María" y lo repitiera (5 marcas en una partida).
 Con nombre en las fichas (Remedios), 0 en la comprobación. Regla: si una ficha nombra a alguien por su parentesco
 y los personajes pueden hablar de esa persona, darle nombre.
+Mismo caso con los primos de Granada ("primo Carlos", ronda 30): ahora se llaman Nerea y Hugo; 0 en la comprobación.
