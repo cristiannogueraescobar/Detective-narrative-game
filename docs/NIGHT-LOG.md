@@ -627,6 +627,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   primera versión ponía la frase bajo "Parte de la mañana:", como si fuera del parte; corregido). Otra vez un sed
   metió un salto real en una cadena: arreglado con Edit. EditMode 716/716, PlayMode 55/55.
 
+- **19:52** Ronda 25. El bot no veía la rueda (solo la libreta en texto): ahora, al acusar, se le dice lo mismo que ve
+  el jugador ("aparecen tachados, porque una pista los descarta: …"; `-noLineupMarks` para comparar). 2B ×4
+  (semilla 1212): **1/4, la primera 2B resuelta del día** (0/20 antes), acusando a Andrés por la furgoneta y el
+  lavado. Muestra pequeña, y en otra partida acusó a Marcos con la marca delante (qwen 7B), pero va en la
+  dirección esperada: las marcas de la rueda ayudan a quien las ve. Contraste del motivo en la rueda: 4,74:1 (AA).
+
 ## Ahora (día 3)
 - Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
   rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
