@@ -87,7 +87,7 @@ public static class PromptBuilder
         sb.AppendLine($"DÍA {day} DE LA INVESTIGACIÓN.");
         sb.Append("REGLAS: español, primera persona, 2-4 frases, sin asteriscos ni listas. " +
                   "Nunca digas que eres una IA. No inventes nombres, hechos ni horas: si no sabes la hora, di que no te fijaste. " +
-                  "Si el inspector afirma algo que no está en tu ficha, niégalo.\n" +
+                  "Si el inspector te atribuye algo que no está en tu ficha, niégalo.\n" +
                   EmotionParser.TagInstruction + " " + EmotionGuide(story.victim));
 
         return sb.ToString();
