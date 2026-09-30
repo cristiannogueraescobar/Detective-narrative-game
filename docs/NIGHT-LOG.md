@@ -72,8 +72,14 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   InterrogationUI partido en 3 archivos parciales. Tipografía Special Elite en títulos, sellos y HUD.
 - 04:46 Audio provisional sintetizado (efectos + ambientes). Test de que los efectos se limpian solos.
 
+- 04:50 Bot ronda de revisión (2C, 1B, 3B): sin rupturas; aún 3 repeticiones → la repetición se pide de nuevo
+  con una nota oculta "no repitas". Balance del caso en el informe final (día y pistas encontradas).
+- 04:58 Tercera revisión de código: la fuente de rótulos estática solo tenía ASCII (acentos de otra fuente):
+  nueva fuente dinámica (asset nuevo, la original intacta) y el test de glifos ahora detecta letras de otra
+  familia. Enlace de la libreta bloqueado sin entrada y sin teclado en móvil.
+
 ## Ahora
-- Ronda de revisión 2: bot 2C/1B/3B en marcha; luego revisión de código 3 y más pulido.
+- Ronda 3: mensajes de error amables (Ollama apagado), build final, más pulido.
 
 ## Después (orden)
 1. Layout: 3 rondas de render→revisión, safe area, zonas táctiles ≥ 48 px (añadir al test).
