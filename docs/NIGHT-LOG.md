@@ -612,6 +612,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   borrado antes, resultado fresco). Barrido de textos: no queda ningún "descartado/sospechoso" con género en la
   interfaz.
 
+- **19:34** Ronda 22 al azar (2B, 1C, 3C; semilla 2222): 3/6 culpables, **0 respuestas marcadas** por segunda ronda
+  seguida (el reintento frío se nota); 2B otra vez 0/2 (0/16 en todo el día). 3C va 15/20 en el día, sin patrón en
+  los fallos. Acumulado al azar: 51/68.
+
 ## Ahora (día 3)
 - Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
   rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
