@@ -95,7 +95,7 @@ public static class Notebook
             {
                 SuspectNote note = notes != null && notes.TryGetValue(character.id, out SuspectNote n) ? n : SuspectNote.Ninguna;
                 string noteText = note == SuspectNote.Ninguna ? "añadir nota" : $"tu nota: {SuspectNotes.Label(note)}";
-                line += $" — <link=\"{NoteLinkPrefix}{character.id}\"><u>{noteText}</u></link>";
+                line += $" — <nobr><link=\"{NoteLinkPrefix}{character.id}\"><u>{noteText}</u></link></nobr>";
             }
 
             ClueData clearing = clues.FirstOrDefault(c => c.kind == ClueKind.Clears && c.clears == character.id);
