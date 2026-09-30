@@ -46,7 +46,7 @@ MonoBehaviour:
   scaredTextSpeed: 1.4
   angryTextSpeed: 1.15
   sadTextSpeed: 0.75
-  titleFont: {fileID: 0}
+  titleFont: {fileID: 11400000, guid: 753fe55cbc830ea4e899fd7b47f6429e, type: 2}
   bodyFont: {fileID: 0}
   titleSize: 72
   headingSize: 52

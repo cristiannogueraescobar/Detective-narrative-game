@@ -25,6 +25,7 @@ public static class CaseSelect
         TMP_Text title = UIFactory.Label(column, "ELIGE UN CASO", t.titleSize, t.textPrimary);
         title.name = "Titulo casos";
         title.alignment = TextAlignmentOptions.Center;
+        title.font = UIFactory.TitleFont();
         title.fontStyle = FontStyles.Bold;
         title.characterSpacing = 10f;
         title.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
@@ -55,6 +56,7 @@ public static class CaseSelect
             card.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
 
             TMP_Text number = Text(card, "Numero", $"EXPEDIENTE Nº {story.id.PadLeft(3, '0')}", t.secondarySize, t.paperInk, new Vector2(0f, 0.7f), new Vector2(0.6f, 0.93f));
+            number.font = UIFactory.TitleFont();
             number.fontStyle = FontStyles.Bold;
             number.alignment = TextAlignmentOptions.MidlineLeft;
             number.characterSpacing = 8f;

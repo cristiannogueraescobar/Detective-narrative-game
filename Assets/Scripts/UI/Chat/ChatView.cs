@@ -637,6 +637,7 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
         row.background = ruleImage;
 
         row.heading = NewText(root, "Titulo", T.headingSize, T.accent, TextAlignmentOptions.Center);
+        row.heading.font = UIFactory.TitleFont();
         row.heading.characterSpacing = 12f;
         row.heading.fontStyle = FontStyles.Bold;
         TextStyle.Set(row.heading, TextStyle.Mode.Scrolling, T.headingSize);

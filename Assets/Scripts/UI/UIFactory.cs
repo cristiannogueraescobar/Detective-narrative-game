@@ -143,6 +143,14 @@ public static class UIFactory
     }
 
     /// <summary>
+    /// Fuente de rótulos (máquina de escribir): títulos, sellos, expedientes, días. Si el tema no tiene, la normal.
+    /// </summary>
+    public static TMP_FontAsset TitleFont()
+    {
+        return ThemeManager.Current.titleFont != null ? ThemeManager.Current.titleFont : DefaultFont();
+    }
+
+    /// <summary>
     /// Sustituye la etiqueta que crea DefaultControls (sea Text de uGUI o TMP sin fuente) por una TMP propia,
     /// estirada dentro del control a partir de 'leftInset'.
     /// </summary>

@@ -96,6 +96,7 @@ public class FxLayer : MonoBehaviour
         frame.raycastTarget = false;
 
         TMP_Text label = NewText(rect, text, fontSize, ink);
+        label.font = UIFactory.TitleFont(); // Los sellos, en letra de máquina
         label.fontStyle = FontStyles.Bold;
         label.characterSpacing = 10f;
         label.textWrappingMode = TextWrappingModes.NoWrap;
@@ -242,6 +243,7 @@ public class FxLayer : MonoBehaviour
         tapeImage.raycastTarget = false;
 
         TMP_Text kicker = NewText(card, "PISTA NUEVA", T.secondarySize, T.paperInk);
+        kicker.font = UIFactory.TitleFont();
         kicker.characterSpacing = 14f;
         kicker.fontStyle = FontStyles.Bold;
         var kr = kicker.rectTransform;
@@ -365,6 +367,7 @@ public class FxLayer : MonoBehaviour
         Stretch(headerText.rectTransform, 0f, 0f);
 
         TMP_Text number = NewText(page, (day - 1).ToString(), 220f, T.paperText);
+        number.font = UIFactory.TitleFont();
         number.fontStyle = FontStyles.Bold;
         var nr = number.rectTransform;
         nr.anchorMin = new Vector2(0f, 0.18f);
