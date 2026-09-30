@@ -160,6 +160,7 @@ public class CaseSummary
 {
     public string rank;
     public string keyClueLine;                 // null si no se eligió prueba clave
+    public string notesLine;                   // Lo que apuntó el jugador sobre el culpable (null: nada)
     public SuspectView culprit;                // Para la ficha policial del final (id null = sin ficha)
     public System.Collections.Generic.List<string> missed = new System.Collections.Generic.List<string>();
 }
@@ -197,7 +198,10 @@ public static class EndingReport
             sb.AppendLine($"{label("RANGO")}  <b>{summary.rank}</b>");
         if (summary != null && !string.IsNullOrEmpty(summary.keyClueLine))
             sb.AppendLine(summary.keyClueLine);
-        if (summary != null && (!string.IsNullOrEmpty(summary.rank) || !string.IsNullOrEmpty(summary.keyClueLine)))
+        if (summary != null && !string.IsNullOrEmpty(summary.notesLine))
+            sb.AppendLine(summary.notesLine);
+        if (summary != null && (!string.IsNullOrEmpty(summary.rank) || !string.IsNullOrEmpty(summary.keyClueLine)
+                                || !string.IsNullOrEmpty(summary.notesLine)))
             sb.AppendLine();
 
         sb.AppendLine($"<color={Theme.Hex(style.ink)}><b>{style.title.ToUpperInvariant()}</b></color>");

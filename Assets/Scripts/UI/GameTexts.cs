@@ -64,8 +64,8 @@ public static class GameTexts
     public const string NewGameConfirm = "¿Empezar un caso nuevo? Se perderá la investigación que tienes a medias.";
     public const string NewGameYes = "Empezar de nuevo";
     public const string NewGameNo = "Seguir con este caso";
-    public const string RestartButton = NewGameYes;
-    public const string NewCaseButton = "Caso nuevo"; // Menú con una investigación guardada (glosario: caso) // Botón de Ajustes: lo mismo que el aviso que abre
+    public const string RestartButton = NewGameYes; // Botón de Ajustes: lo mismo que el aviso que abre
+    public const string NewCaseButton = "Caso nuevo"; // Menú con una investigación guardada (glosario: caso)
 
     // Errores: qué ha pasado y qué hacer (la coletilla "no se ha descontado" la pone la interfaz solo si es verdad)
     public const string NoQuestionsLeft = "No te quedan preguntas hoy. Pulsa «Fin del día» para seguir mañana.";
@@ -148,7 +148,7 @@ public static class GameTexts
             "Cuando las gastes, pulsa «Fin del día»: por la mañana llega un parte con novedades. " +
             "No todos están disponibles al principio: aparecen cuando alguien los menciona, cuando preguntas por lo que ellos saben (la vecina, la curva, los caballos…) o cuando la policía los trae.\n\n" +
             h("LA LIBRETA") + "\n" +
-            "Las pistas, las contradicciones, lo que dice cada uno y cómo está se apuntan solos en la libreta: si una pista no cuadra con lo que alguien dice, enséñasela. Junto a cada uno puedes apuntar tu nota (sospechoso, descartado): la rueda de la acusación la tiene en cuenta. Algunas pistas descartan a alguien: léelas bien. " +
+            "Las pistas, las contradicciones, lo que dice cada uno y cómo está se apuntan solos en la libreta: si una pista no cuadra con lo que alguien dice, enséñasela. Junto a cada uno puedes apuntar tu nota (sospecha o descarte): en la rueda de la acusación, a quien descartes se le ve tachado. Algunas pistas descartan a alguien: léelas bien. " +
             "Toca una pista para enseñarla en tu próxima pregunta, o el nombre de un sospechoso para ir a interrogarle.\n\n" +
             h("ACUSAR Y FINALES") + "\n" +
             "Puedes acusar cuando quieras; el séptimo día es obligatorio. Solo hay una oportunidad:\n" +

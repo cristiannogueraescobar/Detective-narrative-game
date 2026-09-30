@@ -26,7 +26,28 @@ public static class SuspectNotes
 
     public static string Label(SuspectNote note)
     {
-        return note == SuspectNote.Sospechoso ? "sospechoso" : note == SuspectNote.Descartado ? "descartado" : "sin nota";
+        // Sustantivos: valen igual para una sospechosa que para un sospechoso
+        return note == SuspectNote.Sospechoso ? "sospecha" : note == SuspectNote.Descartado ? "descarte" : "ninguna";
+    }
+
+    /// <summary>
+    /// Línea del informe final sobre lo que el jugador apuntó del culpable (null si no apuntó nada). La nota va
+    /// citada, así no hay concordancia de género.
+    /// </summary>
+    public static string EndingLine(SuspectNote culpritNote, string culpritName, bool correct)
+    {
+        string said = $"Tu nota sobre {culpritName} decía «{Label(culpritNote)}»";
+        switch (culpritNote)
+        {
+            case SuspectNote.Sospechoso:
+                return correct ? $"Tu nota sobre {culpritName} ya decía «{Label(culpritNote)}»: buen olfato."
+                               : said + ": tu primera sospecha era la buena.";
+            case SuspectNote.Descartado:
+                return correct ? said + ", pero al final no te dejaste engañar."
+                               : said + ": era quien lo hizo.";
+            default:
+                return null;
+        }
     }
 
     public static List<string> ToSave(IReadOnlyDictionary<string, SuspectNote> notes)

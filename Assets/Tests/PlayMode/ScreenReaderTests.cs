@@ -205,7 +205,7 @@ public class ScreenReaderTests
 
         Assert.IsTrue(ScreenReader.Invoke(note));
         yield return Refresh();
-        Assert.IsTrue(Nodes().Any(n => n.label == $"Nota sobre {who}: tu nota: sospechoso"), "activarla cambia la nota");
+        Assert.IsTrue(Nodes().Any(n => n.label == $"Nota sobre {who}: sospecha"), "activarla cambia la nota");
         Assert.IsTrue(Nodes().Any(n => ReferenceEquals(n, note)), "el mismo nodo: el foco no se pierde");
     }
 }

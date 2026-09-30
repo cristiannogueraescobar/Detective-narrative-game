@@ -159,7 +159,6 @@ public class ScreenReader : MonoBehaviour
         public ScrollRect scroll;
         public bool inChat;
         public TextLinkHandler link; // Enlace dentro de un texto (la libreta): un botón más para el lector
-        public int linkIndex;
         public string linkId;
     }
 
@@ -169,6 +168,7 @@ public class ScreenReader : MonoBehaviour
     private static readonly List<Selectable> selectables = new List<Selectable>();
     private static readonly List<TMP_Text> tmpTexts = new List<TMP_Text>();
     private static readonly List<ScrollRect> scrolls = new List<ScrollRect>();
+    private static readonly HashSet<int> seenIds = new HashSet<int>();
 
     private static List<Item> Collect()
     {
@@ -231,6 +231,13 @@ public class ScreenReader : MonoBehaviour
         }
 
         items.AddRange(texts);
+        // Un id repetido descuadraría la jerarquía (un nodo menos que ids): el segundo no entra
+        seenIds.Clear();
+        for (int k = 0; k < items.Count; k++)
+        {
+            if (!seenIds.Add(items[k].id))
+                items.RemoveAt(k--);
+        }
         items.Sort((a, b) => a.sortKey.CompareTo(b.sortKey));
 
         // Chat muy largo: fuera los mensajes más antiguos (nunca títulos ni el HUD)
@@ -268,7 +275,7 @@ public class ScreenReader : MonoBehaviour
             {
                 id = (t.GetInstanceID() * 397) ^ id.GetHashCode(), rect = t.rectTransform, camera = camera,
                 sortKey = SortKey(frame) + 0.25f, role = AccessibilityRole.Button,
-                label = Plain(handler.Describe(id, link.GetLinkText())), link = handler, linkIndex = i, linkId = id
+                label = Plain(handler.Describe(id, link.GetLinkText())), link = handler, linkId = id
             });
         }
     }
@@ -294,6 +301,17 @@ public class ScreenReader : MonoBehaviour
             yMax = Mathf.Max(yMax, max.y);
         }
         return xMax < xMin ? Rect.zero : new Rect(xMin, Screen.height - yMax, xMax - xMin, yMax - yMin);
+    }
+
+    private static int LinkIndex(TMP_Text t, string linkId)
+    {
+        TMP_TextInfo info = t != null ? t.textInfo : null;
+        for (int i = 0; info != null && i < info.linkCount; i++)
+        {
+            if (info.linkInfo[i].GetLinkID() == linkId)
+                return i;
+        }
+        return -1;
     }
 
     private static bool ActivateLink(Item item)
@@ -504,7 +522,7 @@ public class ScreenReader : MonoBehaviour
         node.role = item.role;
         int id = item.id;
         node.frameGetter = () => !bound.TryGetValue(id, out Item it) || it.rect == null ? Rect.zero
-            : it.link != null ? LinkRect(it.link.GetComponent<TMP_Text>(), it.linkIndex, it.camera)
+            : it.link != null ? LinkRect(it.link.GetComponent<TMP_Text>(), LinkIndex(it.link.GetComponent<TMP_Text>(), it.linkId), it.camera)
             : ScreenRect(it.rect, it.camera);
         if (item.link != null)
             node.invoked += () => bound.TryGetValue(id, out Item it) && ActivateLink(it);
