@@ -65,6 +65,11 @@ public class InvestigationStateTests
     [TestCase(new[] { "i1", "x" }, true, Ending.Bittersweet)]           // 2 + 2 = 4
     [TestCase(new[] { "i1", "i2", "i3" }, false, Ending.Bittersweet)]   // 3
     [TestCase(new[] { "i1", "d", "ctx" }, false, Ending.Insufficient)]  // 1: descartes y contexto no suman
+    [TestCase(new string[0], false, Ending.Insufficient)]              // 0: acertar sin nada
+    [TestCase(new[] { "x" }, true, Ending.Bittersweet)]                  // 1 + 2 = 3: solo la contradicción
+    [TestCase(new[] { "x" }, false, Ending.Insufficient)]                // 1: sin mentira dicha no hay contradicción
+    [TestCase(new[] { "i1", "i2" }, false, Ending.Insufficient)]         // 2: justo por debajo de "con dudas"
+    [TestCase(new[] { "i1", "i2", "i3", "x" }, false, Ending.Bittersweet)] // 4: justo por debajo de "cerrado"
     public void Final_PorEvidencia(string[] found, bool lieTold, Ending expected)
     {
         var s = NewState();
