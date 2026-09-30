@@ -213,15 +213,15 @@ Tienes 7 días.",
                 new ClueData
                 {
                     id = "2A_aparcamiento", playerName = "Un aparcamiento vacío", holder = "cartero", kind = ClueKind.Incriminates, exposesLie = true,
-                    summary = "A las 5:10 Andrés pasó por La Marea: el bar estaba a oscuras y el Volvo de Marcos no estaba.",
-                    topic = "lo que viste al pasar por La Marea",
-                    fact = "a las 5:10, al pasar por La Marea, el bar estaba a oscuras y el Volvo ranchera de Marcos no estaba aparcado en su sitio.",
+                    summary = "A las 5:10 Andrés pasó por La Marea: el bar estaba a oscuras y el Volvo de Marcos no estaba. Marcos dice que no salió del bar.",
+                    topic = "lo que viste al pasar por La Marea, o si viste algo raro o algún coche cerca del bar esa madrugada",
+                    fact = "a las 5:10, al pasar por La Marea, el bar estaba a oscuras y el Volvo ranchera de Marcos no estaba aparcado en su sitio. Te extrañó: otras noches se queda recogiendo con la luz encendida.",
                     anchors = new[]
                     {
                         new[] { "volvo", "coche de marcos", "ranchera" },
                         new[] { "no estaba", "vacio", "a oscuras", "apagado" }
                     },
-                    calibrationQuestions = new[] { "¿Qué vio al pasar por delante de La Marea?", "¿Estaba el coche de Marcos en el bar esa madrugada?" },
+                    calibrationQuestions = new[] { "¿Qué vio al pasar por delante de La Marea?", "¿Estaba el coche de Marcos en el bar esa madrugada?", "¿Vio algo raro cerca del bar La Marea esa madrugada?" },
                     sampleHits = new[]
                     {
                         "A las 5:10 pasé por La Marea y estaba a oscuras; el Volvo de Marcos no estaba.",
@@ -233,14 +233,14 @@ Tienes 7 días.",
                 {
                     id = "2A_curva", playerName = "Coche en la curva", holder = "vecina", kind = ClueKind.Incriminates,
                     summary = "A las 5:20 Maruxa vio un coche grande y oscuro, tipo ranchera, parado en la curva con las luces apagadas.",
-                    topic = "lo que viste en la curva esa madrugada o si viste pasar a alguien o algún vehículo",
+                    topic = "lo que viste desde tu ventana o en la curva esa madrugada, o si viste pasar a alguien o algún vehículo",
                     fact = "a las 5:20 viste un coche grande y oscuro, tipo ranchera, parado en la curva con las luces apagadas. Ahí nunca para nadie.",
                     anchors = new[]
                     {
                         new[] { "coche", "ranchera" },
                         new[] { "luces apagadas", "sin luces", "parado", "5:20" }
                     },
-                    calibrationQuestions = new[] { "¿Vio algo raro en la curva esa madrugada?", "¿Pasó algún coche por delante de su casa hacia las cinco?" },
+                    calibrationQuestions = new[] { "¿Vio algo raro en la curva esa madrugada?", "¿Pasó algún coche por delante de su casa hacia las cinco?", "¿Qué vio desde su ventana esa madrugada?" },
                     sampleHits = new[]
                     {
                         "A las 5:20 había un coche grande, oscuro, parado en la curva sin luces, fillo.",
@@ -252,14 +252,14 @@ Tienes 7 días.",
                 {
                     id = "2A_gps", playerName = "El GPS de Correos", holder = "detective", kind = ClueKind.Clears, clears = "cartero",
                     summary = "El GPS de la furgoneta de Correos sitúa a Andrés en la oficina de clasificación de 5:15 a 7:00.",
-                    topic = "dónde estaba el cartero",
+                    topic = "dónde estaba el cartero esa madrugada o si alguien comprobó la coartada de Andrés",
                     fact = "el GPS de la furgoneta de Correos sitúa a Andrés en la oficina de clasificación desde las 5:15 hasta las 7:00.",
                     anchors = new[]
                     {
                         new[] { "gps", "localizador" },
                         new[] { "oficina", "clasificacion", "5:15", "7:00" }
                     },
-                    calibrationQuestions = new[] { "¿Comprobaron dónde estaba el cartero esa madrugada?", "¿Qué sabe de Andrés Souto?" },
+                    calibrationQuestions = new[] { "¿Comprobaron dónde estaba el cartero esa madrugada?", "¿Qué sabe de Andrés Souto?", "¿Alguien ha comprobado la coartada de Andrés?" },
                     sampleHits = new[]
                     {
                         "El GPS de Correos pone al cartero en la oficina de 5:15 a 7:00.",
@@ -290,7 +290,7 @@ Tienes 7 días.",
                 "Los buzos encuentran el cuerpo de Sofía en la Cala do Corvo. El forense descarta una caída: murió de un golpe.",
                 "La tía de Sofía comenta que este verano alguien dejaba cosas en su buzón.",
                 "En el bolso de Sofía había un sobre sin sello ni remitente, vacío.",
-                "Correos confirma que todos sus empleados fichan en la oficina. Los registros de fichaje los tiene Ruiz en comisaría.",
+                "Correos ha enviado a la comisaría de Ruiz los registros de fichaje de su oficina de esa madrugada, incluido el del cartero.",
                 "Un vecino dice que esa madrugada vio pasar una furgoneta 'pequeña, clara'.",
                 LastDay
             },
@@ -368,15 +368,15 @@ Tienes 7 días.",
                 new ClueData
                 {
                     id = "2B_fichaje", playerName = "Un fichaje tardío", holder = "detective", kind = ClueKind.Incriminates, exposesLie = true,
-                    summary = "Andrés fichó en la oficina a las 6:15. Lleva quince años fichando a las 5:15.",
-                    topic = "los horarios del cartero",
-                    fact = "Andrés fichó en la oficina de Correos a las 6:15 esa madrugada, cuando lleva quince años fichando a las 5:15 sin fallar un día.",
+                    summary = "Según los registros que tiene Ruiz, Andrés fichó a las 6:15; lleva quince años fichando a las 5:15. Andrés dice que a las 5:15 ya clasificaba.",
+                    topic = "los horarios del cartero, a qué hora llegó o fichó Andrés esa madrugada, o los registros de fichaje de Correos",
+                    fact = "tienes en comisaría los registros de fichaje de Correos de esa madrugada: Andrés fichó en la oficina a las 6:15, cuando lleva quince años fichando a las 5:15 sin fallar un día. No le diste importancia porque crees que fue una caída.",
                     anchors = new[]
                     {
                         new[] { "fich" },
                         new[] { "6:15", "seis y cuarto", "una hora tarde", "tarde" }
                     },
-                    calibrationQuestions = new[] { "¿Comprobaron los horarios del cartero?", "¿A qué hora llegó Andrés a su trabajo esa madrugada?" },
+                    calibrationQuestions = new[] { "¿Comprobaron los horarios del cartero?", "¿A qué hora llegó Andrés a su trabajo esa madrugada?", "¿Puedo ver los registros de fichaje de Correos?" },
                     sampleHits = new[]
                     {
                         "El cartero fichó a las 6:15, compañero, y lleva quince años fichando a las 5:15.",
@@ -388,14 +388,14 @@ Tienes 7 días.",
                 {
                     id = "2B_furgoneta", playerName = "La furgoneta blanca", holder = "vecina", kind = ClueKind.Incriminates,
                     summary = "A las 5:12 Maruxa vio una furgoneta blanca pequeña parar junto a la chica en la curva. Ella subió.",
-                    topic = "lo que viste en la curva o lo que pasó por delante de tu casa esa madrugada, personas o vehículos",
+                    topic = "lo que viste desde tu ventana o en la curva esa madrugada, o lo que pasó por delante de tu casa, personas o vehículos",
                     fact = "«A las 5:12 paró una furgoneta blanca pequeña junto a la rapaza, en la curva, y ella se subió.»",
                     anchors = new[]
                     {
                         new[] { "furgoneta", "coche pequeno" },
                         new[] { "blanca", "se subio", "subio", "subirse", "5:12", "paro", "sofia", "la nina", "la chica", "la rapaza" }
                     },
-                    calibrationQuestions = new[] { "¿Vio algo raro en la curva esa madrugada?", "¿Pasó algún vehículo por delante de su casa hacia las cinco?" },
+                    calibrationQuestions = new[] { "¿Vio algo raro en la curva esa madrugada?", "¿Pasó algún vehículo por delante de su casa hacia las cinco?", "¿Qué vio desde su ventana esa madrugada?" },
                     sampleHits = new[]
                     {
                         "A las 5:12 paró una furgoneta blanca pequeña y la rapaza se subió.",
@@ -407,14 +407,14 @@ Tienes 7 días.",
                 {
                     id = "2B_manguera", playerName = "Manguera al amanecer", holder = "bar", kind = ClueKind.Incriminates,
                     summary = "A las 7:30 Marcos vio a Andrés lavando a manguerazos su furgoneta blanca. Nunca la lava.",
-                    topic = "lo que viste por la mañana al volver a casa",
+                    topic = "lo que viste por la mañana al volver a casa, o si sabes de alguien con una furgoneta blanca pequeña",
                     fact = "a las 7:30, al volver a casa, viste a Andrés lavando a manguerazos su furgoneta blanca detrás de su casa. En quince años nunca le viste lavarla.",
                     anchors = new[]
                     {
                         new[] { "lavando", "lavaba", "manguera", "lavarla", "lavar la" },
                         new[] { "furgoneta", "andres", "cartero" }
                     },
-                    calibrationQuestions = new[] { "¿Vio algo raro esa mañana al volver a casa?", "¿Qué vio al irse a casa después de recoger el bar?" },
+                    calibrationQuestions = new[] { "¿Vio algo raro esa mañana al volver a casa?", "¿Qué vio al irse a casa después de recoger el bar?", "¿Conoce a alguien del pueblo con una furgoneta blanca pequeña?" },
                     sampleHits = new[]
                     {
                         "A las 7:30 vi al cartero lavando la furgoneta a manguerazos, chaval.",
@@ -467,7 +467,7 @@ Tienes 7 días.",
                 "La facultad confirma que Sofía preparaba un reportaje sobre el puerto de Portomar.",
                 "El móvil de Sofía no está entre las pruebas enviadas a Vigo.",
                 "La Guardia Civil investiga movimientos de lanchas rápidas en la ría esa misma noche.",
-                "El informe de las primeras horas del caso es sorprendentemente corto.",
+                "El informe de las primeras horas es sorprendentemente corto. Correos dice que esa madrugada el cartero llevaba un certificado urgente a la comisaría y que sigue sin firmar.",
                 LastDay
             },
             roles = new List<CharacterRole>
@@ -528,14 +528,14 @@ Tienes 7 días.",
                 {
                     id = "2C_puerto", playerName = "Algo gordo en el puerto", holder = "bar", kind = ClueKind.Incriminates,
                     summary = "A las 4:40 Sofía volvió pálida al bar: había grabado 'algo gordo' en el puerto y no se fiaba de la policía.",
-                    topic = "cómo estaba Sofía esa noche o qué te contó",
+                    topic = "cómo estaba Sofía esa noche, qué te contó, o lo que sabes de su reportaje sobre el puerto",
                     fact = "a las 4:40 Sofía volvió pálida al bar y te dijo que había grabado con el móvil algo gordo en el puerto, y que no se fiaba de la policía.",
                     anchors = new[]
                     {
                         new[] { "grabado", "grabo", "video" },
                         new[] { "puerto", "muelle", "algo gordo", "algo importante", "no se fiaba de la policia" }
                     },
-                    calibrationQuestions = new[] { "¿Cómo estaba Sofía esa noche?", "¿Le contó Sofía algo antes de irse?" },
+                    calibrationQuestions = new[] { "¿Cómo estaba Sofía esa noche?", "¿Le contó Sofía algo antes de irse?", "¿Sabe algo del reportaje de Sofía sobre el puerto?" },
                     sampleHits = new[]
                     {
                         "A las 4:40 volvió blanca, chaval: dijo que había grabado algo gordo en el puerto.",
@@ -549,14 +549,14 @@ Tienes 7 días.",
                 {
                     id = "2C_opel", playerName = "Un coche conocido", holder = "vecina", kind = ClueKind.Incriminates, exposesLie = true,
                     summary = "A las 5:10 Maruxa vio el Opel gris del inspector Ruiz parar junto a la chica en la curva. Ella subió.",
-                    topic = "lo que viste en la curva esa madrugada o si viste pasar a alguien o algún vehículo",
+                    topic = "lo que viste desde tu ventana o en la curva esa madrugada, o si viste pasar a alguien o algún vehículo",
                     fact = "a las 5:10 viste el Opel gris del inspector Ruiz, lo conoces de sobra, parar junto a la chica en la curva; ella se subió.",
                     anchors = new[]
                     {
                         new[] { "opel", "coche del inspector", "coche de ruiz", "coche gris", "ruiz con su coche", "ruiz en su coche", "inspector con su coche", "inspector en su coche" },
                         new[] { "ruiz", "inspector", "se subio", "5:10" }
                     },
-                    calibrationQuestions = new[] { "¿Vio algo raro en la curva esa madrugada?", "¿Pasó algún coche por delante de su casa hacia las cinco?" },
+                    calibrationQuestions = new[] { "¿Vio algo raro en la curva esa madrugada?", "¿Pasó algún coche por delante de su casa hacia las cinco?", "¿Qué vio desde su ventana esa madrugada?" },
                     sampleHits = new[]
                     {
                         "A las 5:10 paró el Opel gris del inspector Ruiz junto a la rapaza, fillo.",
@@ -569,15 +569,15 @@ Tienes 7 días.",
                 new ClueData
                 {
                     id = "2C_comisaria", playerName = "Comisaría cerrada", holder = "cartero", kind = ClueKind.Incriminates, exposesLie = true,
-                    summary = "A las 5:05 Andrés fue a la comisaría a dejar un certificado urgente: estaba cerrada y no había nadie dentro.",
-                    topic = "lo que hiciste entre las cinco y las cinco y cuarto, o lo que pasó cuando fuiste a la comisaría con el certificado",
-                    fact = "a las 5:05 fuiste a la comisaría a dejar el certificado urgente y estaba cerrada, con las luces apagadas y sin nadie dentro.",
+                    summary = "A las 5:05 Andrés fue a la comisaría con un certificado urgente: estaba cerrada y vacía. Ruiz dice que estuvo allí hasta las seis.",
+                    topic = "lo que hiciste entre las cinco y las cinco y cuarto, si viste a alguien en la comisaría, o lo que pasó cuando fuiste con el certificado",
+                    fact = "a las 5:05 fuiste a la comisaría a dejar el certificado urgente y estaba cerrada, con las luces apagadas y sin nadie dentro. Te extrañó: en fiestas siempre hay alguien de guardia.",
                     anchors = new[]
                     {
                         new[] { "comisaria", "certificado", "5:05", "cinco y cinco" },
                         new[] { "cerrada", "cerrado", "sin nadie", "nadie dentro", "vacia", "luces apagadas" }
                     },
-                    calibrationQuestions = new[] { "¿Pasó por la comisaría esa madrugada?", "¿Qué hizo usted entre las cinco y las cinco y cuarto?" },
+                    calibrationQuestions = new[] { "¿Pasó por la comisaría esa madrugada?", "¿Qué hizo usted entre las cinco y las cinco y cuarto?", "¿Vio al inspector Ruiz en la comisaría esa madrugada?" },
                     sampleHits = new[]
                     {
                         "A las 5:05 fui a la comisaría con el certificado y estaba cerrada, sin nadie dentro.",
@@ -591,14 +591,14 @@ Tienes 7 días.",
                 {
                     id = "2C_prueba", playerName = "Una prueba perdida", holder = "detective", kind = ClueKind.Incriminates,
                     summary = "El móvil de Sofía apareció en la cala, se registró como prueba y 'se extravió' en el traslado a Vigo.",
-                    topic = "el móvil de Sofía",
+                    topic = "el móvil de Sofía o las pruebas que se enviaron a Vigo",
                     fact = "el móvil de la chica apareció en la cala, se registró como prueba y se extravió en el traslado a Vigo. Son cosas que pasan.",
                     anchors = new[]
                     {
                         new[] { "movil", "telefono", "prueba" },
                         new[] { "extravi", "se perdio", "perdido", "traslado", "desaparecio" }
                     },
-                    calibrationQuestions = new[] { "¿Dónde está el móvil de Sofía?", "¿Encontraron el teléfono de la chica?" },
+                    calibrationQuestions = new[] { "¿Dónde está el móvil de Sofía?", "¿Encontraron el teléfono de la chica?", "¿Por qué el móvil de Sofía no está entre las pruebas enviadas a Vigo?" },
                     sampleHits = new[]
                     {
                         "El móvil se extravió en el traslado a Vigo, compañero. Pasa.",
