@@ -72,6 +72,15 @@ public class FxTests
     }
 
     [Test]
+    public void LaHoraDelMargenNoSeRepiteEnLaFrase()
+    {
+        var steps = Timeline.FromEpilogue("A las 22:30, con Carmen dormida, subió. A las 23:05 fingió encontrarla. Salió sobre las 5:10.").ToList();
+        Assert.AreEqual("Con Carmen dormida, subió.", steps[0].text);
+        Assert.AreEqual("Fingió encontrarla.", steps[1].text);
+        Assert.AreEqual("Salió sobre las 5:10.", steps[2].text, "si la hora no abre la frase, la frase queda igual");
+    }
+
+    [Test]
     public void LineaTemporalNoPartePorAbreviaturas()
     {
         var steps = Timeline.FromEpilogue("El Sr. Gil salió a las 5:10. Volvió tarde.").ToList();
@@ -126,7 +135,7 @@ public class EndingReportTests
     public void LaVerdadVaComoLineaTemporalConHoras()
     {
         string[] lines = Build(Ending.Good).Split('\n');
-        Assert.IsTrue(lines.Any(l => l.Contains("22:30") && l.Contains("subió el cacao")));
+        Assert.IsTrue(lines.Any(l => l.Contains("22:30") && l.Contains("Subió el cacao")));
         Assert.IsTrue(lines.Any(l => l.Contains("23:15") && l.Contains("112")));
         Assert.IsTrue(lines.Any(l => l.Contains("Carmen mintió")), "las frases sin hora también salen");
     }
@@ -136,6 +145,16 @@ public class EndingReportTests
     {
         foreach (Ending e in System.Enum.GetValues(typeof(Ending)))
             StringAssert.Contains(EndingStyle.For(e, ThemeManager.Current).verdict, Build(e));
+    }
+
+    [Test]
+    public void CadaDatoVaEnSuLinea()
+    {
+        // En 1080 de ancho dos datos en una línea partían la cifra a la línea siguiente
+        string[] lines = Build(Ending.Good).Split('\n');
+        Assert.IsFalse(lines.Any(l => l.Contains("PISTAS") && l.Contains("CONTRADICCIONES")));
+        Assert.IsFalse(lines.Any(l => l.Contains("EVIDENCIA") && l.Contains("hacen falta")));
+        Assert.IsTrue(lines.Any(l => l.Contains("CONTRADICCIONES") && l.Contains("1")));
     }
 
     [Test]

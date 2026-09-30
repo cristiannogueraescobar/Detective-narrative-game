@@ -68,6 +68,7 @@ public static class Timeline
     }
 
     private static readonly Regex Time = new Regex(@"\b([01]?\d|2[0-3]):[0-5]\d\b");
+    private static readonly Regex LeadingTime = new Regex(@"^(?:A|Hacia|Sobre) las (\d{1,2}:\d{2}),?\s+");
     private static readonly Regex SentenceEnd = new Regex(@"(?<=[.!?…])\s+(?=[\p{Lu}¿¡«])");
     private static readonly string[] Abbreviations = { "Sr.", "Sra.", "Dr.", "Dra.", "D.", "Dña.", "St." };
 
@@ -89,7 +90,12 @@ public static class Timeline
         foreach (string sentence in sentences)
         {
             Match m = Time.Match(sentence);
-            yield return new Step { time = m.Success ? m.Value : null, text = sentence.Trim() };
+            string text = sentence.Trim();
+            // La hora ya va en el margen: "A las 22:30, con…" → "Con…"
+            Match lead = LeadingTime.Match(text);
+            if (m.Success && lead.Success && lead.Groups[1].Value == m.Value && lead.Length < text.Length)
+                text = char.ToUpper(text[lead.Length]) + text.Substring(lead.Length + 1);
+            yield return new Step { time = m.Success ? m.Value : null, text = text };
         }
     }
 
@@ -162,8 +168,11 @@ public static class EndingReport
 
         sb.AppendLine($"{label("TU ACUSACIÓN")}  <b>{accusedName}</b>");
         sb.AppendLine($"{label("CULPABLE")}  <b>{culpritName}</b>");
-        sb.AppendLine($"{label("PISTAS INCRIMINATORIAS")}  {result.incriminatingFound}   {label("CONTRADICCIONES")}  {result.contradictions}");
-        sb.AppendLine($"{label("EVIDENCIA")}  {result.evidence}/{maxEvidence}  <size=80%>{label($"(hacen falta {InvestigationState.GoodThreshold} para una condena segura)")}</size>");
+        // Un dato por línea: dos en la misma partían la cifra a la línea siguiente en pantallas estrechas
+        sb.AppendLine($"{label("PISTAS INCRIMINATORIAS")}  {result.incriminatingFound}");
+        sb.AppendLine($"{label("CONTRADICCIONES")}  {result.contradictions}");
+        sb.AppendLine($"{label("EVIDENCIA")}  <b>{result.evidence}/{maxEvidence}</b>");
+        sb.AppendLine($"<size=80%>{label($"Hacen falta {InvestigationState.GoodThreshold} para una condena segura.")}</size>");
         if (!string.IsNullOrEmpty(stats))
             sb.AppendLine(label(stats));
         sb.AppendLine();
