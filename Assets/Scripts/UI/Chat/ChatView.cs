@@ -281,7 +281,7 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
         {
             // Tecleo de la máquina cada pocas letras
             int visible = row.body.maxVisibleCharacters;
-            if (visible - lastTick >= 4)
+            if (visible - lastTick >= 6)
             {
                 lastTick = visible;
                 SoundManager.Play(Sfx.Typing, 0.25f, 0.08f);
