@@ -298,4 +298,20 @@ public class GameSmokeTests
         Assert.AreEqual(2, Find("EvidenceDropdown (auto)").GetComponent<TMP_Dropdown>().value, "queda elegida como prueba");
         Assert.IsFalse(Find("CluesPanel").activeInHierarchy, "y la libreta se cierra");
     }
+
+    [UnityTest]
+    public IEnumerator LosEfectosSeLimpianSolos()
+    {
+        yield return StartNewGame();
+        var ui = Object.FindFirstObjectByType<InterrogationUI>();
+        ui.ShowContradictionNotification("La versión de alguien choca con: una pista");
+        ui.ShowClueNotification("Una pista");
+        ui.ShowClueNotification("Otra pista");
+        yield return null;
+        Assert.IsNotNull(Find("Sello (auto)"), "el sello aparece");
+
+        yield return new WaitForSecondsRealtime(7f);
+        foreach (string name in new[] { "Sello (auto)", "Ficha de pista (auto)", "Destello (auto)" })
+            Assert.IsTrue(Find(name) == null, $"{name} desaparece al terminar");
+    }
 }
