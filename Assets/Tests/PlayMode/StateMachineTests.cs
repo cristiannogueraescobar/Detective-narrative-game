@@ -518,4 +518,17 @@ public class StateMachineTests
         string report = string.Join(" ", Find("ResultPanel").GetComponentsInChildren<TMP_Text>(true).Select(t => t.text));
         StringAssert.Contains("culpables posibles", report);
     }
+
+    // Ronda 24: la tarjeta del día nuevo reconoce lo conseguido ayer
+    [UnityTest]
+    public IEnumerator LaTarjetaDelDiaDiceLoConseguidoAyer()
+    {
+        yield return StartNewGame();
+        var manager = Object.FindFirstObjectByType<AIConversationManager>();
+        manager.State.Discover(manager.State.Variant.clues[0].id);
+        Object.FindFirstObjectByType<GameManager>().EndDay();
+        yield return new WaitForSecondsRealtime(0.5f);
+        Assert.IsTrue(Object.FindObjectsByType<TMP_Text>(FindObjectsSortMode.None).Any(t => t.text.Contains("Ayer: una pista nueva.")),
+            "la tarjeta del día 2 lo dice");
+    }
 }

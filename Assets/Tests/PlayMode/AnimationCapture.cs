@@ -279,9 +279,13 @@ public class AnimationCapture
     [UnityTest]
     public IEnumerator NuevoDia()
     {
+        Tutorial.SkipAll();
         yield return ToInterrogation();
+        // Con una pista del día: la tarjeta lo reconoce ("Ayer: una pista nueva.")
+        var talk = UnityEngine.Object.FindFirstObjectByType<AIConversationManager>();
+        talk.State.Discover(talk.State.Variant.clues[0].id);
         UnityEngine.Object.FindFirstObjectByType<GameManager>().EndDay();
-        yield return Frames("dia", 0.1f, 0.5f, 0.75f, 1.0f, 2.5f, 6f);
+        yield return Frames("dia",0.1f, 0.5f, 0.75f, 1.0f, 2.5f, 6f);
     }
 
     [UnityTest]

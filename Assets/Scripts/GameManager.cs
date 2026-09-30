@@ -184,6 +184,10 @@ public class GameManager : MonoBehaviour
             data.emotions.ToDictionary(e => e.characterId, e => (Emotion)Enum.Parse(typeof(Emotion), e.emotion)));
 
         interrogationUI?.SetVictim(story.victim);
+        // Al continuar a mitad de día, "ayer" cuenta desde aquí
+        cluesAtDayStart = DiscoveredClues().Count;
+        contradictionsAtDayStart = State.ContradictionClueIds.Count;
+        dayRecap = null;
         interrogationUI?.ContinueInterrogation(data, data.currentSuspect, conversationManager.Emotions);
 
         Debug.Log($"[GameManager] Partida continuada: {variant.id}, día {currentDay}");
@@ -239,6 +243,8 @@ public class GameManager : MonoBehaviour
         ApplyDifficulty(GameSettings.Difficulty);
         hintMemory = new HintMemory();
         notes = new Dictionary<string, SuspectNote>();
+        cluesAtDayStart = contradictionsAtDayStart = 0;
+        dayRecap = null;
         accusationMade = false;
         interrogationUI?.ResetForNewCase();
         SelectCase(storyId);
@@ -275,6 +281,8 @@ public class GameManager : MonoBehaviour
     private bool requestInFlight;
     private bool caseForced; // Caso elegido en el inspector (depuración): no se apunta como jugado
     private bool saveAfterRequest; // Algo cambió durante la pregunta (una nota): guardar al terminar
+    private int cluesAtDayStart, contradictionsAtDayStart; // Para "Ayer: …" en la tarjeta del día
+    private string dayRecap;
 
     public async void AskQuestion(string characterId, string question, string shownClueId)
     {
@@ -353,6 +361,11 @@ public class GameManager : MonoBehaviour
 
     public void EndDay()
     {
+        // Lo conseguido hoy, para la tarjeta de mañana
+        dayRecap = GameTexts.DayRecap(DiscoveredClues().Count - cluesAtDayStart,
+                                      State.ContradictionClueIds.Count - contradictionsAtDayStart);
+        cluesAtDayStart = DiscoveredClues().Count;
+        contradictionsAtDayStart = State.ContradictionClueIds.Count;
         currentDay++;
         questionsUsedToday = 0;
 
@@ -376,7 +389,8 @@ public class GameManager : MonoBehaviour
     private string MorningReport(int day)
     {
         string report = day - 1 < variant.morningReports.Length ? variant.morningReports[day - 1] : "";
-        return GameTexts.MorningReport(report, GameTexts.StuckHint(day, DiscoveredClues().Count, HintCost >= 0), day, maxDays);
+        return GameTexts.MorningReport(report, GameTexts.StuckHint(day, DiscoveredClues().Count, HintCost >= 0), day, maxDays,
+                                       recap: dayRecap);
     }
 
     public void ForceAccusationPanel()

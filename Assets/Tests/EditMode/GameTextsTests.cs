@@ -205,4 +205,15 @@ public class GameTextsTests
     {
         Assert.AreEqual("Caso nuevo", GameTexts.NewCaseButton);
     }
+
+    // Ronda 24: la tarjeta del día reconoce lo que se consiguió ayer (casi todas las preguntas no dan nada nuevo)
+    [Test]
+    public void ElDiaNuevoRecuerdaLoConseguidoAyer()
+    {
+        Assert.IsNull(GameTexts.DayRecap(0, 0), "si no hubo nada, no se dice");
+        Assert.AreEqual("Ayer: una pista nueva.", GameTexts.DayRecap(1, 0));
+        Assert.AreEqual("Ayer: dos pistas nuevas y una contradicción.", GameTexts.DayRecap(2, 1));
+        Assert.AreEqual("Ayer: dos contradicciones.", GameTexts.DayRecap(0, 2));
+        StringAssert.StartsWith("Parte.\nAyer: una pista nueva.", GameTexts.MorningReport("Parte.", null, 3, 7, recap: GameTexts.DayRecap(1, 0)), "después del parte");
+    }
 }
