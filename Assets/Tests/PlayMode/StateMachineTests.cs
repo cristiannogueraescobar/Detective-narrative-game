@@ -424,7 +424,7 @@ public class StateMachineTests
         Assert.Less(cell.transform.Find("Marco").GetComponent<CanvasGroup>().alpha, 1f, "descartado: el retrato atenuado en la rueda (pero se puede elegir)");
         Assert.IsNull(cell.GetComponent<CanvasGroup>(), "el anillo de selección y el nombre, a todo color");
         Assert.IsTrue(cell.GetComponent<Button>().interactable);
-        StringAssert.Contains("(tu descarte)", cell.GetComponentInChildren<TMP_Text>().text, "sin género: vale para cualquiera");
+        StringAssert.Contains("tu descarte", cell.GetComponentInChildren<TMP_Text>().text, "sin género: vale para cualquiera");
     }
 
     // Revisión ronda 11: tocar la nota mientras el sospechoso "escribe" no guarda medio turno (la pregunta sin
@@ -484,7 +484,7 @@ public class StateMachineTests
         yield return new WaitForSecondsRealtime(0.3f);
         GameObject cell = Find("Sospechoso " + manager.Story.Character(clearing.clears).shortName);
         Assert.IsNotNull(cell);
-        StringAssert.Contains("(pista de descarte)", cell.GetComponentInChildren<TMP_Text>().text);
+        StringAssert.Contains("pista de descarte", cell.GetComponentInChildren<TMP_Text>().text);
         Assert.IsTrue(cell.GetComponent<Button>().interactable, "se puede elegir igual");
     }
 
@@ -499,5 +499,23 @@ public class StateMachineTests
         string notebook = Find("CluesPanel").GetComponentsInChildren<TMP_Text>(true).Select(t => t.text).First(t => t.Contains("SOSPECHOSOS"));
         StringAssert.Contains("PARTES DE LA MAÑANA", notebook);
         StringAssert.Contains("Día 2:", notebook);
+    }
+
+    // Revisión 5: acusar apunta la variante como vista y el informe dice cuántos culpables quedan
+    [UnityTest]
+    public IEnumerator AcusarApuntaLaVarianteYElInformeInvitaARejugar()
+    {
+        yield return StartNewGame();
+        string variantId = Object.FindFirstObjectByType<AIConversationManager>().State.Variant.id;
+        Assert.IsFalse(CaseRecords.Played(variantId));
+
+        Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(0.3f);
+        yield return Tap("Accusebutton");
+        yield return WaitUntil(() => Find("ResultPanel").activeInHierarchy, 10f, "el veredicto");
+
+        Assert.IsTrue(CaseRecords.Played(variantId), "la variante cuenta como vista");
+        string report = string.Join(" ", Find("ResultPanel").GetComponentsInChildren<TMP_Text>(true).Select(t => t.text));
+        StringAssert.Contains("culpables posibles", report);
     }
 }
