@@ -125,6 +125,13 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   enlaces de la libreta perdonan un toque cercano (a menos de media zona táctil): una línea de texto mide mucho
   menos de 48 dp.
 
+- 08:20 Ronda 7: bot en 3B, 3C, 2A (semilla 11): culpable 2/6, triste 53 % (historia 3: casi todo gira en torno a
+  Paula, así que la guía hace lo que dice; se vigila). 7ª revisión de código: 0 críticos/importantes; arreglados
+  con test el diálogo reutilizable (nombres fijos), la indicación del tutorial encima del aviso de fin del día y
+  el parte sin línea en blanco. Decisiones: un enlace de sospechoso tocado mientras se espera respuesta no hace
+  nada (igual que los de pistas); el aviso no se recolorea si cambia el alto contraste con él abierto (los
+  ajustes solo se abren desde el menú). Tests 520/520 + PlayMode 16/16.
+
 ## Ahora
 - Ronda 6: crítica de diseño con capturas, más mejoras, informe y galería finales.
 
