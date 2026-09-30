@@ -41,6 +41,7 @@ public static class BotPlayer
         public bool versions = true;  // -noVersions: la libreta no apunta lo que dice cada uno (línea base, ronda 5)
         public bool topicQuestions;   // -topicQuestions: una pregunta corta sobre un tema (A/B del consejo, ronda 12)
         public bool coolTimeRetry = true; // -warmTimeRetry: reintento por horas a la temperatura normal (A/B, ronda 20)
+        public bool lineupMarks = true;   // -noLineupMarks: al acusar no ve los tachados de la rueda (A/B, ronda 25)
     }
 
     public class Turn
@@ -97,6 +98,7 @@ public static class BotPlayer
                 case "-topicQuestions": options.topicQuestions = true; break;
                 case "-coolTimeRetry": options.coolTimeRetry = true; break;
                 case "-warmTimeRetry": options.coolTimeRetry = false; break;
+                case "-noLineupMarks": options.lineupMarks = false; break;
                 case "-ollama": options.ollamaUrl = args[i + 1]; break;
                 case "-model": options.model = args[i + 1]; break;
             }
@@ -432,7 +434,12 @@ public static class BotPlayer
     {
         string system = DetectivePrompt(story, manager, unlocked, options.versions, options.topicQuestions, game.reports);
         string summary = string.Join("\n", game.turns.Select(t => $"- {story.Character(t.suspectId).shortName}: «{Truncate(t.answer, 160)}»").TakeLast(20));
+        // Lo que el jugador ve en la rueda: tachado quien descarta una pista ya encontrada (ronda 25)
+        List<string> cleared = unlocked.Where(id => manager.State.IsClearedByClue(id)).Select(id => story.Character(id).shortName).ToList();
         string ask = "Se acabó el tiempo: tienes que acusar a uno de los sospechosos. Respuestas más recientes:\n" + summary +
+                     (options.lineupMarks && cleared.Count > 0
+                         ? $"\n\nEn la rueda de reconocimiento aparecen tachados, porque una pista los descarta: {string.Join(", ", cleared)}."
+                         : "") +
                      "\n\nResponde SOLO con un JSON: {\"accuse\": \"id\", \"reason\": \"por qué\"}";
 
         for (int attempt = 0; attempt < 3; attempt++)
