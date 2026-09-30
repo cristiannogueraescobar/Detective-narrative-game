@@ -329,11 +329,11 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   el tema trae al personaje; si no, un hecho del parte (un agente lo lleva a comisaría) en el día de su historia.
   Límite de palabras 460 → 540 PROVISIONAL: calibración en curso (pistas, estados, premisas).
 
-- 11:25 Profundidad MEDIDA (fichas de hasta 540 palabras frente a las de 460): pistas 42/48 y 83 % de media
+- 11:15 Profundidad MEDIDA (fichas de hasta 540 palabras frente a las de 460): pistas 42/48 y 83 % de media
   (antes 39–44/48, 80–85 %), estados 95 % coherentes (igual) y 99 % bien formados, premisas 22 % (antes 23 %).
   **Decisión: el límite queda en 540.** B2 completo: prueba clave, rango, resumen con "lo que se te escapó",
   mejor rango en el expediente. B3: el bot usa "Pensar" como un jugador atascado; medición en curso.
-- 11:30 C1 (skill: design:design-critique) → docs/DESIGN-CRITIQUE.md. Primer arreglo: el chat se ancla abajo
+- 11:17 C1 (skill: design:design-critique) → docs/DESIGN-CRITIQUE.md. Primer arreglo: el chat se ancla abajo
   (una conversación corta queda junto al campo; se acabó el hueco en mitad de la pantalla principal).
 
 ## Ahora (día 3)
