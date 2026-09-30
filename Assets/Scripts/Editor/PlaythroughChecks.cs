@@ -85,6 +85,9 @@ public static class PlaythroughChecks
         // "Sí, fui yo" contestando a "¿fuiste tú quien fue a…?" no es confesar el crimen
         bool echoesQuestion = confession.Success && confession.Value.StartsWith("fui yo", System.StringComparison.OrdinalIgnoreCase)
                               && Fold(question ?? "").Contains("fuiste tu");
+        // "Solo fui yo" contestando a "¿fueron juntos…?" es la coartada, no confesar
+        if (confession.Success && Fold(text.Substring(0, confession.Index)).TrimEnd().EndsWith("solo"))
+            echoesQuestion = true;
         if (confession.Success && !echoesQuestion && !IsNegated(text, confession.Index))
         {
             if (!speakerIsCulprit)
