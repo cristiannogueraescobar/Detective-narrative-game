@@ -135,7 +135,7 @@ public static class GameTexts
     {
         return remaining <= 0 ? "Has visto todos los culpables posibles de esta historia."
              : remaining == 1 ? "Esta historia tiene otro culpable posible: juega otra vez para descubrirlo."
-             : $"Esta historia tiene otros {remaining} culpables posibles: juega otra vez para descubrirlos.";
+             : $"Esta historia tiene otros {NumberWord(remaining)} culpables posibles: juega otra vez para descubrirlos.";
     }
     public const string MainMenu = "Menú principal";
 
