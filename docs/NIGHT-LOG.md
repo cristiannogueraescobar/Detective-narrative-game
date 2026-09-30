@@ -434,6 +434,16 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   iteraciones con capturas (pie diminuto → nombre cortado → dos líneas). Theme.endingMugshot la quita. Nueva
   captura veredicto_ficha. EditMode 669/669, PlayMode 36/36.
 
+- **13:52** Ronda final 3, accesibilidad: **lector de pantalla** (TalkBack/VoiceOver) con el módulo de Unity 6
+  (ScreenReader.cs): jerarquía de lo visible en orden de lectura, sin lo tapado por otra pantalla (raycast en el
+  centro de cada elemento), nodos que se activan como un toque (botones, casillas, desplegables, campos,
+  deslizadores ±10 %), y anuncios de respuestas, pistas, contradicciones, parte del día y veredicto. Solo trabaja
+  con el lector del sistema activado (coste cero si no). El tamaño de letra del sistema elige el de la primera
+  partida. ScreenReaderTests (4, forzando el lector en el editor): el primer intento dejaba el menú "debajo" de la
+  selección de caso → oclusión. API mínima de Android 25 → 26 (la exige el módulo). Sin móvil no está probado con
+  TalkBack real: anotado. Un test de sonido dependía del orden (música aún apartada por el test anterior):
+  arreglado esperando a que vuelva. EditMode 675/675, PlayMode 40/40.
+
 ## Ahora (día 3)
 - Ronda final 2: bot para comprobar los desbloqueos tras el n.º 7; capturas tras los cambios; recorrido mental.
   Informe intermedio a las ~16:10.

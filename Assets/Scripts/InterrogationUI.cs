@@ -522,6 +522,7 @@ public partial class InterrogationUI : MonoBehaviour
 
     public void AddAnswer(string suspectId, string speaker, string answer)
     {
+        ScreenReader.Announce($"{speaker}: {answer}");
         string time = pendingQuestion != null ? pendingQuestion.time : GameClock.TimeOf(questionsUsedToday, questionsPerDay);
         pendingQuestion = null;
         pendingSuspectId = null;
@@ -828,6 +829,7 @@ public partial class InterrogationUI : MonoBehaviour
 
     public void ShowClueNotification(string clueName)
     {
+        ScreenReader.Announce($"Pista nueva: {clueName}");
         SetClueBadge(unseenClues + 1);
         SoundManager.Play(Sfx.Clue);
         Haptics.Pulse();
@@ -861,6 +863,7 @@ public partial class InterrogationUI : MonoBehaviour
 
     public void ShowContradictionNotification(string text)
     {
+        ScreenReader.Announce("Contradicción. " + text);
         AppendNotice(ChatEntry.System(ChatEntryKind.Contradiction, text));
 
         if (fx != null)
@@ -1094,6 +1097,7 @@ public partial class InterrogationUI : MonoBehaviour
 
     public void ShowDayTransition(int newDay, string morningReport)
     {
+        ScreenReader.Announce($"Día {newDay}. {morningReport}");
         // El cambio de día se anota en todas las conversaciones, no solo en la abierta
         chat?.Complete();
         conversations.AppendToAll(ChatEntry.Day(newDay, morningReport));

@@ -81,7 +81,8 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
    la primera para probar ya y la segunda para publicar. No he tocado la capa de proveedores.
 2. **Nombre del juego.** El encargo traía "[NOMBRE]" sin rellenar: se ve "Detectives" (`GameTexts.GameName`);
    `productName` sigue siendo "Casos" porque cambiarlo mueve los guardados y ajustes de los jugadores.
-3. **Paquete de Android provisional**: `com.cristiannoguera.casos` (no se puede cambiar una vez publicado).
+3. **Paquete de Android provisional**: `com.cristiannoguera.casos` (no se puede cambiar una vez publicado). **API
+   mínima 26** (Android 8.0): la exige el lector de pantalla; deja fuera solo Android 7.x.
 4. **La vecina de la historia 1 se llama Rosario**, como una persona real condenada en el caso en que se inspira
    la historia (REAL-CASES.md). Recomiendo cambiarle el nombre.
 5. **Ritmo de la vecina**: aparece pronto y lleva la pista decisiva en 4 variantes (coherente, pero hace el caso

@@ -11,7 +11,7 @@ public static class AndroidSetup
 {
     // Provisional: el nombre definitivo lo decide Cristian (una vez publicado no se puede cambiar)
     public const string PackageName = "com.cristiannoguera.casos";
-    public const int MinSdk = 25;     // Android 7.1: cubre > 97 % de los dispositivos activos
+    public const int MinSdk = 26;     // Android 8.0: lo exige el lector de pantalla (módulo de accesibilidad de Unity 6)
     public const int TargetSdk = 36;  // Google Play exige API 36 desde el 31-08-2026 (apps nuevas y actualizaciones)
 
     [MenuItem("Detective/Android/Aplicar ajustes")]

@@ -12,7 +12,7 @@
 |---|---|---|
 | Paquete | `com.cristiannoguera.casos` | **Provisional**: una vez publicado no se puede cambiar. Decídelo antes de subir nada. |
 | Backend | IL2CPP, solo ARM64 | Obligatorio en Google Play para 64 bits; ARMv7 ya no compensa. |
-| API mínima | 25 (Android 7.1) | Cubre casi todos los móviles activos; Unity 6 admite desde la 23. |
+| API mínima | 26 (Android 8.0) | La exige el lector de pantalla (TalkBack) del módulo de accesibilidad de Unity 6; deja fuera solo Android 7.x. |
 | API objetivo | **36** (Android 16) | Google Play lo exige a apps nuevas y actualizaciones desde el 31-08-2026. |
 | Orientación | Vertical (sin girar boca abajo) | El juego está diseñado para una mano. |
 | Internet | Forzado | Los sospechosos hablan por red. |
