@@ -22,6 +22,7 @@ public static class GameSettings
     public const string TextSizeKey = "ajustes.tamanoTexto";
     public const string HighContrastKey = "ajustes.altoContraste";
     public const string VibrationKey = "ajustes.vibracion";
+    public const string DifficultyKey = "ajustes.dificultad";
 
     /// <summary>
     /// Escala del texto por nivel (normal, grande, muy grande).
@@ -159,6 +160,19 @@ public static class GameSettings
     /// <summary>
     /// Nivel de tamaño del texto: 0 normal, 1 grande, 2 muy grande.
     /// </summary>
+    /// <summary>
+    /// Dificultad de los casos nuevos (una partida a medias conserva la suya).
+    /// </summary>
+    public static DifficultyLevel Difficulty
+    {
+        get => global::Difficulty.FromSave(Mathf.RoundToInt(store.Get(DifficultyKey, (float)global::Difficulty.Default)));
+        set
+        {
+            store.Set(DifficultyKey, (int)value);
+            Changed?.Invoke();
+        }
+    }
+
     public static int TextSizeLevel
     {
         get => Mathf.Clamp(Mathf.RoundToInt(store.Get(TextSizeKey, 0f)), 0, TextScales.Length - 1);

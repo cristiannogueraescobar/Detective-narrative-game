@@ -64,6 +64,16 @@ public static class GameTexts
     public const string NewGameYes = "Empezar de nuevo";
     public const string NewGameNo = "Cancelar";
 
+    public const string ThinkPrefix = "Piensas… ";
+
+    /// <summary>
+    /// Botón "Pensar" de la libreta con su coste en preguntas del día.
+    /// </summary>
+    public static string ThinkLabel(int cost)
+    {
+        return cost <= 0 ? "Pensar" : cost == 1 ? "Pensar (1 pregunta)" : $"Pensar ({cost} preguntas)";
+    }
+
     public const string EndDayYes = "Terminar el día";
     public const string EndDayNo = "Seguir preguntando";
 

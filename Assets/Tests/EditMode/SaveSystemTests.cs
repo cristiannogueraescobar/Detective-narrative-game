@@ -99,6 +99,27 @@ public class SaveSystemTests
         Assert.AreEqual("DÍA 2", store.SharedEntries.Single().text);
     }
 
+    [Test]
+    public void GuardadoSinDificultadSeJuegaEnDetective()
+    {
+        // Un guardado de antes de la dificultad no trae el campo
+        string json = SaveSystem.Serialize(Sample()).Replace("\"difficulty\":", "\"ignorado\":");
+        Assert.IsTrue(SaveSystem.TryDeserialize(json, out SaveData loaded));
+        Assert.AreEqual(-1, loaded.difficulty);
+        Assert.AreEqual(DifficultyLevel.Detective, Difficulty.FromSave(loaded.difficulty));
+    }
+
+    [Test]
+    public void LaDificultadYLasAyudasSeGuardan()
+    {
+        SaveData data = Sample();
+        data.difficulty = (int)DifficultyLevel.Veterano;
+        data.hintsUsed = 3;
+        Assert.IsTrue(SaveSystem.TryDeserialize(SaveSystem.Serialize(data), out SaveData loaded));
+        Assert.AreEqual(DifficultyLevel.Veterano, Difficulty.FromSave(loaded.difficulty));
+        Assert.AreEqual(3, loaded.hintsUsed);
+    }
+
     [TestCase("")]
     [TestCase("{ esto no es json")]
     [TestCase("{\"variantId\": \"1A\", \"day\": ")]

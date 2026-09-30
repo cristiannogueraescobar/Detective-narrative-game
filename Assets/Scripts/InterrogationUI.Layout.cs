@@ -382,7 +382,12 @@ public partial class InterrogationUI
 
         ScrollRect notebookScroll = LayoutKit.Scrollable(cluesText, column);
 
-        LayoutKit.Put(closeCluesButton, column, height: Theme.MinTouchSize);
+        // Abajo: "Pensar" (ayuda por niveles, según la dificultad) y "Cerrar"
+        RectTransform actions = LayoutKit.Row(column, "Acciones de la libreta", Theme.MinTouchSize);
+        thinkButton = UIFactory.Button(actions, GameTexts.ThinkLabel(1), false, OnThinkClick);
+        thinkButton.name = "PensarButton";
+        LayoutKit.Put(thinkButton, actions, flexibleWidth: 1.4f);
+        LayoutKit.Put(closeCluesButton, actions, flexibleWidth: 1f);
         LayoutKit.Label(closeCluesButton, "Cerrar");
 
         // Aspecto de libreta: papel crema, tinta oscura y el margen rojo a la izquierda

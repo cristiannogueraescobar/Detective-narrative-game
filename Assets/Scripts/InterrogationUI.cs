@@ -101,7 +101,8 @@ public partial class InterrogationUI : MonoBehaviour
     private RectTransform suggestionsBox; // Preguntas de ejemplo en un chat sin empezar
     private readonly List<TMP_Text> suggestionLabels = new List<TMP_Text>();
     private string victimName;
-    private TMP_Text accusationPromptText;  // Pregunta de la acusación y resumen de la libreta
+    private TMP_Text accusationPromptText;
+    private Button thinkButton;              // "Pensar" en la libreta  // Pregunta de la acusación y resumen de la libreta
     private string pendingSuspectId;
     private int questionsUsedToday;
     private int questionsPerDay = 5;
@@ -918,12 +919,48 @@ public partial class InterrogationUI : MonoBehaviour
     private void ShowCluesPanel()
     {
         SetClueBadge(0);
+        RefreshThinkButton();
         if (cluesPanel != null)
         {
             cluesPanel.SetActive(true);
             cluesPanel.transform.SetAsLastSibling(); // Por encima del retrato y los desplegables
             UIAnimations.CardFlip(this, cluesPanel.transform);
             Debug.Log("[InterrogationUI] Panel de pistas mostrado");
+        }
+    }
+
+    // El botón dice lo que cuesta y desaparece si la dificultad no tiene ayudas
+    private void RefreshThinkButton()
+    {
+        if (thinkButton == null || gameManager == null)
+            return;
+        int cost = gameManager.HintCost;
+        thinkButton.gameObject.SetActive(cost >= 0);
+        thinkButton.GetComponentInChildren<TMP_Text>(true).text = GameTexts.ThinkLabel(cost);
+        thinkButton.interactable = questionInput == null || questionInput.interactable;
+    }
+
+    /// <summary>
+    /// "Pensar": el detective da una pista de cómo seguir (sin decir quién fue). La concreta también cambia al
+    /// sospechoso y escribe la pregunta en el campo (sin enviarla).
+    /// </summary>
+    public void OnThinkClick()
+    {
+        if (gameManager == null || (questionInput != null && !questionInput.interactable))
+            return;
+        Hint hint = gameManager.Think();
+        if (hint == null)
+            return;
+
+        HideCluesPanel();
+        AppendNotice(ChatEntry.System(ChatEntryKind.Notice, GameTexts.ThinkPrefix + hint.text));
+        if (hint.level == 2 && hint.holderId != null)
+        {
+            int who = suspects.FindIndex(v => v.id == hint.holderId);
+            if (who >= 0 && suspectDropdown != null && suspectDropdown.interactable)
+                suspectDropdown.value = who;
+            if (hint.question != null && questionInput != null && string.IsNullOrEmpty(questionInput.text))
+                questionInput.text = hint.question;
         }
     }
 

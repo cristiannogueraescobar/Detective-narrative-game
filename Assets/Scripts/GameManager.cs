@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
     private StoryData story;
     private VariantData variant;
     private int currentDay = 1;
+    private DifficultyLevel difficulty = Difficulty.Default; // Se fija al empezar el caso y se guarda con él
+    private HintMemory hintMemory = new HintMemory();
     private int questionsUsedToday = 0;
     private bool accusationMade;
 
@@ -104,6 +106,8 @@ public class GameManager : MonoBehaviour
             variantId = variant.id,
             day = currentDay,
             questionsUsedToday = questionsUsedToday,
+            difficulty = (int)difficulty,
+            hintsUsed = hintMemory.count,
             currentSuspect = interrogationUI != null ? interrogationUI.CurrentSuspectId : null,
             unlocked = new List<string>(unlocked),
             discovered = new List<string>(State.DiscoveredClueIds),
@@ -137,6 +141,8 @@ public class GameManager : MonoBehaviour
 
         currentDay = data.day;
         questionsUsedToday = data.questionsUsedToday;
+        ApplyDifficulty(Difficulty.FromSave(data.difficulty));
+        hintMemory = new HintMemory { count = System.Math.Max(0, data.hintsUsed) };
         accusationMade = false;
         unlocked.Clear();
         unlocked.AddRange(data.unlocked);
@@ -192,6 +198,8 @@ public class GameManager : MonoBehaviour
     {
         currentDay = 1;
         questionsUsedToday = 0;
+        ApplyDifficulty(GameSettings.Difficulty);
+        hintMemory = new HintMemory();
         accusationMade = false;
         interrogationUI?.ResetForNewCase();
         SelectCase(storyId);
@@ -418,6 +426,35 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Se puede volver a interrogar desde la acusación mientras queden días y no se haya acusado.
     /// </summary>
+    private void ApplyDifficulty(DifficultyLevel level)
+    {
+        difficulty = level;
+        questionsPerDay = Difficulty.QuestionsPerDay(level);
+    }
+
+    public DifficultyLevel CurrentDifficulty => difficulty;
+    public int HintCost => Difficulty.HintCost(difficulty);
+    public int HintsUsed => hintMemory.count;
+
+    /// <summary>
+    /// "Pensar": una ayuda de la libreta (HintAdvisor). Cuesta preguntas del día según la dificultad; null si en
+    /// esta dificultad no hay ayudas.
+    /// </summary>
+    public Hint Think()
+    {
+        int cost = HintCost;
+        if (cost < 0 || State == null || accusationMade)
+            return null;
+        if (questionsUsedToday + cost > questionsPerDay)
+            return new Hint { text = "Hoy ya no te quedan preguntas para pararte a pensar. Mañana será otro día." };
+
+        Hint hint = HintAdvisor.Next(story, State, unlocked, hintMemory);
+        questionsUsedToday += cost;
+        UpdateGameState();
+        SaveGame();
+        return hint;
+    }
+
     public bool CanCancelAccusation => !accusationMade && currentDay <= maxDays;
 
     private void ShowAccusationPanel()

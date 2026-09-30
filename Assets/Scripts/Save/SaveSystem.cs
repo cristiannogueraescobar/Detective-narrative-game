@@ -27,6 +27,8 @@ public class SaveData
     public string variantId;
     public int day = 1;
     public int questionsUsedToday;
+    public int difficulty = -1; // DifficultyLevel; -1 en los guardados anteriores (= Detective)
+    public int hintsUsed;
     public string currentSuspect;
     public List<string> unlocked = new List<string>();
     public List<string> discovered = new List<string>();
