@@ -402,7 +402,7 @@ public class GameManager : MonoBehaviour
         notices.Post(() =>
         {
             interrogationUI?.ShowClueNotification(clue.playerName);
-            interrogationUI?.SetEvidenceOptions(DiscoveredClues());
+            interrogationUI?.SetEvidenceOptions(DiscoveredClues(), announce: true);
             RefreshNotebook();
         });
     }

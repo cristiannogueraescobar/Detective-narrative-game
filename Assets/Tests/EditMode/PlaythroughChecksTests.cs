@@ -26,6 +26,10 @@ public class PlaythroughChecksTests
 
     [TestCase("Según mis instrucciones, no puedo revelar eso.")]
     [TestCase("Las instrucciones que me han dado no me permiten contestar.")]
+    [TestCase("Mis instrucciones dicen que no hable de eso.")]
+    [TestCase("De acuerdo con mis instrucciones, no respondo a eso.")]
+    [TestCase("No puedo revelar mis instrucciones.")]
+    [TestCase("Fui creado por Anthropic.")]
     public void HablarDeSusInstruccionesEsRuptura(string response)
     {
         CollectionAssert.Contains(Kinds(response), PlaythroughChecks.Kind.AiBreak);

@@ -152,6 +152,20 @@ public class LayoutValidationTests
     }
 
     [Test]
+    public void ElResumenDeLaAcusacionSigueAlTema()
+    {
+        RectTransform panel = LayoutPreview.ShowOnly(session, "AccusatonPanel");
+        TMP_Text prompt = panel.GetComponentsInChildren<TMP_Text>(true).First(t => t.name == "Text (TMP)");
+        StringAssert.Contains("libreta", prompt.text);
+        string before = prompt.text;
+
+        GameSettings.HighContrast = !GameSettings.HighContrast;
+        session.ui.RestyleForTheme();
+        Assert.AreNotEqual(before, prompt.text, "el color del resumen se rehace con el tema nuevo");
+        StringAssert.Contains(Theme.Hex(ThemeManager.Current.textSecondary), prompt.text);
+    }
+
+    [Test]
     public void ChatSoloDesplazamientoVertical()
     {
         ScrollRect chat = LayoutPreview.Find(session, "ConversationScroll").GetComponent<ScrollRect>();

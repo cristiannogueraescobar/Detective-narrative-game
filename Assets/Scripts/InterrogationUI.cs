@@ -631,6 +631,8 @@ public partial class InterrogationUI : MonoBehaviour
     public void RestyleForTheme()
     {
         chat?.Restyle();
+        if (accusationPanel != null && accusationPanel.activeInHierarchy)
+            RefreshAccusationPrompt();
         RefreshConversationView();
         if (!string.IsNullOrEmpty(currentSuspectId))
             UpdateSuspectImage(currentSuspectId, instant: true);
@@ -958,7 +960,7 @@ public partial class InterrogationUI : MonoBehaviour
         SelectSuspect(suspects[index].id);
     }
 
-    public void SetEvidenceOptions(List<ClueData> discovered)
+    public void SetEvidenceOptions(List<ClueData> discovered, bool announce = false)
     {
         evidenceOptions = discovered;
 
@@ -968,9 +970,9 @@ public partial class InterrogationUI : MonoBehaviour
         var options = new List<string> { GameTexts.NoEvidenceWith(discovered.Count) };
         options.AddRange(discovered.ConvertAll(c => c.playerName));
 
-        // Una prueba nueva que enseñar: el selector da un pequeño salto para que se note
+        // Una prueba recién descubierta: el selector da un pequeño salto para que se note (no al continuar)
         bool grew = discovered.Count > evidenceDropdown.options.Count - 1 && evidenceDropdown.options.Count > 0;
-        if (grew && Application.isPlaying && isActiveAndEnabled)
+        if (announce && grew && Application.isPlaying && isActiveAndEnabled)
             UIAnimations.Pop(this, evidenceDropdown.transform);
 
         int previous = evidenceDropdown.value;
