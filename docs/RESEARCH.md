@@ -101,3 +101,12 @@ Cada entrada: fuente → qué aprendí → qué decidí con ello. La búsqueda l
 - Requisito: **Android 8.0 (API 26)** e iOS 13 → si se añade, subir `AndroidSetup.MinSdk` de 25 a 26.
 - Fuentes: [Unity 6: accesibilidad móvil](https://docs.unity3d.com/Manual/mobile-accessibility.html),
   [Unity 6.3: accesibilidad](https://docs.unity3d.com/Manual/accessibility.html).
+
+## Deriva de idioma en los LLM (ronda 5)
+- Fenómeno documentado ("language drift"): el modelo contesta en un idioma no pedido, sobre todo cuando el contexto
+  mezcla idiomas y a medida que crece la conversación; una respuesta en otro idioma en el historial lo refuerza.
+  En el bot lo vimos una vez (3A): el detective (qwen) escribió medio en chino y el sospechoso siguió en chino.
+- Mitigación aplicada: detectar escrituras que el español no usa (LanguageCheck) y pedir otra vez "solo en
+  español" antes de que entre en el historial; el bot, además, no envía preguntas en otro alfabeto.
+- Fuentes: [Language Drift in Multilingual RAG (AAAI)](https://ojs.aaai.org/index.php/AAAI/article/view/40417),
+  [arXiv 2511.09984](https://arxiv.org/html/2511.09984v1).
