@@ -96,7 +96,7 @@ public class LayoutValidationTests
     }
 
     [Test]
-    public void PreguntasDeEjemploCabenSinTaparElChat([Values(0, 2)] int textSize, [Values(1920f, 2400f)] float height)
+    public void PreguntasDeEjemploCabenSinTaparElChat([Values(0, 2)] int textSize, [Values(1920f, 2400f, 1440f)] float height)
     {
         GameSettings.TextSizeLevel = textSize;
         LayoutPreview.SetSize(session, LayoutPreview.CanvasSize(1080f, height));
