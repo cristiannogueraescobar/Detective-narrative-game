@@ -84,7 +84,7 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 | Contraste mínimo de texto tras el post-proceso | — | 6,08:1 (todos los pares suben) |
 | Hallazgos de revisión abiertos | — | 4 anotados de 50 (seis revisiones independientes; decisión 15, uno de rendimiento y dos del bot/preview) |
 | Lector de pantalla | no | **sí** (jerarquía, acciones y anuncios; probado en el editor, falta un móvil real) |
-| Bot con variantes al azar (culpable) | — | **48/62** en diez rondas; la 2B, 0/12 en rondas fijas (techo de qwen como detective, no del caso: su pista clave sale 10/10 al preguntarla) |
+| Bot con variantes al azar (culpable) | — | **51/68** en once rondas; la 2B, 0/16 en todo el día (techo de qwen como detective, no del caso: su pista clave sale 10/10 al preguntarla) |
 | Las 9 variantes, cierre (bot, 18 partidas) | — | **15/18 (83 %)**, primera pista 5,7; horas inventadas 1,5 % de respuestas |
 | Rejugar una historia repite la solución | 1 de cada 3 | **nunca** mientras queden variantes sin ver |
 | Partes de la mañana | se leían una vez | **en la libreta** |
