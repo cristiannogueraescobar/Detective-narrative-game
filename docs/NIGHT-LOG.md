@@ -68,8 +68,12 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   sale desplazada media pantalla (solo se veía en juego: capturado y corregido); diálogo de reinicio compacto.
 - 04:27 2C_gps resuelto: "Nadie me vio, pero mírelo en el GPS…" → 16/20 (80 %). Las tres pistas flojas ≥ 7/10.
 
+- 04:35 Bot final 9×2: acierta al culpable 13/18, 0 rupturas "soy una IA". Libreta: tocar pista = prueba.
+  InterrogationUI partido en 3 archivos parciales. Tipografía Special Elite en títulos, sellos y HUD.
+- 04:46 Audio provisional sintetizado (efectos + ambientes). Test de que los efectos se limpian solos.
+
 ## Ahora
-- Ronda final del bot (9×2) sobre HEAD; después, ronda de revisión 2 (diseño en juego, bot al azar, código).
+- Ronda de revisión 2: bot 2C/1B/3B en marcha; luego revisión de código 3 y más pulido.
 
 ## Después (orden)
 1. Layout: 3 rondas de render→revisión, safe area, zonas táctiles ≥ 48 px (añadir al test).
@@ -97,3 +101,6 @@ FINAL. Rondas de revisión.
   la línea de Maruxa del cartero en 2C solo la nombra (sigue desbloqueándola) y el hecho empieza por "Nadie me
   vio, pero…", que es como respondería a "¿alguien puede confirmarlo?".
 - Vibración activada por defecto (solo en móvil).
+- Audio PROVISIONAL sintetizado por código (no lo he podido escuchar): niveles discretos medidos (picos 0,3–0,7,
+  empalmes de bucle sin salto). Si no gusta, borrar Assets/Resources/Audio y el juego queda en silencio.
+- productName sigue siendo "Casos" (cambiarlo movería guardados y ajustes del jugador).
