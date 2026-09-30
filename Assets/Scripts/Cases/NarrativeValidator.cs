@@ -24,6 +24,7 @@ public static class NarrativeValidator
     public const string AgeMismatch = "edad-distinta";
     public const string TwoPlaces = "dos-sitios-a-la-vez";
     public const string TimeOffTimeline = "hora-fuera-de-la-linea-temporal";
+    public const string CastSize = "reparto";
 
     public struct Issue
     {
@@ -42,6 +43,10 @@ public static class NarrativeValidator
     {
         var issues = new List<Issue>();
         void Add(string rule, string detail) => issues.Add(new Issue { variant = v.id, rule = rule, detail = detail });
+
+        // Reparto: 4 o 5 personajes (el culpable y 3-4 que pueden aportar pistas o descartarse)
+        if (story.cast.Count < 4 || story.cast.Count > 5)
+            Add(CastSize, $"el reparto tiene {story.cast.Count} personajes");
 
         // La mentira del culpable: al menos una pista que la expone, incriminatoria y en manos de otro
         if (!v.clues.Any(c => c.exposesLie && c.kind == ClueKind.Incriminates && c.holder != v.culpritId))

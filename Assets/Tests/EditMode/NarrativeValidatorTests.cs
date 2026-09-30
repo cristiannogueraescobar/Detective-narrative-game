@@ -16,7 +16,8 @@ public class NarrativeValidatorTests
     public void LaHistoriaDePruebaEsCoherente()
     {
         StoryData story = TestCases.Story();
-        CollectionAssert.IsEmpty(NarrativeValidator.Validate(story, story.variants[0]));
+        CollectionAssert.IsEmpty(NarrativeValidator.Validate(story, story.variants[0]).Where(i => i.rule != NarrativeValidator.CastSize),
+            "(la historia de prueba tiene 3 personajes a propósito)");
     }
 
     [Test]
@@ -90,6 +91,13 @@ public class NarrativeValidatorTests
         StoryData story = TestCases.Story();
         story.variants[0].Clue("d").clears = "a";
         CollectionAssert.Contains(Rules(story, story.variants[0]), NarrativeValidator.ClearsCulprit);
+    }
+
+    [Test]
+    public void ElRepartoTieneEntreCuatroYCincoPersonajes()
+    {
+        StoryData story = TestCases.Story(); // 3 personajes
+        CollectionAssert.Contains(Rules(story, story.variants[0]), NarrativeValidator.CastSize);
     }
 
     [Test]
