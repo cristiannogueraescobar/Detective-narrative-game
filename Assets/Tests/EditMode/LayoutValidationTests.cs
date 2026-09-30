@@ -47,6 +47,10 @@ public class LayoutValidationTests
             foreach (string panel in LayoutPreview.Panels)
                 yield return new TestCaseData(panel, screen.size, 0).SetName($"Layout_{panel}_{screen.label}");
 
+        // Alto contraste (Ajustes): todos los paneles, con sus textos, contrastes y zonas táctiles
+        foreach (string panel in LayoutPreview.Panels)
+            yield return new TestCaseData(panel, new Vector2(1080f, 1920f), -1).SetName($"Layout_{panel}_alto contraste");
+
         // Texto "muy grande" (Ajustes) en las pantallas de móvil
         foreach (var screen in Screens().Take(2))
             foreach (string panel in LayoutPreview.Panels)
@@ -56,6 +60,14 @@ public class LayoutValidationTests
     [TestCaseSource(nameof(PanelsAndScreens))]
     public void PanelSinDesbordesNiSolapes(string panelName, Vector2 canvasSize, int textSize)
     {
+        // textSize -1: tamaño normal con alto contraste (la vista previa se construye ya con ese tema)
+        if (textSize < 0)
+        {
+            LayoutPreview.Close();
+            session = LayoutPreview.Open(canvasSize, highContrast: true);
+            Assert.IsTrue(GameSettings.HighContrast);
+            textSize = 0;
+        }
         GameSettings.TextSizeLevel = textSize;
         LayoutPreview.SetSize(session, canvasSize);
         RectTransform panel = LayoutPreview.ShowOnly(session, panelName);

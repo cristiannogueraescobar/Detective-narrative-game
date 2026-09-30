@@ -332,6 +332,27 @@ public class AnimationCapture
     }
 
     [UnityTest]
+    public IEnumerator AltoContraste()
+    {
+        Tutorial.SkipAll();
+        bool before = GameSettings.HighContrast;
+        GameSettings.HighContrast = true;
+        try
+        {
+            yield return ToInterrogation();
+            yield return new WaitForSecondsRealtime(0.8f);
+            Shot("alto_contraste_interrogatorio");
+            Find("EndDayButton").GetComponent<Button>().onClick.Invoke();
+            yield return new WaitForSecondsRealtime(0.4f);
+            Shot("alto_contraste_fin_del_dia");
+        }
+        finally
+        {
+            GameSettings.HighContrast = before;
+        }
+    }
+
+    [UnityTest]
     public IEnumerator Desplegable()
     {
         Tutorial.SkipAll();

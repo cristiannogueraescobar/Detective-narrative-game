@@ -31,13 +31,14 @@ public static class LayoutPreview
         public MenuManager menu;
     }
 
-    public static Session Open(Vector2 canvasSize)
+    public static Session Open(Vector2 canvasSize, bool highContrast = false)
     {
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
         // Sin corrutinas ni animaciones en modo edición
         GameSettings.UseStore(new MemoryStore());
         GameSettings.ReduceMotion = true;
+        GameSettings.HighContrast = highContrast;
 
         var session = new Session
         {
