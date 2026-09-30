@@ -132,12 +132,20 @@ public static class ThemeApplier
             case UIRole.PrimaryButton:
                 graphic.color = Color.white; // El color lo pone el ColorBlock del botón
                 if (button != null)
+                {
                     button.colors = ButtonColors(theme.buttonPrimary, theme.buttonDisabled);
+                    UIComponents.GetOrAdd<ClickSound>(button.gameObject);
+                }
+                Round(graphic, 16);
                 break;
             case UIRole.SecondaryButton:
                 graphic.color = Color.white;
                 if (button != null)
+                {
                     button.colors = ButtonColors(theme.buttonSecondary, theme.buttonDisabled);
+                    UIComponents.GetOrAdd<ClickSound>(button.gameObject);
+                }
+                Round(graphic, 16);
                 break;
             case UIRole.Field:
                 Selectable owner = graphic.GetComponentInParent<Selectable>(true);
@@ -169,6 +177,16 @@ public static class ThemeApplier
             case UIRole.Secondary:
                 Style((TMP_Text)graphic, theme.bodyFont, theme.secondarySize, theme.textSecondary);
                 break;
+        }
+    }
+
+    // Esquinas redondeadas en los controles que usan el sprite por defecto de uGUI (o ninguno)
+    private static void Round(Graphic graphic, int radius)
+    {
+        if (graphic is Image image && (image.sprite == null || image.sprite.name == "UISprite"))
+        {
+            image.sprite = UISprites.Rounded(radius);
+            image.type = Image.Type.Sliced;
         }
     }
 

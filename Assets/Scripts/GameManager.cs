@@ -174,6 +174,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void BeginInterrogation()
     {
+        SoundManager.PlayMusic(SoundCatalog.ForStory(story.id));
         RefreshSuspects();
         interrogationUI?.SetEvidenceOptions(DiscoveredClues());
         RefreshNotebook();

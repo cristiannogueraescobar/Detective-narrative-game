@@ -722,6 +722,7 @@ public class InterrogationUI : MonoBehaviour
         string evidenceName = shownClueId != null ? evidenceOptions.Find(c => c.id == shownClueId)?.playerName : null;
         pendingQuestion = ChatEntry.Player(question, evidenceName, GameClock.TimeOf(questionsUsedToday, questionsPerDay));
         pendingSuspectId = currentSuspectId;
+        SoundManager.Play(Sfx.Send);
         conversations.Append(currentSuspectId, pendingQuestion);
         RefreshConversationView();
 
@@ -824,6 +825,7 @@ public class InterrogationUI : MonoBehaviour
         pendingSuspectId = null;
 
         conversations.Append(suspectId, ChatEntry.Suspect(speaker, answer, time));
+        SoundManager.Play(Sfx.Answer);
         if (suspectId == currentSuspectId && chat != null)
             chat.Show(conversations.CurrentEntries, typeLast: true, speed: EmotionStyle.For(EmotionOf(suspectId)).textSpeed);
 
@@ -966,6 +968,7 @@ public class InterrogationUI : MonoBehaviour
     public void ShowClueNotification(string clueName)
     {
         SetClueBadge(unseenClues + 1);
+        SoundManager.Play(Sfx.Clue);
         if (fx != null)
         {
             fx.ClueCard(clueName, viewCluesButton != null ? (RectTransform)viewCluesButton.transform : null);
@@ -1001,6 +1004,7 @@ public class InterrogationUI : MonoBehaviour
         {
             // Sello de tinta que golpea: en el impacto, destello y sacudida de la pantalla
             RectTransform shaken = interrogationPanel != null ? (RectTransform)interrogationPanel.transform : null;
+            SoundManager.Play(Sfx.Contradiction);
             fx.Stamp("CONTRADICCIÓN", T.danger, angle: -9f, hold: 1.3f, onImpact: () =>
             {
                 fx.Flash(T.contradiction, 0.12f);
@@ -1163,6 +1167,7 @@ public class InterrogationUI : MonoBehaviour
 
         SetInputEnabled(true);
         fx?.DayCard(newDay, maxDaysValue, morningReport);
+        SoundManager.Play(Sfx.DayChange);
     }
 
     // ============================================
@@ -1174,6 +1179,8 @@ public class InterrogationUI : MonoBehaviour
         ShowPanel(accusationPanel);
         accusationOptions = options;
         fx?.SetTension(true, accusationPanel != null ? (RectTransform)accusationPanel.transform : null);
+        SoundManager.Play(Sfx.Heartbeat, 0.8f);
+        SoundManager.PlayMusic(Music.Tension);
         EnsureAccusationBackButton();
         if (accusationBackButton != null)
             accusationBackButton.gameObject.SetActive(canGoBack);
@@ -1242,6 +1249,8 @@ public class InterrogationUI : MonoBehaviour
             string accusedId = accusationOptions[accusationDropdown.value].id;
             if (accuseButton != null)
                 accuseButton.interactable = false; // Un solo veredicto
+            SoundManager.Play(Sfx.Accusation);
+            SoundManager.PlayMusic(Music.None);
             if (fx != null)
                 fx.Deliberation(() => gameManager.MakeAccusation(accusedId));
             else
@@ -1261,6 +1270,8 @@ public class InterrogationUI : MonoBehaviour
         fx?.SetTension(false);
         ShowPanel(resultPanel);
         EndingStyle style = EndingStyle.For(result.ending, T);
+        SoundManager.PlayMusic(Music.None);
+        SoundManager.Play(SoundCatalog.ForEnding(result.ending));
 
         if (resultTitleText != null)
         {

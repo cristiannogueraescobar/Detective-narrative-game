@@ -118,7 +118,12 @@ public class FxLayer : MonoBehaviour
         group.blocksRaycasts = false;
         group.interactable = false;
 
-        StartCoroutine(StampRoutine(rect, group, hold, onImpact));
+        Action impact = () =>
+        {
+            SoundManager.Play(Sfx.Stamp, 1f, 0.06f);
+            onImpact?.Invoke();
+        };
+        StartCoroutine(StampRoutine(rect, group, hold, impact));
         return rect.gameObject;
     }
 

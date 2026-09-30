@@ -149,6 +149,9 @@ public class GameSmokeTests
 
         Assert.IsTrue(Find("AskButton").GetComponent<Button>().interactable, "se puede volver a preguntar");
         Assert.IsTrue(SaveSystem.Exists, "la partida se guarda tras la respuesta");
+        CollectionAssert.Contains(SoundManager.Played, Sfx.Send, "suena el envío (aunque no haya archivo)");
+        CollectionAssert.Contains(SoundManager.Played, Sfx.Answer);
+        Assert.AreNotEqual(Music.Menu, SoundManager.CurrentMusic, "en el interrogatorio suena la música de la historia");
     }
 
     [UnityTest]

@@ -212,16 +212,11 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
 
         Canvas.ForceUpdateCanvases();
         row.typewriter.Reveal(0, speed);
-        if (stick)
-        {
-            if (follow != null)
-                StopCoroutine(follow);
-            follow = StartCoroutine(FollowTyping(row));
-        }
-        else
-        {
+        if (follow != null)
+            StopCoroutine(follow);
+        follow = StartCoroutine(FollowTyping(row));
+        if (!stick)
             SetNewMessages(true);
-        }
     }
 
     /// <summary>
@@ -244,9 +239,18 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
     private IEnumerator FollowTyping(Row row)
     {
         yield return null;
-        while (row.typewriter != null && row.typewriter.IsTyping && stick)
+        int lastTick = 0;
+        while (row.typewriter != null && row.typewriter.IsTyping)
         {
-            KeepVisible(row.body, row.body.maxVisibleCharacters);
+            // Tecleo de la máquina cada pocas letras
+            int visible = row.body.maxVisibleCharacters;
+            if (visible - lastTick >= 4)
+            {
+                lastTick = visible;
+                SoundManager.Play(Sfx.Typing, 0.25f, 0.08f);
+            }
+            if (stick)
+                KeepVisible(row.body, visible);
             yield return null;
         }
         follow = null;

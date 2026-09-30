@@ -334,6 +334,7 @@ public class MenuManager : MonoBehaviour
     private void ShowMainMenu()
     {
         ShowPanel(mainMenuPanel);
+        SoundManager.PlayMusic(Music.Menu);
     }
     
     private void ShowInstructions()
