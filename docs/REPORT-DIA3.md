@@ -11,9 +11,12 @@ tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se comple
 2. **Jugabilidad:** "Pensar" (ayuda por niveles), dificultad (Historia/Detective/Veterano), prueba clave, rango del
    detective y "lo que se te escapó". Medido con el bot: primera pista 10,3 → 6,9 preguntas y resueltas 44 → 72 %.
 3. **Aspecto:** retratos 2.5D (relieve + lámpara, elegidos frente a vóxel con capturas), post-proceso noir de URP
-   con el contraste medido *después* del efecto, arte propio por historia, escala de radios, estados de botón y
-   textos revisados. Todo reversible desde el tema o los Ajustes.
-4. **Calidad:** revisión independiente (13 hallazgos, todos arreglados con test en rojo primero), 0 B de basura
+   con el contraste medido *después* del efecto, arte propio por historia, ficha policial del culpable en los
+   finales, retrato más grande en pantallas 20:9, escala de radios, estados de botón y textos revisados. Todo
+   reversible desde el tema o los Ajustes.
+4. **Accesibilidad:** auditoría WCAG 2.2 AA y **lector de pantalla** (TalkBack/VoiceOver con el módulo de Unity 6),
+   flechas de desplegable legibles, pista de deslizadores visible, tamaño de letra del sistema respetado.
+5. **Calidad:** revisión independiente (13 hallazgos, todos arreglados con test en rojo primero), 0 B de basura
    por fotograma, build de Windows con prueba de humo OK. Android configurado, pero sin APK (falta el módulo) y con
    un bloqueante real: **en el móvil ningún proveedor LLM funciona tal cual** (decisión para Cristian).
 
@@ -28,8 +31,9 @@ tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se comple
 | 03_expediente / 19_intros_por_historia | Fondo propio por historia (lluvia, cala, olivar) en vez de la sala genérica; reglas con las cifras de la dificultad |
 | 04_interrogatorio | Chat anclado abajo, Acusar en aviso (no dorado), retrato 2.5D |
 | 05_libreta | Botón "Pensar" |
-| 06_acusacion | Retratos 2.5D en la rueda, prueba clave explicada |
-| 07-09 veredicto y finales | Rango del detective, prueba clave, "lo que se te escapó" |
+| 06_acusacion | Retratos 2.5D en la rueda, prueba clave explicada (solo cuando hay pistas), flechas legibles |
+| 07-09 veredicto y finales | Rango del detective, prueba clave, "lo que se te escapó", "solidez de las pruebas N de M" |
+| 21_ficha_policial | Nuevo: el informe se cierra con la ficha del culpable (retrato 2.5D, nombre a máquina) |
 | 10_ajustes | Dificultad, pista de los deslizadores visible (WCAG 1.4.11) |
 | 12_dialogo | Un solo aviso de reinicio con botones de acción |
 | 13-14 texto grande / alto contraste | Siguen en AA (test) |
@@ -39,8 +43,8 @@ tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se comple
 
 | Métrica | Antes (inicio del día) | Ahora |
 |---|---|---|
-| Tests EditMode | 549 | **668** |
-| Tests PlayMode (sin capturas) | 20 | **36** |
+| Tests EditMode | 549 | **677** |
+| Tests PlayMode (sin capturas) | 20 | **40** |
 | Horas inventadas por qwen (A/B, 18+18 partidas) | 27 / 619 respuestas | **7 / 630** (−74 %), latencia igual |
 | Primera pista (bot, preguntas) | 10,3 (8,6 antes de B2) | **6,9** con Pensar |
 | Partidas sin ninguna pista (bot) | 2 de 18 | **0** |
@@ -50,11 +54,13 @@ tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se comple
 | Incoherencias narrativas conocidas | 17 (auditoría) | 0 abiertas; validador en verde en las 9 variantes |
 | Basura por fotograma del juego (reposo) | ≤ 0 B | ≤ 0 B (tras C3/C4/D1) |
 | Contraste mínimo de texto tras el post-proceso | — | 6,08:1 (todos los pares suben) |
-| Hallazgos de revisión abiertos | — | 0 de 13 |
+| Hallazgos de revisión abiertos | — | 0 de 13 (primera revisión) |
+| Lector de pantalla | no | **sí** (jerarquía, acciones y anuncios; probado en el editor, falta un móvil real) |
 
 ## 4. Skills y herramientas usadas
 - **superpowers:test-driven-development** en todo el código (cada arreglo de la revisión: test en rojo → verde).
-- **design:design-critique** (C1, docs/DESIGN-CRITIQUE.md) y **design:ux-copy** (C6, glosario y tabla de textos).
+- **design:design-critique** (C1, docs/DESIGN-CRITIQUE.md), **design:ux-copy** (C6, glosario y tabla de textos) y
+  **design:accessibility-review** (auditoría WCAG 2.2 AA en las rondas finales).
 - **Subagentes**: auditoría editorial (A2), investigación con búsqueda web (B1), revisión de código independiente
   con el modelo más capaz (D3).
 - **Búsqueda web**: juegos de detectives (RESEARCH.md), nivel de API de Google Play (E).
@@ -109,8 +115,8 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 
 ## 8. Cómo probarlo en Unity (en este orden)
 1. Abrir el proyecto con **Unity 6000.3.2f1** y esperar a que importe (la primera vez tarda).
-2. *Window → General → Test Runner* → **EditMode → Run All** (668 en verde).
-3. **PlayMode → Run All** (36 en verde; las capturas están marcadas *Explicit* y no corren solas).
+2. *Window → General → Test Runner* → **EditMode → Run All** (677 en verde).
+3. **PlayMode → Run All** (40 en verde; las capturas están marcadas *Explicit* y no corren solas).
 4. Para jugar con qwen: `ollama serve` y `ollama pull qwen2.5:7b-instruct`.
 5. Abrir `Assets/Scenes/Game.unity` → **Play** con la ventana *Game* en 1080×1920:
    Jugar → un caso → leer el expediente (fondo de la historia) → Empezar → tocar una pregunta de ejemplo →
@@ -121,3 +127,6 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 7. Build: *Detective → Build de Windows* (o `-buildPath Builds/Windows-final/Detectives.exe`) y
    `Detectives.exe -batchmode -nographics -smoketest -logFile smoke.log` → "SMOKE OK".
 8. Android: ver `docs/ANDROID-BUILD.md` (módulo, *Detective → Android → Aplicar ajustes*, build).
+9. Lector de pantalla en el editor: *Window → Accessibility → Accessibility Hierarchy Viewer* con la escena en Play y
+   `AssistiveSupport.screenReaderStatusOverride = ForceEnabled` (como hacen ScreenReaderTests); en el móvil, activa
+   TalkBack y desliza por la pantalla: lee botones y textos en orden, y anuncia respuestas, pistas y el veredicto.
