@@ -100,3 +100,5 @@ importa al jugador (tiempo hasta la primera pista y partidas en blanco) es la qu
   caer en lo mismo. No impide elegirlo (el final malo lo explica si lo hace).
 - **Rejugar trae otro culpable**: la historia elige primero una variante que no has resuelto; con las tres
   jugadas, nunca la misma dos veces seguidas (antes, al azar: la misma solución 1 de cada 3 veces).
+- **Los partes de la mañana quedan en la libreta** para releerlos (antes solo en la tarjeta del día), y el
+  informe final acaba con los culpables posibles que quedan por ver.
