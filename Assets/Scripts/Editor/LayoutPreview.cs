@@ -54,6 +54,8 @@ public static class LayoutPreview
 
         session.ui.BuildLayout();
         session.menu.BuildLayout();
+        // Como en juego: GameManager vuelve a aplicar el tema cuando ya existen los controles creados por código
+        ThemeApplier.Apply(session.canvas.transform);
         FillWorstCase(session.ui);
 
         // Como en juego: las plantillas de los desplegables empiezan ocultas

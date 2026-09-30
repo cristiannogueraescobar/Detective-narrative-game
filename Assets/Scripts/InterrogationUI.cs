@@ -407,7 +407,11 @@ public class InterrogationUI : MonoBehaviour
         {
             LayoutKit.Put(title, column, height: 110f);
             if (title.TryGetComponent(out TMP_Text titleText))
+            {
                 titleText.text = GameTexts.NotebookTitle;
+                titleText.fontStyle = FontStyles.Bold;
+                titleText.characterSpacing = 8f;
+            }
         }
 
         if (contradictionsText != null)

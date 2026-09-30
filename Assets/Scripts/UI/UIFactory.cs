@@ -96,6 +96,7 @@ public static class UIFactory
             box.sprite = UISprites.RoundedOutline(10, 4);
             box.type = Image.Type.Sliced;
             box.color = theme.textSecondary;
+            box.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore; // Se llama "Background": el tema lo pintaría de negro
         }
         if (go.transform.Find("Background/Checkmark") is RectTransform check && check.TryGetComponent(out Image mark))
         {
@@ -106,6 +107,7 @@ public static class UIFactory
             mark.sprite = UISprites.Rounded(6);
             mark.type = Image.Type.Sliced;
             mark.color = theme.accent;
+            mark.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
         }
 
         var toggle = go.GetComponent<Toggle>();

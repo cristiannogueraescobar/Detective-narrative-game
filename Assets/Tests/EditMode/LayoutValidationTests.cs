@@ -154,6 +154,19 @@ public class LayoutValidationTests
                 errors.Add($"zona táctil pequeña: {Path((RectTransform)control.transform)} {r.width:F0}x{r.height:F0} (mínimo {Theme.MinTouchSize})");
         }
 
+        // Casillas: su borde tiene que verse sobre el fondo (WCAG 1.4.11, 3:1 para componentes)
+        foreach (Toggle toggle in root.GetComponentsInChildren<Toggle>(false))
+        {
+            if (!(toggle.targetGraphic is Graphic box))
+                continue;
+            Color? background = BackgroundOf(box.transform);
+            if (background == null)
+                continue;
+            float ratio = Contrast(box.color, background.Value);
+            if (ratio < 3f)
+                errors.Add($"casilla invisible: {Path((RectTransform)toggle.transform)} contraste {ratio:F1}:1");
+        }
+
         // Placeholder de los campos de texto: no debe desbordar
         foreach (TMP_InputField field in root.GetComponentsInChildren<TMP_InputField>(false))
         {

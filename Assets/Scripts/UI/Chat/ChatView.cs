@@ -651,7 +651,7 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
         row.heading.text = $"DÍA {entry.day}";
         bool report = !string.IsNullOrEmpty(entry.text);
         row.body.gameObject.SetActive(report);
-        row.body.text = report ? "Parte de la mañana: " + entry.text : "";
+        row.body.text = !report ? "" : entry.day <= 1 ? "Lo que se sabe: " + entry.text : "Parte de la mañana: " + entry.text;
     }
 
     // Entrada suave de una fila nueva: sube un poco y aparece
