@@ -148,7 +148,7 @@ public class AIConversationManager : MonoBehaviour
             {
                 InventedTimeRetries++;
                 float retryTemperature = CoolTimeRetry ? Mathf.Min(temperature, CoolRetryTemperature) : temperature;
-                LLMResult retry = await llmProvider.SendAsync(systemPrompt, Nudged(history, TimeNudge), maxTokens, retryTemperature);
+                LLMResult retry = await llmProvider.SendAsync(systemPrompt, Nudged(history, StrictTimeNudge ? TimeNudgeStrict : TimeNudge), maxTokens, retryTemperature);
                 if (retry.Success && !IsRepeat(history, retry.Text)
                     && TimeCheck.Unknown(EmotionParser.Parse(retry.Text).text, known).Count < invented)
                 {
@@ -230,6 +230,9 @@ public class AIConversationManager : MonoBehaviour
     public const string LanguageNudge = " (Responde solo en español.)";
     public static int LanguageRetries;
     public const string TimeNudge = " (Solo di horas que estén en tu ficha; si no sabes la hora, di que no te fijaste.)";
+    // "No me fijé, pero creo que sobre las 23:30": la nota estricta prohíbe también la hora aproximada (A/B, ronda 30)
+    public const string TimeNudgeStrict = " (Solo di horas que estén en tu ficha; si no sabes la hora, di que no te fijaste, sin dar ninguna hora aproximada.)";
+    public bool StrictTimeNudge { get; set; }
 
     /// <summary>
     /// Pedir otra vez las respuestas con horas inventadas (medido con el bot: ver docs/NIGHT-LOG.md, día 3, 0d).
