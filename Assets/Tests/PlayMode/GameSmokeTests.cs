@@ -264,4 +264,20 @@ public class GameSmokeTests
         Assert.IsFalse(Find("CluesPanel").activeInHierarchy, "cierra la libreta");
         Assert.IsFalse(router.Back(), "en el interrogatorio no hace nada");
     }
+
+    [UnityTest]
+    public IEnumerator JugarOtraVezAbreLaSeleccionDeCaso()
+    {
+        yield return StartNewGame();
+        Object.FindFirstObjectByType<GameManager>().RestartGame(); // Lo que hace "Jugar otra vez"
+        yield return null;
+        yield return null;
+        Object.FindFirstObjectByType<AIConversationManager>().UseProvider(provider);
+        yield return new WaitForSecondsRealtime(0.3f);
+
+        GameObject select = Find("Casos (auto)");
+        Assert.IsNotNull(select);
+        Assert.IsTrue(select.activeInHierarchy, "tras «Jugar otra vez» se elige caso");
+        Assert.IsFalse(SaveSystem.Exists, "la partida anterior no se ofrece para continuar");
+    }
 }
