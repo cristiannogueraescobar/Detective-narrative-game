@@ -66,4 +66,17 @@ public class CaseRecordsTests
             picked.Add(CaseRecords.PickVariant(ids, s => s.Substring(0, 1), roll));
         Assert.AreEqual(3, picked.Count);
     }
+
+    // El final invita a rejugar con lo que queda por ver (y felicita al completarla)
+    [Test]
+    public void ElFinalDiceCuantosCulpablesQuedanPorVer()
+    {
+        StringAssert.Contains("otros 2 culpables", GameTexts.ReplayLine(2));
+        StringAssert.Contains("otro culpable", GameTexts.ReplayLine(1));
+        StringAssert.Contains("todos", GameTexts.ReplayLine(0));
+
+        var ids = new[] { "1A", "1B", "1C" };
+        CaseRecords.RecordPlayed("1", "1B");
+        Assert.AreEqual(2, CaseRecords.Unplayed(ids));
+    }
 }

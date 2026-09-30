@@ -573,7 +573,9 @@ public class GameManager : MonoBehaviour
             keyClueLine = keyLine,
             notesLine = SuspectNotes.EndingLine(notes.TryGetValue(variant.culpritId, out SuspectNote culpritNote) ? culpritNote : SuspectNote.Ninguna,
                                                 story.Character(variant.culpritId).shortName, result.correct),
-            culprit = SuspectView.From(story.Character(variant.culpritId))
+            culprit = SuspectView.From(story.Character(variant.culpritId)),
+            // Se llama después de RecordPlayed: esta ya cuenta como vista
+            replayLine = GameTexts.ReplayLine(CaseRecords.Unplayed(story.variants.Select(v => v.id)))
         };
         foreach (ClueData clue in variant.clues.Where(c => !State.IsDiscovered(c.id)))
             summary.missed.Add($"{clue.playerName} (lo sabía {story.Character(clue.holder).shortName})");
