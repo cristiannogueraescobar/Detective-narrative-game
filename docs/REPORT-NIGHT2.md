@@ -108,10 +108,12 @@ hechos con preguntas capciosas y acabar acusando por algo inventado.
 |---|---|
 | Antes | 17/72 (23 %), a veces con detalles y horas inventados |
 | "Si el inspector **afirma** algo que no está en tu ficha, niégalo" | 4/72 (5 %), pero algún "No" reflejo a preguntas de sí/no con pista (3A_audios) |
-| "Si el inspector **te atribuye** algo que no está en tu ficha, niégalo" (la final) | **2/72 (3 %)**, y las dos son la disputa real por la custodia de la historia 3 |
+| "Si el inspector **te atribuye** algo que no está en tu ficha, niégalo" | 2/72 (3 %), las dos son la disputa real por la custodia de la historia 3 |
 
-Para no pasar de 460 palabras por ficha se acortaron líneas comunes ("DÍA n", "NO SABES (dilo si te preguntan)",
-la guía de estados). Informes: `Logs/premisas/`.
+**Pero** con cualquiera de las dos reglas la madre de 3A empezó a negar que Javier la amenazase ("No, nunca me
+ha amenazado… solo un mensaje preocupante") y la pista 3A_audios (una de las flojas que había que subir) volvió a
+fallar; sin la regla pasa en todas las mediciones. **Decisión conservadora: regla revertida.** La ficha es la
+misma que midió las pistas al 84–85 %. Queda como pendiente con los datos: `Logs/premisas/`.
 
 ### Calibración de estados emocionales (144 respuestas, 4 tipos de pregunta)
 

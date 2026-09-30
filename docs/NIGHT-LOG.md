@@ -146,6 +146,12 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   Pero la detección de pistas baja (sin regla 85 / 84 %; con regla 83 / 80 %) y 3A_audios falla: la madre niega
   que Javier la amenazase. Brazo C en curso (recortes sí, regla no) para separar la causa. Galería regenerada.
 
+- 08:25 Brazo C (recortes sí, regla no): 81 %. La dispersión 80–85 % es sobre todo ruido, pero 3A_audios falla
+  en los dos brazos con regla y pasa en todos los demás, y es una de las pistas flojas que había que subir.
+  Decisión conservadora: REVERTIDA la regla y los recortes (la ficha vuelve a la versión medida). Experimento D
+  en el worktree: "Si el inspector dice que hiciste algo que no está en tu ficha, niégalo" (no debería tocar
+  "¿Le había amenazado Javier?"). Solo se adopta si 3A_audios aguanta y las premisas mejoran.
+
 ## Ahora
 - Ronda 6: crítica de diseño con capturas, más mejoras, informe y galería finales.
 
