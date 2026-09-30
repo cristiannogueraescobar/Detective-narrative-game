@@ -210,7 +210,8 @@ public class ScreenReader : MonoBehaviour
             canvas.GetComponentsInChildren(false, tmpTexts);
             foreach (TMP_Text t in tmpTexts)
             {
-                if (usedLabels.Contains(t.GetInstanceID()) || t.GetComponentInParent<Selectable>() != null)
+                if (usedLabels.Contains(t.GetInstanceID()) || t.GetComponentInParent<Selectable>() != null
+                    || t.GetComponentInParent<Decorative>() != null)
                     continue;
                 if (!Visible(t.rectTransform, camera, t.color.a, true, out Rect frame))
                     continue;
