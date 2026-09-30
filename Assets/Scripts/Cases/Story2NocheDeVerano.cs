@@ -290,7 +290,7 @@ Tienes 7 días.",
                 "Los buzos encuentran el cuerpo de Sofía en la Cala do Corvo. El forense descarta una caída: murió de un golpe.",
                 "La tía de Sofía comenta que este verano alguien dejaba cosas en su buzón.",
                 "En el bolso de Sofía había un sobre sin sello ni remitente, vacío.",
-                "Correos confirma que todos sus empleados fichan en la oficina. Los registros están en comisaría.",
+                "Correos confirma que todos sus empleados fichan en la oficina. Los registros de fichaje los tiene Ruiz en comisaría.",
                 "Un vecino dice que esa madrugada vio pasar una furgoneta 'pequeña, clara'.",
                 LastDay
             },
