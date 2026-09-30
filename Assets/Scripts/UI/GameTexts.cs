@@ -31,6 +31,17 @@ public static class GameTexts
             : $"¿Terminar el día? Te quedan {remaining} preguntas y se perderán.";
     }
 
+    /// <summary>
+    /// Consejo en el parte de la mañana para quien lleva dos días sin ninguna pista (sin desvelar nada del caso).
+    /// </summary>
+    public static string StuckHint(int day, int cluesFound)
+    {
+        if (day < 3 || cluesFound > 0)
+            return null;
+        return "Aún no tienes ninguna pista. Pregunta cosas concretas: a qué hora, dónde, qué vio u oyó cada uno, " +
+               "quién puede confirmarlo. Y habla con todos: cada uno sabe algo.";
+    }
+
     public const string EndDayYes = "Terminar el día";
     public const string EndDayNo = "Seguir preguntando";
 

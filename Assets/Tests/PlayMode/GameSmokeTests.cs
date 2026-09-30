@@ -301,6 +301,28 @@ public class GameSmokeTests
     }
 
     [UnityTest]
+    public IEnumerator ElParteMasLargoCabeEnLaHojaDelDia([Values(0, 2)] int textSize)
+    {
+        GameSettings.TextSizeLevel = textSize;
+        yield return StartNewGame();
+        // El parte más largo de los nueve casos, con el consejo de "sin pistas" y el aviso del último día
+        string longest = CaseLibrary.AllVariants().SelectMany(p => p.variant.morningReports).OrderByDescending(r => r.Length).First();
+        string report = longest + "\n" + GameTexts.StuckHint(7, 0) + "\nÚltimo día: al terminarlo tendrás que acusar a alguien.";
+
+        GameObject card = Object.FindFirstObjectByType<FxLayer>().DayCard(7, 7, report);
+        yield return new WaitForSecondsRealtime(0.2f);
+        card.GetComponent<TapHandler>().onTap(); // Completa el texto
+        yield return null;
+        yield return null;
+
+        TMP_Text body = card.GetComponentsInChildren<TMP_Text>().First(t => t.text.StartsWith("Parte de la mañana"));
+        body.ForceMeshUpdate();
+        Assert.IsFalse(body.isTextTruncated, "el parte se lee entero");
+        Assert.GreaterOrEqual(body.fontSize, Theme.MinReadableSize - 0.5f);
+        Object.Destroy(card);
+    }
+
+    [UnityTest]
     public IEnumerator SinPreguntasFinDelDiaNoPregunta()
     {
         yield return StartNewGame();

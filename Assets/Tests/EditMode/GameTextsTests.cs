@@ -35,6 +35,18 @@ public class GameTextsTests
         Assert.AreEqual(expected, GameTexts.EndDayConfirm(remaining));
     }
 
+    [TestCase(2, 0, false)]
+    [TestCase(3, 0, true)]
+    [TestCase(5, 0, true)]
+    [TestCase(3, 1, false)]
+    public void SinPistasElTercerDiaHayUnConsejo(int day, int clues, bool hint)
+    {
+        string text = GameTexts.StuckHint(day, clues);
+        Assert.AreEqual(hint, !string.IsNullOrEmpty(text));
+        if (hint)
+            StringAssert.Contains("concret", text);
+    }
+
     [Test]
     public void LasInstruccionesExplicanTodoElJuego()
     {
