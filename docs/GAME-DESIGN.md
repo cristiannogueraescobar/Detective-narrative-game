@@ -73,3 +73,20 @@ constante. La prueba clave, el rango y el resumen del final no los mide el bot (
 se comprueban con tests (DetectiveRankTests, StateMachineTests) y con las capturas del final.
 Pendiente: el 88 % de turnos sin pista nueva sigue alto porque cuenta cada pregunta de ambiente; la métrica que
 importa al jugador (tiempo hasta la primera pista y partidas en blanco) es la que mejora.
+
+## Rondas finales (tarde del día 3): lo que se añadió y por qué
+- **La libreta apunta lo que dice cada uno** ("Dice: «…»" bajo cada sospechoso en cuanto ha contestado). La
+  deducción de Her Story y L.A. Noire es comparar lo que alguien afirma con lo que prueban los hechos; hasta ahora
+  el jugador tenía que recordarlo. Una quinta indicación del tutorial lo explica la primera vez. **Medido con el
+  bot** (A/B 18 + 18): sin efecto (contradicciones 3 → 2, resueltas 13 → 12, ruido), porque su detective no
+  compara versiones; se mantiene por diseño y queda como decisión para Cristian si las pruebas con personas no lo
+  confirman.
+- **"Pensar" y la prueba clave, explicados donde hacen falta**: el consejo de atasco del parte menciona Pensar (si
+  la dificultad tiene ayudas); la explicación de la prueba clave sale en el resumen de la acusación solo cuando hay
+  pistas (sin pistas el selector no aparece y la frase confundía).
+- **Rango honesto**: acertar sin pruebas ("Sobreseído") ya no da un rango alto; los días de sobra solo premian un
+  caso bien cerrado.
+- **Finales con cara**: la ficha policial del culpable cierra el informe; "solidez de las pruebas N de M" en vez
+  de "evidencia N/M", que se confundía con el recuento de pistas.
+- **Preguntas capciosas**: los sospechosos ya no aceptan premisas falsas (22 % → 2 %, sin perder pistas): el
+  jugador no puede "sembrar" hechos, y lo que niega un sospechoso vuelve a significar algo.
