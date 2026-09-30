@@ -522,6 +522,16 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   la rueda atenúa a los descartados "(descartado)" sin impedir elegirlos. Instrucciones y RESEARCH.md al día.
   Tests: SuspectNotesTests (4) + test de juego (tocar la nota, ver la rueda). EditMode 705/705, PlayMode 48/48.
 
+- **16:42** Ronda 10. Revisión visual de las notas: "Carmen (descartado)" no concordaba (los datos no guardan
+  género) → en la rueda, nombre tachado + "(tu descarte)", que también lee el lector. Recorrido de jugador nuevo
+  con lector de pantalla: **los enlaces de la libreta no existían para el lector** (ni ir a interrogar, ni la
+  nota, ni enseñar una pista; hueco anterior a hoy) → cada enlace es un botón con contexto ("Interrogar a …",
+  "Nota sobre …: añadir nota", "Enseñar como prueba: …"), mismo nodo al cambiar (el foco no salta). Test nuevo en
+  ScreenReaderTests (visto fallar antes). EditMode 705/705, PlayMode 49/49.
+  Bot ronda 10 (al azar 2A, 3A, 1C; semilla 1010): **6/6 culpables**, primera pista a las 5,7 preguntas, 0
+  reintentos por idioma, 0 confesiones/incoherencias; marcadas 2 (un nombre inventado, "Iago" = 1/178, dentro de
+  la tasa conocida; una hora que solo repite la franja de la pregunta). Acumulado del día: 35/44.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
