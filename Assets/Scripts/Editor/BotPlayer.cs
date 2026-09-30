@@ -375,7 +375,11 @@ public static class BotPlayer
             Decision d = ParseDecision(raw);
             if (d != null)
             {
+                string named = d.suspect;
                 d.suspect = Resolve(story, d.suspect);
+                // A veces pone el id de una pista ("2A_curva") en vez de un sospechoso: va a quien la sabe
+                if (d.suspect == null && named != null && manager.State.Variant.clues.FirstOrDefault(c => c.id == named) is ClueData namedClue)
+                    d.suspect = namedClue.holder;
                 d.accuse = Resolve(story, d.accuse);
                 d.evidence = ResolveClue(manager.State.Variant, d.evidence);
             }
