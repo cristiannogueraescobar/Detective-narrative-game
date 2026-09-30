@@ -608,6 +608,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   2C falla porque el bot vuelve a Marcos (como en la 2B; la 2C va 3/6 en tres rondas). Acumulado al azar: 48/62.
   EditMode 715/715, PlayMode 54/54.
 
+- **19:26** Build de Windows rehecha con todo lo de la tarde (Builds/Windows-final): Success y **SMOKE OK** (log
+  borrado antes, resultado fresco). Barrido de textos: no queda ningún "descartado/sospechoso" con género en la
+  interfaz.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
