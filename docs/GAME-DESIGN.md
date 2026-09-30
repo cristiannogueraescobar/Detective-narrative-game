@@ -98,3 +98,5 @@ importa al jugador (tiempo hasta la primera pista y partidas en blanco) es la qu
 - **La rueda marca también a quien descarta una pista ya encontrada** ("(pista de descarte)", como la libreta): en
   la 2B el bot acusaba a Marcos teniendo la grabación que lo descarta, 10 de 10 veces; un jugador cansado puede
   caer en lo mismo. No impide elegirlo (el final malo lo explica si lo hace).
+- **Rejugar trae otro culpable**: la historia elige primero una variante que no has resuelto; con las tres
+  jugadas, nunca la misma dos veces seguidas (antes, al azar: la misma solución 1 de cada 3 veces).
