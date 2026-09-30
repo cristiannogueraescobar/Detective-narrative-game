@@ -309,4 +309,17 @@ public class AnimationCapture
         yield return new WaitForSecondsRealtime(2f);
         Shot("panel_acusacion");
     }
+
+    [UnityTest]
+    public IEnumerator Desplegable()
+    {
+        Tutorial.SkipAll();
+        yield return ToInterrogation();
+        var ui = UnityEngine.Object.FindFirstObjectByType<InterrogationUI>();
+        ui.SetEvidenceOptions(CaseLibrary.AllVariants().First().variant.clues);
+        var dropdown = Find("EvidenceDropdown (auto)").GetComponent<TMPro.TMP_Dropdown>();
+        dropdown.Show();
+        yield return new WaitForSecondsRealtime(0.6f);
+        Shot("desplegable_pruebas");
+    }
 }

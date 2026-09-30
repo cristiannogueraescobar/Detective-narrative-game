@@ -83,6 +83,19 @@ public class LayoutValidationTests
     }
 
     [Test]
+    public void LasOpcionesDeLosDesplegablesSeTocanBien()
+    {
+        foreach (TMP_Dropdown dropdown in session.canvas.GetComponentsInChildren<TMP_Dropdown>(true))
+        {
+            Assert.IsNotNull(dropdown.template, dropdown.name);
+            Transform item = dropdown.template.GetComponentInChildren<Toggle>(true)?.transform;
+            Assert.IsNotNull(item, $"{dropdown.name}: sin opción de plantilla");
+            Assert.GreaterOrEqual(((RectTransform)item).rect.height, Theme.MinTouchSize - Tolerance,
+                $"{dropdown.name}: cada opción de la lista debe medir 48 dp");
+        }
+    }
+
+    [Test]
     public void ChatSoloDesplazamientoVertical()
     {
         ScrollRect chat = LayoutPreview.Find(session, "ConversationScroll").GetComponent<ScrollRect>();

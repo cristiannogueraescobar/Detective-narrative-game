@@ -436,10 +436,24 @@ public class InterrogationUI : MonoBehaviour
 
         if (dropdown.template != null)
         {
-            dropdown.template.anchorMin = new Vector2(0f, 0f);
-            dropdown.template.anchorMax = new Vector2(1f, 0f);
-            dropdown.template.pivot = new Vector2(0.5f, 1f);
-            dropdown.template.sizeDelta = new Vector2(0f, 600f);
+            UIComponents.GetOrAdd<DropdownFit>(dropdown.gameObject).Fit(); // Lista del ancho del desplegable
+
+            // Cada opción de la lista abierta, de 48 dp como el resto de controles
+            Toggle item = dropdown.template.GetComponentInChildren<Toggle>(true);
+            if (item != null)
+            {
+                var itemRect = (RectTransform)item.transform;
+                itemRect.sizeDelta = new Vector2(itemRect.sizeDelta.x, Theme.MinTouchSize);
+                if (dropdown.itemText != null)
+                {
+                    RectTransform text = dropdown.itemText.rectTransform;
+                    text.anchorMin = Vector2.zero;
+                    text.anchorMax = Vector2.one;
+                    text.offsetMin = new Vector2(72f, 6f);
+                    text.offsetMax = new Vector2(-24f, -6f);
+                    dropdown.itemText.alignment = TextAlignmentOptions.MidlineLeft;
+                }
+            }
         }
     }
 
