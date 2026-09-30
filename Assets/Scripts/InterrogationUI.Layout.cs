@@ -77,6 +77,7 @@ public partial class InterrogationUI
         {
             LayoutKit.Put(hudText, hud, flexibleWidth: 1f);
             hudText.alignment = TextAlignmentOptions.MidlineLeft;
+            hudText.font = UIFactory.TitleFont(); // Como un rótulo de expediente
             LayoutKit.OneLine(hudText, T.bodySize);
         }
         LayoutKit.Put(viewCluesButton, hud, width: 260f);
