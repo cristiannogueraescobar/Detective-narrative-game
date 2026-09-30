@@ -224,11 +224,12 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
     private IEnumerator AnimateDots()
     {
         float phase = 0f;
+        var wait = new WaitForSecondsRealtime(0.125f);
         while (typingRow != null && typingRow.root.activeSelf)
         {
-            phase += Time.unscaledDeltaTime * 1.4f;
-            typingRow.body.text = Dots(phase);
-            yield return null;
+            phase += 0.125f * 1.4f;
+            typingRow.body.text = Dots(phase); // 8 veces por segundo basta y no rehace el chat en cada fotograma
+            yield return wait;
         }
         typingDots = null;
     }

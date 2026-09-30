@@ -407,8 +407,21 @@ public class GameManager : MonoBehaviour
 
     public void CancelAccusation()
     {
-        if (CanCancelAccusation)
-            interrogationUI?.ShowInterrogation();
+        if (!CanCancelAccusation)
+            return;
+        interrogationUI?.ShowInterrogation();
+        SoundManager.PlayMusic(SoundCatalog.ForStory(story.id)); // Vuelve la música del caso, no la de tensión
+    }
+
+    private void OnApplicationPause(bool paused)
+    {
+        if (paused)
+            GameSettings.Flush();
+    }
+
+    private void OnApplicationQuit()
+    {
+        GameSettings.Flush();
     }
 
     public void MakeAccusation(string accusedId)

@@ -927,7 +927,7 @@ public class InterrogationUI : MonoBehaviour
     /// </summary>
     public void BeginCase(string situation)
     {
-        if (conversations.SharedEntries.Count > 0)
+        if (!conversations.IsEmpty)
             return;
         conversations.AppendToAll(ChatEntry.Day(1, situation));
         RefreshConversationView();

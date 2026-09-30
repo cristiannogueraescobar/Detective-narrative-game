@@ -36,12 +36,45 @@ public static class GameSettings
 
         public void Set(string key, float value)
         {
-            PlayerPrefs.SetFloat(key, value);
-            PlayerPrefs.Save();
+            PlayerPrefs.SetFloat(key, value); // Se escribe a disco al pausar o salir (Flush), no en cada arrastre
         }
     }
 
-    private static ISettingsStore store = new PlayerPrefsStore();
+    private static ISettingsStore backing = new PlayerPrefsStore();
+    private static readonly CachedStore store = new CachedStore();
+
+    // Los ajustes se leen del almacén una vez y luego de memoria (se consultan en cada fotograma)
+    private class CachedStore
+    {
+        private readonly System.Collections.Generic.Dictionary<string, float> values = new System.Collections.Generic.Dictionary<string, float>();
+
+        public float Get(string key, float fallback)
+        {
+            if (!values.TryGetValue(key, out float v))
+            {
+                v = backing.Get(key, fallback);
+                values[key] = v;
+            }
+            return v;
+        }
+
+        public void Set(string key, float value)
+        {
+            values[key] = value;
+            backing.Set(key, value);
+        }
+
+        public void Clear() => values.Clear();
+    }
+
+    /// <summary>
+    /// Escribe los ajustes a disco (al pausar o cerrar la aplicación).
+    /// </summary>
+    public static void Flush()
+    {
+        if (backing is PlayerPrefsStore)
+            PlayerPrefs.Save();
+    }
 
     public static event Action Changed;
 
@@ -50,7 +83,8 @@ public static class GameSettings
     /// </summary>
     public static void UseStore(ISettingsStore replacement)
     {
-        store = replacement ?? new PlayerPrefsStore();
+        backing = replacement ?? new PlayerPrefsStore();
+        store.Clear();
         Changed = null;
     }
 

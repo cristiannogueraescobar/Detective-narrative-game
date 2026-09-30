@@ -113,6 +113,7 @@ public static class SaveSystem
             && (data.discovered ?? new List<string>()).All(clues.Contains)
             && (data.shown ?? new List<SaveData.Shown>()).All(s => Known(s.characterId) && clues.Contains(s.clueId))
             && (data.histories ?? new List<SaveData.History>()).All(h => Known(h.characterId))
+            && (data.conversations ?? new List<SaveData.Conversation>()).All(c => Known(c.characterId))
             && (data.emotions ?? new List<SaveData.EmotionEntry>()).All(e => Known(e.characterId) && Enum.TryParse(e.emotion, out Emotion _))
             && (data.currentSuspect == null || data.currentSuspect.Length == 0 || Known(data.currentSuspect));
     }

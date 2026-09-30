@@ -226,17 +226,27 @@ public class SoundManager : MonoBehaviour
         }
 
         float startFrom = from.volume;
+        AudioSource other = to;
+        float startOther = clip == null ? other.volume : 0f;
         for (float e = 0f; e < CrossfadeSeconds; e += Time.unscaledDeltaTime)
         {
             float t = e / CrossfadeSeconds;
             from.volume = startFrom * (1f - t);
+            if (clip == null)
+                other.volume = startOther * (1f - t);
             if (clip != null)
                 to.volume = GameSettings.MusicVolume * t;
             yield return null;
         }
 
-        from.Stop();
-        from.volume = 0f;
+        // Solo queda sonando la nueva (un fundido interrumpido podía dejar la anterior a medio volumen)
+        foreach (AudioSource source in new[] { musicA, musicB })
+        {
+            if (clip != null && source == to)
+                continue;
+            source.Stop();
+            source.volume = 0f;
+        }
         if (clip != null)
             to.volume = GameSettings.MusicVolume;
         fade = null;

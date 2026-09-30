@@ -22,15 +22,23 @@ public class TextStyle : MonoBehaviour
     public float maxSize;
     public TMP_FontAsset font;
 
+    private float appliedScale = -1f;
+
     private void OnEnable()
     {
         Apply();
-        GameSettings.Changed += Apply; // Tamaño del texto en caliente
+        GameSettings.Changed += OnSettingsChanged; // Tamaño del texto en caliente
     }
 
     private void OnDisable()
     {
-        GameSettings.Changed -= Apply;
+        GameSettings.Changed -= OnSettingsChanged;
+    }
+
+    private void OnSettingsChanged()
+    {
+        if (!Mathf.Approximately(appliedScale, GameSettings.TextScale))
+            Apply();
     }
 
     public void Apply()
@@ -44,7 +52,8 @@ public class TextStyle : MonoBehaviour
         else if (text.font == null)
             text.font = UIFactory.DefaultFont();
 
-        float max = Mathf.Max(maxSize * GameSettings.TextScale, Theme.MinReadableSize);
+        appliedScale = GameSettings.TextScale;
+        float max = Mathf.Max(maxSize * appliedScale, Theme.MinReadableSize);
         switch (mode)
         {
             case Mode.OneLine:

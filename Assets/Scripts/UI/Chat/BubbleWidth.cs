@@ -17,6 +17,7 @@ public class BubbleWidth : UIBehaviour, ILayoutElement
     private float padding;
     private TMP_Text[] texts;
     private float preferred = -1f;
+    private string cacheKey;
 
     public void Configure(RectTransform source, float reservedWidth, float horizontalPadding, params TMP_Text[] measured)
     {
@@ -48,6 +49,17 @@ public class BubbleWidth : UIBehaviour, ILayoutElement
             available -= group.padding.horizontal;
 
         float max = Mathf.Min(MaxWidth(available, 0f), available - reserved);
+
+        // El texto de medir no cambia casi nunca: sin esto, cada fotograma del "escribiendo…" remedía todo el chat
+        var key = new System.Text.StringBuilder();
+        key.Append(max);
+        foreach (TMP_Text text in texts)
+            key.Append('|').Append(text != null && text.gameObject.activeSelf ? text.text : "");
+        string k = key.ToString();
+        if (k == cacheKey && preferred >= 0f)
+            return;
+        cacheKey = k;
+
         float want = 0f;
         foreach (TMP_Text text in texts)
         {

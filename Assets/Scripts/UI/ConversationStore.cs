@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Conversaciones por sospechoso: la UI solo muestra la del seleccionado.
@@ -16,6 +17,11 @@ public class ConversationStore
     public IReadOnlyList<ChatEntry> CurrentEntries => CurrentId == null ? (IReadOnlyList<ChatEntry>)loose : EntriesOf(CurrentId);
 
     public IReadOnlyList<ChatEntry> SharedEntries => shared;
+
+    /// <summary>
+    /// Nada escrito todavía (ni días, ni conversaciones, ni avisos).
+    /// </summary>
+    public bool IsEmpty => shared.Count == 0 && loose.Count == 0 && bySuspect.Values.All(l => l.Count == 0);
 
     public IReadOnlyList<ChatEntry> EntriesOf(string suspectId)
     {
@@ -74,7 +80,23 @@ public class ConversationStore
         if (sharedEntries != null)
             shared.AddRange(sharedEntries);
         foreach (var pair in entries)
-            bySuspect[pair.Key] = new List<ChatEntry>(pair.Value ?? new List<ChatEntry>());
+        {
+            var list = new List<ChatEntry>(pair.Value ?? new List<ChatEntry>());
+            // Al cargar, cada lista trae su propia copia de los días compartidos: se sustituyen por las
+            // entradas comunes para que el chat reconozca lo ya pintado al cambiar de sospechoso
+            int s = 0;
+            for (int i = 0; i < list.Count && s < shared.Count; i++)
+            {
+                if (SameEntry(list[i], shared[s]))
+                    list[i] = shared[s++];
+            }
+            bySuspect[pair.Key] = list;
+        }
+    }
+
+    private static bool SameEntry(ChatEntry a, ChatEntry b)
+    {
+        return a != null && b != null && a.kind == b.kind && a.day == b.day && a.text == b.text && a.time == b.time;
     }
 
     /// <summary>

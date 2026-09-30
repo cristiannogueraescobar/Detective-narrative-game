@@ -202,4 +202,21 @@ public class GameSmokeTests
         Assert.IsTrue(Find("Indicacion (auto)") == null, "la indicación se cierra");
         Assert.IsTrue(Tutorial.Finished, "saltar apaga todo el tutorial");
     }
+
+    [UnityTest]
+    public IEnumerator VolverDeLaAcusacionRecuperaLaMusicaDelCaso()
+    {
+        yield return StartNewGame();
+        Music story = SoundManager.CurrentMusic;
+        var game = Object.FindFirstObjectByType<GameManager>();
+
+        game.ForceAccusationPanel();
+        yield return null;
+        Assert.AreEqual(Music.Tension, SoundManager.CurrentMusic);
+
+        game.CancelAccusation();
+        yield return null;
+        Assert.AreEqual(story, SoundManager.CurrentMusic, "tras «Volver» suena otra vez la música de la historia");
+        Assert.IsTrue(Find("InterrogationPanel").activeInHierarchy);
+    }
 }
