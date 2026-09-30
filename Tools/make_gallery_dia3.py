@@ -73,6 +73,12 @@ if renders:
               Image.open(renders[-1]).convert('RGB').resize((540, 960))],
              ['ANTES (vacía)', 'AHORA: con lo que dice cada uno']).save(os.path.join(OUT, '22_libreta_versiones.jpg'), quality=85)
 
+# Notas del jugador (ronda 9-12): libreta, rueda y el informe que las recuerda
+notes = [os.path.join(BASE, 'anim', n + '.png') for n in ('notas_libreta', 'notas_rueda', 'notas_final')]
+if all(os.path.exists(n) for n in notes):
+    labelled([Image.open(n).convert('RGB') for n in notes],
+             ['NUEVO: tus notas', 'la rueda tacha tu descarte', 'el final lo recuerda']).save(os.path.join(OUT, '23_notas.jpg'), quality=85)
+
 # Personajes: los 7 retratos, plano (antes) y relieve (ahora)
 proto = os.path.join(BASE, 'c3-prototipo')
 chars = ['padre', 'madre', 'hermano', 'vecina', 'cartero', 'duenio_bar', 'detective']
