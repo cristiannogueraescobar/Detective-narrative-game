@@ -926,6 +926,17 @@ public partial class InterrogationUI : MonoBehaviour
 
     private void OnNotebookLink(string link)
     {
+        if (link.StartsWith(Notebook.SuspectLinkPrefix))
+        {
+            // Esperando respuesta no se cambia de sospechoso (el selector está bloqueado por lo mismo)
+            int who = suspects.FindIndex(v => v.id == link.Substring(Notebook.SuspectLinkPrefix.Length));
+            if (who < 0 || suspectDropdown == null || !suspectDropdown.interactable)
+                return;
+            suspectDropdown.value = who; // Avisa a OnSuspectChanged
+            HideCluesPanel();
+            return;
+        }
+
         // Con la entrada bloqueada (esperando respuesta, sin preguntas) la elección se perdería
         if (!link.StartsWith(Notebook.ClueLinkPrefix) || evidenceDropdown == null || !evidenceDropdown.interactable)
             return;

@@ -39,6 +39,8 @@ public class BriefingAndNotebookTests
         string plain = Notebook.Format(story, state, story.cast.Select(c => c.id), new System.Collections.Generic.Dictionary<string, Emotion>(), c => "x");
 
         StringAssert.Contains($"<link=\"{Notebook.ClueLinkPrefix}i1\">", paper);
+        string suspect = story.cast[0].id;
+        StringAssert.Contains($"<link=\"{Notebook.SuspectLinkPrefix}{suspect}\">", paper, "los sospechosos también son enlaces");
         StringAssert.DoesNotContain("<link", plain, "el texto para el bot no lleva enlaces");
     }
 

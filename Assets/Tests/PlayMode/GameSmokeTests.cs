@@ -392,6 +392,28 @@ public class GameSmokeTests
     }
 
     [UnityTest]
+    public IEnumerator TocarUnSospechosoEnLaLibretaLlevaAInterrogarle()
+    {
+        yield return StartNewGame();
+        var dropdown = Find("SuspectDropdown").GetComponent<TMP_Dropdown>();
+        Assert.Greater(dropdown.options.Count, 1, "hay más de un sospechoso con quien hablar");
+        var game = Object.FindFirstObjectByType<GameManager>();
+        yield return Click("ViewCluesButton");
+
+        var link = Find("CluesPanel").GetComponentInChildren<TextLinkHandler>(true);
+        string text = Find("CluesPanel").GetComponentsInChildren<TMP_Text>(true).Select(t => t.text).First(t => t.Contains(Notebook.SuspectLinkPrefix));
+        // El segundo enlace de sospechoso de la libreta
+        var ids = System.Text.RegularExpressions.Regex.Matches(text, Notebook.SuspectLinkPrefix + "([^\"]+)")
+            .Cast<System.Text.RegularExpressions.Match>().Select(m => m.Groups[1].Value).ToList();
+        Assert.GreaterOrEqual(ids.Count, 2);
+        link.onLink(Notebook.SuspectLinkPrefix + ids[1]);
+        yield return null;
+
+        Assert.AreEqual(1, dropdown.value, "queda elegido para interrogar");
+        Assert.IsFalse(Find("CluesPanel").activeInHierarchy, "y la libreta se cierra");
+    }
+
+    [UnityTest]
     public IEnumerator LosEfectosSeLimpianSolos()
     {
         yield return StartNewGame();

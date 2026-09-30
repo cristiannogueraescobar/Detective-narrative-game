@@ -38,6 +38,7 @@ public static class CaseBriefing
 public static class Notebook
 {
     public const string ClueLinkPrefix = "pista:";
+    public const string SuspectLinkPrefix = "sospechoso:";
 
     public static string Format(StoryData story, InvestigationState state, IEnumerable<string> unlocked,
                                 IReadOnlyDictionary<string, Emotion> emotions, Func<ClueData, string> describeContradiction,
@@ -74,10 +75,14 @@ public static class Notebook
         sb.AppendLine();
 
         sb.AppendLine(heading("SOSPECHOSOS"));
+        if (onPaper)
+            sb.AppendLine("<i><size=85%>Toca un nombre para ir a interrogar.</size></i>");
         var unlockedSet = new HashSet<string>(unlocked);
         foreach (CharacterData character in story.cast.Where(c => unlockedSet.Contains(c.id)))
         {
-            string line = $"• <b>{character.DisplayName}</b>";
+            // En la libreta de papel, el nombre lleva a interrogar a esa persona
+            string who = onPaper ? $"<link=\"{SuspectLinkPrefix}{character.id}\"><u>{character.DisplayName}</u></link>" : character.DisplayName;
+            string line = $"• <b>{who}</b>";
 
             if (emotions.TryGetValue(character.id, out Emotion emotion))
                 line += $" — estado: {emotion.ToString().ToLowerInvariant()}";
