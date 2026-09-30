@@ -65,6 +65,8 @@ public static class BotPlayer
         public int evidence;
         public string accusationReason;
         public string error;
+        public int fallbacks;                                   // Turnos en que el detective no dio un JSON válido
+        public List<string> badDecisions = new List<string>();  // Muestra de esas salidas
         public List<Turn> turns = new List<Turn>();
         public Dictionary<Emotion, int> emotions = new Dictionary<Emotion, int>();
     }
@@ -321,21 +323,36 @@ public static class BotPlayer
             string raw = Chat(client, options, system, new List<ChatMessage> { new ChatMessage { role = "user", content = ask } },
                 DetectiveTemperature, 200, json: true);
             Decision d = ParseDecision(raw);
+            if (d != null)
+            {
+                d.suspect = Resolve(story, d.suspect);
+                d.accuse = Resolve(story, d.accuse);
+                d.evidence = ResolveClue(manager.State.Variant, d.evidence);
+            }
             if (d == null)
+            {
+                if (game.badDecisions.Count < 5)
+                    game.badDecisions.Add(raw);
                 continue;
+            }
 
             if (d.accuse != null && unlocked.Contains(d.accuse))
                 return d;
 
             d.accuse = null;
             if (d.suspect == null || !unlocked.Contains(d.suspect) || string.IsNullOrWhiteSpace(d.question))
+            {
+                if (game.badDecisions.Count < 5)
+                    game.badDecisions.Add(raw);
                 continue;
+            }
             if (d.evidence != null && !manager.State.DiscoveredClueIds.Contains(d.evidence))
                 d.evidence = null;
             return d;
         }
 
         // El modelo no dio un JSON válido: pregunta genérica a un sospechoso al azar (se anota en el informe)
+        game.fallbacks++;
         string fallback = unlocked[random.Next(unlocked.Count)];
         return new Decision { suspect = fallback, question = "¿Qué hizo usted aquella noche, paso a paso?" };
     }
@@ -352,6 +369,8 @@ public static class BotPlayer
         {
             Decision d = ParseDecision(Chat(client, options, system,
                 new List<ChatMessage> { new ChatMessage { role = "user", content = ask } }, 0.3f, 200, json: true));
+            if (d != null)
+                d.accuse = Resolve(story, d.accuse);
             if (d?.accuse != null && story.cast.Any(c => c.id == d.accuse))
                 return d;
         }
@@ -383,6 +402,28 @@ public static class BotPlayer
         {
             return null;
         }
+    }
+
+    // El modelo a veces responde con el nombre en vez del id
+    private static string Resolve(StoryData story, string value)
+    {
+        if (value == null)
+            return null;
+        string v = PlaythroughChecks.Fold(value);
+        CharacterData match = story.cast.FirstOrDefault(c => PlaythroughChecks.Fold(c.id) == v)
+                              ?? story.cast.FirstOrDefault(c => PlaythroughChecks.Fold(c.shortName) == v || PlaythroughChecks.Fold(c.name) == v)
+                              ?? story.cast.FirstOrDefault(c => v.Contains(PlaythroughChecks.Fold(c.shortName)));
+        return match?.id ?? value;
+    }
+
+    private static string ResolveClue(VariantData variant, string value)
+    {
+        if (value == null)
+            return null;
+        string v = PlaythroughChecks.Fold(value);
+        ClueData match = variant.clues.FirstOrDefault(c => PlaythroughChecks.Fold(c.id) == v)
+                         ?? variant.clues.FirstOrDefault(c => PlaythroughChecks.Fold(c.playerName) == v);
+        return match?.id ?? value;
     }
 
     private static string NullIfEmpty(string s) => string.IsNullOrWhiteSpace(s) || s == "null" ? null : s.Trim();
@@ -430,6 +471,9 @@ public static class BotPlayer
             sb.AppendLine($"**Error:** {game.error}");
         sb.AppendLine($"Final: **{game.ending}** · acusado: {game.accusedId} · culpable: {game.culpritId} · preguntas: {game.questionsUsed} · días: {game.daysUsed} · pistas {game.cluesFound}/{game.cluesTotal} · contradicciones {game.contradictions}");
         sb.AppendLine($"Motivo de la acusación: {game.accusationReason}");
+        sb.AppendLine($"Turnos sin decisión válida del detective: {game.fallbacks}");
+        foreach (string bad in game.badDecisions)
+            sb.AppendLine($"  - salida no válida: `{bad.Replace('\n', ' ')}`");
         sb.AppendLine();
         foreach (Turn t in game.turns)
         {
