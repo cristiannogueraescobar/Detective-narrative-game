@@ -561,6 +561,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   visto en rojo). Captura de la rueda con "(tu descarte)" y "(pista de descarte)" a la vez: legible en 2400.
   EditMode 711/711, PlayMode 52/52.
 
+- **17:43** El informe final acaba con lo que queda por ver: "Esta historia tiene otros 2 culpables posibles: juega
+  otra vez para descubrirlos" (o "Has visto todos…"), justo encima de "Jugar otra vez", que abre la selección de
+  caso. En la tarjeta del expediente no cabía sin chocar con títulos largos. EditMode 712/712, PlayMode 52/52.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
