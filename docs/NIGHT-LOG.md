@@ -597,6 +597,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   fallan 2B (0/2, el techo conocido del bot) y una 3B. Horas inventadas marcadas: 8 de 530 (1,5 %), casi todas
   "no me acuerdo, supongo que hacia las 19:30" ante "¿a qué hora exactamente…?" (residuo conocido). README al día.
 
+- **19:17** Ronda 20: A/B del reintento por horas más frío (temperatura 0,3; 3B, 1C, 3A; 12 + 12 partidas, semilla
+  2020): arregla **10 de 11** horas inventadas frente a 5 de 9; quedan 2 marcadas frente a 4; culpables 11 vs 12
+  (ruido); latencia igual. La marca "IA" de la rama fría es un falso positivo ("No, no puedo ayudarte con eso",
+  dicho por un chaval, en personaje). **Activado por defecto** (decisión 16); el bot conserva `-warmTimeRetry`.
+  EditMode 714/714, PlayMode 54/54.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
