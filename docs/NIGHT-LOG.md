@@ -373,5 +373,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   ThemeApplier. EditMode 638/638, PlayMode 32/32. **Bloque C: HECHO CUANDO cumplido** (falta la galería antes/después
   final, que va en el informe).
 
+- **12:33** D1 hecho: clic, máquina, sello, golpes y lluvia ya estaban sintetizados (noches anteriores); añadido el
+  **motivo noir** del menú (La menor, Am–Fmaj7–Dm6–E7b9, piano aditivo + contrabajo pizzicato + escobillas, 8
+  compases a 64 ppm = 30 s exactos: el bucle no pierde el pulso; RNG propio, el resto de archivos idénticos) y la
+  **mezcla** en código (SoundMix: la música se aparta ≈ 7 dB bajo los golpes y vuelve en 1,5 s; sin AudioMixer, que
+  solo se crea con API interna del editor). Tools/check_audio.py: pico, DC, silencio inicial, salto de bucle → todo
+  bien. Tests: SoundMixTests (5) + SoundMixPlayTests. EditMode 650/650. AUDIO-NEEDED.md al día.
+
 ## Ahora (día 3)
-- D1 sonido sintetizado + mezcladores; D2 rendimiento (0 GC, coste de C3/C4); D3 revisión de código.
+- D2 rendimiento (0 GC en reposo, coste de C3/C4 medido), D3 revisión de código.
