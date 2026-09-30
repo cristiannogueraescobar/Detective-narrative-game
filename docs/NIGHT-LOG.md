@@ -633,6 +633,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   lavado. Muestra pequeña, y en otra partida acusó a Marcos con la marca delante (qwen 7B), pero va en la
   dirección esperada: las marcas de la rueda ayudan a quien las ve. Contraste del motivo en la rueda: 4,74:1 (AA).
 
+- **20:02** Ronda 26 (2B y 2C ×4, semilla 2626, el bot ve las marcas de la rueda): **2B 2/4, 2C 3/4**; 0 respuestas
+  marcadas. Con la 25: **2B 3/8 frente a 0/20** sin las marcas. El dato más claro de la tarde: tachar en la rueda a
+  quien descarta una pista cambia la acusación de quien la mira. Galería regenerada con las capturas de las 19:58.
+
 ## Ahora (día 3)
 - Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
   rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
