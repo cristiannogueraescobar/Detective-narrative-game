@@ -205,4 +205,5 @@ abre Unity y deja que reimporte. Game View a **1080x1920 (vertical)**; después 
    recupera la música del caso. Acusa: "El jurado delibera…" y el final con su sello y la línea temporal.
 9. **Jugar otra vez** → selección de caso: el expediente muestra el mejor final que sacaste.
 10. **Continuar**: cierra el juego a mitad de partida y vuelve: "Continuar · <caso>, día N" y el chat entero.
-11. **Build**: `Builds/Windows/Detectives.exe` (ver docs/BUILD.md; `-smoketest` para la prueba de humo).
+11. **Build**: `Builds/Windows/Detectives.exe` se abre como ventana vertical de móvil (9:16) en el centro de la
+    pantalla (ver docs/BUILD.md; `-smoketest` para la prueba de humo).

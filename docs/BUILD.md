@@ -7,6 +7,8 @@
 ```
 
 Sale en `Builds/Windows/Detectives.exe` (≈124 MB). También desde el menú **Detective → Build de Windows**.
+Se abre como una **ventana vertical 9:16** al 90 % del alto de la pantalla, como un móvil (`DesktopWindow`;
+en un monitor de 2560x1600, ventana de 810x1440). En móvil y en el editor no cambia nada.
 Prueba de humo del ejecutable (arranca, comprueba escena, tema y arte, y se cierra):
 
 ```
