@@ -42,6 +42,7 @@ public class SuspectNotesTests
         StringAssert.Contains($"<link=\"{Notebook.NoteLinkPrefix}a\">", notebook, "también a quien aún no tiene nota");
         StringAssert.Contains("añadir nota", notebook, "sin nota todavía: invita a poner una");
         StringAssert.DoesNotContain("tu nota: sin nota", notebook);
+        StringAssert.Contains($"<nobr><link=\"{Notebook.NoteLinkPrefix}b\">", notebook, "la nota no se parte en dos líneas (en 20:9 lo hacía)");
     }
 
     [Test]
