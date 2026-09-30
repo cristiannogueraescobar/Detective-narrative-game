@@ -655,6 +655,13 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   nota y aun así da una hora aproximada) → ronda 30: A/B de una nota más estricta ("sin dar ninguna hora
   aproximada"; apagada por defecto hasta ver los datos). Acumulado al azar: 56/74.
 
+- **20:59** Ronda 30: A/B de la nota estricta ("sin dar ninguna hora aproximada"; 3B, 1B, 3A; 12 + 12, semilla
+  3030): horas inventadas marcadas 3 → 1, arreglos 8/9 vs 7/8, culpables 10 vs 11 → **no concluyente: se queda
+  apagada** (`StrictTimeNudge`), anotado como dato. En la rama base, "primo Carlos" inventado 3 veces: mismo hueco que
+  la tía → los primos de Granada se llaman Nerea y Hugo; el comprobador ya no marca marcas ni juegos (Fortnite,
+  Nike…). Ronda 31 (3B ×2, misma semilla): 2/2, sin "Carlos"; queda una marca "Javier" que es el padre (falso
+  positivo del comprobador). Validador y prompts 50/50.
+
 ## Ahora (día 3)
 - Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
   rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
