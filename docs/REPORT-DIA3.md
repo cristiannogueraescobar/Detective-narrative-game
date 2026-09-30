@@ -1,7 +1,8 @@
 # Informe del día 3 (30 sep 2026, 10:09 → ~22:00)
 
 Rama: **`feature/dia3`** (sale de `feature/noche2`), subida a origin después de cada bloque. **`main` no se ha
-tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se completa al final del día.*
+tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. **Cerrado a las 21:05** (31 rondas con el bot, 7 revisiones
+independientes, suites en verde, build de Windows con SMOKE OK).
 
 ---
 
@@ -38,7 +39,7 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 
 ## 1. Resumen ejecutivo
 1. **Lógica:** validador narrativo (9 reglas, 9 variantes, 17 incoherencias corregidas); qwen ya no acepta premisas falsas (22 → 2 %) ni se pasa al chino.
-2. **Jugabilidad:** "Pensar", dificultad, prueba clave, rango, **tus notas** por sospechoso, **los partes en la libreta** (y la tarjeta del día que reconoce lo de ayer), la rueda **tacha a quien está descartado**, rejugar trae **otro culpable**. Bot: primera pista 10,3 → 6,9 preguntas, resueltas 44 → 72 %.
+2. **Jugabilidad:** "Pensar", dificultad, prueba clave, rango, **tus notas** por sospechoso, **los partes en la libreta** (y la tarjeta del día que reconoce lo de ayer), la rueda **tacha a quien está descartado**, rejugar trae **otro culpable**. Bot: primera pista 10,3 → 6,9 preguntas, resueltas 44 → 72 % (78 % en el cierre con las 9 variantes).
 3. **Aspecto y sonido:** retratos 2.5D, post-proceso noir (contraste medido después), arte y motivo musical por historia, ficha policial en el final; todo reversible desde el tema.
 4. **Accesibilidad:** WCAG 2.2 AA auditado y **lector de pantalla** (TalkBack/VoiceOver), también en los enlaces de la libreta.
 5. **Calidad:** siete revisiones independientes, todos los hallazgos importantes arreglados con test en rojo primero; tests EditMode 549 → 716, PlayMode 20 → 56; build de Windows con prueba de humo OK.
@@ -171,7 +172,12 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
   cae en lo mismo (la rueda ya marca a quien descarta una pista) decidiría si la historia 2 necesita otra pista.
 - Horas inventadas: queda un 1-1,5 % de respuestas ("supongo que hacia las 19:30"); el reintento frío arregla 9 de
   cada 10.
-- Menores anotados de las revisiones 5-6 (solo bot y vista previa del layout): CODE-REVIEW.md.
+- Menores anotados de las revisiones 5-7 (bot, vista previa del layout y el resumen de ayer dentro del parte):
+  CODE-REVIEW.md.
+- Nota estricta para las horas ("sin dar ninguna hora aproximada"): A/B no concluyente (3 → 1 marcas en 347
+  respuestas); se queda apagada (`AIConversationManager.StrictTimeNudge`). Repetir con más partidas si molesta.
+- Regla nueva para las historias (COHERENCE.md): quien aparezca en una ficha por su parentesco y pueda salir en la
+  conversación, con nombre (qwen inventaba "tía María" y "primo Carlos").
 
 ## 8. Cómo probarlo en Unity (en este orden)
 1. Abrir el proyecto con **Unity 6000.3.2f1** y esperar a que importe (la primera vez tarda).
