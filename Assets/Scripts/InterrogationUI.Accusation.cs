@@ -151,6 +151,14 @@ public partial class InterrogationUI
     /// <summary>
     /// Rellena la rueda de reconocimiento con los bustos de los sospechosos; tocar uno lo elige.
     /// </summary>
+    // Descartado en la rueda: por una pista ya encontrada (byClue) o por la nota del propio jugador
+    private bool IsCleared(string id, out bool byClue)
+    {
+        byClue = gameManager != null && gameManager.IsClearedByClue(id);
+        return byClue || (gameManager != null && gameManager.Notes.TryGetValue(id, out SuspectNote note)
+                          && note == SuspectNote.Descartado);
+    }
+
     private void FillLineup(List<SuspectView> options)
     {
         if (lineup == null)
@@ -161,7 +169,9 @@ public partial class InterrogationUI
         lineupSelection.Clear();
 
         // Columnas y tamaño de celda según cuántos hay y el hueco disponible (y se reajusta si cambia)
-        const float labelHeight = 64f;
+        // Con alguien descartado, el pie lleva dos líneas (nombre tachado y motivo) a tamaño legible
+        bool anyCleared = options.Exists(v => IsCleared(v.id, out _));
+        float labelHeight = anyCleared ? 96f : 64f;
         GridFit fit = UIComponents.GetOrAdd<GridFit>(lineup.gameObject);
         fit.count = options.Count;
         fit.labelHeight = labelHeight;
@@ -205,13 +215,12 @@ public partial class InterrogationUI
 
             // Quien el jugador ha descartado en su libreta: atenuado (se puede elegir igual: es su nota, no una regla)
             // Y quien descarta una pista ya encontrada, con las mismas palabras que la libreta
-            bool byClue = gameManager != null && gameManager.IsClearedByClue(view.id);
-            bool cleared = byClue || (gameManager != null && gameManager.Notes.TryGetValue(view.id, out SuspectNote note)
-                                      && note == SuspectNote.Descartado);
+            bool cleared = IsCleared(view.id, out bool byClue);
             if (cleared)
                 frame.gameObject.AddComponent<CanvasGroup>().alpha = 0.45f;
 
-            TMP_Text name = UIFactory.Label(cell, cleared ? $"<s>{view.shortName}</s> ({(byClue ? "pista de descarte" : "tu descarte")})" : view.shortName, T.bodySize,
+            string reason = byClue ? "pista de descarte" : "tu descarte";
+            TMP_Text name = UIFactory.Label(cell, cleared ? $"<s>{view.shortName}</s>\n<size=80%>{reason}</size>" : view.shortName, T.bodySize,
                                             cleared ? T.textSecondary : T.textPrimary);
             name.alignment = TextAlignmentOptions.Center;
             name.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
@@ -221,7 +230,11 @@ public partial class InterrogationUI
             nameRect.pivot = new Vector2(0.5f, 0f);
             nameRect.offsetMin = new Vector2(8f, 0f);
             nameRect.offsetMax = new Vector2(-8f, labelHeight);
-            LayoutKit.OneLine(name, T.bodySize);
+            // Descartado: el motivo en una segunda línea (en una sola, con nombres largos, se cortaba en 16:9)
+            if (cleared)
+                LayoutKit.MultiLine(name, T.bodySize);
+            else
+                LayoutKit.OneLine(name, T.bodySize);
 
             RectTransform ring = UIFactory.Container(cell, "Seleccion", Vector2.zero, Vector2.one);
             var ringImage = ring.gameObject.AddComponent<Image>();

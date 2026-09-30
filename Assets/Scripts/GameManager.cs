@@ -192,8 +192,11 @@ public class GameManager : MonoBehaviour
     private void SelectCase(string storyId = null)
     {
         string forcedId = Application.isEditor ? CaseIdFor(debugCase) : null;
+        caseForced = false;
 
-        if (forcedId == null || !CaseLibrary.TryFind(forcedId, out story, out variant))
+        if (forcedId != null && CaseLibrary.TryFind(forcedId, out story, out variant))
+            caseForced = true;
+        else
         {
             if (forcedId != null)
                 Debug.LogWarning($"[GameManager] La variante {forcedId} aún no existe; se sortea entre las registradas.");
@@ -269,6 +272,7 @@ public class GameManager : MonoBehaviour
     }
 
     private bool requestInFlight;
+    private bool caseForced; // Caso elegido en el inspector (depuración): no se apunta como jugado
     private bool saveAfterRequest; // Algo cambió durante la pregunta (una nota): guardar al terminar
 
     public async void AskQuestion(string characterId, string question, string shownClueId)
@@ -534,7 +538,8 @@ public class GameManager : MonoBehaviour
         SaveSystem.Delete(); // La partida ha terminado
         AccusationResult result = State.Accuse(accusedId);
         CaseRecords.Record(story.id, result.ending);
-        CaseRecords.RecordPlayed(story.id, variant.id); // Al rejugar la historia, otro culpable
+        if (!caseForced) // Un caso forzado en el editor no cuenta (no desordena los ajustes de quien depura)
+            CaseRecords.RecordPlayed(story.id, variant.id); // Al rejugar la historia, otro culpable
 
         Debug.Log($"[GameManager] Acusación: {accusedId} → {result.ending} (evidencia {result.evidence})");
 
