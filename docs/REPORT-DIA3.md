@@ -115,6 +115,10 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 - **Rondas finales, con datos**: el consejo de preguntar "horas, lugares, objetos" se queda (A/B del bot sin
   efecto); la 2B no se toca (su pista clave sale 10/10 al preguntarla; falla el razonamiento del bot) pero la
   rueda marca a quien descarta una pista; el bot ahora lee los partes (antes no, y sesgaba todo a "difícil").
+- **Errores míos de la tarde, corregidos:** dos ediciones por script metieron un salto de línea real dentro de una
+  cadena C# (no compilaba; en una, la captura "pasó" leyendo un resultado viejo): ahora borro los resultados antes de
+  cada captura y miro la hora del PNG. El primer arreglo del bot para "id de pista como sospechoso" no se ejecutaba
+  (lo encontró la quinta revisión).
 - Documentos: GAME-DESIGN.md, DESIGN-CRITIQUE.md, CODE-REVIEW.md, RENDIMIENTO.md, ANDROID-BUILD.md, COHERENCE.md,
   STORY-AUDIT.md.
 
