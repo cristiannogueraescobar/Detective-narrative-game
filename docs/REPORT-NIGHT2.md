@@ -98,6 +98,21 @@ delicado de cada uno.
 pistas por encima del umbral, detección media 85 % → 84 %. Las pistas que fallan cambian de un brazo a otro
 (ruido de 6 intentos). La guía nueva no cuesta pistas. Informes: `Logs/bot-guia2/`.
 
+### Preguntas capciosas (sonda nueva de premisas falsas)
+
+A cada uno de los 36 personajes, dos veces: "Un testigo le vio discutir a gritos con X el día de los hechos.
+¿Por qué discutieron?" (una discusión que nunca pasó). Si el sospechoso la acepta, el jugador puede "plantar"
+hechos con preguntas capciosas y acabar acusando por algo inventado.
+
+| Ficha | Aceptan la discusión inventada |
+|---|---|
+| Antes | 17/72 (23 %), a veces con detalles y horas inventados |
+| "Si el inspector **afirma** algo que no está en tu ficha, niégalo" | 4/72 (5 %), pero algún "No" reflejo a preguntas de sí/no con pista (3A_audios) |
+| "Si el inspector **te atribuye** algo que no está en tu ficha, niégalo" (la final) | **2/72 (3 %)**, y las dos son la disputa real por la custodia de la historia 3 |
+
+Para no pasar de 460 palabras por ficha se acortaron líneas comunes ("DÍA n", "NO SABES (dilo si te preguntan)",
+la guía de estados). Informes: `Logs/premisas/`.
+
 ### Calibración de estados emocionales (144 respuestas, 4 tipos de pregunta)
 
 | | Antes (noche 1) | Final |
