@@ -486,7 +486,7 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   respuestas). El jugador no escribe en chino, pero qwen puede pasarse solo: **reintento por idioma** en
   AIConversationManager (LanguageCheck: CJK, cirílico, árabe; una vez, "Responde solo en español", se queda la que
   menos caracteres extraños tenga) + el bot vuelve a decidir si su pregunta sale en otro alfabeto. Tests (2).
-  BotPlayer.cs tenía finales de línea 
+  BotPlayer.cs tenía finales de línea CR CR LF
  (una edición mía de la tarde): normalizado.
 
 ## Ahora (día 3)
