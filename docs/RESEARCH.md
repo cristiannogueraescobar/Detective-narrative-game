@@ -110,3 +110,11 @@ Cada entrada: fuente → qué aprendí → qué decidí con ello. La búsqueda l
   español" antes de que entre en el historial; el bot, además, no envía preguntas en otro alfabeto.
 - Fuentes: [Language Drift in Multilingual RAG (AAAI)](https://ojs.aaai.org/index.php/AAAI/article/view/40417),
   [arXiv 2511.09984](https://arxiv.org/html/2511.09984v1).
+
+## Notas del jugador en la libreta (ronda 9)
+- En los juegos de deducción que mejor funcionan, el jugador conduce el razonamiento: la libreta donde él mismo
+  tacha lo descartado "estrecha" el caso poco a poco; que el juego lo haga todo se siente como llevar de la mano.
+  → Nota por sospechoso (sospechoso / descartado) que toca el jugador; la rueda atenúa a los descartados sin
+  impedir elegirlos (es su nota, no una regla).
+- Fuentes: [Critical Play: Mysteries](https://mechanicsofmagic.com/2024/05/06/critical-play-mysteries-94/),
+  [Detective prototype development report (Staffordshire)](https://gradex.staffs.ac.uk/wp-content/uploads/2026/05/5755_Detective-Prototype-Development-Report.pdf).

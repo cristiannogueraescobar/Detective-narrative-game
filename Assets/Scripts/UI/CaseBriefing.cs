@@ -39,10 +39,12 @@ public static class Notebook
 {
     public const string ClueLinkPrefix = "pista:";
     public const string SuspectLinkPrefix = "sospechoso:";
+    public const string NoteLinkPrefix = "nota:"; // Tocar la nota del jugador la cambia (SuspectNotes)
 
     public static string Format(StoryData story, InvestigationState state, IEnumerable<string> unlocked,
                                 IReadOnlyDictionary<string, Emotion> emotions, Func<ClueData, string> describeContradiction,
-                                bool onPaper = false, IEnumerable<string> interviewed = null)
+                                bool onPaper = false, IEnumerable<string> interviewed = null,
+                                IReadOnlyDictionary<string, SuspectNote> notes = null)
     {
         Theme t = ThemeManager.Current;
         // Sobre el papel de la libreta, tintas oscuras (los colores del tema no se leerían sobre crema)
@@ -76,7 +78,7 @@ public static class Notebook
 
         sb.AppendLine(heading("SOSPECHOSOS"));
         if (onPaper)
-            sb.AppendLine("<i><size=85%>Toca un nombre para ir a interrogar.</size></i>");
+            sb.AppendLine("<i><size=85%>Toca un nombre para ir a interrogar, o tu nota para cambiarla.</size></i>");
         var unlockedSet = new HashSet<string>(unlocked);
         var interviewedSet = new HashSet<string>(interviewed ?? Enumerable.Empty<string>());
         foreach (CharacterData character in story.cast.Where(c => unlockedSet.Contains(c.id)))
@@ -87,6 +89,14 @@ public static class Notebook
 
             if (emotions.TryGetValue(character.id, out Emotion emotion))
                 line += $" — estado: {emotion.ToString().ToLowerInvariant()}";
+
+            // La nota del propio jugador (solo en la libreta de papel, donde se puede tocar)
+            if (onPaper)
+            {
+                SuspectNote note = notes != null && notes.TryGetValue(character.id, out SuspectNote n) ? n : SuspectNote.Ninguna;
+                string noteText = note == SuspectNote.Ninguna ? "añadir nota" : $"tu nota: {SuspectNotes.Label(note)}";
+                line += $" — <link=\"{NoteLinkPrefix}{character.id}\"><u>{noteText}</u></link>";
+            }
 
             ClueData clearing = clues.FirstOrDefault(c => c.kind == ClueKind.Clears && c.clears == character.id);
             if (clearing != null)

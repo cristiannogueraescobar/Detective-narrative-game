@@ -35,6 +35,25 @@ public class GameManager : MonoBehaviour
     private int currentDay = 1;
     private DifficultyLevel difficulty = Difficulty.Default; // Se fija al empezar el caso y se guarda con él
     private HintMemory hintMemory = new HintMemory();
+    private Dictionary<string, SuspectNote> notes = new Dictionary<string, SuspectNote>(); // Notas del jugador
+
+    /// <summary>
+    /// Notas del jugador sobre cada sospechoso (sospechoso / descartado): libreta y rueda.
+    /// </summary>
+    public IReadOnlyDictionary<string, SuspectNote> Notes => notes;
+
+    /// <summary>
+    /// Tocar la nota de un sospechoso en la libreta: sin nota → sospechoso → descartado → sin nota.
+    /// </summary>
+    public void CycleNote(string characterId)
+    {
+        if (State == null || string.IsNullOrEmpty(characterId))
+            return;
+        notes.TryGetValue(characterId, out SuspectNote current);
+        notes[characterId] = SuspectNotes.Next(current);
+        RefreshNotebook();
+        SaveGame();
+    }
     private int questionsUsedToday = 0;
     private bool accusationMade;
 
@@ -109,6 +128,7 @@ public class GameManager : MonoBehaviour
             difficulty = (int)difficulty,
             hintsUsed = hintMemory.count,
             hintsGiven = hintMemory.ToSave(),
+            suspectNotes = SuspectNotes.ToSave(notes),
             currentSuspect = interrogationUI != null ? interrogationUI.CurrentSuspectId : null,
             unlocked = new List<string>(unlocked),
             discovered = new List<string>(State.DiscoveredClueIds),
@@ -144,6 +164,7 @@ public class GameManager : MonoBehaviour
         questionsUsedToday = data.questionsUsedToday;
         ApplyDifficulty(Difficulty.FromSave(data.difficulty));
         hintMemory = HintMemory.FromSave(data.hintsUsed, data.hintsGiven);
+        notes = SuspectNotes.FromSave(data.suspectNotes);
         accusationMade = false;
         unlocked.Clear();
         unlocked.AddRange(data.unlocked);
@@ -201,6 +222,7 @@ public class GameManager : MonoBehaviour
         questionsUsedToday = 0;
         ApplyDifficulty(GameSettings.Difficulty);
         hintMemory = new HintMemory();
+        notes = new Dictionary<string, SuspectNote>();
         accusationMade = false;
         interrogationUI?.ResetForNewCase();
         SelectCase(storyId);
@@ -399,7 +421,8 @@ public class GameManager : MonoBehaviour
     {
         interrogationUI?.UpdateNotebook(Notebook.Format(story, State, unlocked,
             conversationManager.Emotions, conversationManager.DescribeContradiction, onPaper: true,
-            interviewed: conversationManager.Histories.Where(h => h.Value.Any(m => m.role == "assistant")).Select(h => h.Key)));
+            interviewed: conversationManager.Histories.Where(h => h.Value.Any(m => m.role == "assistant")).Select(h => h.Key),
+            notes: notes));
     }
 
     private void OnClueRevealed(ClueData clue)

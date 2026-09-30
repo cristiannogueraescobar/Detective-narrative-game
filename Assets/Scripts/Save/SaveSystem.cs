@@ -30,6 +30,7 @@ public class SaveData
     public int difficulty = -1; // DifficultyLevel; -1 en los guardados anteriores (= Detective)
     public int hintsUsed;
     public List<string> hintsGiven = new List<string>(); // "pista:nivel" (HintMemory); vacío en guardados anteriores
+    public List<string> suspectNotes = new List<string>(); // "id:nota" (SuspectNotes); vacío en guardados anteriores
     public string currentSuspect;
     public List<string> unlocked = new List<string>();
     public List<string> discovered = new List<string>();

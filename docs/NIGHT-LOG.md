@@ -517,6 +517,11 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
 - **16:17** Ronda 9, el menú de quien vuelve (nueva captura menu_continuar): "Continuar · caso, día N" salía como botón
   secundario y "Nueva partida" en dorado → Continuar es el principal y el otro dice "Caso nuevo" (glosario). Tests.
 
+- **16:26** Ronda 9, idea de la web (el jugador conduce la deducción: libretas donde él tacha, Golden Idol): **notas
+  del jugador** por sospechoso en la libreta ("añadir nota" → sospechoso → descartado), guardadas con la partida;
+  la rueda atenúa a los descartados "(descartado)" sin impedir elegirlos. Instrucciones y RESEARCH.md al día.
+  Tests: SuspectNotesTests (4) + test de juego (tocar la nota, ver la rueda). EditMode 705/705, PlayMode 48/48.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).

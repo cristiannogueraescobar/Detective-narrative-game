@@ -203,7 +203,13 @@ public partial class InterrogationUI
             face.gameObject.AddComponent<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.FitInParent;
             face.GetComponent<AspectRatioFitter>().aspectRatio = 0.75f;
 
-            TMP_Text name = UIFactory.Label(cell, view.shortName, T.bodySize, T.textPrimary);
+            // Quien el jugador ha descartado en su libreta: atenuado (se puede elegir igual: es su nota, no una regla)
+            bool cleared = gameManager != null && gameManager.Notes.TryGetValue(view.id, out SuspectNote note)
+                           && note == SuspectNote.Descartado;
+            if (cleared)
+                cell.gameObject.AddComponent<CanvasGroup>().alpha = 0.45f;
+
+            TMP_Text name = UIFactory.Label(cell, cleared ? view.shortName + " (descartado)" : view.shortName, T.bodySize, T.textPrimary);
             name.alignment = TextAlignmentOptions.Center;
             name.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
             var nameRect = name.rectTransform;
