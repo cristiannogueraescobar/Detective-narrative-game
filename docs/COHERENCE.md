@@ -227,3 +227,8 @@ Víctima: Paula Romero Navarro, 15 años. Pasaba el fin de semana con su padre e
 ## Horas inventadas: reintento más frío (día 3, ronda 20)
 A/B con el bot (3B, 1C, 3A; 12 + 12 partidas): con el reintento a temperatura 0,3 se arreglan 10 de 11 respuestas
 con horas inventadas (antes 5 de 9). Activado por defecto (`AIConversationManager.CoolTimeRetry`).
+
+## Nombres inventados por un hueco de la ficha (día 3, ronda 27)
+"Tu tía" en Granada, sin nombre, hacía que qwen la llamara "tía María" y lo repitiera (5 marcas en una partida).
+Con nombre en las fichas (Remedios), 0 en la comprobación. Regla: si una ficha nombra a alguien por su parentesco
+y los personajes pueden hablar de esa persona, darle nombre.
