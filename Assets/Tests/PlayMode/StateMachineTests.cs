@@ -423,5 +423,6 @@ public class StateMachineTests
         Assert.IsNotNull(cell);
         Assert.Less(cell.GetComponent<CanvasGroup>().alpha, 1f, "descartado: atenuado en la rueda (pero se puede elegir)");
         Assert.IsTrue(cell.GetComponent<Button>().interactable);
+        StringAssert.Contains("(tu descarte)", cell.GetComponentInChildren<TMP_Text>().text, "sin género: vale para cualquiera");
     }
 }

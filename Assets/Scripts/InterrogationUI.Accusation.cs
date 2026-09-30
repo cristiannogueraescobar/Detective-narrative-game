@@ -209,7 +209,7 @@ public partial class InterrogationUI
             if (cleared)
                 cell.gameObject.AddComponent<CanvasGroup>().alpha = 0.45f;
 
-            TMP_Text name = UIFactory.Label(cell, cleared ? view.shortName + " (descartado)" : view.shortName, T.bodySize, T.textPrimary);
+            TMP_Text name = UIFactory.Label(cell, cleared ? $"<s>{view.shortName}</s> (tu descarte)" : view.shortName, T.bodySize, T.textPrimary);
             name.alignment = TextAlignmentOptions.Center;
             name.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
             var nameRect = name.rectTransform;
