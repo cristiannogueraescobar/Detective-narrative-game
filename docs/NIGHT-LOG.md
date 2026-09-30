@@ -108,7 +108,7 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
 - 07:00 Acusación: "En tu libreta: N pistas y M contradicciones" / "acusar ahora es una apuesta". Maruxa habla
   español con toque gallego (su ejemplo en gallego provocaba respuestas enteras en gallego, ~1 de 60).
 
-- 07:20 Ronda 5: bot en 2B, 2C, 3A (semilla 5): culpable 4/6, estados nervioso 33 % · triste 29 % · tranquilo
+- 07:06 Ronda 5: bot en 2B, 2C, 3A (semilla 5): culpable 4/6, estados nervioso 33 % · triste 29 % · tranquilo
   21 %. 5ª revisión de código: 0 críticos/importantes, 3 menores arreglados (con test). Tests 507/507 + PlayMode
   12/12 (+12 capturas explícitas).
 
