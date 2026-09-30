@@ -43,6 +43,7 @@ public static class BotPlayer
         public bool coolTimeRetry = true; // -warmTimeRetry: reintento por horas a la temperatura normal (A/B, ronda 20)
         public bool lineupMarks = true;   // -noLineupMarks: al acusar no ve los tachados de la rueda (A/B, ronda 25)
         public bool strictTimeNudge;      // -strictTimeNudge: la nota del reintento prohíbe la hora aproximada (A/B, ronda 30)
+        public bool memoryCheck = true;   // -noMemoryCheck: un gestor nuevo por partida (sin comprobar la memoria entre partidas)
     }
 
     public class Turn
@@ -61,6 +62,8 @@ public static class BotPlayer
     public class Game
     {
         public List<string> reports = new List<string>(); // Partes de la mañana ya leídos (como el jugador)
+        public bool memoryChecked;  // Hubo partida anterior con el mismo gestor
+        public int memoryLeaks;     // Respuestas de la partida anterior que llegaron al modelo (debe ser 0)
         public string variantId;
         public int index;
         public Ending ending;
@@ -101,6 +104,7 @@ public static class BotPlayer
                 case "-warmTimeRetry": options.coolTimeRetry = false; break;
                 case "-noLineupMarks": options.lineupMarks = false; break;
                 case "-strictTimeNudge": options.strictTimeNudge = true; break;
+                case "-noMemoryCheck": options.memoryCheck = false; break;
                 case "-ollama": options.ollamaUrl = args[i + 1]; break;
                 case "-model": options.model = args[i + 1]; break;
             }
@@ -134,6 +138,7 @@ public static class BotPlayer
     {
         Directory.CreateDirectory(TranscriptFolder);
         var games = new List<Game>();
+        previousAnswers = new List<string>();
         var random = new System.Random(options.seed);
 
         using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(240) })
@@ -162,6 +167,9 @@ public static class BotPlayer
         }
 
         WriteReport(options, games);
+        if (sharedHost != null)
+            UnityEngine.Object.DestroyImmediate(sharedHost);
+        sharedHost = null;
         return games;
     }
 
@@ -179,12 +187,14 @@ public static class BotPlayer
         private readonly Options options;
         public SyncProvider(HttpClient client, Options options) { this.client = client; this.options = options; }
         public string DisplayName => "Ollama (bot)";
+        public readonly List<string> sent = new List<string>(); // Todo lo que llega al modelo (memoria entre partidas)
         public Task WarmUpAsync() => Task.CompletedTask;
 
         public Task<LLMResult> SendAsync(string systemPrompt, IReadOnlyList<ChatMessage> history, int maxTokens, float temperature)
         {
             try
             {
+                sent.Add(systemPrompt + "\n" + string.Join("\n", history.Select(m => m.content)));
                 string text = Chat(client, options, systemPrompt, history.ToList(), temperature, maxTokens, json: false);
                 return Task.FromResult(LLMResult.Ok(text));
             }
@@ -195,16 +205,32 @@ public static class BotPlayer
         }
     }
 
+    private static GameObject sharedHost;
+    private static AIConversationManager sharedManager;
+    private static SyncProvider sharedProvider;
+    private static List<string> previousAnswers = new List<string>();
+
     private static Game Play(HttpClient client, Options options, string variantId, int index, System.Random random)
     {
         if (!CaseLibrary.TryFind(variantId, out StoryData story, out VariantData variant))
             throw new ArgumentException($"Variante desconocida: {variantId}");
 
-        var host = new GameObject("BotPlayer") { hideFlags = HideFlags.HideAndDontSave };
+        // Como "Caso nuevo" en el juego: el mismo gestor para todas las partidas; cada una debe empezar sin memoria
+        bool shared = options.memoryCheck;
+        if (shared && sharedHost == null)
+        {
+            sharedHost = new GameObject("BotPlayer") { hideFlags = HideFlags.HideAndDontSave };
+            sharedManager = sharedHost.AddComponent<AIConversationManager>();
+            sharedProvider = new SyncProvider(client, options);
+            sharedManager.UseProvider(sharedProvider);
+        }
+        var host = shared ? sharedHost : new GameObject("BotPlayer") { hideFlags = HideFlags.HideAndDontSave };
+        int sentBefore = shared ? sharedProvider.sent.Count : 0;
         try
         {
-            var manager = host.AddComponent<AIConversationManager>();
-            manager.UseProvider(new SyncProvider(client, options));
+            var manager = shared ? sharedManager : host.AddComponent<AIConversationManager>();
+            if (!shared)
+                manager.UseProvider(new SyncProvider(client, options));
             manager.RetryInventedTimes = options.timeRetry;
             manager.CoolTimeRetry = options.coolTimeRetry;
             manager.StrictTimeNudge = options.strictTimeNudge;
@@ -312,11 +338,20 @@ public static class BotPlayer
             game.cluesFound = manager.State.DiscoveredClueIds.Count;
             game.contradictions = manager.State.ContradictionClueIds.Count;
             game.evidence = outcome.evidence;
+            if (shared)
+            {
+                // Nada de lo que contestaron en la partida anterior puede llegar al modelo en esta
+                List<string> thisGame = sharedProvider.sent.Skip(sentBefore).ToList();
+                game.memoryChecked = previousAnswers.Count > 0;
+                game.memoryLeaks = previousAnswers.Count(a => thisGame.Any(p => p.Contains(a)));
+                previousAnswers = game.turns.Select(t => t.answer).Where(a => !string.IsNullOrEmpty(a) && a.Length >= 40).ToList();
+            }
             return game;
         }
         finally
         {
-            UnityEngine.Object.DestroyImmediate(host);
+            if (!shared)
+                UnityEngine.Object.DestroyImmediate(host);
         }
     }
 
@@ -597,6 +632,10 @@ public static class BotPlayer
         int answers = all.Sum(g => g.turns.Count);
         sb.AppendLine();
         sb.AppendLine($"**Total:** {all.Count} partidas · {answers} respuestas · aciertos del culpable {all.Count(g => g.accusedId == g.culpritId)}/{all.Count}");
+        int checkedGames = all.Count(g => g.memoryChecked);
+        if (checkedGames > 0)
+            sb.AppendLine($"**Memoria entre partidas** (mismo gestor, como «Caso nuevo»): {checkedGames} partidas comprobadas · "
+                          + $"respuestas de la partida anterior que llegan al modelo: {all.Sum(g => g.memoryLeaks)}");
 
         var emotionTotals = new Dictionary<Emotion, int>();
         foreach (Game g in all)

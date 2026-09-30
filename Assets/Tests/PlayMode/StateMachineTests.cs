@@ -24,9 +24,13 @@ public class StateMachineTests
         public int calls;
         public string DisplayName => "Falso";
 
+        // Todo lo que llega a Ollama (ficha + historial), para comprobar que una partida no ve la anterior
+        public readonly List<string> sent = new List<string>();
+
         public async Task<LLMResult> SendAsync(string systemPrompt, IReadOnlyList<ChatMessage> history, int maxTokens, float temperature)
         {
             calls++;
+            sent.Add(systemPrompt + "\n" + string.Join("\n", history.Select(m => m.role + ": " + m.content)));
             await Task.Delay(delayMs);
             return results.Count > 0 ? results.Dequeue() : LLMResult.Ok($"Respuesta número {calls}, sin más. [ESTADO: tranquilo]");
         }
@@ -547,5 +551,104 @@ public class StateMachineTests
         Object.FindFirstObjectByType<GameManager>().EndDay();
         yield return new WaitForSecondsRealtime(0.5f);
         Assert.IsTrue(Object.FindObjectsByType<TMP_Text>(FindObjectsSortMode.None).Any(t => t.text.Contains("Ayer: una pista nueva.")));
+    }
+
+    // ---- Sesión A, bloque 1: cada partida nueva empieza con memoria cero ----
+
+    private const string Marker = "ZAFIRO";
+
+    // Tras una recarga de escena (Jugar otra vez, Reiniciar, Volver al menú) hay un gestor nuevo: se le da el proveedor
+    private IEnumerator AfterReload()
+    {
+        yield return new WaitForSecondsRealtime(0.5f);
+        Object.FindFirstObjectByType<AIConversationManager>().UseProvider(provider);
+        yield return null;
+    }
+
+    private IEnumerator PlayFirstGameWithMarker(bool accuse)
+    {
+        yield return StartNewGame();
+        yield return AskAndWait($"¿Qué hacía con el {Marker} esa noche?");
+        Assert.IsTrue(provider.sent.Last().Contains(Marker), "el marcador llega en la partida 1");
+        if (accuse)
+        {
+            Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+            yield return new WaitForSecondsRealtime(0.3f);
+            yield return Tap("Accusebutton");
+            yield return WaitUntil(() => Find("ResultPanel").activeInHierarchy, 10f, "el veredicto");
+        }
+    }
+
+    private IEnumerator AssertSecondGameStartsClean(string path)
+    {
+        var manager = Object.FindFirstObjectByType<AIConversationManager>();
+        Assert.IsTrue(manager.Histories.All(h => h.Value.Count == 0), path + ": historiales vacíos al empezar");
+        int before = provider.sent.Count;
+        yield return AskAndWait("¿Dónde estaba a las diez?");
+        Assert.Greater(provider.sent.Count, before);
+        foreach (string prompt in provider.sent.Skip(before))
+            StringAssert.DoesNotContain(Marker, prompt, path + ": el prompt de la partida 2 no contiene nada de la 1");
+    }
+
+    [UnityTest]
+    public IEnumerator JugarOtraVezEmpiezaSinMemoria()
+    {
+        yield return PlayFirstGameWithMarker(accuse: true);
+        yield return Tap("RestartButton");
+        yield return AfterReload();
+        yield return Tap("Caso al azar");
+        yield return Tap("StartButton");
+        yield return AssertSecondGameStartsClean("Jugar otra vez");
+    }
+
+    [UnityTest]
+    public IEnumerator ReiniciarDesdeAjustesEmpiezaSinMemoria()
+    {
+        yield return PlayFirstGameWithMarker(accuse: false);
+        Object.FindFirstObjectByType<GameManager>().RestartGame(); // Lo que hace "Empezar de nuevo" en Ajustes
+        yield return AfterReload();
+        yield return Tap("Caso al azar");
+        yield return Tap("StartButton");
+        yield return AssertSecondGameStartsClean("Reiniciar");
+    }
+
+    [UnityTest]
+    public IEnumerator CasoNuevoDesdeElMenuEmpiezaSinMemoria()
+    {
+        yield return PlayFirstGameWithMarker(accuse: false);
+        Object.FindFirstObjectByType<GameManager>().BackToMenu();
+        yield return AfterReload();
+        yield return Tap("PlayButton"); // "Caso nuevo" (hay partida guardada)
+        yield return Tap("Caso al azar");
+        yield return Tap(ConfirmDialog.ConfirmName); // "Empezar de nuevo": se pierde la investigación a medias
+        yield return Tap("StartButton");
+        yield return AssertSecondGameStartsClean("Caso nuevo desde el menú");
+    }
+
+    [UnityTest]
+    public IEnumerator LaMismaHistoriaOtraVezEmpiezaSinMemoria()
+    {
+        yield return PlayFirstGameWithMarker(accuse: true);
+        string storyId = Object.FindFirstObjectByType<AIConversationManager>().Story.id;
+        yield return Tap("RestartButton");
+        yield return AfterReload();
+        yield return Tap("Caso " + storyId);
+        yield return Tap("StartButton");
+        yield return AssertSecondGameStartsClean("Misma historia");
+    }
+
+    [UnityTest]
+    public IEnumerator ContinuarConservaSoloLaMemoriaDeEsaPartida()
+    {
+        yield return PlayFirstGameWithMarker(accuse: false);
+        Object.FindFirstObjectByType<GameManager>().BackToMenu();
+        yield return AfterReload();
+        yield return Tap("ContinueButton (auto)");
+        yield return null;
+        var manager = Object.FindFirstObjectByType<AIConversationManager>();
+        Assert.IsTrue(manager.Histories.Any(h => h.Value.Any(m => m.content.Contains(Marker))), "Continuar recuerda esa partida");
+        int before = provider.sent.Count;
+        yield return AskAndWait("¿Y después?");
+        Assert.IsTrue(provider.sent.Skip(before).Any(p => p.Contains(Marker)), "y se lo manda al modelo");
     }
 }
