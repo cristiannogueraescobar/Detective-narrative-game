@@ -197,7 +197,7 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   nada depende de archivos sin subir. Horas inventadas de la definitiva: casi todas rutinas aproximadas
   ("me acosté sobre las 23:00"); las dañinas son avistamientos inventados (anotado en el informe).
 
-- 10:15 Ronda 11: bot en 1A, 3B, 3C (semilla 31): culpable 1/6, 0 rupturas, 3 horas inventadas; estados triste
+- 10:03 Ronda 11: bot en 1A, 3B, 3C (semilla 31): culpable 1/6, 0 rupturas, 3 horas inventadas; estados triste
   49 % · nervioso 35 %. La historia 3 sigue siendo la más difícil para el bot (se centra en el humo).
 - PAUSA pedida por el usuario. Todo comiteado en feature/noche2. Tests: EditMode 549/549, PlayMode 20/20.
   Build final en Builds/Windows-final (SMOKE OK).
