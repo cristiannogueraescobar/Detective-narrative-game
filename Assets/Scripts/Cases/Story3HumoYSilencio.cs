@@ -109,7 +109,7 @@ Tienes 7 días para descubrir qué pasó.",
             culpritId = "padre",
             epilogue = "Paula iba a contarle a la jueza el lunes que su padre bebía y la amenazaba. El sábado a las 20:30 discutieron; a las 20:40 ella escribió a Álex " +
                        "pidiéndole que fuera a por ella. A las 20:50 Javier la golpeó y no volvió a levantarse. A las 21:00 quemó sus cosas en el quemadero con neumáticos " +
-                       "y a las 21:30 salió a por garrafas de gasoil. Encarna lo vio todo desde su casa.",
+                       "y a las 21:30 salió a por garrafas de gasoil. Encarna vio el humo y la camioneta desde su casa.",
             morningReports = new[]
             {
                 "",
@@ -162,7 +162,7 @@ Tienes 7 días para descubrir qué pasó.",
                     characterId = "hermano",
                     knowledge = new[] { "Paula no quería ir a la finca ese fin de semana." },
                     version = "El sábado no pisé la finca. Paula estaba con mi padre.",
-                    secret = "Paula te pidió ayuda y no fuiste porque habías bebido en una fiesta; no te lo perdonas.",
+                    secret = "Paula te pidió ayuda y no se lo dijiste a nadie porque estabas bebiendo con tus primos en Granada; no te lo perdonas.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "por qué no fuiste a por Paula.",
                     ifAccused = "Aprietas los puños y te callas.",
@@ -286,7 +286,7 @@ Tienes 7 días para descubrir qué pasó.",
             culpritId = "madre",
             epilogue = "Paula está viva. Convencida de que iba a perder la custodia, Lucía dejó a Álex en Granada a mediodía, subió a la finca a las 19:00 mientras Javier " +
                        "estaba en el bar y se llevó a Paula. Poco después quemó su mochila y sus zapatillas en el quemadero para que culparan a Javier. " +
-                       "Dejó a Paula con su prima en Portugal y volvió de madrugada. La Guardia Civil encuentra a Paula en Ayamonte.",
+                       "Dejó a Paula con su prima en Portugal y volvió de madrugada. La Guardia Civil encuentra a Paula en Portugal, al otro lado del puente de Ayamonte.",
             morningReports = new[]
             {
                 "",
@@ -327,7 +327,7 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     characterId = "padre",
                     knowledge = new[] { MentionAlex, MentionEncarna, "Lucía conduce un coche pequeño rojo, un Seat Ibiza." },
-                    version = "El sábado a las 18:30 fui al bar del pueblo y volví a las 21:30; pensé que Paula dormía. El domingo por la mañana ya no estaba.",
+                    version = "El sábado a las 18:30 fui al bar del pueblo y volví a las 21:30; pensé que Paula dormía. El domingo ya no estaba; creí que se había ido con su madre.",
                     secret = "Bebiste mucho y no entraste a ver a Paula al volver; te avergüenza y temes que la jueza lo use contra ti.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "lo que bebiste el sábado.",
@@ -516,7 +516,7 @@ Tienes 7 días para descubrir qué pasó.",
                 new CharacterRole
                 {
                     characterId = "madre",
-                    knowledge = new[] { MentionAlex, MentionEncarna, "Paula iba a mudarse contigo a Madrid después de la vista." },
+                    knowledge = new[] { MentionAlex, MentionEncarna, "Paula quería vivir contigo después de la vista." },
                     version = "El sábado estuve en Granada con Álex, en casa de mi hermana.",
                     secret = "Planeabas mudarte a Madrid con Paula sin decírselo al juzgado.",
                     admitsWhen = "el inspector insiste",

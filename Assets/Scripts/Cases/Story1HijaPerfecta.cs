@@ -89,7 +89,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
             epilogue = "Daniel Mendoza llevaba un año sacando dinero del fondo de herencia de Elena para tapar las deudas de su bufete. " +
                        "Cuando Elena encontró los extractos y amenazó con contárselo a Carmen, decidió silenciarla. " +
                        "A las 22:30, con Carmen dormida por su pastilla, le subió un cacao con zolpidem triturado, cerró las cortinas y la puerta con llave. " +
-                       "A las 23:05 fingió encontrarla y a las 23:15 llamó al 112. Rosario lo vio todo desde su ventana.",
+                       "A las 23:05 fingió encontrarla y a las 23:15 llamó al 112. Rosario lo vio cerrar las cortinas desde su ventana.",
             morningReports = new[]
             {
                 "",
@@ -205,7 +205,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     id = "1A_puerta", playerName = "La puerta de Elena", holder = "hermano", kind = ClueKind.Incriminates,
                     summary = "La puerta del cuarto de Elena estaba cerrada con llave por fuera. La llave la llevaba Daniel en el bolsillo.",
                     topic = "lo que viste al salir al pasillo cuando papá gritó, o la puerta de Elena",
-                    fact = "la puerta de Elena estaba cerrada con llave por fuera y papá sacó la llave de su bolsillo. Elena nunca cerraba con llave.",
+                    fact = "papá aporreaba la puerta de Elena; estaba cerrada con llave por fuera y sacó la llave de su bolsillo. Elena nunca cerraba con llave.",
                     anchors = new[]
                     {
                         new[] { "llave" },
@@ -319,7 +319,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
             culpritId = "madre",
             epilogue = "Carmen Vidal llevaba dos años inventando enfermedades a Elena y dándole medicación que no necesitaba: necesitaba ser la madre abnegada. " +
                        "Cuando Elena empezó a decir que no estaba enferma y pidió otro médico, Carmen le dio a las 21:40 el triple de su 'medicación del corazón'. " +
-                       "Se quedó sentada junto a su cama, sin llamar a nadie, hasta las 23:15. Lucas la oyó suplicar a través de la pared; Rosario vio la luz encendida toda la noche.",
+                       "Se quedó sentada junto a su cama, sin llamar a nadie, hasta las 23:15. Lucas la oyó suplicar a través de la pared; Rosario vio la luz encendida de 22:00 a 23:15e.",
             morningReports = new[]
             {
                 "",
@@ -369,7 +369,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         MentionRosario,
                         "Carmen siempre se encargaba de los médicos de Elena."
                     },
-                    version = "A las 21:00 salí y volví a las 23:05. A los pocos minutos Carmen gritó desde arriba.",
+                    version = "A las 21:00 salí a cenar con clientes y volví a las 23:05. Poco después Carmen gritó desde arriba.",
                     secret = "Dices que fue una cena con clientes, pero es mentira: tienes una aventura.",
                     admitsWhen = "el inspector insiste, menciona el restaurante o dice que lo va a comprobar",
                     nervousAbout = "dónde estuviste entre las 21:00 y las 23:05.",
@@ -613,9 +613,9 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     knowledge = new[]
                     {
                         MentionRosario,
-                        "Lucas y Elena discutían mucho últimamente."
+                        "Lucas y Elena discutían mucho; ella decía que él vendía sus pastillas del TDAH."
                     },
-                    version = "Estaba de guardia en el hospital. Daniel me llamó a las 23:15 y llegué a las 23:20, con la ambulancia ya en la puerta.",
+                    version = "Estaba de guardia. Volvía a casa cuando Daniel me llamó, pasadas las 23:15; llegué a las 23:20, con la ambulancia en la puerta.",
                     secret = "Aceptaste esa guardia extra para no estar en casa con Daniel: vuestro matrimonio va mal y te sientes culpable.",
                     admitsWhen = "el inspector te insiste",
                     nervousAbout = "tu matrimonio y tus guardias.",

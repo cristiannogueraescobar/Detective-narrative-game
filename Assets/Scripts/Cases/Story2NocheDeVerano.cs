@@ -109,14 +109,14 @@ Tienes 7 días.",
             culpritId = "bar",
             epilogue = "Marcos Rial llevaba todo el verano acosando a Sofía. A las 4:30 ella le tiró una copa y le llamó acosador delante de todo el bar. " +
                        "A las 4:55 Marcos desenchufó la cámara, a las 5:05 salió en su Volvo ranchera y la alcanzó en la curva. " +
-                       "Maruxa vio el coche parado sin luces a las 5:20; Andrés vio el bar vacío a las 5:10. A las 6:30 Marcos volvió a 'limpiar'.",
+                       "Maruxa vio el coche parado sin luces a las 5:20; Andrés vio el bar vacío a las 5:10. Hacia las 6:00 volvió al bar a 'limpiar' hasta las 6:30.",
             morningReports = new[]
             {
                 "",
                 "Los buzos encuentran el cuerpo de Sofía en la Cala do Corvo. El forense descarta una caída: murió de un golpe.",
                 "Un camarero de las fiestas recuerda gritos en La Marea hacia las 4:30.",
                 "En el camino de la Cala do Corvo hay marcas de neumático de un coche grande.",
-                "La Marea tiene una cámara de seguridad. Nadie ha revisado todavía qué grabó esa noche.",
+                "La Marea tiene una cámara de seguridad. El informe del inspector local no la menciona.",
                 "Las amigas de Sofía dicen que este verano 'alguien del pueblo' la agobiaba.",
                 LastDay
             },
@@ -324,7 +324,7 @@ Tienes 7 días.",
                 {
                     characterId = "bar",
                     knowledge = new[] { MentionMaruxa, "Sofía venía a La Marea casi cada noche con sus amigas." },
-                    version = "Cerré a las cinco y me quedé recogiendo dentro hasta las seis y media. Luego me fui a casa.",
+                    version = "Cerré a las cinco y me quedé recogiendo dentro hasta las seis y media. Luego un café y a casa hacia las siete y media.",
                     secret = "Esa noche serviste alcohol a menores y cerraste fuera de hora; te pueden multar.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "la hora de cierre y los menores.",
@@ -351,7 +351,7 @@ Tienes 7 días.",
                     id = "2B_cartas", playerName = "Cartas sin sello", holder = "bar", kind = ClueKind.Incriminates,
                     summary = "Sofía le enseñó a Marcos cartas anónimas que le dejaban en el buzón, sin sello ni matasellos. Estaba asustada.",
                     topic = "si Sofía tenía miedo de alguien o te contó algo raro",
-                    fact = "hace una semana Sofía te enseñó unas cartas anónimas que le dejaban en el buzón de su tía, sin sello ni matasellos; estaba asustada.",
+                    fact = "hace una semana Sofía te enseñó unas cartas anónimas que le dejaban en el buzón de su tía antes de amanecer, sin sello ni matasellos; estaba asustada.",
                     anchors = new[]
                     {
                         new[] { "carta" },
@@ -513,7 +513,7 @@ Tienes 7 días.",
                     // Aquí Maruxa solo se nombra (la desbloquea): si "ve pasar a todo el mundo", el modelo la ofrece
                     // como testigo en vez del GPS de la furgoneta, que es la pista de esta variante
                     knowledge = new[] { "Maruxa, la de la casa de la curva, madruga mucho.", "Esa madrugada llevabas un certificado urgente para la comisaría." },
-                    version = "A las 5:15 entré en la oficina de Correos, como siempre.",
+                    version = "Esa madrugada pasé antes por la comisaría con un certificado urgente y llegué a la oficina pasadas las cinco y cuarto.",
                     secret = "Guardas en casa postales que nunca llegaste a entregar; te da vergüenza que se sepa.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "que registren tu casa.",

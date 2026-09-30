@@ -78,8 +78,11 @@ public static class NarrativeValidator
         }
 
         // Epílogo: sus horas tienen que estar en alguna parte del caso
-        foreach (string t in TimeCheck.Unknown(v.epilogue, string.Join("\n", AllTexts(story, v, includeEpilogue: false))))
-            Add(EpilogueTime, $"el epílogo dice {t}, que no aparece en ninguna ficha, pista ni parte");
+        // (la línea temporal es la verdad del caso: sus horas también valen)
+        string knownTexts = string.Join("\n", AllTexts(story, v, includeEpilogue: false))
+                            + "\n" + string.Join("\n", (v.timeline ?? new List<TimelineEvent>()).Select(e => e.time));
+        foreach (string t in TimeCheck.Unknown(v.epilogue, knownTexts))
+            Add(EpilogueTime, $"el epílogo dice {t}, que no aparece en ninguna ficha, pista, parte ni en la línea temporal");
 
         // Edades: una por persona en toda la historia (todas las variantes)
         var ages = new Dictionary<string, HashSet<string>>();
