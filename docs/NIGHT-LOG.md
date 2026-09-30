@@ -583,6 +583,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   acertabas" (repetía "sospecha"). Memoria nueva: nada de heredocs para código con 
 ; borrar XML viejos.
 
+- **18:21** Ronda 17, bot al azar (salieron 3A, 3B, 3C; semilla 1717): **6/6 culpables**, 0 confesiones ni
+  incoherencias; 4 horas inventadas marcadas (el reintento arregló 6 de 8; residuo conocido), 1 reintento por
+  idioma. Acumulado al azar: 45/56.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
