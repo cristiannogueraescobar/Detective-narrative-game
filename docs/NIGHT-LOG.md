@@ -449,6 +449,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   +312) y los controles se centran a su lado. A 1920 no cambia nada (test). Theme.tallScreenHeaderShare = 0 lo
   quita. Tests: TallScreenLayoutTests (2; en el editor, abrir la escena descargaba el tema de prueba → DontSave).
 
+- **14:08** Ronda 4: bot en 3C, 3B, 1A (semilla 404): 6/6 resueltas, primera pista 7,8, latencia media 902 ms, sin
+  errores. La "confesión" marcada en 1A ("No, solo fui yo" a "¿fueron juntos a la habitación?") es un falso
+  positivo del detector: es su coartada, no una confesión. Build de Windows con todo lo de la tarde: SMOKE OK.
+  Foco visible con teclado/mando (WCAG 2.4.7) sin que el botón tocado se quede encendido (FocusVisibleTests).
+  Galería regenerada (21 hojas). Revisión independiente de la tarde en curso. EditMode 681/681, PlayMode 40/40.
+
 ## Ahora (día 3)
 - Ronda final 2: bot para comprobar los desbloqueos tras el n.º 7; capturas tras los cambios; recorrido mental.
   Informe intermedio a las ~16:10.
