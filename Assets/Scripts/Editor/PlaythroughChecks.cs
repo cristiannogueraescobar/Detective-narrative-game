@@ -36,7 +36,9 @@ public static class PlaythroughChecks
             "Dios", "Señor", "Señora", "Don", "Doña", "Usted", "Ustedes", "Inspector", "Inspectora", "Detective", "Agente",
             "Guardia", "Civil", "Policía", "Madrid", "España", "Galicia", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes",
             "Sábado", "Domingo", "Navidad", "Virgen", "WhatsApp", "Instagram", "Facebook", "Google", "Internet", "Mire",
-            "Oiga", "Vale", "Bueno", "Sí", "No", "Pues", "Claro", "Hombre", "Mujer", "Mamá", "Papá", "Madre", "Padre"
+            "Oiga", "Vale", "Bueno", "Sí", "No", "Pues", "Claro", "Hombre", "Mujer", "Mamá", "Papá", "Madre", "Padre",
+            // Marcas y juegos que un adolescente nombra: no son personajes (falsos positivos de la ronda 30)
+            "Fortnite", "Nike", "Adidas", "Netflix", "TikTok", "YouTube", "PlayStation", "Xbox", "Minecraft"
         });
 
     private static readonly string[] EnglishWords = { " the ", " and ", " you ", " i'm ", " i am ", " what ", " with ", " this " };
