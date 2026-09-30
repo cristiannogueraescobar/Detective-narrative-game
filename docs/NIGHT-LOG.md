@@ -185,7 +185,7 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   el caso raro "falla algo tras contar la pregunta" (excepción interna) queda anotado, sin cambio.
   Tests 549/549 + PlayMode 20/20.
 
-- 09:42 ART-NEEDED: los estados de retrato pedidos por personaje salen ahora de los datos (frecuencias tras la
+- 09:37 ART-NEEDED: los estados de retrato pedidos por personaje salen ahora de los datos (frecuencias tras la
   guía nueva, ~1.500 respuestas): p. ej. Javier, Maruxa y Álex piden "triste" en vez de "enfadado".
 
 ## Ahora
