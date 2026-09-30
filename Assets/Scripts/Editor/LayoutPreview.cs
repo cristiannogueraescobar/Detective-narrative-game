@@ -116,7 +116,7 @@ public static class LayoutPreview
         state.UpdateContradictions();
         ui.UpdateNotebook(Notebook.Format(variantStory, state, variantStory.cast.Select(c => c.id),
             variantStory.cast.ToDictionary(c => c.id, c => Emotion.Enfadado),
-            c => $"La versión de alguien («una cita larga de su mentira») choca con: {c.playerName}"));
+            c => $"La versión de alguien («una cita larga de su mentira») choca con: {c.playerName}", onPaper: true));
 
         ShowEnding(ui, Ending.Insufficient);
         ui.ShowAccusationPanel(suspects, canGoBack: true);

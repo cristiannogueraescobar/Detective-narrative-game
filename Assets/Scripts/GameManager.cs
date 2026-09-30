@@ -367,7 +367,7 @@ public class GameManager : MonoBehaviour
     private void RefreshNotebook()
     {
         interrogationUI?.UpdateNotebook(Notebook.Format(story, State, unlocked,
-            conversationManager.Emotions, conversationManager.DescribeContradiction));
+            conversationManager.Emotions, conversationManager.DescribeContradiction, onPaper: true));
     }
 
     private void OnClueRevealed(ClueData clue)

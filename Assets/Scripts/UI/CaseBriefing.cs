@@ -38,10 +38,15 @@ public static class CaseBriefing
 public static class Notebook
 {
     public static string Format(StoryData story, InvestigationState state, IEnumerable<string> unlocked,
-                                IReadOnlyDictionary<string, Emotion> emotions, Func<ClueData, string> describeContradiction)
+                                IReadOnlyDictionary<string, Emotion> emotions, Func<ClueData, string> describeContradiction,
+                                bool onPaper = false)
     {
         Theme t = ThemeManager.Current;
-        string heading(string text) => $"<color={Theme.Hex(t.accent)}><b>{text}</b></color>";
+        // Sobre el papel de la libreta, tintas oscuras (los colores del tema no se leerían sobre crema)
+        UnityEngine.Color headingColor = onPaper ? t.paperInk : t.accent;
+        UnityEngine.Color contradictionColor = onPaper ? new UnityEngine.Color32(150, 62, 20, 255) : t.contradiction;
+        UnityEngine.Color successColor = onPaper ? new UnityEngine.Color32(46, 100, 50, 255) : t.success;
+        string heading(string text) => $"<color={Theme.Hex(headingColor)}><b>{text}</b></color>";
         List<ClueData> clues = state.DiscoveredClueIds.Select(state.Variant.Clue).ToList();
 
         var sb = new StringBuilder();
@@ -57,7 +62,7 @@ public static class Notebook
         if (state.ContradictionClueIds.Count == 0)
             sb.AppendLine("Ninguna contradicción registrada.");
         foreach (string id in state.ContradictionClueIds)
-            sb.AppendLine($"• <color={Theme.Hex(t.contradiction)}>{describeContradiction(state.Variant.Clue(id))}</color>");
+            sb.AppendLine($"• <color={Theme.Hex(contradictionColor)}>{describeContradiction(state.Variant.Clue(id))}</color>");
         sb.AppendLine();
 
         sb.AppendLine(heading("SOSPECHOSOS"));
@@ -71,7 +76,7 @@ public static class Notebook
 
             ClueData clearing = clues.FirstOrDefault(c => c.kind == ClueKind.Clears && c.clears == character.id);
             if (clearing != null)
-                line += $" — <color={Theme.Hex(t.success)}>pista de descarte: {clearing.playerName}</color>";
+                line += $" — <color={Theme.Hex(successColor)}>pista de descarte: {clearing.playerName}</color>";
 
             sb.AppendLine(line);
         }

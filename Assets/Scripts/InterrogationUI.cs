@@ -443,10 +443,43 @@ public class InterrogationUI : MonoBehaviour
         if (contradictionsText != null)
             contradictionsText.gameObject.SetActive(false); // Las contradicciones van en la libreta
 
-        LayoutKit.Scrollable(cluesText, column);
+        ScrollRect notebookScroll = LayoutKit.Scrollable(cluesText, column);
 
         LayoutKit.Put(closeCluesButton, column, height: Theme.MinTouchSize);
         LayoutKit.Label(closeCluesButton, "Cerrar");
+
+        // Aspecto de libreta: papel crema, tinta oscura y el margen rojo a la izquierda
+        if (panel.TryGetComponent(out Image paper))
+        {
+            paper.sprite = null; // El sprite gris de la escena apagaba el crema
+            paper.color = T.paper;
+            UIComponents.GetOrAdd<ThemeRole>(paper.gameObject).role = UIRole.Ignore;
+        }
+        if (title != null && title.TryGetComponent(out TMP_Text paperTitle))
+        {
+            paperTitle.color = T.paperText;
+            UIComponents.GetOrAdd<ThemeRole>(paperTitle.gameObject).role = UIRole.Ignore;
+        }
+        if (cluesText != null)
+        {
+            cluesText.color = T.paperText;
+            UIComponents.GetOrAdd<ThemeRole>(cluesText.gameObject).role = UIRole.Ignore;
+        }
+        if (notebookScroll != null && notebookScroll.TryGetComponent(out Image scrollImage))
+        {
+            scrollImage.color = Color.clear;
+            UIComponents.GetOrAdd<ThemeRole>(scrollImage.gameObject).role = UIRole.Ignore;
+        }
+        RectTransform margin = UIFactory.Container(panel, "Margen (auto)", new Vector2(0f, 0f), new Vector2(0f, 1f));
+        margin.pivot = new Vector2(0f, 0.5f);
+        margin.sizeDelta = new Vector2(3f, 0f);
+        margin.anchoredPosition = new Vector2(T.padding * 0.55f, 0f);
+        margin.SetSiblingIndex(0);
+        UIComponents.GetOrAdd<LayoutElement>(margin.gameObject).ignoreLayout = true;
+        var marginImage = margin.gameObject.AddComponent<Image>();
+        marginImage.color = new Color(T.paperInk.r, T.paperInk.g, T.paperInk.b, 0.45f);
+        marginImage.raycastTarget = false;
+        margin.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
     }
 
     private void BuildClueNoticeLayout()
