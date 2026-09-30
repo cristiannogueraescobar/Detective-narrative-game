@@ -285,7 +285,7 @@ Tienes 7 días para descubrir qué pasó.",
             id = "3B",
             culpritId = "madre",
             epilogue = "Paula está viva. Convencida de que iba a perder la custodia, Lucía dejó a Álex en Granada a mediodía, subió a la finca a las 19:00 mientras Javier " +
-                       "estaba en el bar y se llevó a Paula. A las 19:30 quemó su mochila y sus zapatillas en el quemadero para que culparan a Javier. " +
+                       "estaba en el bar y se llevó a Paula. Poco después quemó su mochila y sus zapatillas en el quemadero para que culparan a Javier. " +
                        "Dejó a Paula con su prima en Portugal y volvió de madrugada. La Guardia Civil encuentra a Paula en Ayamonte.",
             morningReports = new[]
             {

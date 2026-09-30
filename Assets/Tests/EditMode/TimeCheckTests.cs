@@ -31,6 +31,16 @@ public class TimeCheckTests
     }
 
     [Test]
+    public void LasHorasEscritasEnLetraCuentanComoConocidas()
+    {
+        CollectionAssert.IsEmpty(TimeCheck.Unknown("Volvió a las 6:30.", "Estuve limpiando hasta las seis y media."));
+        CollectionAssert.IsEmpty(TimeCheck.Unknown("Llegó a las 21:15.", "Volví a las nueve y cuarto."), "de noche también");
+        CollectionAssert.IsEmpty(TimeCheck.Unknown("A las 4:45.", "A las cinco menos cuarto."));
+        CollectionAssert.IsEmpty(TimeCheck.Unknown("A las 13:00.", "A la una en punto."));
+        CollectionAssert.AreEqual(new[] { "6:15" }, TimeCheck.Unknown("Volvió a las 6:15.", "Hasta las seis y media."));
+    }
+
+    [Test]
     public void SinHorasNoHayNada()
     {
         CollectionAssert.IsEmpty(TimeCheck.Unknown("No me fijé en la hora, inspector.", Sheet));

@@ -84,9 +84,32 @@ public class VariantData
     public string[] morningReports; // Índice = día - 1; el día 1 va vacío
     public List<CharacterRole> roles = new List<CharacterRole>();
     public List<ClueData> clues = new List<ClueData>();
+    public List<TimelineEvent> timeline = new List<TimelineEvent>(); // Lo que pasó de verdad, hora a hora (validador)
 
     public CharacterRole Role(string characterId) => roles.First(r => r.characterId == characterId);
     public ClueData Clue(string clueId) => clues.First(c => c.id == clueId);
+}
+
+/// <summary>
+/// Un momento de la línea temporal real de una variante: quién estaba dónde y haciendo qué. "~22:30" = aproximado
+/// (no cuenta para "dos sitios a la vez"). Solo la usa el validador narrativo; no llega a las fichas.
+/// </summary>
+public class TimelineEvent
+{
+    public string time;
+    public bool approximate;
+    public string who;
+    public string where;
+    public string what;
+
+    public TimelineEvent(string time, string who, string where, string what)
+    {
+        approximate = time.StartsWith("~");
+        this.time = time.TrimStart('~');
+        this.who = who;
+        this.where = where;
+        this.what = what;
+    }
 }
 
 public class StoryData

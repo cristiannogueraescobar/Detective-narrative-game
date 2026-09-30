@@ -25,11 +25,31 @@ public static class TimeCheck
         return result;
     }
 
+    // "las seis y media", "la una en punto", "las cinco menos cuarto": en los textos conocidos las horas a veces van en letra
+    private static readonly string[] HourWords = { "doce", "una", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "once" };
+    private static readonly Regex WordTime = new Regex(
+        @"\bla(?:s)? (doce|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once)(?: (y media|y cuarto|menos cuarto|en punto))?\b",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
     public static HashSet<int> MinutesIn(string text)
     {
         var result = new HashSet<int>();
         foreach (Match m in DigitTime.Matches(text ?? ""))
             result.Add(Minutes(m));
+        foreach (Match m in WordTime.Matches(text ?? ""))
+        {
+            int hour = System.Array.IndexOf(HourWords, m.Groups[1].Value.ToLowerInvariant()); // 0..11
+            int minutes = hour * 60;
+            switch (m.Groups[2].Value.ToLowerInvariant())
+            {
+                case "y media": minutes += 30; break;
+                case "y cuarto": minutes += 15; break;
+                case "menos cuarto": minutes -= 15; break;
+            }
+            // Sin contexto no se sabe si es de día o de noche: valen las dos lecturas
+            result.Add(((minutes % 1440) + 1440) % 1440);
+            result.Add((minutes + 720) % 1440);
+        }
         return result;
     }
 
