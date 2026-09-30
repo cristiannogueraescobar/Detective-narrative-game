@@ -208,7 +208,14 @@ public partial class InterrogationUI
             layout.childControlWidth = layout.childControlHeight = true;
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = false;
+            layout.childAlignment = TextAnchor.LowerCenter; // Conversación corta: abajo, junto al campo
             UIComponents.GetOrAdd<ContentSizeFitter>(content.gameObject).verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            if (viewport != null)
+            {
+                var fill = UIComponents.GetOrAdd<FillViewport>(viewport.gameObject);
+                fill.content = UIComponents.GetOrAdd<LayoutElement>(content.gameObject);
+                fill.Apply();
+            }
         }
 
         // Las burbujas sustituyen al texto único de la escena

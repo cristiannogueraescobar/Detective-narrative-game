@@ -195,6 +195,24 @@ public class LayoutValidationTests
     }
 
     [Test]
+    public void UnaConversacionCortaQuedaAbajoJuntoAlCampo()
+    {
+        RectTransform panel = LayoutPreview.ShowOnly(session, "InterrogationPanel");
+        session.ui.ShowWaiting(false);
+        session.ui.Conversations.Append("corta", ChatEntry.Day(1, "Lo que se sabe: poca cosa."));
+        session.ui.Conversations.Select("corta");
+        session.ui.RefreshConversationView();
+        LayoutPreview.Rebuild(panel);
+
+        ScrollRect chat = LayoutPreview.Find(session, "ConversationScroll").GetComponent<ScrollRect>();
+        Rect view = WorldRect(chat.viewport);
+        float lowest = chat.content.Cast<Transform>().Where(c => c.gameObject.activeSelf)
+            .Select(c => WorldRect((RectTransform)c).yMin).Min();
+        Assert.Less(lowest - view.yMin, view.height * 0.25f,
+            $"el mensaje queda en el cuarto inferior de la vista, junto al campo (a {lowest - view.yMin:F0} de {view.height:F0})");
+    }
+
+    [Test]
     public void ChatSoloDesplazamientoVertical()
     {
         ScrollRect chat = LayoutPreview.Find(session, "ConversationScroll").GetComponent<ScrollRect>();
