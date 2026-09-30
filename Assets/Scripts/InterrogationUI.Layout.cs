@@ -518,9 +518,13 @@ public partial class InterrogationUI
         Transform group = panel.Find("SuspectsGroupImage");
         if (group != null)
             group.gameObject.SetActive(false);
-        lineup = UIFactory.Container(column, "Rueda (auto)", Vector2.zero, Vector2.one);
-        LayoutKit.Size(lineup, height: 0f, flexibleHeight: 1f);
-        UIComponents.GetOrAdd<LayoutElement>(lineup.gameObject).minHeight = 0f;
+        // La rueda va sobre una pared de alturas de comisaría (la rueda se vacía y se rellena sin tocar la pared)
+        RectTransform wall = UIFactory.Container(column, LineupWallName, Vector2.zero, Vector2.one);
+        LayoutKit.Size(wall, height: 0f, flexibleHeight: 1f);
+        UIComponents.GetOrAdd<LayoutElement>(wall.gameObject).minHeight = 0f;
+        BuildLineupWall(wall);
+        lineup = UIFactory.Container(wall, "Rueda (auto)", Vector2.zero, Vector2.one);
+        lineup.offsetMin = new Vector2(LineupWallMargin, 0f); // Sitio para las cifras de la izquierda
         var grid = lineup.gameObject.AddComponent<GridLayoutGroup>();
         grid.spacing = new Vector2(T.spacing, T.spacing);
         grid.childAlignment = TextAnchor.MiddleCenter;
@@ -542,6 +546,43 @@ public partial class InterrogationUI
         LayoutKit.Label(accuseButton, "Acusar");
 
         EnsureAccusationBackButton();
+    }
+
+    public const string LineupWallName = "Pared de la rueda (auto)";
+    private const float LineupWallMargin = 72f;
+
+    // Líneas horizontales cada 10 cm, de 190 (arriba) a 130 (abajo), con la cifra a la izquierda
+    private void BuildLineupWall(RectTransform wall)
+    {
+        RectTransform marks = UIFactory.Container(wall, "Alturas", Vector2.zero, Vector2.one);
+        marks.gameObject.SetActive(T.lineupWall);
+        UIComponents.GetOrAdd<LayoutElement>(marks.gameObject).ignoreLayout = true;
+        const int top = 190, bottom = 130, step = 10;
+        int count = (top - bottom) / step;
+        for (int k = 0; k <= count; k++)
+        {
+            float y = 1f - (float)k / count;
+            RectTransform line = UIFactory.Container(marks, "Linea " + (top - k * step), new Vector2(0f, y), new Vector2(1f, y));
+            line.sizeDelta = new Vector2(0f, k % 2 == 0 ? 3f : 2f);
+            var image = line.gameObject.AddComponent<Image>();
+            image.color = new Color(T.textSecondary.r, T.textSecondary.g, T.textSecondary.b, k % 2 == 0 ? 0.35f : 0.18f);
+            image.raycastTarget = false;
+            line.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
+
+            RectTransform label = UIFactory.Container(marks, "Cifra " + (top - k * step), new Vector2(0f, y), new Vector2(0f, y));
+            label.pivot = new Vector2(0f, 0f);
+            label.sizeDelta = new Vector2(LineupWallMargin, 40f);
+            TMP_Text text = UIFactory.Label(label, (top - k * step).ToString(), T.secondarySize * 0.8f, T.textSecondary);
+            text.font = UIFactory.TitleFont();
+            text.alignment = TextAlignmentOptions.BottomLeft;
+            text.raycastTarget = false;
+            var textRect = text.rectTransform;
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = textRect.offsetMax = Vector2.zero;
+            UIComponents.GetOrAdd<LayoutElement>(text.gameObject).ignoreLayout = true;
+            text.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
+        }
     }
 
     private void BuildResultLayout()
