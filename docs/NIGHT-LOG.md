@@ -603,6 +603,11 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   dicho por un chaval, en personaje). **Activado por defecto** (decisión 16); el bot conserva `-warmTimeRetry`.
   EditMode 714/714, PlayMode 54/54.
 
+- **19:25** Sexta revisión (CODE-REVIEW.md): nada para el jugador; 4 arreglos de editor/lector/tests y 2 anotados.
+  Ronda 21 al azar con el reintento frío (3C, 2C, 1A; semilla 2121): 3/6 culpables, **0 respuestas marcadas**; la
+  2C falla porque el bot vuelve a Marcos (como en la 2B; la 2C va 3/6 en tres rondas). Acumulado al azar: 48/62.
+  EditMode 715/715, PlayMode 54/54.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
