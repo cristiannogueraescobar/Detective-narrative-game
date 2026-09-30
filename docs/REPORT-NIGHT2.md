@@ -78,6 +78,24 @@ falsos positivos del detector (nombres tras "¿", "fui yo quien entré").
 El bot nunca acusa antes del día 7 y descubre ~2 pistas de 5-6: es un jugador flojo, pero sirve para medir
 rupturas de personaje y coherencia. El juego sigue siendo difícil, como pediste.
 
+### Estados emocionales en partida real (bot, 18 partidas, semilla 59)
+
+La calibración con preguntas sueltas salía bien, pero en partidas reales el 70 % de las respuestas eran
+"nervioso": la guía decía "nervioso si ocultas algo" y todos ocultan algo. Cambio: nervioso solo por el tema
+delicado de cada uno.
+
+| | Antes | Después |
+|---|---|---|
+| nervioso | 70 % | **42 %** |
+| triste | 17 % | 35 % |
+| tranquilo | 5 % | 13 % |
+| enfadado / asustado | 3 % / 4 % | 7 % / 3 % |
+| Culpable acertado | 11/18 | 9/18 (ruido: ver A/B) |
+
+**A/B de pistas** (las 48 pistas, 2 preguntas × 3 intentos, guía antigua contra nueva): 40/48 → **44/48**
+pistas por encima del umbral, detección media 85 % → 84 %. Las pistas que fallan cambian de un brazo a otro
+(ruido de 6 intentos). La guía nueva no cuesta pistas. Informes: `Logs/bot-guia2/`.
+
 ### Calibración de estados emocionales (144 respuestas, 4 tipos de pregunta)
 
 | | Antes (noche 1) | Final |
