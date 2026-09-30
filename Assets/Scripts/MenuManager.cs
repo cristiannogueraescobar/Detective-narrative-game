@@ -407,6 +407,7 @@ public class MenuManager : MonoBehaviour
         if (introPanel != null)
         {
             introPanel.SetActive(true);
+            UIAnimations.FadeIn(this, introPanel); // Del menú al expediente, con fundido
             Debug.Log("[MenuManager] IntroPanel activado (referencia directa)");
             
             // Llamar a GameManager para que actualice los textos del intro
