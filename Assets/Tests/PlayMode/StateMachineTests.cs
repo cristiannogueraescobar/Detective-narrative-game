@@ -400,4 +400,28 @@ public class StateMachineTests
             "indicación sobre lo que dice cada uno");
         Tutorial.SkipAll();
     }
+
+    // Ronda 9: la nota del jugador se cambia tocándola en la libreta, y la rueda atenúa a quien ha descartado
+    [UnityTest]
+    public IEnumerator LaNotaDelJugadorSeTocaEnLaLibretaYSeVeEnLaRueda()
+    {
+        yield return StartNewGame();
+        var manager = Object.FindFirstObjectByType<AIConversationManager>();
+        var links = Find("CluesPanel").GetComponentInChildren<TextLinkHandler>(true);
+        string id = manager.Story.cast.First(c => c.startsUnlocked).id;
+        string shortName = manager.Story.Character(id).shortName;
+
+        links.onLink(Notebook.NoteLinkPrefix + id); // sospechoso
+        links.onLink(Notebook.NoteLinkPrefix + id); // descartado
+        yield return null;
+        string notebook = Find("CluesPanel").GetComponentsInChildren<TMP_Text>(true).Select(t => t.text).First(t => t.Contains("SOSPECHOSOS"));
+        StringAssert.Contains("tu nota: descartado", notebook);
+
+        Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(0.3f);
+        GameObject cell = Find("Sospechoso " + shortName);
+        Assert.IsNotNull(cell);
+        Assert.Less(cell.GetComponent<CanvasGroup>().alpha, 1f, "descartado: atenuado en la rueda (pero se puede elegir)");
+        Assert.IsTrue(cell.GetComponent<Button>().interactable);
+    }
 }

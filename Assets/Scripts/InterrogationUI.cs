@@ -981,6 +981,13 @@ public partial class InterrogationUI : MonoBehaviour
 
     private void OnNotebookLink(string link)
     {
+        // La nota del jugador cambia en el sitio (la libreta sigue abierta)
+        if (link.StartsWith(Notebook.NoteLinkPrefix))
+        {
+            gameManager?.CycleNote(link.Substring(Notebook.NoteLinkPrefix.Length));
+            return;
+        }
+
         if (link.StartsWith(Notebook.SuspectLinkPrefix))
         {
             // Esperando respuesta no se cambia de sospechoso (el selector está bloqueado por lo mismo)
