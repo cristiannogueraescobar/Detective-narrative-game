@@ -31,6 +31,8 @@ public class SaveData
     public int hintsUsed;
     public List<string> hintsGiven = new List<string>(); // "pista:nivel" (HintMemory); vacío en guardados anteriores
     public List<string> suspectNotes = new List<string>(); // "id:nota" (SuspectNotes); vacío en guardados anteriores
+    public int dayStartClues = -1;          // Pistas y contradicciones al empezar el día ("Ayer: …"); -1 en guardados anteriores
+    public int dayStartContradictions = -1;
     public string currentSuspect;
     public List<string> unlocked = new List<string>();
     public List<string> discovered = new List<string>();

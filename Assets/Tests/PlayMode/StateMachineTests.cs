@@ -531,4 +531,21 @@ public class StateMachineTests
         Assert.IsTrue(Object.FindObjectsByType<TMP_Text>(FindObjectsSortMode.None).Any(t => t.text.Contains("Ayer: una pista nueva.")),
             "la tarjeta del día 2 lo dice");
     }
+
+    // Revisión 7: continuar a mitad de día no pierde lo conseguido antes de guardar
+    [UnityTest]
+    public IEnumerator AlContinuarElDiaRecuerdaLoDeAntesDeGuardar()
+    {
+        yield return StartNewGame();
+        var manager = Object.FindFirstObjectByType<AIConversationManager>();
+        manager.State.Discover(manager.State.Variant.clues[0].id);
+        yield return AskAndWait("¿Dónde estaba?"); // Guarda
+
+        yield return LoadGame();
+        yield return Tap("ContinueButton (auto)");
+        yield return null;
+        Object.FindFirstObjectByType<GameManager>().EndDay();
+        yield return new WaitForSecondsRealtime(0.5f);
+        Assert.IsTrue(Object.FindObjectsByType<TMP_Text>(FindObjectsSortMode.None).Any(t => t.text.Contains("Ayer: una pista nueva.")));
+    }
 }
