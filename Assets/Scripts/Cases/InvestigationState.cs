@@ -47,6 +47,19 @@ public class InvestigationState
 
     public bool IsDiscovered(string clueId) => discovered.Contains(clueId);
 
+    /// <summary>
+    /// ¿Una pista ya encontrada descarta a este personaje? (libreta, rueda y final malo "tus propias pistas lo
+    /// descartaban")
+    /// </summary>
+    public bool IsClearedByClue(string characterId)
+    {
+        return discovered.Any(id =>
+        {
+            ClueData clue = Variant.Clue(id);
+            return clue != null && clue.kind == ClueKind.Clears && clue.clears == characterId;
+        });
+    }
+
     public bool Discover(string clueId)
     {
         if (discovered.Contains(clueId))
@@ -130,11 +143,7 @@ public class InvestigationState
         if (!result.correct)
         {
             result.ending = Ending.Bad;
-            result.ignoredClearingClue = discovered.Any(id =>
-            {
-                ClueData clue = Variant.Clue(id);
-                return clue.kind == ClueKind.Clears && clue.clears == accusedId;
-            });
+            result.ignoredClearingClue = IsClearedByClue(accusedId);
         }
         else if (result.evidence >= GoodThreshold)
         {
