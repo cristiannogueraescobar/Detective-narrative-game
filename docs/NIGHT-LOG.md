@@ -165,6 +165,11 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   (solo esa ruta, sin proceso vivo; sin admin no veo la causa). BuildScript acepta -buildPath; build final en
   Builds/Windows-final, verificada (ventana 765x1360 en 2560x1600) y prueba de humo OK.
 
+- 08:52 Bot ronda 8 (3C, 3A, 3B, semilla 17): culpable 2/6, pistas 0,5–1,5/5. En 3C el detective se obsesiona
+  con el humo (la pista falsa de la historia) y nunca pregunta por el último contacto con Paula, que es donde
+  está la pista clave. Idea: elegir las preguntas de ejemplo con datos. Sonda nueva (SuggestionProbe): cada
+  candidata como primera pregunta a los 36 personajes × 2, contando pistas con el análisis real. En curso.
+
 ## Ahora
 - Ronda 6: crítica de diseño con capturas, más mejoras, informe y galería finales.
 
