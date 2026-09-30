@@ -60,7 +60,7 @@ public class FxTests
     [Test]
     public void LineaTemporalSeparaFrasesYHoras()
     {
-        string epilogue = "Daniel llevaba un año robando. A las 22:30 le subió un cacao con zolpidem. A las 23:05 fingió encontrarla y a las 23:15 llamó al 112. Rosario lo vio todo.";
+        string epilogue = "Daniel llevaba un año robando. A las 22:30 le subió un cacao con zolpidem. A las 23:05 fingió encontrarla y a las 23:15 llamó al 112. Amparo lo vio todo.";
         var steps = Timeline.FromEpilogue(epilogue).ToList();
 
         Assert.AreEqual(4, steps.Count);
@@ -175,14 +175,14 @@ public class EndingReportTests
         {
             rank = "Sabueso",
             keyClueLine = "Tu prueba clave, «La taza», le señalaba.",
-            missed = new System.Collections.Generic.List<string> { "La ventana (lo sabía Rosario)", "El frasco (lo sabía Carmen)" }
+            missed = new System.Collections.Generic.List<string> { "La ventana (lo sabía Amparo)", "El frasco (lo sabía Carmen)" }
         };
         string text = EndingReport.Build(result, "Daniel", "Daniel", 7, "Lo hizo Daniel.", ThemeManager.Current, null, summary);
         StringAssert.Contains("RANGO", text);
         StringAssert.Contains("Sabueso", text);
         StringAssert.Contains("le señalaba", text);
         StringAssert.Contains("SE TE ESCAPÓ", text);
-        StringAssert.Contains("lo sabía Rosario", text);
+        StringAssert.Contains("lo sabía Amparo", text);
     }
 
     [Test]

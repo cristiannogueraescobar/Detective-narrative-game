@@ -7,7 +7,7 @@ using System.Collections.Generic;
 /// </summary>
 public static class Story1HijaPerfecta
 {
-    private const string MentionRosario = "Rosario, la vecina de enfrente, se pasa las noches mirando por la ventana.";
+    private const string MentionAmparo = "Amparo, la vecina de enfrente, se pasa las noches mirando por la ventana.";
 
     private const string CulpritAdmits =
         "te enseñan una prueba concreta, y aun así solo admites lo que esa prueba demuestra";
@@ -64,12 +64,12 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 },
                 new CharacterData
                 {
-                    id = "vecina", name = "Rosario Gil", shortName = "Rosario", artId = "rosario", roleLabel = "vecina", portraitKey = "Vecina",
-                    identity = "Eres Rosario Gil, 70 años, viuda y jubilada. Vives justo enfrente de los Mendoza; desde tu salón ves la ventana del cuarto de Elena. Duermes poco.",
+                    id = "vecina", name = "Amparo Gil", shortName = "Amparo", artId = "rosario", roleLabel = "vecina", portraitKey = "Vecina",
+                    identity = "Eres Amparo Gil, 70 años, viuda y jubilada. Vives justo enfrente de los Mendoza; desde tu salón ves la ventana del cuarto de Elena. Duermes poco.",
                     speech = "Cotilla, detallista y cariñosa. Das horas exactas porque tienes el reloj de cuco delante. Llamas 'hijo' al inspector.",
                     speechExample = "Mire, hijo, yo no es que espíe, pero una tiene ojos.",
                     startsUnlocked = false,
-                    mentionAliases = new[] { "rosario", "vecina", "la de enfrente" }
+                    mentionAliases = new[] { "amparo", "vecina", "la de enfrente" }
                 }
             },
             variants = new List<VariantData> { Variant1A(), Variant1B(), Variant1C() }
@@ -89,7 +89,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
             epilogue = "Daniel Mendoza llevaba un año sacando dinero del fondo de herencia de Elena para tapar las deudas de su bufete. " +
                        "Cuando Elena encontró los extractos y amenazó con contárselo a Carmen, decidió silenciarla. " +
                        "A las 22:30, con Carmen dormida por su pastilla, le subió un cacao con zolpidem triturado, cerró las cortinas y la puerta con llave. " +
-                       "A las 23:05 fingió encontrarla y a las 23:15 llamó al 112. Rosario lo vio cerrar las cortinas desde su ventana.",
+                       "A las 23:05 fingió encontrarla y a las 23:15 llamó al 112. Amparo lo vio cerrar las cortinas desde su ventana.",
             morningReports = new[]
             {
                 "",
@@ -107,7 +107,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     characterId = "padre",
                     knowledge = new[]
                     {
-                        MentionRosario,
+                        MentionAmparo,
                         "Carmen se tomó su pastilla para dormir a las 22:00 y se acostó.",
                         "Lucas estaba en su cuarto con los cascos."
                     },
@@ -118,7 +118,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     admitsWhen = CulpritAdmits,
                     nervousAbout = "el dinero de Elena, tu despacho, el cacao y lo que pasó entre las 22:00 y las 23:00.",
                     ifAccused = "Te ofendes con frialdad, recuerdas que eres abogado y amenazas con una querella.",
-                    doesNotKnow = "Qué vio exactamente Rosario desde su ventana.",
+                    doesNotKnow = "Qué vio exactamente Amparo desde su ventana.",
                     lieQuote = "no entré en su cuarto",
                     lieAnchors = new[]
                     {
@@ -137,7 +137,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     characterId = "madre",
                     knowledge = new[]
                     {
-                        MentionRosario,
+                        MentionAmparo,
                         "Daniel es muy controlador con el dinero y con los horarios de la casa.",
                         "Elena llevaba unos días rara, callada, como asustada."
                     },
@@ -153,7 +153,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     characterId = "hermano",
                     knowledge = new[]
                     {
-                        MentionRosario,
+                        MentionAmparo,
                         "Papá y Elena discutieron el miércoles en el despacho por unos papeles; papá le gritó."
                     },
                     version = "Estuve toda la noche en mi cuarto jugando online con los cascos. No oí nada hasta que papá empezó a gritar; entonces salí al pasillo.",
@@ -223,7 +223,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 new ClueData
                 {
                     id = "1A_ventana", playerName = "Lo que vio la ventana", holder = "vecina", kind = ClueKind.Incriminates, exposesLie = true,
-                    summary = "Rosario vio a Daniel a las 22:35 en el cuarto de Elena, cerrando las cortinas. Él casi nunca entraba allí.",
+                    summary = "Amparo vio a Daniel a las 22:35 en el cuarto de Elena, cerrando las cortinas. Él casi nunca entraba allí.",
                     topic = "lo que viste esa noche en la casa de enfrente o si viste algo raro antes de la llamada al 112",
                     fact = "a las 22:35 viste al padre, Daniel, en el cuarto de la niña cerrando las cortinas. Te extrañó porque él casi nunca entra en ese cuarto.",
                     anchors = new[]
@@ -319,7 +319,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
             culpritId = "madre",
             epilogue = "Carmen Vidal llevaba dos años inventando enfermedades a Elena y dándole medicación que no necesitaba: necesitaba ser la madre abnegada. " +
                        "Cuando Elena empezó a decir que no estaba enferma y pidió otro médico, Carmen le dio a las 21:40 el triple de su 'medicación del corazón'. " +
-                       "Se quedó sentada junto a su cama, sin llamar a nadie, hasta las 23:15. Lucas la oyó suplicar a través de la pared; Rosario vio la luz encendida de 22:00 a 23:15e.",
+                       "Se quedó sentada junto a su cama, sin llamar a nadie, hasta las 23:15. Lucas la oyó suplicar a través de la pared; Amparo vio la luz encendida de 22:00 a 23:15e.",
             morningReports = new[]
             {
                 "",
@@ -337,7 +337,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     characterId = "madre",
                     knowledge = new[]
                     {
-                        MentionRosario,
+                        MentionAmparo,
                         "Elena tenía una arritmia; tú misma le recetaste el tratamiento para el corazón.",
                         "Daniel salió a las 21:00 y volvió a las 23:05."
                     },
@@ -366,7 +366,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     characterId = "padre",
                     knowledge = new[]
                     {
-                        MentionRosario,
+                        MentionAmparo,
                         "Carmen siempre se encargaba de los médicos de Elena."
                     },
                     version = "A las 21:00 salí a cenar con clientes y volví a las 23:05. Poco después Carmen gritó desde arriba.",
@@ -381,7 +381,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     characterId = "hermano",
                     knowledge = new[]
                     {
-                        MentionRosario,
+                        MentionAmparo,
                         "Mamá siempre está con médicos y pastillas para Elena."
                     },
                     version = "Estuve en mi cuarto con los cascos casi toda la noche, jugando; solo me los quité un momento.",
@@ -474,7 +474,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 new ClueData
                 {
                     id = "1B_luz", playerName = "La luz encendida", holder = "vecina", kind = ClueKind.Incriminates, exposesLie = true,
-                    summary = "Rosario vio la luz del cuarto de Elena encendida de 22:00 a 23:15, con la madre sentada junto a la cama, muy quieta, sin llamar a nadie.",
+                    summary = "Amparo vio la luz del cuarto de Elena encendida de 22:00 a 23:15, con la madre sentada junto a la cama, muy quieta, sin llamar a nadie.",
                     topic = "lo que viste esa noche en la casa de enfrente",
                     fact = "viste a la madre, Carmen, sentada junto a la cama de la niña, muy quieta, sin llamar a nadie, desde las 22:00 hasta las 23:15.",
                     anchors = new[]
@@ -550,7 +550,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
             culpritId = "hermano",
             epilogue = "Lucas vendía en el instituto sus pastillas para el TDAH y Elena lo descubrió. A las 21:45 discutieron en la escalera; él le arrancó el móvil y ella cayó y se golpeó la cabeza. " +
                        "Parecía estar bien: Lucas la acostó, fregó el escalón con lejía y a las 21:52 llamó a su padre. Daniel llegó a las 22:15 y decidió no llevarla al hospital. " +
-                       "Hacia las 23:00 Elena dejó de respirar. Rosario oyó los gritos y el golpe desde enfrente.",
+                       "Hacia las 23:00 Elena dejó de respirar. Amparo oyó los gritos y el golpe desde enfrente.",
             morningReports = new[]
             {
                 "",
@@ -568,7 +568,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     characterId = "hermano",
                     knowledge = new[]
                     {
-                        MentionRosario,
+                        MentionAmparo,
                         "Mamá estaba de guardia en el hospital hasta las 23:00."
                     },
                     version = "Estuve toda la noche en mi cuarto con los cascos puestos, jugando. No oí nada hasta que papá empezó a gritar.",
@@ -597,7 +597,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     characterId = "padre",
                     knowledge = new[]
                     {
-                        MentionRosario,
+                        MentionAmparo,
                         "Carmen estaba de guardia en el hospital hasta las 23:00."
                     },
                     version = "Estuve en el despacho hasta tarde. Llegué a casa a las 23:00, subí a ver a Elena y no respiraba. A las 23:15 llamé al 112.",
@@ -612,7 +612,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     characterId = "madre",
                     knowledge = new[]
                     {
-                        MentionRosario,
+                        MentionAmparo,
                         "Lucas y Elena discutían mucho; ella decía que él vendía sus pastillas del TDAH."
                     },
                     version = "Estaba de guardia. Volvía a casa cuando Daniel me llamó, pasadas las 23:15; llegué a las 23:20, con la ambulancia en la puerta.",
@@ -643,7 +643,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 new ClueData
                 {
                     id = "1C_gritos", playerName = "Gritos en la escalera", holder = "vecina", kind = ClueKind.Incriminates, exposesLie = true,
-                    summary = "Hacia las 21:45 Rosario oyó gritos de los dos chicos y un golpe seco. Después vio a Lucas en la ventana de la escalera.",
+                    summary = "Hacia las 21:45 Amparo oyó gritos de los dos chicos y un golpe seco. Después vio a Lucas en la ventana de la escalera.",
                     topic = "lo que oíste o viste esa noche",
                     fact = "sobre las 21:45 oíste gritos de los dos chicos, Lucas y la niña, y luego un golpe seco. Justo después viste a Lucas parado en la ventana de la escalera, con las manos en la cabeza.",
                     anchors = new[]

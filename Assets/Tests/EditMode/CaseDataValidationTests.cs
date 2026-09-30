@@ -213,4 +213,25 @@ public class CaseDataValidationTests
             Assert.LessOrEqual(words, MaxPromptWords, $"{character.id}: {words} palabras");
         }
     }
+
+    // Sesión A (decisión 4): la vecina de la historia 1 compartía nombre con una persona real del caso que la
+    // inspira. Nada de lo que ve el jugador o el modelo puede llamarla así (artId es la clave interna del arte)
+    [Test]
+    public void LaVecinaYaNoSeLlamaComoLaPersonaReal()
+    {
+        StoryData story = CaseLibrary.Stories.First(s => s.id == "1");
+        CharacterData vecina = story.Character("vecina");
+        string saved = vecina.artId;
+        vecina.artId = "";
+        try
+        {
+            string all = UnityEngine.JsonUtility.ToJson(story) + string.Join(" ", story.variants.Select(v => UnityEngine.JsonUtility.ToJson(v)));
+            StringAssert.DoesNotContain("Rosario", all);
+            Assert.AreEqual("Amparo", vecina.shortName);
+        }
+        finally
+        {
+            vecina.artId = saved;
+        }
+    }
 }

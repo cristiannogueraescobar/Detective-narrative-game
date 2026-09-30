@@ -17,8 +17,8 @@ acertado en el 56 %).
 ### 1. "Pensar" (ayuda por niveles, con coste) — *Golden Idol, Duck Detective, Thimbleweed*
 - Botón **Pensar** en la libreta. El detective "rumia" y da una pista **sobre cómo seguir**, nunca sobre quién
   fue:
-  - nivel 1 (vago): "Quizá **Rosario** sabe más de lo que ha contado.";
-  - nivel 2 (concreto, si vuelve a pedirla sobre la misma pista): "Pregúntale a **Rosario** por *lo que vio esa
+  - nivel 1 (vago): "Quizá **Amparo** sabe más de lo que ha contado.";
+  - nivel 2 (concreto, si vuelve a pedirla sobre la misma pista): "Pregúntale a **Amparo** por *lo que vio esa
     noche en la casa de enfrente*."
 - Elige una pista **aún no encontrada** de alguien **ya disponible**; primero las que no son la decisiva (⚡), para
   que la ayuda no regale el caso.

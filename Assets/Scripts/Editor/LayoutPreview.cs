@@ -129,7 +129,7 @@ public static class LayoutPreview
         ui.ShowDayTransition(2, "El forense sitúa la muerte entre las 22:30 y las 23:15.");
         ui.ShowSuspectUnlocked(suspects[0].displayName);
         ui.ShowContradictionNotification("La versión de alguien («una cita») choca con: Lo que vio la ventana");
-        ui.ShowNotice("Un agente te informa: conviene hablar con Rosario Gil.");
+        ui.ShowNotice("Un agente te informa: conviene hablar con Amparo Gil.");
         ui.ShowError("No te quedan preguntas hoy.");
         // Conversación del sospechoso abierto: preguntas cortas y largas, una con prueba, respuestas de varios tamaños
         string id = suspects[0].id;
@@ -139,7 +139,7 @@ public static class LayoutPreview
         ui.Conversations.Append(id, ChatEntry.Player("¿Y esto?", "La taza de la mesilla", "11:17"));
         ui.Conversations.Append(id, ChatEntry.Suspect(name, "No.", "11:17"));
         ui.Conversations.Append(id, ChatEntry.Player("", "Lo que vio la ventana", "13:11"));
-        ui.Conversations.Append(id, ChatEntry.Suspect(name, "Eso no demuestra nada. Rosario ve lo que quiere ver desde esa ventana, siempre ha sido así.", "13:11"));
+        ui.Conversations.Append(id, ChatEntry.Suspect(name, "Eso no demuestra nada. Amparo ve lo que quiere ver desde esa ventana, siempre ha sido así.", "13:11"));
         ui.RefreshConversationView();
         ui.ShowWaiting(true);
     }

@@ -16,7 +16,7 @@ usaron agencias, prensa regional y jurídica). Lo que solo aparecía en una fuen
 
 ### ⚠ Para decidir (Cristian)
 - **La historia 1 está muy cerca del caso real** (Santiago + niña adoptada de 12 años + septiembre + fármaco para
-  dormir + padre abogado). **La vecina se llama "Rosario", el nombre de pila de la madre condenada** en ese caso.
+  dormir + padre abogado). **La vecina se llamaba "Rosario", el nombre de pila de la madre condenada** en ese caso: **renombrada a Amparo en la Sesión A** (1-10-2026; la clave interna del arte, `rosario`, no la ve nadie).
   No lo he cambiado (es decisión tuya), pero propongo renombrar a la vecina (p. ej. "Remedios") y alejar algún
   detalle identificativo (ciudad o edad).
 - Las historias 2 y 3 ya se alejan lo suficiente (lugares ficticios, otras edades, otros culpables; la variante

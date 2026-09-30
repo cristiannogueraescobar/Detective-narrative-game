@@ -100,7 +100,7 @@ public class ClueDetectorTests
     [Test]
     public void MentionsAny_DetectaAliasNormalizado()
     {
-        Assert.IsTrue(ClueDetector.MentionsAny(ClueDetector.Normalize("Rosario, la de enfrente"), new[] { "Rosario" }));
-        Assert.IsFalse(ClueDetector.MentionsAny(ClueDetector.Normalize("Nadie más"), new[] { "Rosario" }));
+        Assert.IsTrue(ClueDetector.MentionsAny(ClueDetector.Normalize("Amparo, la de enfrente"), new[] { "Amparo" }));
+        Assert.IsFalse(ClueDetector.MentionsAny(ClueDetector.Normalize("Nadie más"), new[] { "Amparo" }));
     }
 }
