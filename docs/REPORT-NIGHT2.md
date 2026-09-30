@@ -219,7 +219,9 @@ Cómo regenerarlas: `ScreenshotTool.CaptureFromCommandLine` (vista previa) y el 
   retratos antiguos en plano medio y aplica tinte, postura y temblor.
 - **Horas inventadas**: qwen 7B aún dice alguna hora que no está en su ficha (3–6 % de las respuestas según la
   partida). A veces con un hecho imposible: en la ronda 9 la vecina de 1A "vio" a Elena a las 00:05, ya
-  muerta, y lo repitió después. La regla ya está en la ficha; bajarlo más pediría otro modelo o más texto en fichas que ya están en
+  muerta, y lo repitió después.
+  En la definitiva, de 26 horas inventadas la mayoría son rutinas aproximadas ("me acosté poco después de las
+  23:00"), inofensivas; las dañinas son avistamientos inventados (Rosario en 1B: "a las 23:12 noté…"). La regla ya está en la ficha; bajarlo más pediría otro modelo o más texto en fichas que ya están en
   el límite de 460 palabras.
 - **Preguntas capciosas**: un 23 % de los sospechosos acepta una acusación inventada si el inspector la da por
   hecha. Una regla en la ficha lo bajaba al 2–5 %, pero hacía que la madre de 3A negase las amenazas de Javier
