@@ -47,7 +47,9 @@ clues; show a clue to the suspect you think is lying; accuse once, naming your k
   text sizes (seeded from the system font scale), high contrast (AAA), visible focus, text speed, reduce motion,
   noir filter toggle — all applied live and saved; WCAG 2.2 AA audited.
 - **Game design**: difficulty levels, tiered hints, key-evidence accusation and detective ranks, natural
-  character unlocks by topic, the notebook keeps each suspect's version to compare with the clues.
+  character unlocks by topic, the notebook keeps each suspect's version to compare with the clues, your own
+  notes per suspect (suspicion / ruled out) and every morning report; the lineup strikes through whoever you or a
+  found clue ruled out; replaying a story brings a culprit you haven't seen yet.
 - **Two LLM providers** behind one interface: Ollama (default, local, `qwen2.5:7b-instruct`) or Anthropic Claude.
 - **Robust to the model's quirks**: repeated answers and answers with invented times are asked once more
   (invented times −74 %); suspects reject false premises in leading questions (22 % → 2 %); character sheets are
