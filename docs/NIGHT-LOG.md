@@ -678,4 +678,4 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
 
 ## Ahora (día 3)
 - Día cerrado: 31 rondas con el bot, 7 revisiones, suites en verde, build final con SMOKE OK, informe cerrado.
-- Solo queda borrar el worktree temporal del bot (C:\Dev\dng-bot) y el push final.
+- Worktree temporal del bot (C:\Dev\dng-bot) borrado (`git worktree remove --force` + `prune`); todo en origin.
