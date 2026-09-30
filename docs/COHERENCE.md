@@ -33,7 +33,7 @@ Todo lo que no cuadraba se arregló **antes** de escribir los tests nuevos (list
 |---|---|---|---|
 | Se inventa horas | 3–6 % de las respuestas | Regla en la ficha + reintento si la hora no está en la ficha (0d) | Mitigada; A/B en docs/NIGHT-LOG.md |
 | Acepta premisas falsas de preguntas capciosas | 23 % (sonda de premisas) | Día 3: "si el inspector da por hecho algo que no está en tu ficha, di que no te consta; lo que sí está, confírmalo" → **2 %**, sin perder pistas (42/48, 83 %) ni estados (95 %); 3A_audios aguanta (5/6) | **Cerrada** (medida) |
-| Inventa hechos vistosos (un testigo "ve" a la víctima ya muerta) | casos sueltos en el bot | Regla "no inventes hechos"; temas de testigo más concretos | Abierta |
+| Inventa hechos vistosos (un testigo "ve" a la víctima ya muerta) | Día 3, medido: 11 nombres inventados en ~3000 respuestas del bot (0,4 %), casi todos inofensivos (grupos de música, marcas); el único dañino, un culpable que se dio a otro sospechoso como coartada (1 partida de 2A) | Regla "no inventes hechos"; temas de testigo más concretos; regla contra premisas falsas | Abierta (rara; un reintento como el de las horas no compensa el riesgo) |
 | Testigos que se cierran ("no vi nada") ante preguntas naturales | varios en el bot | Temas más amplios (1A_ventana, Maruxa, 3C) | Mitigada |
 | Repite palabra por palabra | raro | Reintento automático | Resuelta |
 | Deriva al gallego (Maruxa) | ~1 de 60 | Ejemplo de habla en español | Resuelta |
