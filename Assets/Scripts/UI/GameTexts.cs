@@ -155,7 +155,7 @@ public static class GameTexts
             $"Cada día tienes {NumberWord(Difficulty.QuestionsPerDay(DifficultyLevel.Detective))} preguntas " +
             $"({NumberWord(Difficulty.QuestionsPerDay(DifficultyLevel.Historia))} en Historia, " +
             $"{NumberWord(Difficulty.QuestionsPerDay(DifficultyLevel.Veterano))} en Veterano; se elige en Ajustes). " +
-            "Cuando las gastes, pulsa «Fin del día»: por la mañana llega un parte con novedades. " +
+            "Cuando las gastes, pulsa «Fin del día»: por la mañana llega un parte con novedades, que se queda en la libreta. " +
             "No todos están disponibles al principio: aparecen cuando alguien los menciona, cuando preguntas por lo que ellos saben (la vecina, la curva, los caballos…) o cuando la policía los trae.\n\n" +
             h("LA LIBRETA") + "\n" +
             "Las pistas, las contradicciones, lo que dice cada uno y cómo está se apuntan solos en la libreta: si una pista no cuadra con lo que alguien dice, enséñasela. Junto a cada uno puedes apuntar tu nota (sospecha o descarte): en la rueda de la acusación, a quien descartes se le ve tachado. Algunas pistas descartan a alguien: léelas bien. " +
