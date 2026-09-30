@@ -37,6 +37,7 @@ public static class BotPlayer
         public string ollamaUrl = "http://localhost:11434";
         public string model = new OllamaSettings().model;
         public bool timeRetry = true; // -noTimeRetry: sin reintento por horas inventadas (A/B)
+        public bool hints = true;     // -noHints: el bot no usa "Pensar" (línea base de B3)
     }
 
     public class Turn
@@ -68,6 +69,7 @@ public static class BotPlayer
         public string accusationReason;
         public string error;
         public int fallbacks;                                   // Turnos en que el detective no dio un JSON válido
+        public int hints;                                       // Veces que usó "Pensar"
         public List<string> badDecisions = new List<string>();  // Muestra de esas salidas
         public List<Turn> turns = new List<Turn>();
         public Dictionary<Emotion, int> emotions = new Dictionary<Emotion, int>();
@@ -86,6 +88,7 @@ public static class BotPlayer
                 case "-games": options.games = Math.Max(1, int.Parse(args[i + 1])); break;
                 case "-seed": options.seed = int.Parse(args[i + 1]); break;
                 case "-noTimeRetry": options.timeRetry = false; break;
+                case "-noHints": options.hints = false; break;
                 case "-ollama": options.ollamaUrl = args[i + 1]; break;
                 case "-model": options.model = args[i + 1]; break;
             }
@@ -201,6 +204,10 @@ public static class BotPlayer
 
             var lastAnswer = new Dictionary<string, string>();
             string accused = null;
+            var hintMemory = new HintMemory();
+            int sinceClue = 0;          // Preguntas seguidas sin pista nueva
+            string note = null;         // Lo que dio "Pensar", para la siguiente decisión
+            Decision forced = null;     // Pensar (nivel 2): la pregunta sugerida, al sospechoso indicado
 
             for (int day = 1; day <= MaxDays && accused == null; day++)
             {
@@ -211,7 +218,22 @@ public static class BotPlayer
 
                 for (int q = 0; q < QuestionsPerDay && accused == null; q++)
                 {
-                    Decision decision = Decide(client, options, story, manager, unlocked, game, day, q, random);
+                    // Como un jugador atascado: tras 4 preguntas sin nada nuevo, "Pensar" (cuesta la pregunta)
+                    if (options.hints && forced == null && sinceClue >= 4)
+                    {
+                        Hint hint = HintAdvisor.Next(story, manager.State, unlocked, hintMemory);
+                        game.hints++;
+                        game.questionsUsed++;
+                        sinceClue = 0;
+                        note = hint.text;
+                        if (hint.level == 2 && hint.holderId != null && hint.question != null && unlocked.Contains(hint.holderId))
+                            forced = new Decision { suspect = hint.holderId, question = hint.question };
+                        continue;
+                    }
+
+                    Decision decision = forced ?? Decide(client, options, story, manager, unlocked, game, day, q, random, note);
+                    forced = null;
+                    note = null;
                     if (decision.accuse != null && day >= EarliestAccusationDay)
                     {
                         accused = decision.accuse;
@@ -247,6 +269,7 @@ public static class BotPlayer
                     });
                     lastAnswer[decision.suspect] = result.Text;
                     game.questionsUsed++;
+                    sinceClue = turnClues.Count > 0 ? 0 : sinceClue + 1;
                 }
             }
 
@@ -312,7 +335,7 @@ public static class BotPlayer
     }
 
     private static Decision Decide(HttpClient client, Options options, StoryData story, AIConversationManager manager,
-                                   List<string> unlocked, Game game, int day, int question, System.Random random)
+                                   List<string> unlocked, Game game, int day, int question, System.Random random, string note = null)
     {
         string system = DetectivePrompt(story, manager, unlocked);
         var recent = game.turns.Skip(Math.Max(0, game.turns.Count - 8))
@@ -326,7 +349,8 @@ public static class BotPlayer
             (day >= EarliestAccusationDay
                 ? "Si ya estás seguro de quién es el culpable y tienes pruebas, puedes acusar en su lugar: {\"accuse\": \"id\", \"reason\": \"por qué\"}\n"
                 : "") +
-            "No repitas preguntas ya hechas. Varía de sospechoso si alguien no aporta nada.";
+            "No repitas preguntas ya hechas. Varía de sospechoso si alguien no aporta nada." +
+            (note != null ? $"\nTe has parado a pensar y se te ha ocurrido esto: {note}" : "");
 
         for (int attempt = 0; attempt < 3; attempt++)
         {
@@ -551,7 +575,8 @@ public static class BotPlayer
                           $"({all.Count - firstClue.Count} partidas sin ninguna) · turnos sin pista nueva {(double)dead / allTurns.Count:P0} · " +
                           $"respuestas repetidas {allTurns.Count(t => t.findings.Any(f => f.kind == PlaythroughChecks.Kind.Incoherent))} · " +
                           $"partidas resueltas (culpable) {(double)all.Count(g => g.accusedId == g.culpritId) / Math.Max(1, all.Count):P0} · " +
-                          $"duración media {all.Average(g => g.turns.Sum(t => t.ms)) / 60000.0:F1} min de respuestas");
+                          $"duración media {all.Average(g => g.turns.Sum(t => t.ms)) / 60000.0:F1} min de respuestas · " +
+                          $"ayudas (Pensar) {all.Sum(g => g.hints)} ({(options.hints ? "activadas" : "desactivadas")})");
         }
 
         sb.AppendLine();
