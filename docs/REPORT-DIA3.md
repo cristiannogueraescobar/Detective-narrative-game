@@ -77,7 +77,7 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 | Primera pista (bot, preguntas) | 10,3 (8,6 antes de B2) | **6,9** con Pensar |
 | Partidas sin ninguna pista (bot) | 2 de 18 | **0** |
 | Partidas resueltas (bot) | 44-56 % | **72 %** con Pensar |
-| Detección de pistas (calibración, 48 pistas) | 80-85 % | 83 % con fichas más ricas; 80 % al cierre (ruido de 3 intentos; la única bajada real, 3A_granada, arreglada: 6/6) |
+| Detección de pistas (calibración, 48 pistas) | 80-85 % | 83 % con fichas más ricas; 80 % al cierre (ruido de 3 intentos; la única bajada real, 3A_granada por el nombre de la tía, arreglada: 83 %, como por la mañana) |
 | 2C_gps (la pista que falló en 0c) | 60 % | **85 %** (10 intentos) |
 | Premisas falsas aceptadas (sonda de 72) | 23 % | **2-5 %** (tres sondas: 5, 2 y 5 % en el cierre; sin perder pistas ni estados) |
 | Incoherencias narrativas conocidas | 17 (auditoría) | 0 abiertas; validador en verde en las 9 variantes |
