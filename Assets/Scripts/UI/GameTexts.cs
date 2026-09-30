@@ -65,7 +65,8 @@ public static class GameTexts
             "Cada día tienes cinco preguntas. Cuando las gastes, pulsa «Fin del día»: por la mañana llega un parte con novedades. " +
             "Desde el tercer día puedes hablar con todos.\n\n" +
             h("LA LIBRETA") + "\n" +
-            "Las pistas, las contradicciones y cómo está cada sospechoso se apuntan solos en la libreta. Algunas pistas descartan a alguien: léelas bien.\n\n" +
+            "Las pistas, las contradicciones y cómo está cada sospechoso se apuntan solos en la libreta. Algunas pistas descartan a alguien: léelas bien. " +
+            "Toca una pista para enseñarla en tu próxima pregunta, o el nombre de un sospechoso para ir a interrogarle.\n\n" +
             h("ACUSAR Y FINALES") + "\n" +
             "Puedes acusar cuando quieras; el séptimo día es obligatorio. Solo hay una oportunidad:\n" +
             "•  Culpable y pruebas sólidas: caso cerrado.\n" +
