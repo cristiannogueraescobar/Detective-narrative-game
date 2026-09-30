@@ -46,10 +46,23 @@ public static class GameTexts
     /// <summary>
     /// Parte de la mañana: el del caso, el consejo si lo hay y el aviso de los últimos días, sin líneas vacías.
     /// </summary>
-    public static string MorningReport(string caseReport, string hint, int day, int maxDays)
+    /// <summary>
+    /// Lo conseguido el día anterior, para la tarjeta del día nuevo (null si no hubo nada: no se recalca).
+    /// </summary>
+    public static string DayRecap(int clues, int contradictions)
+    {
+        var items = new System.Collections.Generic.List<string>();
+        if (clues > 0)
+            items.Add(clues == 1 ? "una pista nueva" : $"{NumberWord(clues)} pistas nuevas");
+        if (contradictions > 0)
+            items.Add(contradictions == 1 ? "una contradicción" : $"{NumberWord(contradictions)} contradicciones");
+        return items.Count == 0 ? null : $"Ayer: {string.Join(" y ", items)}.";
+    }
+
+    public static string MorningReport(string caseReport, string hint, int day, int maxDays, string recap = null)
     {
         var parts = new System.Collections.Generic.List<string>();
-        foreach (string part in new[] { caseReport, hint })
+        foreach (string part in new[] { caseReport, recap, hint }) // El parte primero: lo presenta "Parte de la mañana:"
         {
             if (!string.IsNullOrWhiteSpace(part))
                 parts.Add(part.Trim());
