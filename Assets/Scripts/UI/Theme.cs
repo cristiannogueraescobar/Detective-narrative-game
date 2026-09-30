@@ -65,7 +65,7 @@ public class Theme : ScriptableObject
     [Range(0f, 0.1f)] public float angryLean = 0.03f;      // Se acerca un 3 %
     public float sadDrop = 14f;                            // px que baja la cabeza
     [Range(0f, 1f)] public float sadSaturation = 0.45f;
-    public Vector2 sweatBand = new Vector2(0.78f, 0.9f);   // Altura (0-1) de la frente en el retrato
+    public Vector2 sweatBand = new Vector2(0.72f, 0.84f);  // Altura (0-1) de la frente en el retrato (plano medio)
     public float sweatInterval = 1.4f;                     // s entre gotas
     public float sweatDropLife = 1.6f;
     public float sweatDropFall = 36f;                      // px que resbala cada gota
@@ -119,7 +119,7 @@ public class Theme : ScriptableObject
 
     [Header("Distribución vertical (px a 1080 × 1920)")]
     public float hudHeight = 140f;
-    public float portraitHeight = 380f;
+    public float portraitHeight = 420f;
     public float bottomAreaHeight = 440f;
     public float padding = 32f;
     public float spacing = 16f;

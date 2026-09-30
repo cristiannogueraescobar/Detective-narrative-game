@@ -50,6 +50,7 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
     private Coroutine follow;
     private GameObject newMessages;
     private Texture avatarTexture;
+    private Rect avatarFace = new Rect(0f, 0f, 1f, 1f);
     private string typingSpeaker;
     private bool stick = true;
 
@@ -158,9 +159,10 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
     /// <summary>
     /// Mini-retrato de las respuestas (el del sospechoso de esta conversación).
     /// </summary>
-    public void SetAvatar(Texture texture)
+    public void SetAvatar(Texture texture, Rect? face = null)
     {
         avatarTexture = texture;
+        avatarFace = face ?? UISprites.FaceCrop(texture);
         foreach (Row row in rows)
             ApplyAvatar(row);
         if (typingRow != null)
@@ -546,7 +548,7 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
             return;
         row.face.texture = avatarTexture;
         row.face.color = avatarTexture != null ? Color.white : T.placeholder;
-        row.face.uvRect = UISprites.FaceCrop(avatarTexture);
+        row.face.uvRect = avatarFace;
     }
 
     private Row CreateNoticeRow()

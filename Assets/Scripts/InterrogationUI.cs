@@ -813,7 +813,11 @@ public class InterrogationUI : MonoBehaviour
             texture = ArtLibrary.Placeholder(T.placeholder);
 
         suspectImage.texture = texture;
-        chat?.SetAvatar(texture == null || texture.name.Contains("Placeholder") ? null : texture);
+        // El pixel art antiguo es de cuerpo entero: en el interrogatorio, plano medio; en el chat, la cara
+        string cropKey = legacyArt ? view.portraitKey : null;
+        suspectImage.uvRect = PortraitCrops.Bust(cropKey);
+        bool placeholder = texture == null || texture.name.Contains("Placeholder");
+        chat?.SetAvatar(placeholder ? null : texture, PortraitCrops.Face(cropKey, texture));
 
         // El arte antiguo se gradúa para casar con el tema; el nuevo ya viene con la paleta del juego
         if (legacyArt)

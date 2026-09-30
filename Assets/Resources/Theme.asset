@@ -59,7 +59,7 @@ MonoBehaviour:
   contradictionAnimDuration: 0.5
   typewriterCharsPerSecond: 45
   hudHeight: 140
-  portraitHeight: 380
+  portraitHeight: 420
   bottomAreaHeight: 440
   padding: 32
   spacing: 16
