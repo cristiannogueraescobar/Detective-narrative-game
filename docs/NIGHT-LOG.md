@@ -592,6 +592,11 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   25. La validación de layout no veía las secciones nuevas (el caso peor no tenía notas ni partes) → incluidas;
   77/77 en todos los tamaños de texto, y render del editor revisado a ojo. PlayMode 54/54.
 
+- **18:48** Ronda 19, medición de cierre: bot en **las 9 variantes** (2 partidas cada una, semilla 1919): **15/18
+  culpables (83 %)**, primera pista a las 5,7 preguntas, 0 partidas sin pistas, 0 confesiones ni incoherencias;
+  fallan 2B (0/2, el techo conocido del bot) y una 3B. Horas inventadas marcadas: 8 de 530 (1,5 %), casi todas
+  "no me acuerdo, supongo que hacia las 19:30" ante "¿a qué hora exactamente…?" (residuo conocido). README al día.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
