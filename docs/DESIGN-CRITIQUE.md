@@ -83,7 +83,10 @@ claro, breve, el mismo término para lo mismo, errores con "qué pasó + qué ha
 
 **Glosario (se usa siempre así):** *pista* (lo que apuntas en la libreta) · *prueba* (una pista que enseñas o con
 la que acusas) · *contradicción* (una mentira pillada) · *parte* (novedades de cada mañana) · *caso* (no
-"partida") · *Fin del día* (botón) / *Terminar el día* (confirmación).
+"partida") · *Fin del día* (botón) / *Terminar el día* (confirmación) · *tu nota*: *sospecha* / *descarte*
+(sustantivos: sin género; en la rueda, *(tu descarte)*) · *pista de descarte* (la que descarta a alguien, igual en
+la libreta y en la rueda) · *culpables posibles* (las variantes, como en la selección de caso). Números pequeños
+en letra (`GameTexts.NumberWord`).
 
 Además (WCAG 1.4.11): la parte vacía de los deslizadores tenía 1,5:1 con el fondo; ahora `Theme.sliderTrack`
 ≥ 3:1 con fondo y panel (test).

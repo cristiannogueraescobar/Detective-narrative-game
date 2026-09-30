@@ -71,7 +71,7 @@ public class CaseRecordsTests
     [Test]
     public void ElFinalDiceCuantosCulpablesQuedanPorVer()
     {
-        StringAssert.Contains("otros 2 culpables", GameTexts.ReplayLine(2));
+        StringAssert.Contains("otros dos culpables", GameTexts.ReplayLine(2));
         StringAssert.Contains("otro culpable", GameTexts.ReplayLine(1));
         StringAssert.Contains("todos", GameTexts.ReplayLine(0));
 
