@@ -30,6 +30,16 @@ public class QuestionSuggestionsTests
     }
 
     [Test]
+    public void SonLasQueMasPistasDestapan()
+    {
+        // Sonda de sugerencias (Logs/sugerencias.md, 360 respuestas): "¿Qué relación tenías con…?" destapó 1 pista;
+        // "¿Cuándo viste o hablaste con … por última vez?", 9 (y 3 que ninguna otra abre)
+        string[] all = QuestionSuggestions.For("Sofía");
+        CollectionAssert.Contains(all, "¿Cuándo viste o hablaste con Sofía por última vez?");
+        Assert.IsFalse(all.Any(q => q.Contains("relación")));
+    }
+
+    [Test]
     public void SinVictimaNoQuedaHueco()
     {
         foreach (string q in QuestionSuggestions.For(null))

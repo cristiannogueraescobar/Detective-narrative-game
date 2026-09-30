@@ -21,10 +21,12 @@ public static class QuestionSuggestions
     public static string[] For(string victim)
     {
         string who = string.IsNullOrEmpty(victim) ? "la víctima" : victim;
+        // Elegidas con datos (SuggestionProbe, Logs/sugerencias.md): son las que más pistas destapan como primera
+        // pregunta; "¿Qué relación tenías con…?" sonaba natural pero no abría casi nada
         return new[]
         {
             "¿Dónde estabas cuando pasó?",
-            $"¿Qué relación tenías con {who}?",
+            $"¿Cuándo viste o hablaste con {who} por última vez?",
             "¿Viste u oíste algo raro?"
         };
     }

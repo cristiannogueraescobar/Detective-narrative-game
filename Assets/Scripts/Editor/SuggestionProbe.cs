@@ -28,7 +28,8 @@ public static class SuggestionProbe
             $"¿Qué relación tenías con {who}?",
             "¿Viste u oíste algo raro?",
             $"¿Cuándo viste o hablaste con {who} por última vez?",
-            "¿Quién puede confirmar dónde estabas?"
+            "¿Quién puede confirmar dónde estabas?",
+            $"¿Cuándo supiste de {who} por última vez?"
         };
     }
 
