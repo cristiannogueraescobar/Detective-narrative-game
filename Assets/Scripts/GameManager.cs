@@ -191,6 +191,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void BeginInterrogation()
     {
+        interrogationUI?.BeginCase(story.situation);
         SoundManager.PlayMusic(SoundCatalog.ForStory(story.id));
         RefreshSuspects();
         interrogationUI?.SetEvidenceOptions(DiscoveredClues());

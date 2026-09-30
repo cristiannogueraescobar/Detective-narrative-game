@@ -90,8 +90,23 @@ public static class UIFactory
 
         TMP_Text toggleLabel = ReplaceLabel(go, text, new Vector2(56f + theme.spacing, 0f));
         toggleLabel.alignment = TextAlignmentOptions.MidlineLeft;
-        Tint(background, theme.panelBorder);
-        Tint(go.transform.Find("Background/Checkmark"), theme.accent);
+        // Casilla con borde claro: sin marcar también se ve
+        if (background != null && background.TryGetComponent(out Image box))
+        {
+            box.sprite = UISprites.RoundedOutline(10, 4);
+            box.type = Image.Type.Sliced;
+            box.color = theme.textSecondary;
+        }
+        if (go.transform.Find("Background/Checkmark") is RectTransform check && check.TryGetComponent(out Image mark))
+        {
+            check.anchorMin = Vector2.zero;
+            check.anchorMax = Vector2.one;
+            check.offsetMin = new Vector2(10f, 10f);
+            check.offsetMax = new Vector2(-10f, -10f);
+            mark.sprite = UISprites.Rounded(6);
+            mark.type = Image.Type.Sliced;
+            mark.color = theme.accent;
+        }
 
         var toggle = go.GetComponent<Toggle>();
         toggle.isOn = value;

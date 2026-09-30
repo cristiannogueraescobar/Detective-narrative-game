@@ -18,8 +18,17 @@ using UnityEngine.UI;
 [Explicit, Category("Capturas")]
 public class AnimationCapture
 {
-    private const int Width = 540;
-    private const int Height = 960;
+    // -captureHeight 1200 = móvil alargado (1080x2400 a media resolución); por defecto 1080x1920
+    private static readonly int Width = 540;
+    private static readonly int Height = Argument("-captureHeight", 960);
+    private static string Suffix => Height == 960 ? "" : "_" + (Height * 2);
+
+    private static int Argument(string name, int fallback)
+    {
+        string[] args = Environment.GetCommandLineArgs();
+        int i = Array.IndexOf(args, name);
+        return i >= 0 && i + 1 < args.Length && int.TryParse(args[i + 1], out int v) ? v : fallback;
+    }
 
     private Camera camera;
     private RenderTexture target;
@@ -79,7 +88,7 @@ public class AnimationCapture
         image.ReadPixels(new Rect(0, 0, Width, Height), 0, 0);
         image.Apply();
         RenderTexture.active = null;
-        File.WriteAllBytes(Path.Combine(folder, name + ".png"), image.EncodeToPNG());
+        File.WriteAllBytes(Path.Combine(folder, name + Suffix + ".png"), image.EncodeToPNG());
         UnityEngine.Object.Destroy(image);
     }
 
@@ -252,5 +261,40 @@ public class AnimationCapture
         chat.Show(entries, typeLast: true);
         yield return new WaitForSecondsRealtime(0.4f);
         Shot("chatlargo_nuevo_mensaje");
+    }
+
+    // Todos los paneles tal como se ven en juego (con fondos, efectos y datos reales)
+    [UnityTest]
+    public IEnumerator Paneles()
+    {
+        Tutorial.SkipAll();
+        yield return new WaitForSecondsRealtime(2f);
+        Shot("panel_menu");
+        foreach (var (open, back, name) in new[]
+                 {
+                     ("InstructionsButton", "BackFromInstructionsButton", "instrucciones"),
+                     ("SetingsButton", "BackFromSettingsButton", "ajustes"),
+                     ("AboutButton", "BackFromAboutButton", "acercade")
+                 })
+        {
+            yield return Click(open);
+            yield return new WaitForSecondsRealtime(0.5f);
+            Shot("panel_" + name);
+            yield return Click(back);
+        }
+
+        yield return Click("PlayButton");
+        yield return new WaitForSecondsRealtime(6f);
+        Shot("panel_intro");
+        yield return Click("StartButton");
+        yield return new WaitForSecondsRealtime(0.8f);
+        Shot("panel_interrogatorio");
+        yield return Click("ViewCluesButton");
+        yield return new WaitForSecondsRealtime(0.8f);
+        Shot("panel_libreta");
+        yield return Click("CloseCluesButton");
+        UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(2f);
+        Shot("panel_acusacion");
     }
 }

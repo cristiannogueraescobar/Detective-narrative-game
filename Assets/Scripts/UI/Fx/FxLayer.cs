@@ -750,7 +750,7 @@ public class FxLayer : MonoBehaviour
             float seconds = Time.unscaledTime - tensionSince;
             float close = FxCurves.VignetteClose(seconds * 0.25f);
             float beat = FxCurves.Heartbeat(seconds / 0.85f);
-            tension.color = new Color(0f, 0f, 0f, 0.25f + 0.45f * close + 0.08f * beat * close);
+            tension.color = new Color(0f, 0f, 0f, 0.15f + 0.35f * close + 0.08f * beat * close);
             if (heartbeatTarget != null)
                 heartbeatTarget.localScale = Vector3.one * (1f + 0.012f * beat * close);
         }

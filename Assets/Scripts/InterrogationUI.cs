@@ -480,15 +480,17 @@ public class InterrogationUI : MonoBehaviour
             }
         }
 
-        // Ilustración: ocupa el hueco que quede, sin deformarse
+        // Rueda de reconocimiento: los sospechosos de este caso (la foto de grupo era de la historia 1)
         Transform group = panel.Find("SuspectsGroupImage");
         if (group != null)
-        {
-            LayoutKit.Put(group, column, height: 0f, flexibleHeight: 1f);
-            UIComponents.GetOrAdd<LayoutElement>(group.gameObject).minHeight = 0f;
-            if (group.TryGetComponent(out Image image))
-                image.preserveAspect = true;
-        }
+            group.gameObject.SetActive(false);
+        lineup = UIFactory.Container(column, "Rueda (auto)", Vector2.zero, Vector2.one);
+        LayoutKit.Size(lineup, height: 0f, flexibleHeight: 1f);
+        UIComponents.GetOrAdd<LayoutElement>(lineup.gameObject).minHeight = 0f;
+        var grid = lineup.gameObject.AddComponent<GridLayoutGroup>();
+        grid.spacing = new Vector2(T.spacing, T.spacing);
+        grid.childAlignment = TextAnchor.MiddleCenter;
+        UIComponents.GetOrAdd<GridFit>(lineup.gameObject);
 
         PutDropdown(accusationDropdown, column);
         LayoutKit.Put(accuseButton, column, height: 130f);
@@ -808,19 +810,7 @@ public class InterrogationUI : MonoBehaviour
 
         SuspectView view = suspects.Find(v => v.id == suspectId);
         Emotion emotion = EmotionOf(suspectId);
-
-        Texture2D texture = null;
-        if (!string.IsNullOrEmpty(view.artId))
-            texture = ArtLibrary.LoadFirst(PortraitPaths.Candidates(view.artId, emotion));
-
-        bool legacyArt = false;
-        if (texture == null && view.portraitKey != null && suspectImages.TryGetValue(view.portraitKey, out Texture2D legacy) && legacy != null)
-        {
-            texture = legacy;
-            legacyArt = true;
-        }
-        if (texture == null)
-            texture = ArtLibrary.Placeholder(T.placeholder);
+        (Texture2D texture, bool legacyArt) = PortraitOf(view, emotion);
 
         suspectImage.texture = texture;
         // El pixel art antiguo es de cuerpo entero: en el interrogatorio, plano medio; en el chat, la cara
@@ -841,6 +831,18 @@ public class InterrogationUI : MonoBehaviour
     /// <summary>
     /// Respuesta del sospechoso: burbuja a la izquierda que se escribe letra a letra (un toque la completa).
     /// </summary>
+    private (Texture2D texture, bool legacy) PortraitOf(SuspectView view, Emotion emotion)
+    {
+        Texture2D texture = null;
+        if (!string.IsNullOrEmpty(view.artId))
+            texture = ArtLibrary.LoadFirst(PortraitPaths.Candidates(view.artId, emotion));
+        if (texture != null)
+            return (texture, false);
+        if (view.portraitKey != null && suspectImages.TryGetValue(view.portraitKey, out Texture2D legacy) && legacy != null)
+            return (legacy, true);
+        return (ArtLibrary.Placeholder(T.placeholder), false);
+    }
+
     public void AddAnswer(string suspectId, string speaker, string answer)
     {
         string time = pendingQuestion != null ? pendingQuestion.time : GameClock.TimeOf(questionsUsedToday, questionsPerDay);
@@ -914,6 +916,17 @@ public class InterrogationUI : MonoBehaviour
         if (contradictionOverlay != null)
             contradictionOverlay.transform.SetAsLastSibling();
         return contradictionOverlay;
+    }
+
+    /// <summary>
+    /// Primera página del chat: el día 1 con lo que se sabe del caso (el chat no empieza vacío).
+    /// </summary>
+    public void BeginCase(string situation)
+    {
+        if (conversations.SharedEntries.Count > 0)
+            return;
+        conversations.AppendToAll(ChatEntry.Day(1, situation));
+        RefreshConversationView();
     }
 
     /// <summary>
@@ -1241,9 +1254,15 @@ public class InterrogationUI : MonoBehaviour
     {
         ShowPanel(accusationPanel);
         accusationOptions = options;
-        Transform accusationTitle = accusationPanel != null ? accusationPanel.transform.Find("AccusationTitleText") : null;
-        if (accusationTitle != null && accusationTitle.TryGetComponent(out TMP_Text accusationTitleText))
-            accusationTitleText.text = GameTexts.AccusationTitle(dayValue >= maxDaysValue || !canGoBack);
+        // El título está dentro de la columna de la distribución: se busca en todo el panel
+        if (accusationPanel != null)
+        {
+            foreach (TMP_Text t in accusationPanel.GetComponentsInChildren<TMP_Text>(true))
+            {
+                if (t.name == "AccusationTitleText")
+                    t.text = GameTexts.AccusationTitle(dayValue >= maxDaysValue || !canGoBack);
+            }
+        }
         fx?.SetTension(true, accusationPanel != null ? (RectTransform)accusationPanel.transform : null);
         SoundManager.Play(Sfx.Heartbeat, 0.8f);
         SoundManager.PlayMusic(Music.Tension);
@@ -1255,11 +1274,14 @@ public class InterrogationUI : MonoBehaviour
         {
             accusationDropdown.ClearOptions();
             accusationDropdown.AddOptions(options.ConvertAll(v => v.displayName));
+            accusationDropdown.onValueChanged.RemoveListener(MarkLineup);
+            accusationDropdown.onValueChanged.AddListener(MarkLineup);
         }
         else
         {
             Debug.LogError("[InterrogationUI] ¡accusationDropdown es NULL!");
         }
+        FillLineup(options);
     }
 
     /// <summary>
@@ -1329,6 +1351,106 @@ public class InterrogationUI : MonoBehaviour
     // ============================================
 
     private GameObject endingStamp;
+    private RectTransform lineup;
+    private readonly List<GameObject> lineupSelection = new List<GameObject>();
+
+    /// <summary>
+    /// Rellena la rueda de reconocimiento con los bustos de los sospechosos; tocar uno lo elige.
+    /// </summary>
+    private void FillLineup(List<SuspectView> options)
+    {
+        if (lineup == null)
+            return;
+
+        for (int i = lineup.childCount - 1; i >= 0; i--)
+            DestroyImmediateOrLater(lineup.GetChild(i).gameObject);
+        lineupSelection.Clear();
+
+        // Columnas y tamaño de celda según cuántos hay y el hueco disponible (y se reajusta si cambia)
+        const float labelHeight = 64f;
+        GridFit fit = UIComponents.GetOrAdd<GridFit>(lineup.gameObject);
+        fit.count = options.Count;
+        fit.labelHeight = labelHeight;
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)lineup.parent);
+        fit.Fit();
+
+        for (int i = 0; i < options.Count; i++)
+        {
+            int index = i;
+            SuspectView view = options[i];
+            RectTransform cell = UIFactory.Container(lineup, "Sospechoso " + view.shortName, Vector2.zero, Vector2.one);
+            var card = cell.gameObject.AddComponent<Image>();
+            card.sprite = UISprites.Rounded(16);
+            card.type = Image.Type.Sliced;
+            card.color = T.panelBorder;
+            var button = cell.gameObject.AddComponent<Button>();
+            button.targetGraphic = card;
+            button.onClick.AddListener(() =>
+            {
+                if (accusationDropdown != null)
+                    accusationDropdown.value = index;
+                MarkLineup(index);
+            });
+            cell.gameObject.AddComponent<ClickSound>();
+            cell.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
+
+            (Texture2D texture, bool legacy) = PortraitOf(view, EmotionOf(view.id));
+            RectTransform frame = UIFactory.Container(cell, "Marco", new Vector2(0f, 0f), new Vector2(1f, 1f));
+            frame.offsetMin = new Vector2(8f, labelHeight);
+            frame.offsetMax = new Vector2(-8f, -8f);
+            RectTransform face = UIFactory.Container(frame, "Busto", Vector2.zero, Vector2.one);
+            var raw = face.gameObject.AddComponent<RawImage>();
+            raw.texture = texture;
+            raw.uvRect = PortraitCrops.Bust(legacy ? view.portraitKey : null);
+            raw.raycastTarget = false;
+            if (legacy)
+                ArtGrading.Apply(raw, ArtGrading.Kind.LegacyPortrait);
+            face.gameObject.AddComponent<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+            face.GetComponent<AspectRatioFitter>().aspectRatio = 0.75f;
+
+            TMP_Text name = UIFactory.Label(cell, view.shortName, T.bodySize, T.textPrimary);
+            name.alignment = TextAlignmentOptions.Center;
+            name.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
+            var nameRect = name.rectTransform;
+            nameRect.anchorMin = Vector2.zero;
+            nameRect.anchorMax = new Vector2(1f, 0f);
+            nameRect.pivot = new Vector2(0.5f, 0f);
+            nameRect.offsetMin = new Vector2(8f, 0f);
+            nameRect.offsetMax = new Vector2(-8f, labelHeight);
+            LayoutKit.OneLine(name, T.bodySize);
+
+            RectTransform ring = UIFactory.Container(cell, "Seleccion", Vector2.zero, Vector2.one);
+            var ringImage = ring.gameObject.AddComponent<Image>();
+            ringImage.sprite = UISprites.RoundedOutline(16, 6);
+            ringImage.type = Image.Type.Sliced;
+            ringImage.color = T.accent;
+            ringImage.raycastTarget = false;
+            ring.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
+            lineupSelection.Add(ring.gameObject);
+        }
+
+        MarkLineup(accusationDropdown != null ? accusationDropdown.value : 0);
+    }
+
+    private void MarkLineup(int selected)
+    {
+        for (int i = 0; i < lineupSelection.Count; i++)
+            lineupSelection[i].SetActive(i == selected);
+    }
+
+    private static void DestroyImmediateOrLater(GameObject target)
+    {
+        if (Application.isPlaying)
+        {
+            target.SetActive(false);
+            Destroy(target);
+        }
+        else
+        {
+            DestroyImmediate(target);
+        }
+    }
 
     public void ShowAccusationResult(AccusationResult result, string accusedName, string culpritName,
                                      int maxEvidence, string epilogue)
