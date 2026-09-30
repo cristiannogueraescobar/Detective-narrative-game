@@ -155,6 +155,10 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
 - 08:30 Experimento D ("dice que hiciste"): premisas 17/72 (23 %), igual que sin regla; 3A_audios 18/20. Las
   redacciones que funcionan cuestan una pista y la inocua no hace nada: la regla queda revertida y en pendientes.
 
+- 08:33 Ronda 8: la validación de layout no cubría el alto contraste: ahora los 10 paneles pasan también con
+  alto contraste (desbordes, glifos, contraste WCAG, zonas táctiles). Captura de alto contraste revisada.
+  Tests 544/544. Revisión de código (8ª) en curso.
+
 ## Ahora
 - Ronda 6: crítica de diseño con capturas, más mejoras, informe y galería finales.
 
