@@ -107,6 +107,19 @@ public class AIConversationFlowTests
     }
 
     [Test]
+    public void ElReintentoPorHorasFrioBajaLaTemperatura()
+    {
+        manager.CoolTimeRetry = true;
+        provider.results.Enqueue(LLMResult.Ok("La vi en el salón a las 21:47. [ESTADO: tranquilo]"));
+        provider.results.Enqueue(LLMResult.Ok("La vi en el salón, no me fijé en la hora. [ESTADO: tranquilo]"));
+
+        Ask("a", "¿Cuándo la vio por última vez?");
+
+        Assert.AreEqual(2, provider.calls);
+        Assert.LessOrEqual(provider.lastTemperature, AIConversationManager.CoolRetryTemperature + 1e-6f);
+    }
+
+    [Test]
     public void SiElReintentoTambienInventaSeQuedaConLaQueMenosInventa()
     {
         provider.results.Enqueue(LLMResult.Ok("A las 21:47 cené. [ESTADO: tranquilo]"));

@@ -40,6 +40,7 @@ public static class BotPlayer
         public bool hints = true;     // -noHints: el bot no usa "Pensar" (línea base de B3)
         public bool versions = true;  // -noVersions: la libreta no apunta lo que dice cada uno (línea base, ronda 5)
         public bool topicQuestions;   // -topicQuestions: una pregunta corta sobre un tema (A/B del consejo, ronda 12)
+        public bool coolTimeRetry;    // -coolTimeRetry: reintento por horas a temperatura baja (A/B, ronda 20)
     }
 
     public class Turn
@@ -94,6 +95,7 @@ public static class BotPlayer
                 case "-noHints": options.hints = false; break;
                 case "-noVersions": options.versions = false; break;
                 case "-topicQuestions": options.topicQuestions = true; break;
+                case "-coolTimeRetry": options.coolTimeRetry = true; break;
                 case "-ollama": options.ollamaUrl = args[i + 1]; break;
                 case "-model": options.model = args[i + 1]; break;
             }
@@ -199,6 +201,7 @@ public static class BotPlayer
             var manager = host.AddComponent<AIConversationManager>();
             manager.UseProvider(new SyncProvider(client, options));
             manager.RetryInventedTimes = options.timeRetry;
+            manager.CoolTimeRetry = options.coolTimeRetry;
             manager.StartCase(story, variant);
 
             var unlocked = new List<string>(story.cast.Where(c => c.startsUnlocked).Select(c => c.id));
