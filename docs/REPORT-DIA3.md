@@ -16,12 +16,13 @@ tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se comple
    reversible desde el tema o los Ajustes.
 4. **Accesibilidad:** auditoría WCAG 2.2 AA y **lector de pantalla** (TalkBack/VoiceOver con el módulo de Unity 6),
    flechas de desplegable legibles, pista de deslizadores visible, tamaño de letra del sistema respetado.
-5. **Calidad:** revisión independiente (13 hallazgos, todos arreglados con test en rojo primero), 0 B de basura
+5. **Calidad:** dos revisiones independientes (13 + 11 hallazgos, 0 críticos, todos arreglados con test en rojo
+   primero), qwen ya no acepta premisas falsas (22 % → 2 %) ni arrastra respuestas en chino, 0 B de basura
    por fotograma, build de Windows con prueba de humo OK. Android configurado, pero sin APK (falta el módulo) y con
    un bloqueante real: **en el móvil ningún proveedor LLM funciona tal cual** (decisión para Cristian).
 
 ## 2. Galería antes / después
-`docs/screenshots/2026-09-30/galeria/` (20 hojas; se regeneran con `python Tools/make_gallery_dia3.py`).
+`docs/screenshots/2026-09-30/galeria/` (22 hojas; se regeneran con `python Tools/make_gallery_dia3.py`).
 "Antes" = capturas del comienzo del bloque C (visualmente, el final de la noche 2).
 
 | Hoja | Qué cambia |
@@ -30,7 +31,7 @@ tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se comple
 | 02_casos | Expedientes con la víctima, radios de la escala |
 | 03_expediente / 19_intros_por_historia | Fondo propio por historia (lluvia, cala, olivar) en vez de la sala genérica; reglas con las cifras de la dificultad |
 | 04_interrogatorio | Chat anclado abajo, Acusar en aviso (no dorado), retrato 2.5D |
-| 05_libreta | Botón "Pensar" |
+| 05_libreta / 22_libreta_versiones | Botón "Pensar"; lo que dice cada sospechoso, para compararlo con las pistas |
 | 06_acusacion | Retratos 2.5D en la rueda, prueba clave explicada (solo cuando hay pistas), flechas legibles |
 | 07-09 veredicto y finales | Rango del detective, prueba clave, "lo que se te escapó", "solidez de las pruebas N de M" |
 | 21_ficha_policial | Nuevo: el informe se cierra con la ficha del culpable (retrato 2.5D, nombre a máquina) |
@@ -43,8 +44,8 @@ tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se comple
 
 | Métrica | Antes (inicio del día) | Ahora |
 |---|---|---|
-| Tests EditMode | 549 | **677** |
-| Tests PlayMode (sin capturas) | 20 | **40** |
+| Tests EditMode | 549 | **686** |
+| Tests PlayMode (sin capturas) | 20 | **46** |
 | Horas inventadas por qwen (A/B, 18+18 partidas) | 27 / 619 respuestas | **7 / 630** (−74 %), latencia igual |
 | Primera pista (bot, preguntas) | 10,3 (8,6 antes de B2) | **6,9** con Pensar |
 | Partidas sin ninguna pista (bot) | 2 de 18 | **0** |
@@ -55,7 +56,7 @@ tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se comple
 | Incoherencias narrativas conocidas | 17 (auditoría) | 0 abiertas; validador en verde en las 9 variantes |
 | Basura por fotograma del juego (reposo) | ≤ 0 B | ≤ 0 B (tras C3/C4/D1) |
 | Contraste mínimo de texto tras el post-proceso | — | 6,08:1 (todos los pares suben) |
-| Hallazgos de revisión abiertos | — | 0 de 13 (primera revisión) |
+| Hallazgos de revisión abiertos | — | 0 de 24 (dos revisiones independientes) |
 | Lector de pantalla | no | **sí** (jerarquía, acciones y anuncios; probado en el editor, falta un móvil real) |
 
 ## 4. Skills y herramientas usadas
@@ -75,8 +76,9 @@ tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se comple
   → "Pensar", dificultad, prueba clave, rango.
 - **REAL-CASES.md**: patrones de casos reales (solo patrones; sin nombres ni datos de víctimas) → carácter, herida,
   cómo se nota la mentira y progresión bajo presión de cada personaje (StoriesDatabase.json).
-- **Datos que decidieron**: reintento por horas (A/B), límite de 540 palabras (calibración), 2.5D frente a vóxel
-  (capturas y vértices), raíces de desbloqueo (bot: el hermano salía el día 1 en 8/12 partidas).
+- **Datos que decidieron**: reintento por horas (A/B), límite de 540 y luego 565 palabras (calibración), regla
+  contra premisas falsas (sonda + calibración completa), 2.5D frente a vóxel (capturas y vértices), raíces de
+  desbloqueo (bot: el hermano salía el día 1 en 8/12 partidas), tonos de los drones de la música (espectro).
 - Documentos: GAME-DESIGN.md, DESIGN-CRITIQUE.md, CODE-REVIEW.md, RENDIMIENTO.md, ANDROID-BUILD.md, COHERENCE.md,
   STORY-AUDIT.md.
 
@@ -116,13 +118,14 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 
 ## 8. Cómo probarlo en Unity (en este orden)
 1. Abrir el proyecto con **Unity 6000.3.2f1** y esperar a que importe (la primera vez tarda).
-2. *Window → General → Test Runner* → **EditMode → Run All** (677 en verde).
-3. **PlayMode → Run All** (40 en verde; las capturas están marcadas *Explicit* y no corren solas).
+2. *Window → General → Test Runner* → **EditMode → Run All** (686 en verde).
+3. **PlayMode → Run All** (46 en verde; las capturas están marcadas *Explicit* y no corren solas).
 4. Para jugar con qwen: `ollama serve` y `ollama pull qwen2.5:7b-instruct`.
 5. Abrir `Assets/Scenes/Game.unity` → **Play** con la ventana *Game* en 1080×1920:
    Jugar → un caso → leer el expediente (fondo de la historia) → Empezar → tocar una pregunta de ejemplo →
-   Enviar → preguntar a otros → abrir la Libreta → **Pensar** dos veces (la segunda te lleva al sospechoso con la
-   pregunta escrita) → Fin del día (parte de la mañana) → … → Acusar con una **prueba clave** → final con rango.
+   Enviar → preguntar a otros → abrir la Libreta (verás "Dice: «…»" bajo quien ya ha contestado, con una
+   indicación la primera vez) → **Pensar** dos veces (la segunda te lleva al sospechoso con la pregunta escrita) →
+   Fin del día (parte de la mañana) → … → Acusar con una **prueba clave** → final con rango y ficha policial.
 6. **Ajustes**: dificultad (para el siguiente caso), texto *Muy grande*, *Alto contraste*, *Filtro noir* apagado y
    encendido (el post-proceso se va y vuelve), volumen de música mientras suena una pista (la música se aparta).
 7. Build: *Detective → Build de Windows* (o `-buildPath Builds/Windows-final/Detectives.exe`) y
