@@ -182,3 +182,17 @@ enlaces de la libreta para el lector, menú con "Continuar" principal). **0 crí
 | 6 | Menor | Cadenas nuevas cada medio segundo por enlace con el lector activo (GC en móviles modestos) | **Pendiente**, anotado: solo con lector activo; cachear por texto si se nota en un móvil real |
 | 7 | Menor (tests) | La nota no se probaba con "Continuar" ni durante una pregunta | **Arreglado**: dos tests de juego nuevos |
 | — | Nit | Comentario de `RestartButton` pegado a `NewCaseButton` | **Arreglado** |
+
+# Revisión de código (día 3, quinta)
+Quinta revisión independiente (subagente), sobre `git diff 0e9ab1f..HEAD` (rueda con pista de descarte, variantes
+no jugadas primero, línea para rejugar, partes en la libreta, cambios del bot). **1 confirmado, 4 plausibles.**
+La revisión trazó y dio por buenos: el código de las variantes (sin colisiones), "Caso al azar", que se apunte una
+sola vez por caso, el último día, continuar una partida, el lector y que los tests no pasen en vacío.
+
+| # | Sev. | Hallazgo | Estado |
+|---|---|---|---|
+| 1 | Confirmado (bot) | El paso "id de pista como sospechoso → quien la sabe" nunca se ejecutaba (`Resolve` no devuelve null) | **Arreglado** |
+| 2 | Plausible | "Nombre (pista de descarte)" en una línea se cortaría en 16:9 con nombres largos | **Arreglado**: el motivo en su propia línea, pie más alto solo si hay alguien descartado; capturas con 2 y 3 sospechosos |
+| 3 | Plausible | Quien ya jugó antes de esta versión verá otra vez "otros dos culpables" | **Aceptado** (aún no publicado): decisión 15 |
+| 4 | Plausible | Un caso forzado en el inspector se apuntaba como jugado en los ajustes reales | **Arreglado** |
+| 5 | Tests | Nada comprobaba que acusar apunte la variante ni la línea del informe | **Arreglado**: test de juego |
