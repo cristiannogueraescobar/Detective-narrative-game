@@ -605,10 +605,10 @@ Tienes 7 días.",
                     id = "2C_gps", playerName = "El GPS de Correos", holder = "cartero", kind = ClueKind.Clears, clears = "cartero",
                     summary = "La furgoneta de Correos tiene GPS: a las 5:15 Andrés estaba en la nacional camino de la oficina.",
                     topic = "quién o qué puede confirmar dónde estabas, o cómo demostrar tus horarios",
-                    fact = "«Mírelo en el GPS de la furgoneta de Correos: a las 5:15 me sitúa en la nacional, camino de la oficina. Compruébelo.»",
+                    fact = "«Nadie me vio, pero mírelo en el GPS de la furgoneta de Correos: a las 5:15 me sitúa en la nacional, camino de la oficina. Compruébelo.»",
                     anchors = new[]
                     {
-                        new[] { "gps", "localizador", "me situa", "me localiza" },
+                        new[] { "gps", "localizador", "me situa", "me localiza", "lo registra" },
                         new[] { "nacional", "oficina", "5:15", "comprobar" }
                     },
                     calibrationQuestions = new[] { "¿Alguien puede confirmar dónde estaba usted?", "¿Cómo sé que dice la verdad sobre sus horarios?" },
@@ -616,7 +616,8 @@ Tienes 7 días.",
                     {
                         "La furgoneta lleva GPS: a las 5:15 estaba en la nacional, compruébelo.",
                         "Mire el localizador de Correos, me sitúa camino de la oficina.",
-                        "A las 5:15 me sitúa en la nacional, camino de la oficina. Compruébelo."
+                        "A las 5:15 me sitúa en la nacional, camino de la oficina. Compruébelo.",
+                        "A las 5:15 entré en la oficina de Correos, como siempre. Mi furgoneta lo registra todo."
                     },
                     sampleMisses = new[] { "Yo trabajo solo, nadie me acompaña." }
                 },
