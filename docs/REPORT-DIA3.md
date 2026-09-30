@@ -109,6 +109,10 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
     siguiente). No he reescrito la historia remota sin tu permiso. Para que `main` no las herede: fusiona con
     `git merge --squash feature/dia3`. Si prefieres limpiar la propia rama: `git rebase -i 5745bb2`, marcar
     `98f436d` ("Untrack raw captures…") como `fixup` justo debajo de `ff30092`, y `git push --force-with-lease`.
+13. **"Dice: «…»" en la libreta**: sin efecto medible en el bot (A/B 18 + 18: contradicciones 3 → 2, resueltas
+    13 → 12, ruido), porque su detective no compara versiones con pistas. Lo dejo por diseño (es cómo se deduce en
+    Her Story o L.A. Noire); si en pruebas con personas no ayuda, se quita en `Notebook.Format` (parámetro
+    `interviewed`).
 
 ## 7. Pendientes
 - APK de Android (instalar el módulo) y medir el post-proceso en un móvil real (estimado 1-2 ms).
