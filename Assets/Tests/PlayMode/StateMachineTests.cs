@@ -217,6 +217,11 @@ public class StateMachineTests
         StringAssert.Contains(culprit, card.GetComponentInChildren<TMP_Text>(true).text);
         Assert.AreEqual(Find("ResultPanel").GetComponentsInChildren<TMP_Text>(true).First(t => t.text.Contains("TU ACUSACIÓN")).transform.parent,
                         card.transform.parent, "dentro del informe (se desplaza con él, nunca lo tapa)");
+        // Al terminar el informe, la ficha "cae" sobre el expediente con un golpe de sello
+        SoundManager.Played.Clear();
+        Find("ResultPanel").GetComponentsInChildren<StepReveal>(true).First().OnPointerClick(null);
+        yield return new WaitForSecondsRealtime(0.8f);
+        CollectionAssert.Contains(SoundManager.Played, Sfx.Stamp);
     }
 
     [UnityTest]

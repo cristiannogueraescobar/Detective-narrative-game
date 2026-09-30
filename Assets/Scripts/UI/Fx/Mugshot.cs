@@ -127,6 +127,8 @@ public static class Mugshot
             }
             if (!started && reveal != null && Time.frameCount < 2)
                 return;
+            if (alpha <= 0f)
+                SoundManager.Play(Sfx.Stamp, 0.5f); // La ficha cae sobre el expediente
             alpha = GameSettings.ReduceMotion ? 1f : Mathf.MoveTowards(alpha, 1f, Time.unscaledDeltaTime / 0.5f);
             group.alpha = alpha;
         }
