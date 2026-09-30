@@ -171,9 +171,12 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 4. Para jugar con qwen: `ollama serve` y `ollama pull qwen2.5:7b-instruct`.
 5. Abrir `Assets/Scenes/Game.unity` → **Play** con la ventana *Game* en 1080×1920:
    Jugar → un caso → leer el expediente (fondo de la historia) → Empezar → tocar una pregunta de ejemplo →
-   Enviar → preguntar a otros → abrir la Libreta (verás "Dice: «…»" bajo quien ya ha contestado, con una
-   indicación la primera vez; toca "añadir nota" para marcar sospecha o descarte) → **Pensar** dos veces (la segunda te lleva al sospechoso con la pregunta escrita) →
-   Fin del día (parte de la mañana) → … → Acusar con una **prueba clave** → final con rango y ficha policial.
+   Enviar → preguntar a otros → abrir la **Libreta**: "Dice: «…»" bajo quien ya ha contestado y, junto a cada
+   nombre, **"añadir nota"** (tócala: sospecha → descarte → nada) → **Pensar** dos veces (la segunda te lleva al
+   sospechoso con la pregunta escrita) → **Fin del día** (el parte de la mañana queda al final de la libreta) → … →
+   **Acusar**: a quien descartaste (o descarta una pista) se le ve tachado; elige una **prueba clave** → final con
+   rango, lo que decía tu nota del culpable, ficha policial y cuántos culpables posibles te quedan →
+   **Jugar otra vez** con la misma historia: sale otro culpable.
 6. **Ajustes**: dificultad (para el siguiente caso), texto *Muy grande*, *Alto contraste*, *Filtro noir* apagado y
    encendido (el post-proceso se va y vuelve), volumen de música mientras suena una pista (la música se aparta).
 7. Build: *Detective → Build de Windows* (o `-buildPath Builds/Windows-final/Detectives.exe`) y
