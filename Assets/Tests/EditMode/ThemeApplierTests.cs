@@ -35,6 +35,8 @@ public class ThemeApplierTests
     [TestCase("menu_fondo.png_0", true)]
     [TestCase("sospechosos_imagen.png_0", true)]
     [TestCase(null, false)]
+    [TestCase("Redondeado 16 (auto)", false)]   // Sprites de UI generados por código
+    [TestCase("Círculo (auto)", false)]
     public void IlustracionesNoSeTinenComoPaneles(string spriteName, bool isArtwork)
     {
         Assert.AreEqual(isArtwork, ThemeApplier.IsArtworkSprite(spriteName));

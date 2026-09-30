@@ -37,7 +37,8 @@ public static class ThemeApplier
     /// </summary>
     public static bool IsArtworkSprite(string spriteName)
     {
-        return !string.IsNullOrEmpty(spriteName) && System.Array.IndexOf(BuiltInSprites, spriteName) < 0;
+        return !string.IsNullOrEmpty(spriteName) && System.Array.IndexOf(BuiltInSprites, spriteName) < 0
+               && !spriteName.EndsWith("(auto)"); // UISprites: formas de interfaz, no ilustraciones
     }
 
     public static UIRole RoleFor(string objectName, bool isButton, bool isText, bool insideButton)
@@ -135,6 +136,7 @@ public static class ThemeApplier
                 {
                     button.colors = ButtonColors(theme.buttonPrimary, theme.buttonDisabled);
                     UIComponents.GetOrAdd<ClickSound>(button.gameObject);
+                    ShowColorNow(button);
                 }
                 Round(graphic, 16);
                 break;
@@ -144,6 +146,7 @@ public static class ThemeApplier
                 {
                     button.colors = ButtonColors(theme.buttonSecondary, theme.buttonDisabled);
                     UIComponents.GetOrAdd<ClickSound>(button.gameObject);
+                    ShowColorNow(button);
                 }
                 Round(graphic, 16);
                 break;
@@ -178,6 +181,16 @@ public static class ThemeApplier
                 Style((TMP_Text)graphic, theme.bodyFont, theme.secondarySize, theme.textSecondary);
                 break;
         }
+    }
+
+    // El ColorBlock solo se pinta en la siguiente transición de estado: se aplica ya
+    private static void ShowColorNow(Selectable selectable)
+    {
+        if (selectable.targetGraphic == null)
+            return;
+        ColorBlock c = selectable.colors;
+        Color target = (selectable.interactable ? c.normalColor : c.disabledColor) * c.colorMultiplier;
+        selectable.targetGraphic.CrossFadeColor(target, 0f, true, true);
     }
 
     // Esquinas redondeadas en los controles que usan el sprite por defecto de uGUI (o ninguno)

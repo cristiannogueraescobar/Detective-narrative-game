@@ -60,11 +60,28 @@ public class GameManager : MonoBehaviour
 
         SelectCase();
 
+        highContrastApplied = GameSettings.HighContrast;
+        GameSettings.Changed += OnSettingsChanged;
+
         Debug.Log("[GameManager] Inicializado. Esperando menú principal...");
+    }
+
+    private bool highContrastApplied;
+
+    // El alto contraste cambia los colores del tema: se vuelven a aplicar a toda la UI al momento
+    private void OnSettingsChanged()
+    {
+        if (GameSettings.HighContrast == highContrastApplied || interrogationUI == null)
+            return;
+        highContrastApplied = GameSettings.HighContrast;
+        ThemeApplier.Apply(interrogationUI.transform.root);
+        interrogationUI.RestyleForTheme();
     }
 
     private void OnDestroy()
     {
+        GameSettings.Changed -= OnSettingsChanged;
+
         if (conversationManager == null)
             return;
 

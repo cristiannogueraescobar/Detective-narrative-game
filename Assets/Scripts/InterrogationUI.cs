@@ -868,6 +868,17 @@ public class InterrogationUI : MonoBehaviour
     }
 
     /// <summary>
+    /// El tema cambió (alto contraste): el chat se rehace con los colores nuevos.
+    /// </summary>
+    public void RestyleForTheme()
+    {
+        chat?.Restyle();
+        RefreshConversationView();
+        if (!string.IsNullOrEmpty(currentSuspectId))
+            UpdateSuspectImage(currentSuspectId, instant: true);
+    }
+
+    /// <summary>
     /// Vuelve a pintar la conversación abierta (también la usa la vista previa del editor).
     /// </summary>
     public void RefreshConversationView()

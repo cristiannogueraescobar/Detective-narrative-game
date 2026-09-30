@@ -25,6 +25,12 @@ public class TextStyle : MonoBehaviour
     private void OnEnable()
     {
         Apply();
+        GameSettings.Changed += Apply; // Tamaño del texto en caliente
+    }
+
+    private void OnDisable()
+    {
+        GameSettings.Changed -= Apply;
     }
 
     public void Apply()
@@ -38,7 +44,7 @@ public class TextStyle : MonoBehaviour
         else if (text.font == null)
             text.font = UIFactory.DefaultFont();
 
-        float max = Mathf.Max(maxSize, Theme.MinReadableSize);
+        float max = Mathf.Max(maxSize * GameSettings.TextScale, Theme.MinReadableSize);
         switch (mode)
         {
             case Mode.OneLine:

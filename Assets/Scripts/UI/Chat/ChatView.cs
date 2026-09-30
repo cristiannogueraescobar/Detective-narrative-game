@@ -122,6 +122,40 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
     }
 
     /// <summary>
+    /// Descarta todas las filas (también las del pool) para que se vuelvan a crear con el tema actual.
+    /// </summary>
+    public void Restyle()
+    {
+        Complete();
+        foreach (Row row in rows)
+            Destroy(row.root);
+        foreach (Stack<Row> free in pool.Values)
+            foreach (Row row in free)
+                Destroy(row.root);
+        rows.Clear();
+        pool.Clear();
+        shown.Clear();
+        if (typingRow != null)
+        {
+            Destroy(typingRow.root);
+            typingRow = null;
+        }
+        if (newMessages != null)
+        {
+            Destroy(newMessages);
+            BuildNewMessagesButton();
+        }
+    }
+
+    private new static void Destroy(Object target)
+    {
+        if (Application.isPlaying)
+            Object.Destroy(target);
+        else
+            Object.DestroyImmediate(target);
+    }
+
+    /// <summary>
     /// Mini-retrato de las respuestas (el del sospechoso de esta conversación).
     /// </summary>
     public void SetAvatar(Texture texture)

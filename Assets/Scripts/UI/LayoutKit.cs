@@ -115,9 +115,24 @@ public static class LayoutKit
         if (text == null)
             return null;
 
-        RectTransform area = UIFactory.Container(column, text.name + " Scroll (auto)", Vector2.zero, Vector2.one);
-        Size(area, height: minHeight, flexibleHeight: flexibleHeight);
-        UIComponents.GetOrAdd<LayoutElement>(area.gameObject).minHeight = minHeight;
+        ScrollRect scroll = ScrollArea(column, text.name + " Scroll (auto)", 0f);
+        Size((RectTransform)scroll.transform, height: minHeight, flexibleHeight: flexibleHeight);
+        UIComponents.GetOrAdd<LayoutElement>(scroll.gameObject).minHeight = minHeight;
+
+        var textRect = (RectTransform)text.transform;
+        textRect.SetParent(scroll.content, false);
+        textRect.localScale = Vector3.one;
+        textRect.localRotation = Quaternion.identity;
+        ScrollingText(text);
+        return scroll;
+    }
+
+    /// <summary>
+    /// Zona con desplazamiento solo vertical: lo que se añada a su 'content' se apila y crece hacia abajo.
+    /// </summary>
+    public static ScrollRect ScrollArea(Transform parent, string name, float spacing)
+    {
+        RectTransform area = UIFactory.Container(parent, name, Vector2.zero, Vector2.one);
 
         RectTransform viewport = UIFactory.Container(area, "Viewport (auto)", Vector2.zero, Vector2.one);
         viewport.gameObject.AddComponent<RectMask2D>();
@@ -128,13 +143,8 @@ public static class LayoutKit
         contentLayout.childControlWidth = contentLayout.childControlHeight = true;
         contentLayout.childForceExpandWidth = true;
         contentLayout.childForceExpandHeight = false;
+        contentLayout.spacing = spacing;
         content.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-        var textRect = (RectTransform)text.transform;
-        textRect.SetParent(content, false);
-        textRect.localScale = Vector3.one;
-        textRect.localRotation = Quaternion.identity;
-        ScrollingText(text);
 
         var scroll = area.gameObject.AddComponent<ScrollRect>();
         scroll.viewport = viewport;

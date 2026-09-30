@@ -45,12 +45,18 @@ public class LayoutValidationTests
     {
         foreach (var screen in Screens())
             foreach (string panel in LayoutPreview.Panels)
-                yield return new TestCaseData(panel, screen.size).SetName($"Layout_{panel}_{screen.label}");
+                yield return new TestCaseData(panel, screen.size, 0).SetName($"Layout_{panel}_{screen.label}");
+
+        // Texto "muy grande" (Ajustes) en las pantallas de móvil
+        foreach (var screen in Screens().Take(2))
+            foreach (string panel in LayoutPreview.Panels)
+                yield return new TestCaseData(panel, screen.size, 2).SetName($"Layout_{panel}_{screen.label}_texto muy grande");
     }
 
     [TestCaseSource(nameof(PanelsAndScreens))]
-    public void PanelSinDesbordesNiSolapes(string panelName, Vector2 canvasSize)
+    public void PanelSinDesbordesNiSolapes(string panelName, Vector2 canvasSize, int textSize)
     {
+        GameSettings.TextSizeLevel = textSize;
         LayoutPreview.SetSize(session, canvasSize);
         RectTransform panel = LayoutPreview.ShowOnly(session, panelName);
         Assert.IsNotNull(panel, $"no existe {panelName}");
@@ -115,10 +121,11 @@ public class LayoutValidationTests
 
         foreach (RectTransform rect in root.GetComponentsInChildren<RectTransform>(false))
         {
-            if (rect == root || InsideScrollContent(rect) || InsideInputField(rect))
+            if (rect == root || InsideInputField(rect))
                 continue;
 
-            if (IsRelevant(rect) && rect.parent is RectTransform parent && !IsClippedCover(rect))
+            // El contenido de un scroll puede ser más alto que su ventana (para eso se desplaza)
+            if (IsRelevant(rect) && rect.parent is RectTransform parent && !IsClippedCover(rect) && !IsScrollContent(rect))
                 CheckInside(rect, parent, errors);
 
             TMP_Text text = rect.GetComponent<TMP_Text>();
@@ -138,7 +145,7 @@ public class LayoutValidationTests
         // Zonas táctiles: 48 dp de lado como mínimo (las barras de scroll se arrastran con el contenido)
         foreach (Selectable control in root.GetComponentsInChildren<Selectable>(false))
         {
-            if (control is Scrollbar || !control.interactable || InsideScrollContent((RectTransform)control.transform))
+            if (control is Scrollbar || !control.interactable)
                 continue;
             Rect r = ((RectTransform)control.transform).rect;
             if (r.width < Theme.MinTouchSize - Tolerance || r.height < Theme.MinTouchSize - Tolerance)
@@ -201,7 +208,7 @@ public class LayoutValidationTests
             return;
         bool auto = style.mode == TextStyle.Mode.OneLine || style.mode == TextStyle.Mode.MultiLine;
         float actual = auto ? text.fontSizeMax : text.fontSize;
-        float expected = Mathf.Max(style.maxSize, Theme.MinReadableSize);
+        float expected = Mathf.Max(style.maxSize * GameSettings.TextScale, Theme.MinReadableSize);
         if (auto != text.enableAutoSizing || Mathf.Abs(actual - expected) > 0.5f)
             errors.Add($"estilo perdido: {Path((RectTransform)text.transform)} {actual:F0} px en vez de {expected:F0}");
     }
@@ -314,6 +321,11 @@ public class LayoutValidationTests
         return rect.GetComponent<TMP_Text>() != null || rect.GetComponent<Selectable>() != null
             || rect.GetComponent<LayoutGroup>() != null || rect.GetComponent<RawImage>() != null
             || rect.GetComponent<ScrollRect>() != null;
+    }
+
+    private static bool IsScrollContent(RectTransform rect)
+    {
+        return rect.parent != null && rect.GetComponentInParent<ScrollRect>(true) is ScrollRect scroll && scroll.content == rect;
     }
 
     // Fondo que cubre la pantalla sin deformarse: desborda a propósito y su padre lo recorta
