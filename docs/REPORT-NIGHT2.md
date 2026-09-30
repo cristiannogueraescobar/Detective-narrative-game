@@ -134,6 +134,7 @@ la noche, "después" = capturas en juego de ahora). Todas las capturas en bruto 
 | Selección de caso (nueva) | ![](screenshots/galeria/seleccion_de_caso.jpg) |
 | Intro / expediente | ![](screenshots/galeria/intro.jpg) |
 | Interrogatorio | ![](screenshots/galeria/interrogatorio.jpg) |
+| Interrogatorio al empezar (preguntas de ejemplo) | ![](screenshots/galeria/interrogatorio_inicio.jpg) |
 | Desplegable de pruebas | ![](screenshots/galeria/desplegable.jpg) |
 | Libreta | ![](screenshots/galeria/libreta.jpg) |
 | Acusación | ![](screenshots/galeria/acusacion.jpg) |
