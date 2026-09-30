@@ -105,6 +105,7 @@ public class LayoutValidationTests
         // Un sospechoso aún sin preguntas, con el parte del día más largo de los tres casos
         string situation = CaseLibrary.Stories.Select(s => s.situation).OrderByDescending(s => s.Length).First();
         session.ui.ShowWaiting(false);
+        session.ui.UpdateGameState(1, 7, 0, 5); // La vista previa llega con el día gastado
         session.ui.Conversations.Append("nuevo", ChatEntry.Day(1, situation));
         session.ui.Conversations.Select("nuevo");
         session.ui.SetVictim("Sofía");
@@ -127,6 +128,23 @@ public class LayoutValidationTests
         ScrollRect chat = LayoutPreview.Find(session, "ConversationScroll").GetComponent<ScrollRect>();
         Assert.GreaterOrEqual(WorldRect(chat.viewport).yMin, WorldRect(box).yMax - Tolerance, "debajo del chat, sin taparlo");
         Assert.GreaterOrEqual(WorldRect(chat.viewport).height, WorldRect(box).height * 0.5f, "el chat sigue teniendo sitio");
+
+        TMP_Text hint = box.GetComponentInChildren<TMP_Text>();
+        Assert.AreEqual(UIRole.Secondary, hint.GetComponent<ThemeRole>()?.role, "el rótulo sigue gris al cambiar de tema");
+
+        // Sin preguntas hoy no se invita a preguntar
+        session.ui.UpdateGameState(1, 7, 5, 5);
+        Assert.IsFalse(box.gameObject.activeSelf, "sin preguntas hoy");
+        session.ui.UpdateGameState(1, 7, 0, 5);
+        Assert.IsTrue(box.gameObject.activeSelf);
+
+        // Con algo escrito (o una pregunta devuelta tras un fallo) no se ofrece sustituirlo
+        TMP_InputField input = LayoutPreview.Find(session, "QuestionInput")?.GetComponent<TMP_InputField>()
+                               ?? panel.GetComponentInChildren<TMP_InputField>(true);
+        input.text = "¿Qué hacía usted allí?";
+        Assert.IsFalse(box.gameObject.activeSelf, "con el campo escrito");
+        input.text = "";
+        Assert.IsTrue(box.gameObject.activeSelf);
 
         session.ui.Conversations.Append("nuevo", ChatEntry.Player("¿Dónde estabas?", null, "09:00"));
         session.ui.RefreshConversationView();

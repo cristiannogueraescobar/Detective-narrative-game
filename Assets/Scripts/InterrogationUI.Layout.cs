@@ -238,6 +238,7 @@ public partial class InterrogationUI
 
         TMP_Text hint = UIFactory.Label(suggestionsBox, GameTexts.SuggestionsHint, T.secondarySize, T.textSecondary);
         hint.fontStyle = FontStyles.Italic;
+        hint.gameObject.AddComponent<ThemeRole>().role = UIRole.Secondary;
         hint.alignment = TextAlignmentOptions.BottomRight;
         LayoutKit.OneLine(hint, T.secondarySize);
         UIComponents.GetOrAdd<LayoutElement>(hint.gameObject).minHeight = T.secondarySize * 1.5f;
@@ -302,6 +303,10 @@ public partial class InterrogationUI
             questionInput.textComponent.rectTransform.offsetMin = questionInput.textComponent.rectTransform.offsetMax = Vector2.zero;
             questionInput.textComponent.alignment = TextAlignmentOptions.MidlineLeft;
         }
+
+        // Con algo escrito las preguntas de ejemplo se apartan: tocar una no pisa lo que ya hay
+        questionInput.onValueChanged.RemoveListener(OnQuestionTextChanged);
+        questionInput.onValueChanged.AddListener(OnQuestionTextChanged);
     }
 
     private static void PutDropdown(TMP_Dropdown dropdown, RectTransform column)

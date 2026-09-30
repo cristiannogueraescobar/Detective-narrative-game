@@ -660,7 +660,8 @@ public partial class InterrogationUI : MonoBehaviour
             return;
 
         bool show = conversations.CurrentId != null && QuestionSuggestions.ShouldShow(conversations.CurrentEntries)
-                    && (questionInput == null || questionInput.interactable);
+                    && questionsUsedToday < questionsPerDay
+                    && (questionInput == null || (questionInput.interactable && string.IsNullOrEmpty(questionInput.text)));
         suggestionsBox.gameObject.SetActive(show);
         if (!show)
             return;
@@ -668,6 +669,11 @@ public partial class InterrogationUI : MonoBehaviour
         string[] texts = QuestionSuggestions.For(victimName);
         for (int i = 0; i < suggestionLabels.Count && i < texts.Length; i++)
             suggestionLabels[i].text = texts[i];
+    }
+
+    private void OnQuestionTextChanged(string text)
+    {
+        RefreshSuggestions();
     }
 
     // Rellena el campo (no envía): se puede retocar y la pregunta solo se gasta al pulsar Enviar
@@ -694,6 +700,7 @@ public partial class InterrogationUI : MonoBehaviour
     {
         questionsUsedToday = questionsUsed;
         questionsPerDay = questionsMax;
+        RefreshSuggestions();
         maxDaysValue = maxDays;
         dayValue = day;
 
