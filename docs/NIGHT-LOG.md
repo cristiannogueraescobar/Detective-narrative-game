@@ -180,7 +180,8 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   con Ollama apagado y -buildPath con nombre suelto, arreglados con test. Galería con las preguntas finales.
 
 ## Ahora
-- Ronda 6: crítica de diseño con capturas, más mejoras, informe y galería finales.
+- Rondas finales (10+): revisión de toda la rama (subagente), bot definitivo de 18 partidas (semilla 59),
+  informe y galería finales, build final, borrar el worktree.
 
 ## Después (orden)
 1. Layout: 3 rondas de render→revisión, safe area, zonas táctiles ≥ 48 px (añadir al test).
@@ -193,6 +194,7 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
 7. Accesibilidad: tamaño de texto, alto contraste, velocidad de texto, filtro noir.
 8. Build de Windows (y APK si hay módulo).
 FINAL. Rondas de revisión.
+(Todo lo anterior está hecho; ver "Hecho".)
 
 ## Decisiones (opción conservadora, para revisar)
 - Zona táctil mínima = 120 px de lienzo (48 dp en un móvil de 411 dp de ancho). Más estricto que "48 px".
@@ -211,3 +213,14 @@ FINAL. Rondas de revisión.
 - Audio PROVISIONAL sintetizado por código (no lo he podido escuchar): niveles discretos medidos (picos 0,3–0,7,
   empalmes de bucle sin salto). Si no gusta, borrar Assets/Resources/Audio y el juego queda en silencio.
 - productName sigue siendo "Casos" (cambiarlo movería guardados y ajustes del jugador).
+- Preguntas de ejemplo: rellenan el campo pero nunca envían (la pregunta se gasta solo al pulsar Enviar). Elegidas
+  con datos (SuggestionProbe).
+- "Fin del día" pide confirmación solo si quedan preguntas; con el día gastado sigue siendo un toque.
+- Regla contra preguntas capciosas REVERTIDA: bajaba la aceptación de premisas falsas del 23 % al 2–5 %, pero
+  costaba la pista 3A_audios (una de las flojas que había que subir). Queda en pendientes con datos.
+- La build de Windows se abre en ventana vertical 9:16 (85 % del alto) y sin pantalla completa: es un juego de
+  móvil. En móvil y en el editor no cambia nada.
+- Build final en Builds/Windows-final (la ruta de siempre quedó bloqueada por Windows; BuildScript acepta
+  -buildPath). No he tocado permisos ni el antivirus.
+- Maruxa habla español con toque gallego (su ejemplo en gallego provocaba respuestas enteras en gallego).
+- README.md no se ha tocado (desactualizado; es la cara pública del repositorio).
