@@ -380,5 +380,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   solo se crea con API interna del editor). Tools/check_audio.py: pico, DC, silencio inicial, salto de bucle → todo
   bien. Tests: SoundMixTests (5) + SoundMixPlayTests. EditMode 650/650. AUDIO-NEEDED.md al día.
 
+- **12:40** D2 hecho: docs/RENDIMIENTO.md. GC en reposo: el juego ≤ 0 B por fotograma (menú e interrogatorio, restado
+  el editor). Coste de C3/C4 medido con la nueva captura CosteVisual (1080×1920, GPU sincronizada): ruido en la RTX
+  (0,56-0,63 ms en las 4 combinaciones); en móvil se estima < 0,2 ms el relieve y 1-2 ms el post-proceso, que se
+  quita con el ajuste "Filtro noir". Medir en Android real queda en Pendientes. Atlas/pooling revisados (documentado).
+
 ## Ahora (día 3)
-- D2 rendimiento (0 GC en reposo, coste de C3/C4 medido), D3 revisión de código.
+- D3 revisión de código exhaustiva → docs/CODE-REVIEW.md. Luego E (Android), después informe intermedio (~16:10).

@@ -141,6 +141,70 @@ public class AnimationCapture
         yield return Frames("menu", 0.1f, 0.6f, 1.2f, 2.5f);
     }
 
+    // D2: coste en GPU del relieve de los retratos (C3) y del post-proceso (C4), a 1080x1920 en el interrogatorio.
+    // Tiempo por fotograma de cámara, sincronizando con la GPU (lectura de 1 píxel) cada 10. Deja Logs/coste-visual.md.
+    [UnityTest]
+    public IEnumerator CosteVisual()
+    {
+        yield return ToInterrogation();
+        var ui = UnityEngine.Object.FindFirstObjectByType<InterrogationUI>();
+        Theme theme = UnityEngine.Object.Instantiate(ThemeManager.Current);
+        ThemeManager.Override(theme);
+
+        var full = new RenderTexture(1080, 1920, 24);
+        camera.targetTexture = full;
+        var pixel = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+        var data = UnityEngine.Rendering.Universal.CameraExtensions.GetUniversalAdditionalCameraData(camera);
+        var report = new List<string> { "# Coste visual (GPU del editor, 1080x1920, interrogatorio)", "",
+            "| Relieve (C3) | Post-proceso (C4) | ms por fotograma | vs. todo apagado |", "|---|---|---|---|" };
+        var results = new Dictionary<string, double>();
+
+        foreach (bool post in new[] { false, true })
+        foreach (bool lit in new[] { false, true })
+        {
+            theme.portraitLit = lit;
+            theme.postFx = post;
+            NoirPostFx.Refresh();
+            data.renderPostProcessing = post;
+            ui.SetEmotion(ui.CurrentSuspectId, Emotion.Nervioso); // Vuelve a poner el retrato con el material del tema
+            yield return null;
+
+            for (int i = 0; i < 20; i++) // Calentar
+                camera.Render();
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            const int frames = 300;
+            for (int i = 0; i < frames; i++)
+            {
+                camera.Render();
+                if (i % 10 == 9)
+                {
+                    RenderTexture.active = full;
+                    pixel.ReadPixels(new Rect(0, 0, 1, 1), 0, 0);
+                    pixel.Apply();
+                    RenderTexture.active = null;
+                }
+            }
+            results[$"{lit}|{post}"] = watch.Elapsed.TotalMilliseconds / frames;
+            yield return null;
+        }
+
+        double off = results["False|False"];
+        foreach (bool post in new[] { false, true })
+        foreach (bool lit in new[] { false, true })
+        {
+            double ms = results[$"{lit}|{post}"];
+            report.Add($"| {(lit ? "sí" : "no")} | {(post ? "sí" : "no")} | {ms:F2} | {(ms - off >= 0 ? "+" : "")}{ms - off:F2} ms |");
+        }
+        report.Add("");
+        report.Add($"GPU: {SystemInfo.graphicsDeviceName} ({SystemInfo.graphicsDeviceType}).");
+        File.WriteAllLines(Path.Combine("Logs", "coste-visual.md"), report);
+
+        camera.targetTexture = target;
+        full.Release();
+        UnityEngine.Object.Destroy(pixel);
+        ThemeManager.Override(null);
+    }
+
     [UnityTest]
     public IEnumerator Emociones()
     {
