@@ -62,6 +62,14 @@ public class PlaythroughChecksTests
     }
 
     [Test]
+    public void ContarQueEntroNoEsConfesar()
+    {
+        CollectionAssert.DoesNotContain(Kinds("A las 23:05 fui yo quien entré para comprobar cómo estaba.", culprit: true),
+            PlaythroughChecks.Kind.UnmotivatedConfession);
+        CollectionAssert.Contains(Kinds("Sí. Fui yo.", culprit: true), PlaythroughChecks.Kind.UnmotivatedConfession);
+    }
+
+    [Test]
     public void NegarNoEsConfesar()
     {
         CollectionAssert.IsEmpty(Kinds("¡No! Yo no la maté, se lo juro por mis hijos.", culprit: true));

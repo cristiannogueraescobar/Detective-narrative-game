@@ -22,7 +22,7 @@ public static class PlaythroughChecks
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static readonly Regex ConfessionPattern = new Regex(
-        @"\b(yo (la|lo) (mat[eé]|asesin[eé]|envenen[eé]|empuj[eé]|ahogu[eé])|(la|lo) mat[eé] yo|fui yo( quien| el que| la que)?|lo hice yo|confieso|soy (el|la) culpable|soy (el|la) asesin[oa])\b",
+        @"\b(yo (la|lo) (mat[eé]|asesin[eé]|envenen[eé]|empuj[eé]|ahogu[eé])|(la|lo) mat[eé] yo|fui yo(?=\s*[.!,;]|\s*$)|fui yo (quien|el que|la que) (la|lo) |lo hice yo|confieso|soy (el|la) culpable|soy (el|la) asesin[oa])\b",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static readonly Regex DigitTime = new Regex(@"\b([01]?\d|2[0-3])[:.h]([0-5]\d)\b");
