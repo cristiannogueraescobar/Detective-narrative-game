@@ -149,15 +149,20 @@ public class SettingsPanel : MonoBehaviour
         confirmation.gameObject.AddComponent<Image>().color = theme.overlay;
         UIComponents.GetOrAdd<LayoutElement>(confirmation.gameObject).ignoreLayout = true;
 
-        RectTransform box = UIFactory.Container(confirmation, "Caja", new Vector2(0.08f, 0.33f), new Vector2(0.92f, 0.67f));
+        // Caja centrada que mide lo que su contenido (antes quedaba media caja vacía)
+        RectTransform box = UIFactory.Container(confirmation, "Caja", new Vector2(0.06f, 0.5f), new Vector2(0.94f, 0.5f));
+        box.pivot = new Vector2(0.5f, 0.5f);
         var boxImage = box.gameObject.AddComponent<Image>();
-        boxImage.color = theme.panel;
+        boxImage.color = theme.panel; // Más oscura que el botón secundario: "Cancelar" se ve como botón
         boxImage.sprite = UISprites.Rounded(20);
         boxImage.type = Image.Type.Sliced;
+        boxImage.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
         UIFactory.VerticalLayout(box, theme.spacing, theme.padding);
+        box.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
         TMP_Text question = UIFactory.Label(box, "¿Empezar una partida nueva? Se perderá la investigación actual.", theme.bodySize, theme.textPrimary);
         question.alignment = TextAlignmentOptions.Center;
+        question.GetComponent<LayoutElement>().minHeight = theme.bodySize * 3.2f; // Dos líneas holgadas
         UIFactory.Button(box, "Sí, reiniciar", true, () => onRestart?.Invoke());
         UIFactory.Button(box, "Cancelar", false, () => confirmation.gameObject.SetActive(false));
     }

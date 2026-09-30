@@ -322,4 +322,26 @@ public class AnimationCapture
         yield return new WaitForSecondsRealtime(0.6f);
         Shot("desplegable_pruebas");
     }
+
+    [UnityTest]
+    public IEnumerator Dialogos()
+    {
+        yield return Click("SetingsButton");
+        Find("AjustesControles").GetComponentsInChildren<Button>(true).First(b => b.GetComponentInChildren<TMPro.TMP_Text>().text == "Reiniciar partida").onClick.Invoke();
+        yield return new WaitForSecondsRealtime(0.4f);
+        Shot("dialogo_reiniciar");
+        yield return Click("BackFromSettingsButton");
+
+        Tutorial.Reset();
+        yield return ToInterrogation();
+        yield return new WaitForSecondsRealtime(1.5f);
+        Shot("tutorial_preguntar");
+        var fx = UnityEngine.Object.FindFirstObjectByType<FxLayer>();
+        fx.Hint(Tutorial.TextOf(Tutorial.Contradiction), (RectTransform)Find("ViewCluesButton").transform, null, null);
+        yield return new WaitForSecondsRealtime(0.6f);
+        Shot("tutorial_contradiccion");
+        fx.Hint(Tutorial.TextOf(Tutorial.Days), (RectTransform)Find("EndDayButton").transform, null, null);
+        yield return new WaitForSecondsRealtime(0.6f);
+        Shot("tutorial_dias");
+    }
 }
