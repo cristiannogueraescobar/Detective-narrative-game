@@ -87,6 +87,52 @@ public static class UISprites
         return circle;
     }
 
+    private static Sprite chevron;
+
+    /// <summary>
+    /// Flecha hacia abajo (V gruesa con borde suavizado) para los desplegables: la de uGUI es tan fina que a
+    /// tamaño de móvil el suavizado la deja en gris (WCAG 1.4.11).
+    /// </summary>
+    public static Sprite Chevron()
+    {
+        if (chevron != null)
+            return chevron;
+
+        const int size = 64;
+        const float stroke = 7f; // Medio grosor en píxeles
+        var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+        {
+            name = "Flecha (auto)",
+            wrapMode = TextureWrapMode.Clamp,
+            hideFlags = HideFlags.DontSave
+        };
+        Vector2 left = new Vector2(12f, 44f), tip = new Vector2(32f, 20f), right = new Vector2(52f, 44f);
+        var pixels = new Color32[size * size];
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                var p = new Vector2(x + 0.5f, y + 0.5f);
+                float d = Mathf.Min(DistanceToSegment(p, left, tip), DistanceToSegment(p, tip, right));
+                pixels[y * size + x] = new Color32(255, 255, 255, (byte)(Mathf.Clamp01(stroke - d + 0.5f) * 255f));
+            }
+        }
+        texture.SetPixels32(pixels);
+        texture.Apply(false, true);
+
+        chevron = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
+        chevron.name = texture.name;
+        chevron.hideFlags = HideFlags.DontSave;
+        return chevron;
+    }
+
+    private static float DistanceToSegment(Vector2 p, Vector2 a, Vector2 b)
+    {
+        Vector2 ab = b - a;
+        float t = Mathf.Clamp01(Vector2.Dot(p - a, ab) / ab.sqrMagnitude);
+        return Vector2.Distance(p, a + ab * t);
+    }
+
     private static readonly Dictionary<long, Sprite> outlines = new Dictionary<long, Sprite>();
     private static Sprite vignette;
 

@@ -414,6 +414,14 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   pistas el selector no aparece → la explicación va en el resumen de la libreta, solo cuando hay pistas. Tests.
   Unity activó solo UnityConnectSettings (servicios): revertido, no se sube.
 
+- **13:23** Ronda 2 (bot, 2A/2C/3A/3C, semilla 202): 6/8 resueltas, primera pista 5,6, sin errores; desbloqueos tras
+  el arreglo n.º 7: Maruxa el día 2 en 4/4 (antes día 1 en 5/14), Álex el día 1 en 2/4 (antes 8/12; lo que queda
+  es que otros lo mencionan, que es lo buscado). Auditoría de accesibilidad (skill accessibility-review, WCAG 2.2
+  AA) → DESIGN-CRITIQUE.md: la flecha de los desplegables (20 px, ~1,5:1 en pantalla aunque fuera blanca) pasa a
+  una V propia de 36 px en textSecondary; el validador ahora exige tamaño y contraste de la flecha. Pendientes
+  anotados: foco visible con teclado (PC) y lector de pantalla (Unity 6 lo permite; exige API 26 → RESEARCH.md).
+  EditMode 668/668.
+
 ## Ahora (día 3)
 - Ronda final 2: bot para comprobar los desbloqueos tras el n.º 7; capturas tras los cambios; recorrido mental.
   Informe intermedio a las ~16:10.

@@ -92,3 +92,12 @@ Cada entrada: fuente → qué aprendí → qué decidí con ello. La búsqueda l
   hasta el 01-11-2026. → `AndroidSetup.TargetSdk = 36`.
   Fuentes: [developer.android.com: target SDK](https://developer.android.com/google/play/requirements/target-sdk),
   [Ayuda de Play Console](https://support.google.com/googleplay/android-developer/answer/11926878).
+
+## Lector de pantalla en Unity 6 (accesibilidad, ronda final 2)
+- Unity 6 tiene un **módulo de accesibilidad** con soporte de **TalkBack (Android) y VoiceOver (iOS)**:
+  `AssistiveSupport` activa el lector y recibe sus eventos; la interfaz se describe en un `AccessibilityHierarchy`
+  de `AccessibilityNode` (separado de los GameObject) con rol (botón, deslizador, título, imagen), etiqueta,
+  estado y acciones. Visor: *Window → Accessibility → Accessibility Hierarchy Viewer*.
+- Requisito: **Android 8.0 (API 26)** e iOS 13 → si se añade, subir `AndroidSetup.MinSdk` de 25 a 26.
+- Fuentes: [Unity 6: accesibilidad móvil](https://docs.unity3d.com/Manual/mobile-accessibility.html),
+  [Unity 6.3: accesibilidad](https://docs.unity3d.com/Manual/accessibility.html).
