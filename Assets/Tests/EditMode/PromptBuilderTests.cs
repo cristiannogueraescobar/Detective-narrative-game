@@ -83,4 +83,15 @@ public class PromptBuilderTests
         StringAssert.DoesNotContain("LO QUE SABES:", prompt); // c no tiene knowledge
         StringAssert.Contains("REGLAS:", prompt);
     }
+
+    [Test]
+    public void GuiaDeEstadosNerviosoSoloPorSuTema()
+    {
+        // Todos ocultan algo: "nervioso si ocultas algo" dejaba el 80 % de las respuestas en nervioso (bot, 12 partidas)
+        string guide = PromptBuilder.EmotionGuide("Elena");
+        StringAssert.DoesNotContain("ocultas", guide);
+        StringAssert.Contains("Elena", guide);
+        StringAssert.Contains("triste", guide);
+        StringAssert.Contains("TE PONE NERVIOSO", guide);
+    }
 }
