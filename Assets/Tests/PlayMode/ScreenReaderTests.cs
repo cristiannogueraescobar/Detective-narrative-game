@@ -175,4 +175,14 @@ public class ScreenReaderTests
         yield return Refresh();
         Assert.IsFalse(Nodes().Any(n => n.label.Contains("Tres casos")));
     }
+
+    // Lo decorativo (las cifras de la pared de alturas) no se lee
+    [UnityTest]
+    public IEnumerator LoDecorativoNoSeLee()
+    {
+        var subtitle = Object.FindObjectsByType<TMP_Text>(FindObjectsSortMode.None).First(t => t.text.Contains("Tres casos"));
+        subtitle.gameObject.AddComponent<Decorative>();
+        yield return Refresh();
+        Assert.IsFalse(Nodes().Any(n => n.label.Contains("Tres casos")));
+    }
 }

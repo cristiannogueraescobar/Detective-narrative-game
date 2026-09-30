@@ -556,6 +556,7 @@ public partial class InterrogationUI
     {
         RectTransform marks = UIFactory.Container(wall, "Alturas", Vector2.zero, Vector2.one);
         marks.gameObject.SetActive(T.lineupWall);
+        marks.gameObject.AddComponent<Decorative>(); // El lector de pantalla no lee las cifras
         UIComponents.GetOrAdd<LayoutElement>(marks.gameObject).ignoreLayout = true;
         const int top = 190, bottom = 130, step = 10;
         int count = (top - bottom) / step;
