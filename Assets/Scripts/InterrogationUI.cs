@@ -378,8 +378,23 @@ public class InterrogationUI : MonoBehaviour
         chat.Initialize();
     }
 
+    private const string QuestionPlaceholder = "Escribe tu pregunta…";
+    private const string EvidencePlaceholder = "Pregunta sobre la prueba (opcional)…";
+
+    // Con una prueba elegida, la pregunta es opcional: se puede enseñar sin decir nada
+    private void OnEvidenceChanged(int index)
+    {
+        if (questionInput != null && questionInput.placeholder is TMP_Text placeholder)
+            placeholder.text = index > 0 ? EvidencePlaceholder : QuestionPlaceholder;
+    }
+
     private void ConfigureQuestionInput()
     {
+        if (evidenceDropdown != null)
+        {
+            evidenceDropdown.onValueChanged.RemoveListener(OnEvidenceChanged);
+            evidenceDropdown.onValueChanged.AddListener(OnEvidenceChanged);
+        }
         // La escena traía la pregunta de ejemplo como texto escrito, no como placeholder
         questionInput.SetTextWithoutNotify(string.Empty);
 
@@ -394,7 +409,7 @@ public class InterrogationUI : MonoBehaviour
 
         if (questionInput.placeholder is TMP_Text placeholder)
         {
-            placeholder.text = "Escribe tu pregunta…";
+            placeholder.text = QuestionPlaceholder;
             placeholder.rectTransform.anchorMin = Vector2.zero;
             placeholder.rectTransform.anchorMax = Vector2.one;
             placeholder.rectTransform.offsetMin = placeholder.rectTransform.offsetMax = Vector2.zero;
