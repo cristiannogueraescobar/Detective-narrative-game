@@ -58,6 +58,8 @@ public class AnimationCapture
         camera.targetTexture = target;
         camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = Color.magenta;
+        // El post-proceso noir (NoirPostFx) también en la captura: se ve lo que ve el jugador
+        UnityEngine.Rendering.Universal.CameraExtensions.GetUniversalAdditionalCameraData(camera).renderPostProcessing = NoirPostFx.Enabled;
         foreach (Canvas canvas in UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None).Where(c => c.isRootCanvas))
         {
             canvas.renderMode = RenderMode.ScreenSpaceCamera;

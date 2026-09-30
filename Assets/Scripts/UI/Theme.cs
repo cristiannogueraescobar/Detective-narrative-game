@@ -137,6 +137,15 @@ public class Theme : ScriptableObject
     [Header("Ambiente (menú, filtro noir)")]
     [Range(0f, 0.3f)] public float grainIntensity = 0.05f;
     [Range(0f, 1f)] public float vignetteIntensity = 0.45f;
+
+    [Header("Post-proceso noir de URP (NoirPostFx; desactivar = lienzo superpuesto sin post-proceso)")]
+    public bool postFx = true;
+    [Range(0f, 1f)] public float postBloomIntensity = 0.3f;
+    [Range(0.9f, 2f)] public float postBloomThreshold = 0.95f;  // Gamma: por encima del papel (0,91): el texto no brilla
+    [Range(-30f, 30f)] public float postContrast = 6f;
+    [Range(-50f, 0f)] public float postSaturation = -8f;
+    public Color postShadowTone = new Color(0.42f, 0.47f, 0.55f);   // Sombras frías
+    public Color postHighlightTone = new Color(0.58f, 0.54f, 0.47f); // Luces cálidas (lámpara)
     public float deliberationSeconds = 2.2f;                    // Pausa antes del veredicto
     [Range(0f, 1f)] public float roomBrightness = 0.38f;        // Sala de interrogatorios detrás del chat
     public Color story1Tint = new Color(0.85f, 0.92f, 1.05f);  // Casa en Santiago: fría

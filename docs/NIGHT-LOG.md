@@ -336,6 +336,24 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
 - 11:17 C1 (skill: design:design-critique) → docs/DESIGN-CRITIQUE.md. Primer arreglo: el chat se ancla abajo
   (una conversación corta queda junto al campo; se acabó el hueco en mitad de la pantalla principal).
 
+- **11:32** C1/C2 cerrado: escala de radios en el tema (6·12·16·20·36), sin radios sueltos en el código
+  (skill: design-critique, fila "Radios" → Arreglado). 2C_gps con 10 intentos: 17/20 (85 %): arreglo del juego confirmado.
+- **11:50** C3 hecho: prototipos 2D / 2.5D / vóxel 40 / vóxel 64 con los mismos 4 retratos (captura
+  CharacterStyleCapture). Vóxel descartado (pierde la cara; el arte está reescalado, no es pixel art limpio;
+  9-23 k vértices + cámara por retrato). **2.5D elegido**: shader LitPortrait (relieve desde alfa/luminancia,
+  lámpara cálida, contraluz frío en el filo). Tres iteraciones con capturas (halo azul → banda interior → filo).
+  En los 12 personajes, rueda y mini-retratos del chat (antes sin gradación). Interruptor: Theme.portraitLit.
+  Tests: LitPortraitTests (5) + ChatViewTests. EditMode 629/629 antes del último cambio. Skills: TDD.
+
+- **12:10** C4 hecho: NoirPostFx (URP) — con "Filtro noir" los lienzos raíz pasan a la cámara y un Volume global
+  en memoria aplica contraste +6, saturación −8, virado frío/cálido y bloom solo por encima de gamma 0,95 (el papel,
+  lo más claro del tema, es 0,91: el texto no brilla). Grano y viñeta siguen en FxLayer (respetan Reducir
+  animaciones). Interruptores: ajuste "Filtro noir" y Theme.postFx. **Contraste medido después del post-proceso**
+  (muestras del tema pasadas por la cámara real): los 10 pares suben (p. ej. secundario/panel 5,85 → 6,08,
+  Acusar 5,73 → 6,61). Tests: NoirPostFxTests (5; el de píxeles necesita GPU: capture-anim.sh NoirPostFxTests).
+  EditMode 630/630, PlayMode 32/32. Coste en móvil: se mide en D2.
+  Visto de paso: la parte vacía de los deslizadores casi no se ve (WCAG 1.4.11, 3:1 en componentes) → C6/rondas.
+
 ## Ahora (día 3)
-- C1/C2: resto de la crítica (Acusar sin dorado, expedientes completos, velo del título, estados de botón,
-  radios, parte del día legible). En segundo plano: B3 (bot con y sin "Pensar") y 2C_gps con 10 intentos.
+- C5 arte procedural (fondos por historia, texturas, iconos, en archivos nuevos), luego C6.
+  En segundo plano: B3 (bot con y sin "Pensar").
