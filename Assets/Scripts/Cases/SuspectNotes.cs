@@ -41,7 +41,7 @@ public static class SuspectNotes
         {
             case SuspectNote.Sospechoso:
                 return correct ? $"Tu nota sobre {culpritName} ya decía «{Label(culpritNote)}»: buen olfato."
-                               : said + ": tu primera sospecha era la buena.";
+                               : said + ": ahí acertabas.";
             case SuspectNote.Descartado:
                 return correct ? said + ", pero al final no te dejaste engañar."
                                : said + ": era quien lo hizo.";
