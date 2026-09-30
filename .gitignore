@@ -86,3 +86,16 @@ crashlytics-build.properties
 
 # Builds del juego (BuildScript)
 /Builds/
+
+# Capturas en bruto (se regeneran con .superpowers/capture-anim.sh); lo que se versiona es la galería y las
+# comparativas. Subidas por error en ff30092 y retiradas en el commit siguiente.
+docs/screenshots/2026-09-30/00-inicio/
+docs/screenshots/2026-09-30/01-ronda1/
+docs/screenshots/2026-09-30/02-chat/
+docs/screenshots/2026-09-30/03-ajustes/
+docs/screenshots/2026-09-30/04-retratos/
+docs/screenshots/2026-09-30/05-libreta/
+docs/screenshots/2026-09-30/anim/
+docs/screenshots/2026-09-30/dia3-antes-C/
+docs/screenshots/2026-09-30/final/
+docs/screenshots/2026-09-30/c3-prototipo/*_voxel*.png
