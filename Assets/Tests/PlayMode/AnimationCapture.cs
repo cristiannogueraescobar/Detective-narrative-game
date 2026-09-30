@@ -256,9 +256,16 @@ public class AnimationCapture
             Shot($"chatlargo_{Mathf.RoundToInt(p * 100):000}");
         }
 
-        // Llega una respuesta nueva mientras el jugador está leyendo arriba: no se le mueve, sale "Nuevos mensajes"
+        // Llega una respuesta nueva mientras el jugador está leyendo arriba (ha arrastrado el chat): no se le mueve
+        // y sale "Nuevos mensajes"
+        scroll.verticalNormalizedPosition = 0.5f;
+        chat.OnBeginDrag(new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current));
+        yield return null;
         entries.Add(ChatEntry.Suspect("Daniel", "Ya se lo he dicho, inspector: aquella noche no salí de mi cuarto.", "17:22"));
         chat.Show(entries, typeLast: true);
+        yield return null;
+        Assert.AreEqual(0.5f, scroll.verticalNormalizedPosition, 0.02f, "no se le mueve al que lee");
+        Assert.IsTrue(Find("NuevosMensajes (auto)").activeInHierarchy, "aparece «Nuevos mensajes»");
         yield return new WaitForSecondsRealtime(0.4f);
         Shot("chatlargo_nuevo_mensaje");
     }
