@@ -21,6 +21,8 @@ PAIRS = [
     ('instrucciones', '00-inicio/1080x1920_IntructionsPanel.png', 'anim/panel_instrucciones.png'),
     ('final_bueno', '00-inicio/1080x1920_Final_Good.png', 'anim/final_good_7000.png'),
     ('final_malo', '00-inicio/1080x1920_Final_Bad.png', 'anim/final_bad_7000.png'),
+    ('seleccion_de_caso', '00-inicio/1080x1920_MainMenuPanel.png', 'anim/panel_casos.png'),
+    ('desplegable', '00-inicio/1080x1920_InterrogationPanel.png', 'anim/desplegable_pruebas.png'),
 ]
 
 STRIPS = [
@@ -29,6 +31,12 @@ STRIPS = [
     ('efecto_dia', 'anim/dia_', 6),
     ('efecto_veredicto', 'anim/veredicto_', 6),
     ('efecto_intro', 'anim/intro_', 4),
+    ('efecto_acusacion', 'anim/acusacion_', 3),
+    ('emocion_nervioso', 'anim/emocion_nervioso_', 4),
+    ('emocion_enfadado', 'anim/emocion_enfadado_', 4),
+    ('emocion_triste', 'anim/emocion_triste_', 4),
+    ('menu_vivo', 'anim/menu_', 4),
+    ('tutorial', 'anim/tutorial_', 3),
 ]
 
 

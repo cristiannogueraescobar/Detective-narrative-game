@@ -184,6 +184,17 @@ public class GameSmokeTests
         yield return null;
         Object.FindFirstObjectByType<AIConversationManager>().UseProvider(provider);
         yield return null;
+        // "Continuar · <caso>, día N": todas las letras en la misma fuente (la de la escena solo trae ASCII)
+        TMP_Text label = Find("ContinueButton (auto)").GetComponentInChildren<TMP_Text>();
+        StringAssert.StartsWith("Continuar ·", label.text);
+        label.ForceMeshUpdate();
+        for (int i = 0; i < label.textInfo.characterCount; i++)
+        {
+            TMP_CharacterInfo ci = label.textInfo.characterInfo[i];
+            if (ci.isVisible)
+                Assert.AreEqual(label.font.faceInfo.familyName, ci.fontAsset.faceInfo.familyName, $"letra «{ci.character}»");
+        }
+
         yield return Click("ContinueButton (auto)");
 
         Assert.IsTrue(Find("InterrogationPanel").activeInHierarchy);

@@ -321,11 +321,19 @@ public class LayoutValidationTests
             replacement = (char)0x25A1;
         bool intended = text.text.IndexOf(replacement) >= 0;
 
+        string family = text.font.faceInfo.familyName;
         for (int i = 0; i < text.textInfo.characterCount; i++)
         {
-            if (text.textInfo.characterInfo[i].character == replacement && !intended)
+            TMP_CharacterInfo ci = text.textInfo.characterInfo[i];
+            if (ci.character == replacement && !intended)
             {
                 errors.Add($"carácter sin glifo en {Path((RectTransform)text.transform)} ({text.font.name}): «{Short(text.text)}»");
+                return;
+            }
+            // Una letra sacada de otra familia (la de reserva) se nota: "DÍA" con la Í en otra fuente
+            if (ci.isVisible && ci.fontAsset != null && ci.fontAsset.faceInfo.familyName != family)
+            {
+                errors.Add($"letra «{ci.character}» en otra fuente ({ci.fontAsset.faceInfo.familyName}) en {Path((RectTransform)text.transform)} ({family})");
                 return;
             }
         }

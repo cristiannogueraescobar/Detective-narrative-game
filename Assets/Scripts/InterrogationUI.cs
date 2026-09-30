@@ -841,7 +841,8 @@ public partial class InterrogationUI : MonoBehaviour
 
     private void OnNotebookLink(string link)
     {
-        if (!link.StartsWith(Notebook.ClueLinkPrefix) || evidenceDropdown == null)
+        // Con la entrada bloqueada (esperando respuesta, sin preguntas) la elección se perdería
+        if (!link.StartsWith(Notebook.ClueLinkPrefix) || evidenceDropdown == null || !evidenceDropdown.interactable)
             return;
         string clueId = link.Substring(Notebook.ClueLinkPrefix.Length);
         int index = evidenceOptions.FindIndex(c => c.id == clueId);
@@ -849,7 +850,8 @@ public partial class InterrogationUI : MonoBehaviour
             return;
         evidenceDropdown.value = index + 1; // La opción 0 es "ninguna"
         HideCluesPanel();
-        if (questionInput != null && questionInput.interactable)
+        // En móvil no se abre el teclado: taparía "Enviar", y la pregunta es opcional con una prueba
+        if (questionInput != null && questionInput.interactable && !TouchScreenKeyboard.isSupported)
             questionInput.ActivateInputField();
     }
 

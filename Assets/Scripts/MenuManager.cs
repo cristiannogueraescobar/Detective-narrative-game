@@ -213,8 +213,7 @@ public class MenuManager : MonoBehaviour
         Transform continueButton = panel.Find("ContinueButton (auto)");
         if (continueButton != null)
         {
-            LayoutKit.Put(continueButton, column, height: Theme.MinTouchSize);
-            LayoutKit.Label(continueButton.GetComponent<Button>(), null);
+            PutMenuButton(continueButton.GetComponent<Button>(), column, null);
         }
 
         PutMenuButton(playButton, column, continueButton != null ? "Nueva partida" : "Jugar");
@@ -248,7 +247,13 @@ public class MenuManager : MonoBehaviour
         // La escena traía estilos sueltos (cursiva en "Acerca de")
         TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
         if (text != null)
+        {
             text.fontStyle = FontStyles.Normal;
+            // La fuente de la escena solo trae ASCII: "Continuar · caso, día N" necesita la dinámica
+            text.font = UIFactory.TitleFont();
+            if (text.TryGetComponent(out TextStyle style))
+                style.font = text.font;
+        }
     }
 
     /// <summary>

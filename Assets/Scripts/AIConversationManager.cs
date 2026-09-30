@@ -112,8 +112,12 @@ public class AIConversationManager : MonoBehaviour
         // una sola, con algo más de variedad. Si vuelve a repetir, se acepta: nunca se bloquea la partida.
         if (result.Success && IsRepeat(history, result.Text))
         {
-            LLMResult retry = await llmProvider.SendAsync(systemPrompt,
-                ConversationWindow.Last(history, MaxHistoryMessages), maxTokens, Mathf.Min(1f, temperature + RepeatRetryTemperatureBoost));
+            // Copia de la ventana con una nota al final de la pregunta; el historial real no la guarda
+            var nudged = new List<ChatMessage>(ConversationWindow.Last(history, MaxHistoryMessages));
+            ChatMessage last = nudged[nudged.Count - 1];
+            nudged[nudged.Count - 1] = new ChatMessage { role = last.role, content = last.content + RepeatNudge };
+            LLMResult retry = await llmProvider.SendAsync(systemPrompt, nudged, maxTokens,
+                Mathf.Min(1f, temperature + RepeatRetryTemperatureBoost));
             if (retry.Success)
                 result = retry;
         }
@@ -184,6 +188,7 @@ public class AIConversationManager : MonoBehaviour
     }
 
     public const float RepeatRetryTemperatureBoost = 0.25f;
+    public const string RepeatNudge = " (No repitas lo que ya has dicho: responde con otras palabras.)";
 
     // ¿La respuesta nueva es la misma que la última de este personaje (sin contar la etiqueta de estado)?
     private static bool IsRepeat(List<ChatMessage> history, string answer)

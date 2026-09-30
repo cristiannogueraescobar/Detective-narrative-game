@@ -94,7 +94,33 @@ editor); < 1 ms de CPU por fotograma. `Logs/rendimiento.md`.
 
 ---
 
-## 4. Qué rama probar y en qué orden
+## 4. Galería antes / después
+
+En `docs/screenshots/galeria/` (JPEG, lado a lado; "antes" = el estado de la rama `feature/ui-movil` al empezar
+la noche, "después" = capturas en juego de ahora). Todas las capturas en bruto (PNG) están en
+`docs/screenshots/2026-09-30/` (sin subir al repositorio: se regeneran con los scripts).
+
+| Pantalla | Archivo |
+|---|---|
+| Menú | ![](screenshots/galeria/menu.jpg) |
+| Selección de caso (nueva) | ![](screenshots/galeria/seleccion_de_caso.jpg) |
+| Intro / expediente | ![](screenshots/galeria/intro.jpg) |
+| Interrogatorio | ![](screenshots/galeria/interrogatorio.jpg) |
+| Desplegable de pruebas | ![](screenshots/galeria/desplegable.jpg) |
+| Libreta | ![](screenshots/galeria/libreta.jpg) |
+| Acusación | ![](screenshots/galeria/acusacion.jpg) |
+| Final bueno / malo | ![](screenshots/galeria/final_bueno.jpg) ![](screenshots/galeria/final_malo.jpg) |
+| Ajustes / Instrucciones | ![](screenshots/galeria/ajustes.jpg) ![](screenshots/galeria/instrucciones.jpg) |
+
+Efectos (fotogramas en el tiempo): `efecto_pista`, `efecto_contradiccion`, `efecto_dia`, `efecto_acusacion`,
+`efecto_veredicto`, `efecto_intro`, `emocion_nervioso|enfadado|triste`, `menu_vivo`, `tutorial`.
+
+Cómo regenerarlas: `ScreenshotTool.CaptureFromCommandLine` (vista previa) y el test explícito `AnimationCapture`
+(en juego, `-testFilter AnimationCapture`, sin `-nographics`); después `python Tools/make_gallery.py`.
+
+---
+
+## 5. Qué rama probar y en qué orden
 
 **Rama `feature/noche2`.** El proyecto principal (`C:\Dev\Detective-narrative-game`) ya está en esa rama;
 abre Unity y deja que reimporte. Game View a **1080x1920 (vertical)**; después prueba 1080x2400.

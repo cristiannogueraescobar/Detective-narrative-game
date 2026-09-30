@@ -16,6 +16,7 @@ public class AIConversationFlowTests
         public string lastFirstRole;
         public float lastTemperature;
         public int calls;
+        public string lastUserMessage;
 
         public string DisplayName => "Falso";
 
@@ -24,6 +25,7 @@ public class AIConversationFlowTests
             lastHistoryCount = history.Count;
             lastTemperature = temperature;
             calls++;
+            lastUserMessage = history.Count > 0 ? history[history.Count - 1].content : null;
             lastFirstRole = history.Count > 0 ? history[0].role : null;
             return Task.FromResult(results.Count > 0 ? results.Dequeue() : LLMResult.Ok("Sin más. [ESTADO: tranquilo]"));
         }
@@ -72,6 +74,21 @@ public class AIConversationFlowTests
         Assert.AreEqual(before + 2, provider.calls, "se repite la petición una vez");
         Assert.AreEqual("Ya se lo he dicho: no salí de casa.", second.Text);
         Assert.Greater(provider.lastTemperature, AIConversationManager.DefaultTemperature, "con algo más de variedad");
+        StringAssert.Contains("No repitas", provider.lastUserMessage, "y se le pide que no se repita");
+    }
+
+    [Test]
+    public void LaNotaDelReintentoNoSeQuedaEnElHistorial()
+    {
+        provider.results.Enqueue(LLMResult.Ok("Estuve en casa. [ESTADO: nervioso]"));
+        provider.results.Enqueue(LLMResult.Ok("Estuve en casa. [ESTADO: nervioso]"));
+        provider.results.Enqueue(LLMResult.Ok("Ya se lo dije. [ESTADO: enfadado]"));
+        Ask("a", "¿Dónde estaba?");
+        Ask("a", "¿Seguro?");
+
+        Ask("a", "Otra");
+        foreach (ChatMessage m in manager.Histories["a"])
+            StringAssert.DoesNotContain("No repitas", m.content);
     }
 
     [Test]

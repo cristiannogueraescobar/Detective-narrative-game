@@ -66,7 +66,7 @@ public class SettingsPanel : MonoBehaviour
             Tutorial.Reset();
             TMP_Text label = tutorial.GetComponentInChildren<TMP_Text>();
             if (label != null)
-                label.text = "Tutorial activado: sale en la próxima partida";
+                label.text = "Tutorial activado";
         });
         tutorial.name = "RepetirTutorial";
         UIFactory.Button(list, "Reiniciar partida", false, AskRestart);
