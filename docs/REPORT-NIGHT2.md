@@ -54,6 +54,8 @@ Diario minuto a minuto: `docs/NIGHT-LOG.md`. Tests: **EditMode y PlayMode en ver
 - **El retrato tiene que significar algo.** Si todo el mundo está "nervioso" (70 % de las respuestas), el
   nerviosismo deja de ser una pista. Ahora solo se pone nervioso quien oye hablar de su tema delicado; con la
   víctima se entristece; con lo cotidiano está tranquilo. Un cambio de cara vuelve a ser información.
+- **Un toque por error no cuesta un día.** "Fin del día" está al alcance del pulgar, justo bajo el selector de
+  sospechoso. Con preguntas sin gastar pide confirmación; con el día gastado sigue siendo un solo toque.
 - **Decidir con información, sin chivatazos.** La acusación recuerda cuántas pistas y contradicciones llevas
   (o que acusar sin nada es una apuesta), sin decir cuáles incriminan a quién.
 
@@ -194,7 +196,9 @@ abre Unity y deja que reimporte. Game View a **1080x1920 (vertical)**; después 
      la completa). Mira que el retrato cambie según el estado.
    - Sube a leer mientras responde: no te mueve; aparece "Nuevos mensajes".
    - Si sale una pista: el selector pasa a decir "ninguna · 1 en la libreta" y da un saltito; ficha que cae, destella y vuela a "Libreta" (contador rojo). Abre la libreta: papel.
-   - Gasta las 5 preguntas: "Fin del día" pasa a dorado. Púlsalo: hoja de calendario con el parte (dos toques).
+   - Pulsa "Fin del día" con preguntas sin gastar: pide confirmación ("Te quedan N preguntas y se perderán");
+     "Seguir preguntando" o Atrás vuelven sin perder nada.
+   - Gasta las 5 preguntas: "Fin del día" pasa a dorado. Púlsalo: hoja de calendario con el parte (dos toques). Sin preguntas ya no pregunta.
 8. **Acusar**: bajo la pregunta, "En tu libreta: N pistas y M contradicciones" (sin pistas: "acusar ahora es
    una apuesta"). Rueda de reconocimiento con los bustos; el que tocas se marca. "Volver" (o Esc) vuelve y
    recupera la música del caso. Acusa: "El jurado delibera…" y el final con su sello y la línea temporal.

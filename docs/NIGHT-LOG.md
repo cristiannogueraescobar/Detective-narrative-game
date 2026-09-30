@@ -112,6 +112,10 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   21 %. 5ª revisión de código: 0 críticos/importantes, 3 menores arreglados (con test). Tests 507/507 + PlayMode
   12/12 (+12 capturas explícitas).
 
+- 07:25 Ronda 6 (diseño): "Fin del día" está justo bajo el selector de sospechoso y terminaba el día al
+  momento aunque quedasen preguntas: un toque por error costaba hasta 5. Ahora pide confirmación si quedan
+  ("Te quedan 3 preguntas y se perderán"); Atrás la cierra. Diálogo de confirmación común con el de reiniciar.
+
 ## Ahora
 - Ronda 6: crítica de diseño con capturas, más mejoras, informe y galería finales.
 
