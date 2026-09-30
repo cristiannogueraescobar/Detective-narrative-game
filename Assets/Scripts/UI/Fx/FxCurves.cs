@@ -154,13 +154,23 @@ public class EndingStyle
 }
 
 /// <summary>
+/// Resumen del caso para el informe final: rango, veredicto sobre la prueba clave y pistas que se escaparon.
+/// </summary>
+public class CaseSummary
+{
+    public string rank;
+    public string keyClueLine;                 // null si no se eligió prueba clave
+    public System.Collections.Generic.List<string> missed = new System.Collections.Generic.List<string>();
+}
+
+/// <summary>
 /// Texto del informe final: acusación, evidencia, veredicto y la verdad como línea temporal (una línea por paso,
 /// para que StepReveal la descubra poco a poco).
 /// </summary>
 public static class EndingReport
 {
     public static string Build(AccusationResult result, string accusedName, string culpritName, int maxEvidence,
-                               string epilogue, Theme t, string stats = null)
+                               string epilogue, Theme t, string stats = null, CaseSummary summary = null)
     {
         EndingStyle style = EndingStyle.For(result.ending, t);
         var sb = new System.Text.StringBuilder();
@@ -180,6 +190,13 @@ public static class EndingReport
             sb.AppendLine(label(stats));
         sb.AppendLine();
 
+        if (summary != null && !string.IsNullOrEmpty(summary.rank))
+            sb.AppendLine($"{label("RANGO")}  <b>{summary.rank}</b>");
+        if (summary != null && !string.IsNullOrEmpty(summary.keyClueLine))
+            sb.AppendLine(summary.keyClueLine);
+        if (summary != null && (!string.IsNullOrEmpty(summary.rank) || !string.IsNullOrEmpty(summary.keyClueLine)))
+            sb.AppendLine();
+
         sb.AppendLine($"<color={Theme.Hex(style.ink)}><b>{style.title.ToUpperInvariant()}</b></color>");
         sb.AppendLine(result.ending == Ending.Bad && result.ignoredClearingClue
             ? "Acusaste a alguien a quien tus propias pistas descartaban. El verdadero culpable sigue libre."
@@ -191,6 +208,15 @@ public static class EndingReport
         {
             string marker = step.time != null ? $"<color={Theme.Hex(t.accent)}><b>{step.time}</b></color>" : $"<color={Theme.Hex(t.accent)}>•</color>";
             sb.AppendLine($"{marker}  {step.text}");
+        }
+
+        // Lo que se escapó: aprender a preguntar (y ganas de rejugar)
+        if (summary != null && summary.missed != null && summary.missed.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine($"<color={Theme.Hex(t.accent)}><b>LO QUE SE TE ESCAPÓ</b></color>");
+            foreach (string m in summary.missed)
+                sb.AppendLine($"<color={Theme.Hex(t.accent)}>•</color>  {m}");
         }
         return sb.ToString().TrimEnd();
     }

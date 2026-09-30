@@ -168,6 +168,33 @@ public class EndingReportTests
     }
 
     [Test]
+    public void ElResumenDiceElRangoLaPruebaClaveYLoQueSeEscapo()
+    {
+        var result = new AccusationResult { ending = Ending.Good, correct = true, evidence = 5 };
+        var summary = new CaseSummary
+        {
+            rank = "Sabueso",
+            keyClueLine = "Tu prueba clave, «La taza», le señalaba.",
+            missed = new System.Collections.Generic.List<string> { "La ventana (lo sabía Rosario)", "El frasco (lo sabía Carmen)" }
+        };
+        string text = EndingReport.Build(result, "Daniel", "Daniel", 7, "Lo hizo Daniel.", ThemeManager.Current, null, summary);
+        StringAssert.Contains("RANGO", text);
+        StringAssert.Contains("Sabueso", text);
+        StringAssert.Contains("le señalaba", text);
+        StringAssert.Contains("SE TE ESCAPÓ", text);
+        StringAssert.Contains("lo sabía Rosario", text);
+    }
+
+    [Test]
+    public void SinNadaQueSeEscaparaNoHaySeccion()
+    {
+        var summary = new CaseSummary { rank = "Inspector", missed = new System.Collections.Generic.List<string>() };
+        string text = EndingReport.Build(new AccusationResult { ending = Ending.Good, correct = true, evidence = 6 },
+            "A", "A", 7, "", ThemeManager.Current, null, summary);
+        StringAssert.DoesNotContain("SE TE ESCAPÓ", text);
+    }
+
+    [Test]
     public void DescartarUnaPistaPropiaSeExplica()
     {
         StringAssert.Contains("descartaban", Build(Ending.Bad, ignored: true));

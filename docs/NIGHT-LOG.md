@@ -309,7 +309,7 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
 - Lo que queda abierto: preguntas capciosas (23 %, limitación de qwen) y el ritmo de la vecina (se desbloquea
   pronto y lleva la pista decisiva en 4 variantes): decisión de diseño, anotada.
 
-- 11:20 0d DATOS (A/B, 18 + 18 partidas, semilla 59, mismo código salvo el interruptor):
+- 11:03 0d DATOS (A/B, 18 + 18 partidas, semilla 59, mismo código salvo el interruptor):
   | | sin reintento | con reintento |
   |---|---|---|
   | horas inventadas | 27 en 619 respuestas | **7 en 630 (−74 %)** |
@@ -319,10 +319,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   **Decisión: reintento activado.** Coste de latencia despreciable. Las premisas falsas quedan como limitación
   conocida de qwen (docs/COHERENCE.md). BLOQUE 0 TERMINADO (ramas en origin sin builds ni secretos; fallos (b)
   corregidos; datos de 0d aquí).
-- 11:00 B2 (skill: superpowers TDD): "Pensar" (ayuda por niveles, desde los datos, con coste) y dificultad
+- 10:50 B2 (skill: superpowers TDD): "Pensar" (ayuda por niveles, desde los datos, con coste) y dificultad
   Historia/Detective/Veterano (Ajustes; guardada con la partida). Rango del detective y resumen del caso
   (pendiente de conectar a la pantalla final).
-- 11:15 Ampliación del usuario, profundidad narrativa: docs/REAL-CASES.md (casos reales y patrones, con fuentes;
+- 11:00 Ampliación del usuario, profundidad narrativa: docs/REAL-CASES.md (casos reales y patrones, con fuentes;
   aviso ético: la vecina de la historia 1 comparte nombre con la madre condenada del caso real → decisión para
   Cristian), Resources/Stories/StoriesDatabase.json (carácter, herida, cómo se le nota al mentir, progresión bajo
   presión, cómo sostiene la mentira el culpable) que entra en las fichas, y desbloqueos naturales: preguntar por
