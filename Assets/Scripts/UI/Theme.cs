@@ -183,6 +183,7 @@ public class Theme : ScriptableObject
     [Header("Distribución vertical (px a 1080 × 1920)")]
     public float hudHeight = 140f;
     public float portraitHeight = 420f;
+    [Range(0f, 1f)] public float tallScreenHeaderShare = 0.35f; // Parte del alto extra (> 1920) para el retrato; 0 = todo al chat
     public float bottomAreaHeight = 440f;
     public float padding = 32f;
     public float spacing = 16f;

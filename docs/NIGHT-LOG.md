@@ -444,6 +444,11 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   TalkBack real: anotado. Un test de sonido dependía del orden (música aún apartada por el test anterior):
   arreglado esperando a que vuelva. EditMode 675/675, PlayMode 40/40.
 
+- **14:01** Ronda final 4: en 1080×2400 todo el alto extra iba al chat y, al empezar, quedaba una franja vacía →
+  TallScreenHeader: el retrato se lleva el 35 % del alto que pasa de 1920 (+168 px en 20:9; el chat sigue ganando
+  +312) y los controles se centran a su lado. A 1920 no cambia nada (test). Theme.tallScreenHeaderShare = 0 lo
+  quita. Tests: TallScreenLayoutTests (2; en el editor, abrir la escena descargaba el tema de prueba → DontSave).
+
 ## Ahora (día 3)
 - Ronda final 2: bot para comprobar los desbloqueos tras el n.º 7; capturas tras los cambios; recorrido mental.
   Informe intermedio a las ~16:10.

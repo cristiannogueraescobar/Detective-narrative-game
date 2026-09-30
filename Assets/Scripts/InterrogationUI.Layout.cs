@@ -134,6 +134,7 @@ public partial class InterrogationUI
         RectTransform side = UIFactory.Container(header, "Controles (auto)", Vector2.zero, Vector2.one);
         LayoutKit.Size(side, flexibleWidth: 1f);
         var sideLayout = side.gameObject.AddComponent<VerticalLayoutGroup>();
+        sideLayout.childAlignment = TextAnchor.MiddleCenter; // Con un retrato más alto (pantallas 20:9), centrados a su lado
         sideLayout.spacing = T.spacing;
         sideLayout.childControlWidth = sideLayout.childControlHeight = true;
         sideLayout.childForceExpandWidth = true;
@@ -149,6 +150,13 @@ public partial class InterrogationUI
             UIComponents.GetOrAdd<ThemeRole>(accuseNowButton.gameObject).role = UIRole.DangerButton;
             ThemeApplier.Apply(accuseNowButton.transform);
         }
+
+        // Pantallas alargadas: el retrato se lleva una parte del alto extra; el resto, el chat
+        Transform portraitBoxT = header.Find("Retrato (auto)");
+        UIComponents.GetOrAdd<TallScreenHeader>(column.gameObject).Configure(
+            header.GetComponent<LayoutElement>(),
+            portraitBoxT != null ? portraitBoxT.GetComponent<LayoutElement>() : null,
+            headerHeight);
 
         // Chat: todo el hueco que queda, solo desplazamiento vertical
         if (conversationScroll != null)
