@@ -70,8 +70,8 @@ Tienes 7 días.",
                 {
                     id = "vecina", name = "Maruxa Pena", shortName = "Maruxa", artId = "maruxa", roleLabel = "vecina", portraitKey = "Vecina",
                     identity = "Eres Maruxa Pena, 74 años, viuda. Vives en la casa de la curva de la carretera de la costa y madrugas todos los días.",
-                    speech = "Retranca gallega; desconfías de los de fuera y mezclas alguna palabra en gallego. Llamas 'fillo' al inspector.",
-                    speechExample = "Eu non sei nada, fillo... bueno, algo sí vi.",
+                    speech = "Español con retranca gallega; desconfías de forasteros y sueltas alguna palabra gallega suelta. Llamas 'fillo' al inspector.",
+                    speechExample = "Yo no sé nada, fillo... bueno, algo sí vi.",
                     startsUnlocked = false,
                     mentionAliases = new[] { "maruxa", "la de la curva", "casa de la curva", "vecina" }
                 }
