@@ -170,6 +170,10 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   está la pista clave. Idea: elegir las preguntas de ejemplo con datos. Sonda nueva (SuggestionProbe): cada
   candidata como primera pregunta a los 36 personajes × 2, contando pistas con el análisis real. En curso.
 
+- 09:20 Sonda de sugerencias (2 pasadas): "¿Qué relación tenías con…?" 1 y 0 pistas; "¿Cuándo supiste de X por
+  última vez?" 14. Las preguntas de ejemplo pasan a ser dónde estabas / cuándo supiste de X / algo raro.
+  Tests 548/548 + PlayMode 17/17.
+
 ## Ahora
 - Ronda 6: crítica de diseño con capturas, más mejoras, informe y galería finales.
 

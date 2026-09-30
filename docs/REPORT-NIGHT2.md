@@ -48,9 +48,11 @@ Diario minuto a minuto: `docs/NIGHT-LOG.md`. Tests: **EditMode y PlayMode en ver
   "Nuevos mensajes".
 - **El Atrás de Android nunca saca del juego**: cierra lo que haya abierto y, en el interrogatorio, no hace nada.
 - **La primera pregunta no debería costar.** Un chat vacío en el móvil es una pantalla en blanco y un teclado.
-  Tres preguntas de ejemplo (dónde estabas, tu relación con la víctima, si viste algo raro) rellenan el campo
-  pero nunca envían: el jugador decide y la pregunta solo se gasta al pulsar Enviar. Van debajo del chat, no
+  Tres preguntas de ejemplo rellenan el campo pero nunca envían: el jugador decide y la pregunta solo se gasta al pulsar Enviar. Van debajo del chat, no
   encima, porque en días avanzados el chat de un sospechoso nuevo ya tiene partes y avisos que no se deben tapar.
+  **Las tres se eligieron con datos** (ver Métricas): "¿Qué relación tenías con…?" sonaba natural pero no
+  destapaba casi nada; ahora son "¿Dónde estabas cuando pasó?", "¿Cuándo supiste de <víctima> por última vez?" y
+  "¿Viste u oíste algo raro?".
 - **El retrato tiene que significar algo.** Si todo el mundo está "nervioso" (70 % de las respuestas), el
   nerviosismo deja de ser una pista. Ahora solo se pone nervioso quien oye hablar de su tema delicado; con la
   víctima se entristece; con lo cotidiano está tranquilo. Un cambio de cara vuelve a ser información.
@@ -125,6 +127,23 @@ ha amenazado… solo un mensaje preocupante") y la pista 3A_audios (una de las f
 fallar; sin la regla pasa en todas las mediciones. Una tercera redacción más estrecha ("dice que **hiciste**")
 no la rompe (18/20) pero tampoco hace nada (23 %). **Decisión conservadora: regla revertida.** La ficha es la
 misma que midió las pistas al 84–85 %. Queda como pendiente con los datos: `Logs/premisas/`.
+
+### Preguntas de ejemplo (sonda nueva `SuggestionProbe`)
+
+Cada candidata, como primera pregunta, a los 36 personajes × 2 (dos pasadas, 900 respuestas), contando las pistas
+que destapa el análisis real del juego:
+
+| Pregunta | Pistas destapadas (pasada 1 / 2) |
+|---|---|
+| ¿Dónde estabas cuando pasó? | 15 / 20 |
+| ¿Qué relación tenías con <víctima>? | **1 / 0** (retirada) |
+| ¿Viste u oíste algo raro? | 25 / 26 |
+| ¿Cuándo viste o hablaste con <víctima> por última vez? | 9 / 7 |
+| ¿Quién puede confirmar dónde estabas? | 17 / 15 |
+| ¿Cuándo supiste de <víctima> por última vez? | — / **14** (elegida: más corta, y abre las pistas del último contacto, clave en 3A y 3C) |
+
+"Quién puede confirmarlo" también rinde, pero como primera pregunta no tiene sentido antes de saber dónde
+estaba. Informes: `Logs/sugerencias.md`, `Logs/sugerencias-2.md`.
 
 ### Calibración de estados emocionales (144 respuestas, 4 tipos de pregunta)
 
