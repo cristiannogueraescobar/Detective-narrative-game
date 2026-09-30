@@ -322,6 +322,11 @@ public class AnimationCapture
         yield return new WaitForSecondsRealtime(0.8f);
         Shot("notas_libreta");
         yield return Click("CloseCluesButton");
+        // Y una pista de descarte ya encontrada: la rueda lo marca con las palabras de la libreta
+        var talk = UnityEngine.Object.FindFirstObjectByType<AIConversationManager>();
+        ClueData clearing = talk.State.Variant.clues.FirstOrDefault(c => c.kind == ClueKind.Clears && ids.Contains(c.clears));
+        if (clearing != null)
+            talk.State.Discover(clearing.id);
         manager.ForceAccusationPanel();
         yield return new WaitForSecondsRealtime(2f);
         Shot("notas_rueda");
