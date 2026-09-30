@@ -77,6 +77,8 @@ Informes completos en `Logs/` (`bot-final/`, `bot-baseline-0600/`, `bot-guia2/`,
 | 06:30, guía de estados nueva (semilla 59) | 18 | 9/18 (50 %) | 1,4 | 20 en 630 (3,2 %) | 0** |
 | Ronda 5 (2B, 2C, 3A) | 6 | 4/6 | 1,8 | 4 en 210 | 0** |
 | Ronda 7 (3B, 3C, 2A) | 6 | 2/6 | 1,0 | 8 en 210 | 0 |
+| Ronda 8 (3C, 3A, 3B) | 6 | 2/6 | 1,0 | 6 en 210 | 0 |
+| Ronda 9 (2B, 1B, 1A) | 6 | 4/6 | 2,2 | 7 en 210 | 0 |
 
 Con 18 partidas la tasa de acierto baila ±2 partidas de una ronda a otra: el detective también es qwen y sus
 preguntas cambian cada vez. Lo estable es que no hay rupturas de personaje ni confesiones sin motivo.
@@ -209,7 +211,8 @@ Cómo regenerarlas: `ScreenshotTool.CaptureFromCommandLine` (vista previa) y el 
 - **Arte por estado emocional**: el juego busca `Assets/Art/Portraits/<personaje>_<estado>.png`. Hoy usa los
   retratos antiguos en plano medio y aplica tinte, postura y temblor.
 - **Horas inventadas**: qwen 7B aún dice alguna hora que no está en su ficha (3–6 % de las respuestas según la
-  partida). La regla ya está en la ficha; bajarlo más pediría otro modelo o más texto en fichas que ya están en
+  partida). A veces con un hecho imposible: en la ronda 9 la vecina de 1A "vio" a Elena a las 00:05, ya
+  muerta, y lo repitió después. La regla ya está en la ficha; bajarlo más pediría otro modelo o más texto en fichas que ya están en
   el límite de 460 palabras.
 - **Preguntas capciosas**: un 23 % de los sospechosos acepta una acusación inventada si el inspector la da por
   hecha. Una regla en la ficha lo bajaba al 2–5 %, pero hacía que la madre de 3A negase las amenazas de Javier
