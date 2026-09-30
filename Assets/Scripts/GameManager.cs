@@ -202,7 +202,10 @@ public class GameManager : MonoBehaviour
             var all = CaseLibrary.AllVariants().Where(p => storyId == null || p.story.id == storyId).ToList();
             if (all.Count == 0)
                 all = CaseLibrary.AllVariants().ToList();
-            (story, variant) = all[UnityEngine.Random.Range(0, all.Count)];
+            // Primero las variantes que aún no has resuelto; si ya las has jugado todas, nunca la misma dos veces seguidas
+            int pick = CaseRecords.PickVariant(all.Select(p => p.variant.id).ToList(),
+                id => all.First(p => p.variant.id == id).story.id, UnityEngine.Random.Range(0, 1 << 20));
+            (story, variant) = all[pick];
         }
 
         conversationManager.StartCase(story, variant);
@@ -530,6 +533,7 @@ public class GameManager : MonoBehaviour
         SaveSystem.Delete(); // La partida ha terminado
         AccusationResult result = State.Accuse(accusedId);
         CaseRecords.Record(story.id, result.ending);
+        CaseRecords.RecordPlayed(story.id, variant.id); // Al rejugar la historia, otro culpable
 
         Debug.Log($"[GameManager] Acusación: {accusedId} → {result.ending} (evidencia {result.evidence})");
 

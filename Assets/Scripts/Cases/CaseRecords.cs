@@ -63,4 +63,52 @@ public static class CaseRecords
             GameSettings.Flush(); // A disco ya: la partida guardada se acaba de borrar
         }
     }
+
+    // ---- Variantes jugadas: rejugar una historia trae otro culpable ----
+
+    private static string PlayedKey(string variantId) => $"casos.jugada.{variantId}";
+    private static string LastKey(string storyId) => $"casos.ultima.{storyId}";
+
+    /// <summary>
+    /// Apunta una variante terminada (ya se sabe su solución) y que es la última de su historia.
+    /// </summary>
+    public static void RecordPlayed(string storyId, string variantId)
+    {
+        GameSettings.SetValue(PlayedKey(variantId), 1f);
+        // Solo hay números en los ajustes: la última se guarda como el código de su id
+        GameSettings.SetValue(LastKey(storyId), Code(variantId));
+        GameSettings.Flush();
+    }
+
+    public static bool Played(string variantId) => GameSettings.GetValue(PlayedKey(variantId), 0f) > 0f;
+
+    /// <summary>
+    /// Índice de la variante que toca entre 'variantIds': una aún no jugada; si ya se jugaron todas, cualquiera
+    /// menos la última de su historia. 'roll' es el azar (Random.Range en el juego, fijo en los tests).
+    /// </summary>
+    public static int PickVariant(System.Collections.Generic.IReadOnlyList<string> variantIds, System.Func<string, string> storyOf, int roll)
+    {
+        var candidates = new System.Collections.Generic.List<int>();
+        for (int k = 0; k < variantIds.Count; k++)
+            if (!Played(variantIds[k]))
+                candidates.Add(k);
+        if (candidates.Count == 0)
+        {
+            for (int k = 0; k < variantIds.Count; k++)
+                if (GameSettings.GetValue(LastKey(storyOf(variantIds[k])), -1f) != Code(variantIds[k]))
+                    candidates.Add(k);
+        }
+        if (candidates.Count == 0)
+            return variantIds.Count == 0 ? -1 : System.Math.Abs(roll) % variantIds.Count;
+        return candidates[System.Math.Abs(roll) % candidates.Count];
+    }
+
+    // "2B" → número estable (los ajustes solo guardan números); basta con que distinga las de una historia
+    private static float Code(string variantId)
+    {
+        int code = 0;
+        foreach (char c in variantId ?? "")
+            code = code * 31 + c;
+        return code & 0xFFFF;
+    }
 }
