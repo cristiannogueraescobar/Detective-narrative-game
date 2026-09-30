@@ -325,6 +325,21 @@ public class AnimationCapture
         manager.ForceAccusationPanel();
         yield return new WaitForSecondsRealtime(2f);
         Shot("notas_rueda");
+
+        // El informe final recuerda tu nota sobre el culpable (se le apunta "sospecha" y se acusa a otro)
+        var conversation = UnityEngine.Object.FindFirstObjectByType<AIConversationManager>();
+        string culprit = conversation.State.Variant.culpritId;
+        if (manager.Notes.TryGetValue(culprit, out SuspectNote current))
+            for (int k = 0; k < 3 && manager.Notes[culprit] != SuspectNote.Sospechoso; k++)
+                manager.CycleNote(culprit);
+        else
+            manager.CycleNote(culprit);
+        UnityEngine.Object.FindFirstObjectByType<InterrogationUI>().OnAccuseClick();
+        yield return new WaitForSecondsRealtime(3f);
+        var reveal = UnityEngine.Object.FindFirstObjectByType<StepReveal>();
+        reveal?.OnPointerClick(null);
+        yield return new WaitForSecondsRealtime(1f);
+        Shot("notas_final");
     }
 
     [UnityTest]

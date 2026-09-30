@@ -118,3 +118,14 @@ Cada entrada: fuente → qué aprendí → qué decidí con ello. La búsqueda l
   impedir elegirlos (es su nota, no una regla).
 - Fuentes: [Critical Play: Mysteries](https://mechanicsofmagic.com/2024/05/06/critical-play-mysteries-94/),
   [Detective prototype development report (Staffordshire)](https://gradex.staffs.ac.uk/wp-content/uploads/2026/05/5755_Detective-Prototype-Development-Report.pdf).
+
+## Preguntas que no sacan nada (ronda 12)
+- Opiniones de jugadores de juegos de interrogatorio con IA (Homicide Desk y similares): lo que más frustra es que
+  una pregunta vaga se conteste con evasivas mientras corre el límite de preguntas, y tener que "adivinar las
+  palabras" que quiere el juego. Lo que gusta: que el jugador se comporte como un investigador de verdad.
+- Nuestros datos (1290 preguntas del bot en 19 rondas): con una hora ("¿viste algo raro a las 5?") salen pistas en
+  el 9 %; sin hora, largas, en el 15 %; las cortas sobre un tema ("¿Tomaba Elena alguna medicación?") en el 88 %,
+  aunque casi todas son las que sugiere Pensar (sesgo). Por eso el A/B del bot (`-topicQuestions`) antes de tocar
+  el consejo del juego ("horas, lugares, objetos").
+- Fuentes: [Homicide Desk (reseñas)](https://vaporlens.app/app/4935210/homicide_desk),
+  [Narrative reliability in LLM detective games](https://arxiv.org/pdf/2609.23043).
