@@ -144,6 +144,10 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
     13 → 12, ruido), porque su detective no compara versiones con pistas. Lo dejo por diseño (es cómo se deduce en
     Her Story o L.A. Noire); si en pruebas con personas no ayuda, se quita en `Notebook.Format` (parámetro
     `interviewed`).
+14. **Tus notas por sospechoso** (sospechoso / descartado) no se validan ni cuentan para el final: son del
+    jugador. El bot no las usa, así que no hay métrica; la idea es de Golden Idol y de las libretas de deducción
+    (RESEARCH.md). En la rueda, "<s>Carmen</s> (tu descarte)" en vez de "descartado/a": los datos no guardan el
+    género del personaje.
 
 ## 7. Pendientes
 - APK de Android (instalar el módulo) y medir el post-proceso en un móvil real (estimado 1-2 ms).
@@ -159,7 +163,7 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 5. Abrir `Assets/Scenes/Game.unity` → **Play** con la ventana *Game* en 1080×1920:
    Jugar → un caso → leer el expediente (fondo de la historia) → Empezar → tocar una pregunta de ejemplo →
    Enviar → preguntar a otros → abrir la Libreta (verás "Dice: «…»" bajo quien ya ha contestado, con una
-   indicación la primera vez) → **Pensar** dos veces (la segunda te lleva al sospechoso con la pregunta escrita) →
+   indicación la primera vez; toca "añadir nota" para marcar sospechoso o descartado) → **Pensar** dos veces (la segunda te lleva al sospechoso con la pregunta escrita) →
    Fin del día (parte de la mañana) → … → Acusar con una **prueba clave** → final con rango y ficha policial.
 6. **Ajustes**: dificultad (para el siguiente caso), texto *Muy grande*, *Alto contraste*, *Filtro noir* apagado y
    encendido (el post-proceso se va y vuelve), volumen de música mientras suena una pista (la música se aparta).
