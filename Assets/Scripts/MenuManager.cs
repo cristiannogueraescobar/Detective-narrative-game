@@ -106,7 +106,7 @@ public class MenuManager : MonoBehaviour
     /// </summary>
     private void SetUpContinueButton()
     {
-        if (playButton == null || !SaveSystem.TryLoad(out _))
+        if (playButton == null || !SaveSystem.TryLoad(out SaveData saved))
             return;
 
         GameObject clone = Instantiate(playButton.gameObject, playButton.transform.parent);
@@ -118,7 +118,8 @@ public class MenuManager : MonoBehaviour
 
         var continueButton = clone.GetComponent<Button>();
         UIComponents.SetOnlyListener(continueButton, OnContinueClicked);
-        SetLabel(clone, "Continuar");
+        CaseLibrary.TryFind(saved.variantId, out StoryData savedStory, out _);
+        SetLabel(clone, GameTexts.Continue(savedStory != null ? savedStory.title : null, saved.day));
         SetLabel(playButton.gameObject, "Nueva partida");
     }
 

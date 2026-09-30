@@ -69,6 +69,14 @@ public static class GameTexts
         return $"DÍA {day} DE {maxDays}  ·  {questions}";
     }
 
+    /// <summary>
+    /// Botón de continuar con el caso y el día en que se quedó.
+    /// </summary>
+    public static string Continue(string caseTitle, int day)
+    {
+        return string.IsNullOrEmpty(caseTitle) ? "Continuar" : $"Continuar · {caseTitle}, día {day}";
+    }
+
     public static string AccusationTitle(bool lastDay)
     {
         return lastDay ? "HORA DE ACUSAR" : "ACUSACIÓN";

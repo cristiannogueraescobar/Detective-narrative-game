@@ -28,6 +28,13 @@ public class GameTextsTests
     }
 
     [Test]
+    public void ContinuarDiceQueCasoYQueDia()
+    {
+        Assert.AreEqual("Continuar · Noche de verano, día 3", GameTexts.Continue("Noche de verano", 3));
+        Assert.AreEqual("Continuar", GameTexts.Continue(null, 3));
+    }
+
+    [Test]
     public void AcercaDeLlevaLaVersion()
     {
         StringAssert.Contains("versión 1.2", GameTexts.About(ThemeManager.Current, "1.2"));
