@@ -14,12 +14,11 @@ Diario minuto a minuto: `docs/NIGHT-LOG.md`. Tests: **EditMode y PlayMode en ver
 | **Chat** | Burbujas (tú a la derecha, sospechoso a la izquierda con mini-retrato y hora de juego), avisos centrados, "escribiendo…", máquina de escribir que se salta con un toque, auto-scroll que respeta al que lee + "Nuevos mensajes", pool de filas. |
 | **Animación y ambiente** | Menú vivo (polvo en la luz, parpadeo de lámpara, lluvia en el cristal, vapor del café, título que se enciende), retratos con postura por emoción (temblor y sudor, retroceso, sacudida y rojo, bajada y desaturación), ficha de pista que vuela a la libreta, sello CONTRADICCIÓN, calendario del nuevo día, viñeta y latido en la acusación, "El jurado delibera…", finales con sello, color propio y línea temporal, expediente con sello CONFIDENCIAL, filtro noir (grano + viñeta). |
 | **Sonido** | `SoundManager` con eventos para todo, música por historia y menú con fundido cruzado, volúmenes de música y efectos, silencio si faltan archivos. `AUDIO-NEEDED.md`. |
-| **Contenido** | Instrucciones y Acerca de reescritos, tutorial de 4 indicaciones (saltable), HUD claro ("quedan N preguntas"), selección de caso con el mejor final de cada historia, botón Atrás de Android. |
-| **Narrativa con qwen** | Pistas flojas: 3A_audios 60 %→100 %, 3C_fotos 60 %→80 %, 2C_gps 60 %→50 % (ver pendientes). Víctima: "triste" 36/36 (antes "tranquilo" 16/36). Jugador bot: 9 variantes jugadas por qwen de principio a fin. Sin respuestas repetidas palabra por palabra. |
+| **Contenido** | Instrucciones y Acerca de reescritos, tutorial de 4 indicaciones (saltable), HUD claro ("quedan N preguntas"), selección de caso con el mejor final de cada historia, botón Atrás de Android. **Preguntas de ejemplo** al empezar con cada sospechoso (rellenan el campo, nunca envían), selector de pruebas que dice cuántas tienes, y la acusación recuerda lo que llevas ("En tu libreta: 3 pistas y 1 contradicción" / "acusar ahora es una apuesta"). |
+| **Narrativa con qwen** | Pistas flojas: 3A_audios 60 %→100 %, 3C_fotos 60 %→80 %, 2C_gps 60 %→80 %. Víctima: "triste" (antes "tranquilo" 16/36). **Estados variados en partida real**: nervioso 70 %→42 %, triste 17→35 %, tranquilo 5→13 % (el retrato vuelve a decir algo). Jugador bot: 9 variantes jugadas por qwen de principio a fin. Sin respuestas repetidas palabra por palabra. |
 | **Accesibilidad** | Tamaño de texto (3 niveles), alto contraste (AAA), velocidad del texto, reducir animaciones, filtro noir, vibración. Todo persistente y en caliente. |
 | **Build** | Game.unity única escena. Build de Windows OK y **el .exe arranca** (prueba de humo "SMOKE OK"). Android: módulo no instalado → pasos en `docs/BUILD.md`. |
 
-(Este informe se completa al final de la noche con métricas, galería y orden de pruebas.)
 
 ---
 
@@ -48,6 +47,15 @@ Diario minuto a minuto: `docs/NIGHT-LOG.md`. Tests: **EditMode y PlayMode en ver
 - **Nada de sustos para el que lee.** Si el jugador ha subido a releer, el chat no se le mueve: aparece
   "Nuevos mensajes".
 - **El Atrás de Android nunca saca del juego**: cierra lo que haya abierto y, en el interrogatorio, no hace nada.
+- **La primera pregunta no debería costar.** Un chat vacío en el móvil es una pantalla en blanco y un teclado.
+  Tres preguntas de ejemplo (dónde estabas, tu relación con la víctima, si viste algo raro) rellenan el campo
+  pero nunca envían: el jugador decide y la pregunta solo se gasta al pulsar Enviar. Van debajo del chat, no
+  encima, porque en días avanzados el chat de un sospechoso nuevo ya tiene partes y avisos que no se deben tapar.
+- **El retrato tiene que significar algo.** Si todo el mundo está "nervioso" (70 % de las respuestas), el
+  nerviosismo deja de ser una pista. Ahora solo se pone nervioso quien oye hablar de su tema delicado; con la
+  víctima se entristece; con lo cotidiano está tranquilo. Un cambio de cara vuelve a ser información.
+- **Decidir con información, sin chivatazos.** La acusación recuerda cuántas pistas y contradicciones llevas
+  (o que acusar sin nada es una apuesta), sin decir cuáles incriminan a quién.
 
 ---
 
