@@ -579,6 +579,14 @@ public class AnimationCapture
         fx.Hint(Tutorial.TextOf(Tutorial.Days), (RectTransform)Find("EndDayButton").transform, null, null);
         yield return new WaitForSecondsRealtime(0.6f);
         Shot("tutorial_dias");
+        Find("Indicacion (auto)")?.SetActive(false);
+        yield return Click("ViewCluesButton");
+        yield return new WaitForSecondsRealtime(0.6f);
+        fx.Hint(Tutorial.TextOf(Tutorial.Versions), (RectTransform)Find("CloseCluesButton").transform, null, null);
+        yield return new WaitForSecondsRealtime(0.6f);
+        Shot("tutorial_versiones");
+        Find("Indicacion (auto)")?.SetActive(false);
+        yield return Click("CloseCluesButton");
 
         Find("Indicacion (auto)")?.SetActive(false);
         Find("EndDayButton").GetComponent<Button>().onClick.Invoke();

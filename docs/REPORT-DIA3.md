@@ -45,7 +45,7 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 6. **Bloqueante para Android:** ningún proveedor LLM funciona tal cual en el móvil (decisión 1). APK sin generar (falta el módulo).
 
 ## 2. Galería antes / después
-`docs/screenshots/2026-09-30/galeria/` (24 hojas; se regeneran con `python Tools/make_gallery_dia3.py`).
+`docs/screenshots/2026-09-30/galeria/` (25 hojas; se regeneran con `python Tools/make_gallery_dia3.py`).
 "Antes" = capturas del comienzo del bloque C (visualmente, el final de la noche 2).
 
 | Hoja | Qué cambia |
@@ -64,6 +64,7 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 | 20_personajes | Los 7 retratos: plano 2D frente a relieve 2.5D |
 | 23_notas | Nuevo: tus notas en la libreta, la rueda que tacha tu descarte y el final que lo recuerda |
 | 24_libreta_partes | Nuevo: los partes de la mañana quedan en la libreta |
+| 25_tutorial_libreta | Nuevo: la indicación de la libreta señala «añadir nota» |
 
 ## 3. Métricas antes / después
 
