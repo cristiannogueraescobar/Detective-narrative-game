@@ -63,8 +63,13 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
 - 04:02 Calibración final de estados (último prompt): coherente 141/144; neutra tranquilo 34/36; víctima
   triste 34/36; sensible nervioso 35/36. Icono de app generado (Tools/make_app_icon.py).
 
+- 04:05 Segunda revisión de código: 4 menores, corregidos. Build de Windows rehecha con icono: SMOKE OK.
+- 04:15 Sala de interrogatorios oscura detrás del chat; desplegables: opciones de 48 dp y la lista abierta ya no
+  sale desplazada media pantalla (solo se veía en juego: capturado y corregido); diálogo de reinicio compacto.
+- 04:27 2C_gps resuelto: "Nadie me vio, pero mírelo en el GPS…" → 16/20 (80 %). Las tres pistas flojas ≥ 7/10.
+
 ## Ahora
-- Segunda revisión de código (subagente) y ronda final del bot (9×2) sobre HEAD.
+- Ronda final del bot (9×2) sobre HEAD; después, ronda de revisión 2 (diseño en juego, bot al azar, código).
 
 ## Después (orden)
 1. Layout: 3 rondas de render→revisión, safe area, zonas táctiles ≥ 48 px (añadir al test).
@@ -88,7 +93,7 @@ FINAL. Rondas de revisión.
   documentadas en docs/BUILD.md como pendientes.
 - Tamaño de las fichas: se mantuvo el límite de 460 palabras (test) acortando reglas en vez de subirlo.
 - Los retratos antiguos se muestran en plano medio (recorte), no de cuerpo entero.
-- 2C_gps se queda en 5/10: la línea de Maruxa (sirve para desbloquearla) compite con el GPS al preguntar
-  "¿quién puede confirmarlo?". Meter el GPS en su versión hace que la ficha revele la pista sola (lo prohíbe
-  un test de datos). Se deja así: con "¿cómo sé que dice la verdad?" sale el GPS. Pendiente de decidir.
+- 2C_gps: en vez de meter el GPS en su versión (el test de datos lo prohíbe: la ficha revelaría la pista sola),
+  la línea de Maruxa del cartero en 2C solo la nombra (sigue desbloqueándola) y el hecho empieza por "Nadie me
+  vio, pero…", que es como respondería a "¿alguien puede confirmarlo?".
 - Vibración activada por defecto (solo en móvil).
