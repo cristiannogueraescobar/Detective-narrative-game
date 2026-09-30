@@ -34,12 +34,13 @@ public static class GameTexts
     /// <summary>
     /// Consejo en el parte de la mañana para quien lleva dos días sin ninguna pista (sin desvelar nada del caso).
     /// </summary>
-    public static string StuckHint(int day, int cluesFound)
+    public static string StuckHint(int day, int cluesFound, bool canThink = false)
     {
         if (day < 3 || cluesFound > 0)
             return null;
         return "Aún no tienes ninguna pista. Pregunta cosas concretas: a qué hora, dónde, qué vio u oyó cada uno, " +
-               "quién puede confirmarlo. Y habla con todos: cada uno sabe algo.";
+               "quién puede confirmarlo. Y habla con todos: cada uno sabe algo." +
+               (canThink ? " Si te atascas, «Pensar» (en la libreta) te sugiere a quién preguntar." : "");
     }
 
     /// <summary>
@@ -228,6 +229,7 @@ public static class GameTexts
         string c = clues == 1 ? "1 pista" : $"{clues} pistas";
         string x = contradictions == 0 ? "ninguna contradicción"
                  : contradictions == 1 ? "1 contradicción" : $"{contradictions} contradicciones";
-        return $"En tu libreta: {c} y {x}.";
+        // El selector de la prueba clave solo aparece con pistas: se explica justo entonces
+        return $"En tu libreta: {c} y {x}." + (clues > 0 ? " Elige también la prueba clave: si lo demuestra, tu rango sube." : "");
     }
 }

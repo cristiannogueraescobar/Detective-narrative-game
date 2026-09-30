@@ -20,9 +20,9 @@ public class GameTextsTests
     }
 
     [TestCase(0, 0, "Tu libreta está vacía: acusar ahora es una apuesta.")]
-    [TestCase(1, 0, "En tu libreta: 1 pista y ninguna contradicción.")]
-    [TestCase(3, 1, "En tu libreta: 3 pistas y 1 contradicción.")]
-    [TestCase(5, 2, "En tu libreta: 5 pistas y 2 contradicciones.")]
+    [TestCase(1, 0, "En tu libreta: 1 pista y ninguna contradicción. Elige también la prueba clave: si lo demuestra, tu rango sube.")]
+    [TestCase(3, 1, "En tu libreta: 3 pistas y 1 contradicción. Elige también la prueba clave: si lo demuestra, tu rango sube.")]
+    [TestCase(5, 2, "En tu libreta: 5 pistas y 2 contradicciones. Elige también la prueba clave: si lo demuestra, tu rango sube.")]
     public void LaAcusacionRecuerdaLoQueTienes(int clues, int contradictions, string expected)
     {
         Assert.AreEqual(expected, GameTexts.AccusationSummary(clues, contradictions));
@@ -155,5 +155,21 @@ public class GameTextsTests
         string text = GameTexts.Instructions(ThemeManager.Current);
         StringAssert.Contains(GameTexts.NumberWord(Difficulty.QuestionsPerDay(DifficultyLevel.Historia)) + " en Historia", text);
         StringAssert.Contains(GameTexts.NumberWord(Difficulty.QuestionsPerDay(DifficultyLevel.Veterano)) + " en Veterano", text);
+    }
+
+    // Ronda final 2 (recorrido de jugador nuevo): quien se atasca sabe que existe "Pensar"; la prueba clave se explica
+    [Test]
+    public void ElConsejoDeAtascoRecuerdaPensarSiHayAyudas()
+    {
+        StringAssert.Contains("Pensar", GameTexts.StuckHint(3, 0, canThink: true));
+        StringAssert.DoesNotContain("Pensar", GameTexts.StuckHint(3, 0, canThink: false), "en Veterano no hay ayudas");
+    }
+
+    [Test]
+    public void LaAcusacionExplicaLaPruebaClaveSoloSiHayPistas()
+    {
+        StringAssert.Contains("prueba clave", GameTexts.AccusationSummary(2, 0));
+        StringAssert.DoesNotContain("prueba clave", GameTexts.AccusationSummary(0, 0), "sin pistas no hay selector");
+        StringAssert.DoesNotContain("prueba clave", GameTexts.AccusationPrompt);
     }
 }

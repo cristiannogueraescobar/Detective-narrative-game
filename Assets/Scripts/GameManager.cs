@@ -334,7 +334,7 @@ public class GameManager : MonoBehaviour
     private string MorningReport(int day)
     {
         string report = day - 1 < variant.morningReports.Length ? variant.morningReports[day - 1] : "";
-        return GameTexts.MorningReport(report, GameTexts.StuckHint(day, DiscoveredClues().Count), day, maxDays);
+        return GameTexts.MorningReport(report, GameTexts.StuckHint(day, DiscoveredClues().Count, HintCost >= 0), day, maxDays);
     }
 
     public void ForceAccusationPanel()

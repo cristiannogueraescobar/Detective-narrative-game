@@ -408,6 +408,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   corregido con un test que impide que ninguna pregunta de ejemplo desbloquee a nadie. COHERENCE.md regenerada.
   EditMode 666/666, PlayMode 36/36. **Bloque D: HECHO CUANDO cumplido.**
 
+- **13:08** Ronda final 2, recorrido mental de jugador nuevo: dos huecos. (1) Quien se atasca no sabe que existe
+  "Pensar" (vive en la libreta) → el consejo de atasco del parte lo menciona si la dificultad tiene ayudas. (2) La
+  prueba clave no se explicaba; primero la puse en la pregunta de la acusación, pero la captura mostró que sin
+  pistas el selector no aparece → la explicación va en el resumen de la libreta, solo cuando hay pistas. Tests.
+  Unity activó solo UnityConnectSettings (servicios): revertido, no se sube.
+
 ## Ahora (día 3)
 - Ronda final 2: bot para comprobar los desbloqueos tras el n.º 7; capturas tras los cambios; recorrido mental.
   Informe intermedio a las ~16:10.
