@@ -197,9 +197,17 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   nada depende de archivos sin subir. Horas inventadas de la definitiva: casi todas rutinas aproximadas
   ("me acosté sobre las 23:00"); las dañinas son avistamientos inventados (anotado en el informe).
 
+- 10:15 Ronda 11: bot en 1A, 3B, 3C (semilla 31): culpable 1/6, 0 rupturas, 3 horas inventadas; estados triste
+  49 % · nervioso 35 %. La historia 3 sigue siendo la más difícil para el bot (se centra en el humo).
+- PAUSA pedida por el usuario. Todo comiteado en feature/noche2. Tests: EditMode 549/549, PlayMode 20/20.
+  Build final en Builds/Windows-final (SMOKE OK).
+
 ## Ahora
-- Rondas finales (10+): revisión de toda la rama (subagente), bot definitivo de 18 partidas (semilla 59),
-  informe y galería finales, build final, borrar el worktree.
+- EN PAUSA. Lo siguiente que iba a hacer:
+  1. Añadir la ronda 11 a la tabla del bot en docs/REPORT-NIGHT2.md.
+  2. Más rondas finales (bot en 3 variantes, revisión de código, crítica de capturas) hasta ~11:30.
+  3. Cierre: cifras finales en el informe, build final si cambia código, borrar el worktree C:\Dev\dng-bot
+     (git worktree remove --force + prune) y mensaje final.
 
 ## Después (orden)
 1. Layout: 3 rondas de render→revisión, safe area, zonas táctiles ≥ 48 px (añadir al test).
