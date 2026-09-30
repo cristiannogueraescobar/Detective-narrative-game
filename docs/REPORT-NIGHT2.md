@@ -81,6 +81,7 @@ Informes completos en `Logs/` (`bot-final/`, `bot-baseline-0600/`, `bot-guia2/`,
 | Ronda 7 (3B, 3C, 2A) | 6 | 2/6 | 1,0 | 8 en 210 | 0 |
 | Ronda 8 (3C, 3A, 3B) | 6 | 2/6 | 1,0 | 6 en 210 | 0 |
 | Ronda 9 (2B, 1B, 1A) | 6 | 4/6 | 2,2 | 7 en 210 | 0 |
+| Ronda 11 (1A, 3B, 3C) | 6 | 1/6 | 1,5 | 3 en 210 | 0 |
 | **Definitiva 09:50** (todo, semilla 59) | 18 | **9/18 (50 %)** | 1,7 | 26 en 630 (4,1 %) | 0*** |
 
 Con 18 partidas la tasa de acierto baila ±2 partidas de una ronda a otra: el detective también es qwen y sus
