@@ -112,4 +112,17 @@ public static class GameTexts
     }
 
     public const string AccusationPrompt = "¿Quién lo hizo? Solo tienes una oportunidad: tus pistas y las contradicciones serán las pruebas.";
+
+    /// <summary>
+    /// Lo que el jugador lleva a la acusación (sin decir qué pistas incriminan a quién).
+    /// </summary>
+    public static string AccusationSummary(int clues, int contradictions)
+    {
+        if (clues <= 0 && contradictions <= 0)
+            return "Tu libreta está vacía: acusar ahora es una apuesta.";
+        string c = clues == 1 ? "1 pista" : $"{clues} pistas";
+        string x = contradictions == 0 ? "ninguna contradicción"
+                 : contradictions == 1 ? "1 contradicción" : $"{contradictions} contradicciones";
+        return $"En tu libreta: {c} y {x}.";
+    }
 }

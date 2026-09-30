@@ -475,11 +475,12 @@ public partial class InterrogationUI
         Transform instructions = panel.Find("Text (TMP)");
         if (instructions != null)
         {
-            LayoutKit.Put(instructions, column, height: 200f);
+            LayoutKit.Put(instructions, column, height: 240f); // Pregunta + resumen de la libreta
             if (instructions.TryGetComponent(out TMP_Text instructionsText))
             {
                 instructionsText.text = GameTexts.AccusationPrompt;
                 LayoutKit.MultiLine(instructionsText, T.bodySize);
+                accusationPromptText = instructionsText;
             }
         }
 

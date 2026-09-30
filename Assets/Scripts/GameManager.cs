@@ -428,7 +428,8 @@ public class GameManager : MonoBehaviour
 
     private void ShowAccusationPanel()
     {
-        interrogationUI?.ShowAccusationPanel(UnlockedSuspects(), CanCancelAccusation);
+        interrogationUI?.ShowAccusationPanel(UnlockedSuspects(), CanCancelAccusation,
+            conversationManager.State?.ContradictionClueIds.Count ?? 0);
     }
 
     public void CancelAccusation()

@@ -101,6 +101,7 @@ public partial class InterrogationUI : MonoBehaviour
     private RectTransform suggestionsBox; // Preguntas de ejemplo en un chat sin empezar
     private readonly List<TMP_Text> suggestionLabels = new List<TMP_Text>();
     private string victimName;
+    private TMP_Text accusationPromptText;  // Pregunta de la acusación y resumen de la libreta
     private string pendingSuspectId;
     private int questionsUsedToday;
     private int questionsPerDay = 5;

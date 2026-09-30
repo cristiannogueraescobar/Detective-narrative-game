@@ -119,7 +119,7 @@ public static class LayoutPreview
             c => $"La versión de alguien («una cita larga de su mentira») choca con: {c.playerName}", onPaper: true));
 
         ShowEnding(ui, Ending.Insufficient);
-        ui.ShowAccusationPanel(suspects, canGoBack: true);
+        ui.ShowAccusationPanel(suspects, canGoBack: true, contradictions: 12); // Cifras de dos dígitos: la línea más larga
 
         // Conversación larga (vive en el scroll), con todos los tipos de aviso que pueden aparecer en ella
         ui.ShowDayTransition(2, "El forense sitúa la muerte entre las 22:30 y las 23:15.");

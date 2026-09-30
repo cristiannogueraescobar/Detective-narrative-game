@@ -13,10 +13,14 @@ public partial class InterrogationUI
     // ACUSACIÓN
     // ============================================
 
-    public void ShowAccusationPanel(List<SuspectView> options, bool canGoBack)
+    public void ShowAccusationPanel(List<SuspectView> options, bool canGoBack, int contradictions = 0)
     {
         ShowPanel(accusationPanel);
         accusationOptions = options;
+        // Lo que llevas a la acusación, bajo la pregunta (sin decir qué pista incrimina a quién)
+        if (accusationPromptText != null)
+            accusationPromptText.text = $"{GameTexts.AccusationPrompt}\n<size=80%><color={Theme.Hex(T.textSecondary)}>" +
+                                        $"{GameTexts.AccusationSummary(evidenceOptions.Count, contradictions)}</color></size>";
         // El título está dentro de la columna de la distribución: se busca en todo el panel
         if (accusationPanel != null)
         {

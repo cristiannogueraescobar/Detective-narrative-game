@@ -19,6 +19,15 @@ public class GameTextsTests
         Assert.AreEqual(expected, GameTexts.NoEvidenceWith(available));
     }
 
+    [TestCase(0, 0, "Tu libreta está vacía: acusar ahora es una apuesta.")]
+    [TestCase(1, 0, "En tu libreta: 1 pista y ninguna contradicción.")]
+    [TestCase(3, 1, "En tu libreta: 3 pistas y 1 contradicción.")]
+    [TestCase(5, 2, "En tu libreta: 5 pistas y 2 contradicciones.")]
+    public void LaAcusacionRecuerdaLoQueTienes(int clues, int contradictions, string expected)
+    {
+        Assert.AreEqual(expected, GameTexts.AccusationSummary(clues, contradictions));
+    }
+
     [Test]
     public void LasInstruccionesExplicanTodoElJuego()
     {
