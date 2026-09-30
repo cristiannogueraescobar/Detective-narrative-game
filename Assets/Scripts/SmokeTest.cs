@@ -34,7 +34,9 @@ public class SmokeTest : MonoBehaviour
                   && FindFirstObjectByType<InterrogationUI>() != null
                   && FindFirstObjectByType<MenuManager>() != null
                   && ThemeManager.Current != null
-                  && ArtLibrary.Load(ArtSlots.IconNotebook) != null;
+                  && ArtLibrary.Load(ArtSlots.IconNotebook) != null
+                  && ArtLibrary.Load(ArtSlots.StoryIntro("1")) != null   // Arte de las historias (C5) en el catálogo
+                  && Shader.Find(ArtGrading.LitShaderName) != null;     // Relieve de los retratos (C3) en la build
 
         Debug.Log(ok && errors == 0 ? "SMOKE OK" : $"SMOKE FAIL (escena completa: {ok}, errores: {errors})");
         Application.Quit(ok && errors == 0 ? 0 : 1);

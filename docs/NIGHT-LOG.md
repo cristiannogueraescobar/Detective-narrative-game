@@ -392,5 +392,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   móvil ningún proveedor funciona tal cual (Ollama en localhost; la clave de Anthropic se lee de un archivo que no
   existe en Android) → Decisiones para Cristian, con 3 opciones.
 
+- **12:40** E: build de Windows recompilada (Builds/Windows-final/Detectives.exe, 131 MB, 0 errores, 14 s) y prueba
+  de humo **SMOKE OK**; la prueba ahora comprueba también el arte de las historias y el shader de relieve en la
+  build. **Bloque E: HECHO CUANDO cumplido salvo el APK** (sin módulo Android en este PC; documentado).
+
 ## Ahora (día 3)
-- E: recompilar Windows (Builds/Windows-final) + prueba de humo. Revisar la revisión de D3 cuando llegue.
+- Esperando la revisión de D3; mientras, primera RONDA FINAL (capturas 1920/2400 + crítica, diff, validador + bot
+  en 3 variantes, recorrido mental de jugador nuevo).
