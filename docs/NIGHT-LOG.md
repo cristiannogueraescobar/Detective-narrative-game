@@ -507,6 +507,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   Ronda 6 (bot 2C, 1C, 3B, con los arreglos de idioma y etiqueta): 0 respuestas incoherentes, 4/6 resueltas,
   primera pista 5,3. EditMode 700/700, PlayMode 46/46.
 
+- **15:45** Ronda 7: capturas a 1920 y 2400 (pared de la rueda, texto muy grande, alto contraste: bien); galería
+  regenerada; build de Windows con todo: SMOKE OK. El lector de pantalla habría leído las cifras de la pared
+  ("190, 180…"): componente Decorative que el lector salta (test).
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
