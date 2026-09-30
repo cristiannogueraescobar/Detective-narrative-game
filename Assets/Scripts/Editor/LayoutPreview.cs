@@ -15,7 +15,7 @@ public static class LayoutPreview
     public const string ScenePath = "Assets/Scenes/Game.unity";
 
     public static readonly string[] Panels =
-        { "MainMenuPanel", "IntroPanel", "InterrogationPanel", "CluesPanel", "AccusatonPanel", "ResultPanel", "IntructionsPanel", "SettingsPanel", "AboutPanel" };
+        { "MainMenuPanel", "IntroPanel", "InterrogationPanel", "CluesPanel", "AccusatonPanel", "ResultPanel", "IntructionsPanel", "SettingsPanel", "AboutPanel", CaseSelect.PanelName };
 
     private class MemoryStore : ISettingsStore
     {

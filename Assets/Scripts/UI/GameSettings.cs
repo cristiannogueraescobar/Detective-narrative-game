@@ -191,6 +191,10 @@ public static class GameSettings
 
     public static void SetFlag(string key, bool value) => store.Set(key, value ? 1f : 0f);
 
+    public static float GetValue(string key, float fallback) => store.Get(key, fallback);
+
+    public static void SetValue(string key, float value) => store.Set(key, value);
+
     /// <summary>
     /// Vibración del móvil en los momentos fuertes (contradicción, pista).
     /// </summary>

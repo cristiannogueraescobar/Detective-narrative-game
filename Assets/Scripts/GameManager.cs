@@ -151,7 +151,7 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    private void SelectCase()
+    private void SelectCase(string storyId = null)
     {
         string forcedId = Application.isEditor ? CaseIdFor(debugCase) : null;
 
@@ -160,7 +160,10 @@ public class GameManager : MonoBehaviour
             if (forcedId != null)
                 Debug.LogWarning($"[GameManager] La variante {forcedId} aún no existe; se sortea entre las registradas.");
 
-            var all = CaseLibrary.AllVariants().ToList();
+            // La historia la elige el jugador; la variante (quién lo hizo) siempre es sorpresa
+            var all = CaseLibrary.AllVariants().Where(p => storyId == null || p.story.id == storyId).ToList();
+            if (all.Count == 0)
+                all = CaseLibrary.AllVariants().ToList();
             (story, variant) = all[UnityEngine.Random.Range(0, all.Count)];
         }
 
@@ -180,6 +183,25 @@ public class GameManager : MonoBehaviour
     // ============================================
     // FLUJO
     // ============================================
+
+    /// <summary>
+    /// El jugador eligió historia en la selección de caso (null = cualquiera). Prepara una partida nueva.
+    /// </summary>
+    public void ChooseStory(string storyId)
+    {
+        currentDay = 1;
+        questionsUsedToday = 0;
+        accusationMade = false;
+        SelectCase(storyId);
+        SelectCaseUI();
+    }
+
+    private void SelectCaseUI()
+    {
+        interrogationUI?.SetEvidenceOptions(DiscoveredClues());
+        RefreshNotebook();
+        UpdateGameState();
+    }
 
     public void ShowCaseIntro()
     {
@@ -432,6 +454,7 @@ public class GameManager : MonoBehaviour
         accusationMade = true;
         SaveSystem.Delete(); // La partida ha terminado
         AccusationResult result = State.Accuse(accusedId);
+        CaseRecords.Record(story.id, result.ending);
 
         Debug.Log($"[GameManager] Acusación: {accusedId} → {result.ending} (evidencia {result.evidence})");
 

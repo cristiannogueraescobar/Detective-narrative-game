@@ -145,6 +145,7 @@ public class MenuManager : MonoBehaviour
             SettingsPanel.Build(settingsPanel, () => gameManager?.RestartGame());
 
         BuildMainMenu();
+        BuildCaseSelect();
         Theme theme = ThemeManager.Current;
         SetText(instructionsPanel, "InstructionsTitleText", GameTexts.InstructionsTitle);
         SetText(instructionsPanel, "InstructionsText", GameTexts.Instructions(theme));
@@ -313,10 +314,45 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+    private RectTransform caseSelect;
+
+    // "Jugar": primero se elige el caso
     private void OnPlayClicked()
     {
-        Debug.Log("[MenuManager] Botón JUGAR presionado");
+        ShowCaseSelect();
+    }
+
+    /// <summary>
+    /// Selección de caso: un expediente por historia con su mejor final, y "al azar".
+    /// </summary>
+    private void ShowCaseSelect()
+    {
+        if (mainMenuPanel == null)
+        {
+            StartChosenCase(null);
+            return;
+        }
+        ShowPanel(mainMenuPanel);
+        BuildCaseSelect();
+        CaseSelect.Refresh(caseSelect);
+        caseSelect.gameObject.SetActive(true);
+        caseSelect.SetAsLastSibling();
+        UIAnimations.FadeIn(this, caseSelect.gameObject);
+    }
+
+    private void BuildCaseSelect()
+    {
+        if (caseSelect == null && mainMenuPanel != null)
+            caseSelect = CaseSelect.Build((RectTransform)mainMenuPanel.transform, StartChosenCase, () => caseSelect.gameObject.SetActive(false));
+    }
+
+    private void StartChosenCase(string storyId)
+    {
+        Debug.Log($"[MenuManager] Caso elegido: {storyId ?? "al azar"}");
         SaveSystem.Delete(); // "Nueva partida" descarta la anterior
+        gameManager?.ChooseStory(storyId);
+        if (caseSelect != null)
+            caseSelect.gameObject.SetActive(false);
         
         // Ocultar menú principal
         if (mainMenuPanel != null)

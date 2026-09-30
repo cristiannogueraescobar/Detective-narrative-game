@@ -107,6 +107,7 @@ public class GameSmokeTests
     private static IEnumerator StartNewGame()
     {
         yield return Click("PlayButton");
+        yield return Click("Caso al azar");
         Assert.IsTrue(Find("IntroPanel").activeInHierarchy, "tras Jugar se ve la intro del caso");
         yield return Click("StartButton");
         Assert.IsTrue(Find("InterrogationPanel").activeInHierarchy, "tras Empezar se ve el interrogatorio");

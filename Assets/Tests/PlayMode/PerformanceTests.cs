@@ -85,6 +85,8 @@ public class PerformanceTests
 
         Resources.FindObjectsOfTypeAll<GameObject>().First(g => g.name == "PlayButton" && g.scene.IsValid()).GetComponent<Button>().onClick.Invoke();
         yield return null;
+        Resources.FindObjectsOfTypeAll<GameObject>().First(g => g.name == "Caso al azar" && g.scene.IsValid()).GetComponent<Button>().onClick.Invoke();
+        yield return null;
         Resources.FindObjectsOfTypeAll<GameObject>().First(g => g.name == "StartButton" && g.scene.IsValid()).GetComponent<Button>().onClick.Invoke();
         yield return new WaitForSecondsRealtime(1f);
         var ui = Object.FindFirstObjectByType<InterrogationUI>();

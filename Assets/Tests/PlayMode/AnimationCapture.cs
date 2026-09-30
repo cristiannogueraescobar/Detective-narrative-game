@@ -119,6 +119,7 @@ public class AnimationCapture
     private static IEnumerator ToInterrogation()
     {
         yield return Click("PlayButton");
+        yield return Click("Caso al azar");
         yield return Click("StartButton");
         yield return new WaitForSecondsRealtime(0.5f);
     }
@@ -147,6 +148,7 @@ public class AnimationCapture
     public IEnumerator Intro()
     {
         yield return Click("PlayButton");
+        yield return Click("Caso al azar");
         yield return Frames("intro", 0.2f, 1.5f, 4f, 8f);
     }
 
@@ -291,6 +293,9 @@ public class AnimationCapture
         }
 
         yield return Click("PlayButton");
+        yield return new WaitForSecondsRealtime(0.5f);
+        Shot("panel_casos");
+        yield return Click("Caso al azar");
         yield return new WaitForSecondsRealtime(6f);
         Shot("panel_intro");
         yield return Click("StartButton");
