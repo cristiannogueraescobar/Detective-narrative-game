@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -32,6 +33,15 @@ public class BackButtonRouter : MonoBehaviour
     /// </summary>
     public bool Back()
     {
+        // Una lista desplegable abierta es lo más "de dentro": Atrás solo la cierra
+        foreach (TMP_Dropdown dropdown in FindObjectsByType<TMP_Dropdown>(FindObjectsSortMode.None))
+        {
+            if (dropdown.IsExpanded)
+            {
+                dropdown.Hide();
+                return true;
+            }
+        }
         if (game != null && game.HandleBack())
             return true;
         return menu != null && menu.HandleBack();

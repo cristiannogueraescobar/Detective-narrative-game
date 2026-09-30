@@ -556,6 +556,16 @@ public class FxLayer : MonoBehaviour
     public bool HintVisible => currentHint != null;
 
     /// <summary>
+    /// Retira la indicación abierta (p. ej. al abrir un aviso: esta capa va por encima de todo).
+    /// </summary>
+    public void CloseHint()
+    {
+        if (currentHint != null)
+            Destroy(currentHint);
+        currentHint = null;
+    }
+
+    /// <summary>
     /// Indicación junto a 'target' (encima si está en la mitad de abajo, debajo si no), con un aro que late
     /// alrededor. "Entendido" la cierra; "Saltar tutorial", también todas las siguientes.
     /// </summary>

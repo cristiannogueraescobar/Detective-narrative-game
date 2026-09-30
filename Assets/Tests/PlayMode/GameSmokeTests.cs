@@ -199,6 +199,38 @@ public class GameSmokeTests
     }
 
     [UnityTest]
+    public IEnumerator EmpezarOtroCasoConUnaPartidaGuardadaPidePermiso()
+    {
+        yield return StartNewGame();
+        yield return Ask("¿Qué hacía a las diez?");
+        yield return WaitUntil(() => SaveSystem.Exists && Find("AskButton").GetComponent<Button>().interactable, 8f, "partida guardada");
+
+        yield return SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
+        yield return null;
+        Object.FindFirstObjectByType<AIConversationManager>().UseProvider(provider);
+        yield return null;
+
+        yield return Click("PlayButton");
+        yield return Click("Caso al azar");
+        GameObject dialog = Find("ConfirmarNuevaPartida");
+        Assert.IsTrue(dialog != null && dialog.activeInHierarchy, "hay una investigación a medias: se pregunta antes de borrarla");
+        Assert.IsTrue(SaveSystem.Exists, "aún no se ha borrado nada");
+        Assert.IsFalse(Find("IntroPanel").activeInHierarchy);
+
+        // Atrás (o Cancelar) no pierde nada
+        Assert.IsTrue(Object.FindFirstObjectByType<MenuManager>().HandleBack());
+        yield return null;
+        Assert.IsFalse(dialog.activeInHierarchy);
+        Assert.IsTrue(SaveSystem.Exists);
+
+        yield return Click("Caso al azar");
+        dialog.GetComponentsInChildren<Button>().First(b => b.name == ConfirmDialog.ConfirmName).onClick.Invoke();
+        yield return null;
+        Assert.IsTrue(Find("IntroPanel").activeInHierarchy, "confirmado: empieza el caso nuevo");
+        Assert.IsFalse(SaveSystem.Exists, "y la partida anterior se descarta");
+    }
+
+    [UnityTest]
     public IEnumerator ContinuarRecuperaLaConversacion()
     {
         yield return StartNewGame();
@@ -330,6 +362,37 @@ public class GameSmokeTests
         Assert.IsFalse(body.isTextTruncated, "el parte se lee entero");
         Assert.GreaterOrEqual(body.fontSize, Theme.MinReadableSize - 0.5f);
         Object.Destroy(card);
+    }
+
+    [UnityTest]
+    public IEnumerator ElAvisoDeFinDelDiaNoQuedaDebajoDeUnaIndicacion()
+    {
+        yield return StartNewGame();
+        var fx = Object.FindFirstObjectByType<FxLayer>();
+        fx.Hint(Tutorial.TextOf(Tutorial.Days), (RectTransform)Find("EndDayButton").transform, null, null);
+        yield return null;
+        Assert.IsTrue(fx.HintVisible);
+
+        yield return Click("EndDayButton");
+        Assert.IsFalse(fx.HintVisible, "la indicación (en otro lienzo, por encima) se retira para no tapar el aviso");
+        Assert.IsTrue(Find("ConfirmarFinDelDia").activeInHierarchy);
+    }
+
+    [UnityTest]
+    public IEnumerator AtrasConUnaListaAbiertaSoloCierraLaLista()
+    {
+        yield return StartNewGame();
+        Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(0.3f);
+        TMP_Dropdown dropdown = Find("AccusatonPanel").GetComponentsInChildren<TMP_Dropdown>().First();
+        dropdown.Show();
+        yield return null;
+        Assert.IsTrue(dropdown.IsExpanded);
+
+        Assert.IsTrue(Object.FindFirstObjectByType<BackButtonRouter>().Back());
+        yield return new WaitForSecondsRealtime(0.3f);
+        Assert.IsFalse(dropdown.IsExpanded, "se cierra la lista");
+        Assert.IsTrue(Find("AccusatonPanel").activeInHierarchy, "y la acusación sigue abierta (un Atrás, un paso)");
     }
 
     [UnityTest]

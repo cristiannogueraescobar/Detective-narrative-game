@@ -353,7 +353,8 @@ public class MenuManager : MonoBehaviour
     {
         if (caseSelect != null && caseSelect.gameObject.activeInHierarchy)
         {
-            caseSelect.gameObject.SetActive(false);
+            if (!ConfirmDialog.Hide(caseSelect, NewGameDialog))
+                caseSelect.gameObject.SetActive(false);
             return true;
         }
         foreach (GameObject page in new[] { instructionsPanel, settingsPanel, aboutPanel })
@@ -383,9 +384,23 @@ public class MenuManager : MonoBehaviour
         }
         if (caseSelect == null && mainMenuPanel != null)
         {
-            caseSelect = CaseSelect.Build((RectTransform)mainMenuPanel.transform, StartChosenCase, () => caseSelect.gameObject.SetActive(false));
+            caseSelect = CaseSelect.Build((RectTransform)mainMenuPanel.transform, OnCaseChosen, () => caseSelect.gameObject.SetActive(false));
             caseSelectTheme = ThemeManager.Current;
         }
+    }
+
+    private const string NewGameDialog = "ConfirmarNuevaPartida";
+
+    // Con una investigación a medias, empezar otra la borra: se pregunta antes (Continuar sigue en el menú)
+    private void OnCaseChosen(string storyId)
+    {
+        if (!SaveSystem.Exists || caseSelect == null)
+        {
+            StartChosenCase(storyId);
+            return;
+        }
+        ConfirmDialog.Show(caseSelect, NewGameDialog, GameTexts.NewGameConfirm, GameTexts.NewGameYes, GameTexts.NewGameNo,
+            () => StartChosenCase(storyId));
     }
 
     private void StartChosenCase(string storyId)

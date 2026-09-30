@@ -413,6 +413,7 @@ public partial class InterrogationUI : MonoBehaviour
             gameManager.EndDay();
             return;
         }
+        fx?.CloseHint(); // La capa de efectos va por encima: la indicación taparía los botones del aviso
         ConfirmDialog.Show(interrogationPanel.transform, EndDayDialog, GameTexts.EndDayConfirm(remaining),
             GameTexts.EndDayYes, GameTexts.EndDayNo, () => gameManager.EndDay());
     }

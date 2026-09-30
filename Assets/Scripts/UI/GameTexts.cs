@@ -60,6 +60,10 @@ public static class GameTexts
         return string.Join("\n", parts);
     }
 
+    public const string NewGameConfirm = "¿Empezar un caso nuevo? Se perderá la investigación que tienes a medias.";
+    public const string NewGameYes = "Empezar de nuevo";
+    public const string NewGameNo = "Cancelar";
+
     public const string EndDayYes = "Terminar el día";
     public const string EndDayNo = "Seguir preguntando";
 
