@@ -1,5 +1,5 @@
 /// <summary>
-/// Tutorial ligero de la primera partida: cuatro indicaciones en su momento, cada una una sola vez.
+/// Tutorial ligero de la primera partida: cinco indicaciones en su momento, cada una una sola vez.
 /// "Saltar tutorial" las apaga todas. Se guarda con los ajustes.
 /// </summary>
 public static class Tutorial
@@ -8,8 +8,9 @@ public static class Tutorial
     public const string Days = "dias";
     public const string Evidence = "pruebas";
     public const string Contradiction = "contradiccion";
+    public const string Versions = "versiones"; // La libreta ya apunta lo que dice alguien
 
-    public static readonly string[] All = { Ask, Days, Evidence, Contradiction };
+    public static readonly string[] All = { Ask, Days, Evidence, Contradiction, Versions };
 
     private const string Prefix = "tutorial.";
     private const string SkippedKey = "tutorial.saltado";
@@ -59,6 +60,8 @@ public static class Tutorial
                 return "Elige a quién interrogar y escribe tu pregunta (o toca una de ejemplo). Funcionan las concretas: horas, lugares, objetos.";
             case Days:
                 return $"Tienes {GameTexts.NumberWord(questionsPerDay)} preguntas al día. Cuando se acaben, pulsa «Fin del día» y a la mañana siguiente llegará un parte.";
+            case Versions:
+                return "Aquí se apunta lo que dice cada uno. Si una pista no cuadra con su versión, enséñasela: así se pilla una mentira.";
             case Evidence:
                 return "Las pistas se guardan en tu libreta. Con «Mostrar prueba» puedes enseñárselas a un sospechoso junto a tu pregunta.";
             default:
