@@ -44,7 +44,7 @@ public static class Notebook
     public static string Format(StoryData story, InvestigationState state, IEnumerable<string> unlocked,
                                 IReadOnlyDictionary<string, Emotion> emotions, Func<ClueData, string> describeContradiction,
                                 bool onPaper = false, IEnumerable<string> interviewed = null,
-                                IReadOnlyDictionary<string, SuspectNote> notes = null)
+                                IReadOnlyDictionary<string, SuspectNote> notes = null, IReadOnlyList<string> reports = null)
     {
         Theme t = ThemeManager.Current;
         // Sobre el papel de la libreta, tintas oscuras (los colores del tema no se leerían sobre crema)
@@ -117,6 +117,30 @@ public static class Notebook
                 sb.AppendLine($"<indent=6%><i><size=90%>Dice: «{role.version}»</size></i></indent>");
         }
 
+        // Los partes de la mañana, para releerlos (antes solo se veían en la transición del día)
+        if (reports != null && reports.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine(heading("PARTES DE LA MAÑANA"));
+            foreach (string report in reports)
+                sb.AppendLine($"• {report}");
+        }
+
         return sb.ToString().TrimEnd();
+    }
+
+    /// <summary>
+    /// Los partes recibidos hasta 'day' ("Día 2: …"); el día 1 no tiene.
+    /// </summary>
+    public static List<string> ReportsUpTo(VariantData variant, int day)
+    {
+        var list = new List<string>();
+        string[] reports = variant?.morningReports ?? new string[0];
+        for (int d = 2; d <= day && d - 1 < reports.Length; d++)
+        {
+            if (!string.IsNullOrWhiteSpace(reports[d - 1]))
+                list.Add($"Día {d}: {reports[d - 1]}");
+        }
+        return list;
     }
 }

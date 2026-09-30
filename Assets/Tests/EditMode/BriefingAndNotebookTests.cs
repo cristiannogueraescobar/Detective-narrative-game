@@ -130,4 +130,26 @@ public class BriefingAndNotebookTests
         StringAssert.DoesNotContain(version, locked);
         StringAssert.Contains(version, open);
     }
+
+    // Ronda 15: los partes de la mañana se podían leer una sola vez (en la transición del día); ahora quedan en la
+    // libreta ("los registros están en comisaría" es media pista)
+    [Test]
+    public void LaLibretaGuardaLosPartesDeLaMañana()
+    {
+        StoryData story = TestCases.Story();
+        VariantData variant = story.variants[0];
+        var state = new InvestigationState(variant);
+
+        CollectionAssert.IsEmpty(Notebook.ReportsUpTo(variant, 1), "el día 1 no hay parte");
+        CollectionAssert.AreEqual(new[] { "Día 2: d2", "Día 3: d3" }, Notebook.ReportsUpTo(variant, 3));
+
+        string day1 = Notebook.Format(story, state, new[] { "a" }, new Dictionary<string, Emotion>(), c => "x", onPaper: true,
+            reports: Notebook.ReportsUpTo(variant, 1));
+        StringAssert.DoesNotContain("PARTES", day1);
+        string day3 = Notebook.Format(story, state, new[] { "a" }, new Dictionary<string, Emotion>(), c => "x", onPaper: true,
+            reports: Notebook.ReportsUpTo(variant, 3));
+        StringAssert.Contains("PARTES DE LA MAÑANA", day3);
+        StringAssert.Contains("Día 3: d3", day3);
+        Assert.Greater(day3.IndexOf("PARTES"), day3.IndexOf("SOSPECHOSOS"), "al final: lo principal va antes");
+    }
 }
