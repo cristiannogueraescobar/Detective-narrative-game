@@ -116,6 +116,11 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   momento aunque quedasen preguntas: un toque por error costaba hasta 5. Ahora pide confirmación si quedan
   ("Te quedan 3 preguntas y se perderán"); Atrás la cierra. Diálogo de confirmación común con el de reiniciar.
 
+- 07:45 Checker del bot: los nombres que dijo el inspector en la pregunta no son inventados (Ruiz, Opel,
+  Granada eran falsos positivos). Resumen de la acusación al 90 % (legible en "Muy grande"). Parte de la mañana:
+  sin pistas el día 3, consejo sin spoilers; test de que el parte más largo cabe en la hoja del día (y de que el
+  test detecta un parte que no cabe).
+
 ## Ahora
 - Ronda 6: crítica de diseño con capturas, más mejoras, informe y galería finales.
 
