@@ -47,6 +47,8 @@ Todas las imágenes son verticales para móvil, con la resolución de referencia
 | Cabecera historia 3 | `Assets/Art/Stories/historia3_cabecera.png` | 1080 × 480 | PNG | Olivar al atardecer con una columna de humo negro al fondo |
 | Intro historia 3 | `Assets/Art/Stories/historia3_intro.png` | 1080 × 1920 | PNG | Quemadero con ceniza humeante y una zapatilla medio quemada; cortijo al fondo. Centro despejado para texto |
 
+Provisional (día 3): las tres intros están generadas por código (`Tools/make_story_art.py`, pixel art con la paleta de cada historia). Sustituir el archivo por el arte final basta: el catálogo se actualiza solo. Las cabeceras siguen sin arte a propósito (con el fondo a pantalla completa repetirían la escena).
+
 **Composición:** las pantallas de intro llevan el texto del parte del caso encima, así que conviene dejar oscuro y con poco detalle la franja central (del 25 % al 85 % de la altura).
 
 ## 3. Iconos

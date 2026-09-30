@@ -54,19 +54,28 @@ public class AnimationCapture
 
         // El lienzo pasa a dibujarse con una cámara sobre una textura del tamaño de un móvil
         target = new RenderTexture(Width, Height, 24);
-        camera = new GameObject("Captura", typeof(Camera)).GetComponent<Camera>();
-        camera.targetTexture = target;
-        camera.clearFlags = CameraClearFlags.SolidColor;
-        camera.backgroundColor = Color.magenta;
-        // El post-proceso noir (NoirPostFx) también en la captura: se ve lo que ve el jugador
-        UnityEngine.Rendering.Universal.CameraExtensions.GetUniversalAdditionalCameraData(camera).renderPostProcessing = NoirPostFx.Enabled;
+        RedirectCanvases();
+        yield return null;
+    }
+
+    private void RedirectCanvases()
+    {
+        // La cámara de captura se crea aquí (y otra vez si una recarga de escena la destruye)
+        if (camera == null)
+        {
+            camera = new GameObject("Captura", typeof(Camera)).GetComponent<Camera>();
+            camera.targetTexture = target;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = Color.magenta;
+            // El post-proceso noir (NoirPostFx) también en la captura: se ve lo que ve el jugador
+            UnityEngine.Rendering.Universal.CameraExtensions.GetUniversalAdditionalCameraData(camera).renderPostProcessing = NoirPostFx.Enabled;
+        }
         foreach (Canvas canvas in UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None).Where(c => c.isRootCanvas))
         {
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
             canvas.worldCamera = camera;
             canvas.planeDistance = 10f;
         }
-        yield return null;
     }
 
     [UnityTearDown]
@@ -152,6 +161,22 @@ public class AnimationCapture
         yield return Click("PlayButton");
         yield return Click("Caso al azar");
         yield return Frames("intro", 0.2f, 1.5f, 4f, 8f);
+    }
+
+    // Fondo de cada historia (C5) detrás del expediente
+    [UnityTest]
+    public IEnumerator IntrosPorHistoria()
+    {
+        foreach (string id in new[] { "1", "2", "3" })
+        {
+            yield return SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
+            yield return null;
+            RedirectCanvases();
+            yield return Click("PlayButton");
+            yield return Click("Caso " + id);
+            yield return new WaitForSecondsRealtime(6f);
+            Shot("intro_historia" + id);
+        }
     }
 
     [UnityTest]

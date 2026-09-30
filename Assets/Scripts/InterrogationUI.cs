@@ -279,15 +279,21 @@ public partial class InterrogationUI : MonoBehaviour
             introHeader.raycastTarget = false;
         }
 
-        // Fondo de la historia o, si no hay, la sala de interrogatorios; oscurecido para leer el parte encima
-        Texture2D background = ArtLibrary.Load(ArtSlots.StoryIntro(storyId)) ?? ArtLibrary.Load(ArtSlots.DefaultIntroBackground);
+        // Fondo de la historia o, si no hay, la sala de interrogatorios; oscurecido para leer el parte encima.
+        // El arte de la historia ya viene con su paleta (cielo oscuro arriba): sin gradación y menos oscurecido.
+        Texture2D storyArt = ArtLibrary.Load(ArtSlots.StoryIntro(storyId));
+        Texture2D background = storyArt ?? ArtLibrary.Load(ArtSlots.DefaultIntroBackground);
         introBackground.texture = background != null ? background : ArtLibrary.Placeholder(T.background);
-        introBackground.color = ScaleRgb(T.StoryTint(storyId), 0.4f);
+        introBackground.color = storyArt != null ? new Color(T.introArtBrightness, T.introArtBrightness, T.introArtBrightness)
+                                                 : ScaleRgb(T.StoryTint(storyId), 0.4f);
         SetStoryAmbience(storyId);
         if (background != null)
         {
             introBackground.GetComponent<AspectRatioFitter>().aspectRatio = (float)background.width / background.height;
-            ArtGrading.Apply(introBackground, ArtGrading.Kind.Background);
+            if (storyArt != null)
+                ArtGrading.Clear(introBackground);
+            else
+                ArtGrading.Apply(introBackground, ArtGrading.Kind.Background);
         }
 
         // La cabecera solo si existe su arte (un rectángulo liso partía la pantalla)

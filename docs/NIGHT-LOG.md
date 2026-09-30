@@ -358,6 +358,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   blanco 2 → 0, turnos vacíos 96 → 88 %, resueltas 44 → 72 %. En GAME-DESIGN.md. **Bloque B: HECHO CUANDO cumplido**
   (investigación, documento, 4 mejoras, medición antes/después).
 
+- **12:40** C5 hecho: Tools/make_story_art.py (determinista) genera las 3 intros en pixel art 1/4 con paleta por
+  historia y tramado Bayer: 1) urbanización con lluvia, ventana de Elena encendida, farola; 2) cala al amanecer,
+  guirnaldas, faro, bar La Marea, una figura sola; 3) olivar, cortijo, camioneta y la columna de humo. Cielo oscuro
+  arriba (el expediente se lee encima), la escena en el cuarto inferior. Cuatro iteraciones con capturas por
+  historia (nueva captura IntrosPorHistoria). El arte nuevo ya no pasa por la gradación del arte antiguo (salía casi
+  negro): Theme.introArtBrightness. Cabeceras NO generadas a propósito (repetirían la escena). Iconos: ya estaban.
+
 ## Ahora (día 3)
-- C5 arte procedural (fondos por historia, texturas, iconos, en archivos nuevos), luego C6.
-  En segundo plano: B3 (bot con y sin "Pensar").
+- C6 UX writing (todos los textos) + deslizadores (parte vacía casi invisible), luego D1 sonido.
