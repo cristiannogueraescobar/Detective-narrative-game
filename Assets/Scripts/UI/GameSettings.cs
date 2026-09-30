@@ -21,6 +21,7 @@ public static class GameSettings
     public const string SfxVolumeKey = "ajustes.volumenEfectos";
     public const string TextSizeKey = "ajustes.tamanoTexto";
     public const string HighContrastKey = "ajustes.altoContraste";
+    public const string VibrationKey = "ajustes.vibracion";
 
     /// <summary>
     /// Escala del texto por nivel (normal, grande, muy grande).
@@ -189,4 +190,17 @@ public static class GameSettings
     public static bool GetFlag(string key) => store.Get(key, 0f) > 0.5f;
 
     public static void SetFlag(string key, bool value) => store.Set(key, value ? 1f : 0f);
+
+    /// <summary>
+    /// Vibración del móvil en los momentos fuertes (contradicción, pista).
+    /// </summary>
+    public static bool Vibration
+    {
+        get => store.Get(VibrationKey, 1f) > 0.5f;
+        set
+        {
+            store.Set(VibrationKey, value ? 1f : 0f);
+            Changed?.Invoke();
+        }
+    }
 }

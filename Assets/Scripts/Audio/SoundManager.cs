@@ -285,6 +285,24 @@ public class SoundManager : MonoBehaviour
 }
 
 /// <summary>
+/// Vibración breve en los momentos fuertes (solo en móvil y si está activada en Ajustes).
+/// </summary>
+public static class Haptics
+{
+    public static int Pulses { get; private set; }
+
+    public static void Pulse()
+    {
+        if (!GameSettings.Vibration)
+            return;
+        Pulses++;
+#if UNITY_ANDROID || UNITY_IOS
+        Handheld.Vibrate();
+#endif
+    }
+}
+
+/// <summary>
 /// Clic de un botón (se añade a todos los botones al aplicar el tema).
 /// </summary>
 [RequireComponent(typeof(Selectable))]

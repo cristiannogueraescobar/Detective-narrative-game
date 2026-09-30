@@ -87,6 +87,7 @@ public class InterrogationUI : MonoBehaviour
     private readonly Dictionary<string, Emotion> emotionBySuspect = new Dictionary<string, Emotion>();
     private EmotionPresenter emotionPresenter;
     private ChatView chat;
+    private TMP_Text emotionLabel;
     private FxLayer fx;                  // Efectos (solo en juego)
     private int unseenClues;             // Pistas nuevas desde la última vez que se abrió la libreta
     private TMP_Text clueBadge;
@@ -244,6 +245,31 @@ public class InterrogationUI : MonoBehaviour
             var fitter = UIComponents.GetOrAdd<AspectRatioFitter>(suspectImage.gameObject);
             fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
             fitter.aspectRatio = 0.75f;
+
+            // Estado emocional a la vista: una etiqueta sobre el pie del retrato
+            RectTransform chip = UIFactory.Container(portraitBox, "Estado (auto)", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
+            chip.pivot = new Vector2(0.5f, 0f);
+            chip.anchoredPosition = new Vector2(0f, 8f);
+            chip.sizeDelta = new Vector2(headerHeight * 0.72f, 50f);
+            UIComponents.GetOrAdd<LayoutElement>(chip.gameObject).ignoreLayout = true;
+            var chipImage = chip.gameObject.AddComponent<Image>();
+            chipImage.sprite = UISprites.Rounded(25);
+            chipImage.type = Image.Type.Sliced;
+            chipImage.color = new Color(0f, 0f, 0f, 0.8f);
+            chipImage.raycastTarget = false;
+            chip.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
+            emotionLabel = UIFactory.Label(chip, "", T.secondarySize, T.textPrimary);
+            emotionLabel.name = "EstadoTexto";
+            emotionLabel.alignment = TextAlignmentOptions.Center;
+            emotionLabel.fontStyle = FontStyles.Bold;
+            emotionLabel.characterSpacing = 4f;
+            emotionLabel.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
+            var labelRect = emotionLabel.rectTransform;
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.offsetMin = new Vector2(8f, 0f);
+            labelRect.offsetMax = new Vector2(-8f, 0f);
+            LayoutKit.OneLine(emotionLabel, T.secondarySize);
         }
 
         RectTransform side = UIFactory.Container(header, "Controles (auto)", Vector2.zero, Vector2.one);
@@ -830,6 +856,12 @@ public class InterrogationUI : MonoBehaviour
             ArtGrading.Clear(suspectImage);
         suspectImage.gameObject.SetActive(true);
         emotionPresenter?.Apply(emotion, instant);
+
+        if (emotionLabel != null)
+        {
+            emotionLabel.text = emotion.ToString().ToUpperInvariant();
+            emotionLabel.color = EmotionStyle.LabelColor(emotion);
+        }
     }
 
     /// <summary>
@@ -1047,6 +1079,7 @@ public class InterrogationUI : MonoBehaviour
     {
         SetClueBadge(unseenClues + 1);
         SoundManager.Play(Sfx.Clue);
+        Haptics.Pulse();
         ShowTutorial(Tutorial.Evidence, evidenceDropdown != null ? (RectTransform)evidenceDropdown.transform : null, 1f);
         if (fx != null)
         {
@@ -1088,6 +1121,7 @@ public class InterrogationUI : MonoBehaviour
             fx.Stamp("CONTRADICCIÓN", T.danger, angle: -9f, hold: 1.3f, onImpact: () =>
             {
                 fx.Flash(T.contradiction, 0.12f);
+                Haptics.Pulse();
                 if (shaken != null)
                     fx.Shake(shaken, 14f, 0.35f);
             });

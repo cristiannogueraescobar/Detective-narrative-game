@@ -57,6 +57,7 @@ public class SettingsPanel : MonoBehaviour
         UIFactory.Toggle(list, "Reducir animaciones", GameSettings.ReduceMotion, v => GameSettings.ReduceMotion = v);
         UIFactory.Toggle(list, "Filtro noir (grano y viñeta)", GameSettings.NoirFilter, v => GameSettings.NoirFilter = v);
         UIFactory.Toggle(list, "Alto contraste", GameSettings.HighContrast, v => GameSettings.HighContrast = v);
+        UIFactory.Toggle(list, "Vibración", GameSettings.Vibration, v => GameSettings.Vibration = v);
 
         Section(list, "PARTIDA");
         UIFactory.Button(list, "Reiniciar partida", false, AskRestart);

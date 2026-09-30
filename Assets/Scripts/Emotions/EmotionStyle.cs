@@ -12,6 +12,22 @@ public class EmotionStyle
     public bool shakeOnce;           // Sacudida única (enfado) en lugar de temblor continuo
     public float textSpeed = 1f;     // Multiplicador de la velocidad de escritura
 
+    /// <summary>
+    /// Color de la etiqueta del estado sobre el retrato (legible sobre fondo casi negro).
+    /// </summary>
+    public static Color LabelColor(Emotion emotion)
+    {
+        Theme t = ThemeManager.Current;
+        switch (emotion)
+        {
+            case Emotion.Nervioso: return t.accent;
+            case Emotion.Asustado: return new Color(0.72f, 0.82f, 1f);
+            case Emotion.Enfadado: return t.danger;
+            case Emotion.Triste: return new Color(0.7f, 0.76f, 0.9f);
+            default: return t.textSecondary;
+        }
+    }
+
     public static EmotionStyle For(Emotion emotion)
     {
         Theme theme = ThemeManager.Current;
