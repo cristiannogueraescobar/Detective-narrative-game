@@ -98,6 +98,7 @@ importa al jugador (tiempo hasta la primera pista y partidas en blanco) es la qu
 - **La rueda marca también a quien descarta una pista ya encontrada** ("(pista de descarte)", como la libreta): en
   la 2B el bot acusaba a Marcos teniendo la grabación que lo descarta, 10 de 10 veces; un jugador cansado puede
   caer en lo mismo. No impide elegirlo (el final malo lo explica si lo hace).
+  Medido: con las marcas de la rueda a la vista, el bot pasa de 0/20 a 3/8 en la 2B (rondas 25-26).
 - **Rejugar trae otro culpable**: la historia elige primero una variante que no has resuelto; con las tres
   jugadas, nunca la misma dos veces seguidas (antes, al azar: la misma solución 1 de cada 3 veces).
 - **Los partes de la mañana quedan en la libreta** para releerlos (antes solo en la tarjeta del día), y el
