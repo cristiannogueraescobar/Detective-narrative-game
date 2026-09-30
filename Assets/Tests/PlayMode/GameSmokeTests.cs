@@ -219,4 +219,24 @@ public class GameSmokeTests
         Assert.AreEqual(story, SoundManager.CurrentMusic, "tras «Volver» suena otra vez la música de la historia");
         Assert.IsTrue(Find("InterrogationPanel").activeInHierarchy);
     }
+
+    [UnityTest]
+    public IEnumerator FinDelDiaMuestraElCalendarioYSeCierraConToques()
+    {
+        yield return StartNewGame();
+        yield return Click("EndDayButton");
+        yield return new WaitForSecondsRealtime(0.2f);
+
+        GameObject card = Find("Nuevo dia (auto)");
+        Assert.IsNotNull(card, "aparece la hoja del nuevo día");
+        StringAssert.Contains("DÍA 2", Find("HudText").GetComponent<TMP_Text>().GetParsedText());
+
+        var tap = card.GetComponent<TapHandler>();
+        tap.onTap(); // Completa el parte si se está escribiendo
+        yield return null;
+        tap.onTap(); // Cierra
+        yield return new WaitForSecondsRealtime(0.5f);
+        Assert.IsTrue(Find("Nuevo dia (auto)") == null, "la hoja se cierra con toques");
+        Assert.GreaterOrEqual(Rows("Dia (auto)").Count, 2, "el chat tiene el día 1 y el día 2");
+    }
 }
