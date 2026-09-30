@@ -60,6 +60,8 @@ public class SettingsPanel : MonoBehaviour
         UIFactory.Toggle(list, "Vibración", GameSettings.Vibration, v => GameSettings.Vibration = v);
 
         Section(list, "PARTIDA");
+        UIFactory.Label(list, "Dificultad (para los casos nuevos)", theme.bodySize, theme.textPrimary);
+        DifficultySelector(list);
         Button tutorial = null;
         tutorial = UIFactory.Button(list, "Repetir el tutorial", false, () =>
         {
@@ -117,6 +119,52 @@ public class SettingsPanel : MonoBehaviour
             sizeButtons.Add(b);
         }
         MarkTextSize();
+    }
+
+    // Historia / Detective / Veterano, con una línea que explica la elegida
+    private readonly List<Button> difficultyButtons = new List<Button>();
+    private TMP_Text difficultyHint;
+
+    private void DifficultySelector(RectTransform list)
+    {
+        Theme theme = ThemeManager.Current;
+        RectTransform row = UIFactory.Container(list, "Dificultad", Vector2.zero, Vector2.one);
+        var rowLayout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
+        rowLayout.spacing = theme.spacing;
+        rowLayout.childControlWidth = rowLayout.childControlHeight = true;
+        rowLayout.childForceExpandWidth = true;
+        rowLayout.childForceExpandHeight = true;
+        var rowElement = row.gameObject.AddComponent<LayoutElement>();
+        rowElement.minHeight = rowElement.preferredHeight = Theme.MinTouchSize;
+
+        foreach (DifficultyLevel level in new[] { DifficultyLevel.Historia, DifficultyLevel.Detective, DifficultyLevel.Veterano })
+        {
+            DifficultyLevel chosen = level;
+            Button b = UIFactory.Button(row, Difficulty.Label(level), false, () => SelectDifficulty(chosen));
+            b.name = "Dificultad " + Difficulty.Label(level);
+            difficultyButtons.Add(b);
+        }
+        difficultyHint = UIFactory.Label(list, "", theme.secondarySize, theme.textSecondary);
+        difficultyHint.name = "Dificultad (explicación)";
+        MarkDifficulty();
+    }
+
+    private void SelectDifficulty(DifficultyLevel level)
+    {
+        GameSettings.Difficulty = level;
+        MarkDifficulty();
+    }
+
+    private void MarkDifficulty()
+    {
+        for (int i = 0; i < difficultyButtons.Count; i++)
+        {
+            Button b = difficultyButtons[i];
+            UIComponents.GetOrAdd<ThemeRole>(b.gameObject).role = i == (int)GameSettings.Difficulty ? UIRole.PrimaryButton : UIRole.SecondaryButton;
+            ThemeApplier.Apply(b.transform);
+        }
+        if (difficultyHint != null)
+            difficultyHint.text = Difficulty.Description(GameSettings.Difficulty);
     }
 
     private void SelectTextSize(int level)

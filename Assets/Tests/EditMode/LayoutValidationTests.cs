@@ -186,6 +186,15 @@ public class LayoutValidationTests
     }
 
     [Test]
+    public void LaDificultadSeEligeEnAjustes()
+    {
+        LayoutPreview.ShowOnly(session, "SettingsPanel");
+        LayoutPreview.Find(session, "Dificultad Veterano").GetComponent<Button>().onClick.Invoke();
+        Assert.AreEqual(DifficultyLevel.Veterano, GameSettings.Difficulty);
+        StringAssert.Contains("Sin ayudas", LayoutPreview.Find(session, "Dificultad (explicación)").GetComponent<TMP_Text>().text);
+    }
+
+    [Test]
     public void ChatSoloDesplazamientoVertical()
     {
         ScrollRect chat = LayoutPreview.Find(session, "ConversationScroll").GetComponent<ScrollRect>();
