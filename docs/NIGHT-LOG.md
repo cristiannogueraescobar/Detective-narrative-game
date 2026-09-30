@@ -85,6 +85,16 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
 - 05:35 Revisión en tableta (4:3): todos los paneles bien. Cuelgue al salir en -nographics: 1-3/12, en ventana
   0/6 y en la build 0/25; documentado en BUILD.md (no afecta al jugador).
 
+- 05:45 Crítica de diseño (capturas nuevas): el informe final partía cifras de línea ("CONTRADICCIONES / 1"):
+  un dato por línea. La línea temporal repetía la hora ("22:30  A las 22:30, …"): se quita de la frase.
+- 05:50 Preguntas de ejemplo bajo un interrogatorio sin empezar (3 botones, rellenan el campo, nunca envían; se
+  apartan con el campo escrito, sin preguntas o al preguntar). Van en la columna, no encima del chat: con días
+  avanzados el chat de un sospechoso nuevo ya tiene partes y avisos. Tutorial e instrucciones lo mencionan.
+- 05:55 4ª revisión de código (subagente): 0 críticos/importantes, 3 menores, todos arreglados con test.
+- 05:58 Bot (18 partidas, 9 variantes): el 80 % de las respuestas se etiquetaban "nervioso" (el retrato ya no
+  decía nada). Causa: la guía decía "nervioso si ocultas algo" y todos ocultan algo. Ahora: nervioso solo por su
+  tema de TE PONE NERVIOSO. Medición antes/después en curso.
+
 ## Ahora
 - Ronda 4: bot en 3 variantes al azar sobre HEAD, crítica de diseño, revisión de código.
 
