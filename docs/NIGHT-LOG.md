@@ -250,3 +250,24 @@ FINAL. Rondas de revisión.
   -buildPath). No he tocado permisos ni el antivirus.
 - Maruxa habla español con toque gallego (su ejemplo en gallego provocaba respuestas enteras en gallego).
 - README.md no se ha tocado (desactualizado; es la cara pública del repositorio).
+
+---
+
+# DÍA 3 (30 sep 2026, 10:09 → ~22:00) · rama feature/dia3
+
+Encargo: 12 h para que el juego mejore notablemente en lógica, jugabilidad y aspecto (bloques 0, A, B, C, D, E y
+rondas finales). Checkpoint de 6 h (~16:00): push y "Informe intermedio" en docs/REPORT-DIA3.md.
+
+Skills disponibles en esta sesión: superpowers (planes, TDD, debugging, verificación), design:* (design-critique,
+accessibility-review, ux-copy, design-system). NO están instalados: design-skills, unity-perf, finecomb ni el
+plugin de Unity (ui-ugui, optimize-text-mesh-pro, 2d-pixel-perfect, urp-postprocessing, audio-*, sprite-atlas):
+sus funciones se cubren con subagentes de revisión, búsqueda web y medición propia (se indica en cada tarea).
+
+## Hecho (día 3)
+- 10:09 Cierre de la noche 2 (fila de la ronda 11). Rama feature/dia3 desde feature/noche2.
+- 10:12 0a: Builds/ está en .gitignore; ninguna build ni blob > 5 MB en ninguna rama. 0b: sin secretos en los
+  205 commits sin subir (patrones de claves de Anthropic, GitHub, AWS, contraseñas, claves privadas);
+  anthropic_api_key.txt ignorado. Push de feature/noche2 y feature/dia3 a origin.
+
+## Ahora (día 3)
+- 0c: clasificar los 9 fallos del bot (subagente) · B1: investigación web (subagente, en paralelo).
