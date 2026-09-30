@@ -198,4 +198,11 @@ public class GameTextsTests
         Assert.AreEqual(GameTexts.NewGameYes, GameTexts.RestartButton);
         StringAssert.DoesNotContain("partida", GameTexts.RestartButton.ToLowerInvariant());
     }
+
+    // Glosario (C6): el menú con una partida guardada dice "Caso nuevo", no "Nueva partida"
+    [Test]
+    public void ElMenuHablaDeCasosNoDePartidas()
+    {
+        Assert.AreEqual("Caso nuevo", GameTexts.NewCaseButton);
+    }
 }

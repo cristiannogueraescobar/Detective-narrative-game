@@ -103,7 +103,7 @@ public class MenuManager : MonoBehaviour
     
     /// <summary>
     /// Si hay una partida guardada válida, añade "Continuar" (clonando el botón de jugar, encima de él)
-    /// y el de jugar pasa a llamarse "Nueva partida".
+    /// y el de jugar pasa a llamarse "Caso nuevo".
     /// </summary>
     private void SetUpContinueButton()
     {
@@ -112,7 +112,7 @@ public class MenuManager : MonoBehaviour
 
         GameObject clone = Instantiate(playButton.gameObject, playButton.transform.parent);
         clone.name = "ContinueButton (auto)";
-        clone.transform.SetSiblingIndex(playButton.transform.GetSiblingIndex()); // Encima de "Nueva partida"
+        clone.transform.SetSiblingIndex(playButton.transform.GetSiblingIndex()); // Encima de "Caso nuevo"
         var rect = (RectTransform)clone.transform;
         var source = (RectTransform)playButton.transform;
         rect.anchoredPosition = source.anchoredPosition + new Vector2(0f, source.rect.height + ThemeManager.Current.spacing);
@@ -121,7 +121,7 @@ public class MenuManager : MonoBehaviour
         UIComponents.SetOnlyListener(continueButton, OnContinueClicked);
         CaseLibrary.TryFind(saved.variantId, out StoryData savedStory, out _);
         SetLabel(clone, GameTexts.Continue(savedStory != null ? savedStory.title : null, saved.day));
-        SetLabel(playButton.gameObject, "Nueva partida");
+        SetLabel(playButton.gameObject, GameTexts.NewCaseButton);
     }
 
     private static void SetLabel(GameObject button, string text)
@@ -227,7 +227,7 @@ public class MenuManager : MonoBehaviour
             PutMenuButton(continueButton.GetComponent<Button>(), column, null);
         }
 
-        PutMenuButton(playButton, column, continueButton != null ? "Nueva partida" : "Jugar");
+        PutMenuButton(playButton, column, continueButton != null ? GameTexts.NewCaseButton : "Jugar");
         PutMenuButton(instructionsButton, column, "Instrucciones");
         PutMenuButton(settingsButton, column, "Ajustes");
         PutMenuButton(aboutButton, column, "Acerca de");
@@ -417,7 +417,7 @@ public class MenuManager : MonoBehaviour
     private void StartChosenCase(string storyId)
     {
         Debug.Log($"[MenuManager] Caso elegido: {storyId ?? "al azar"}");
-        SaveSystem.Delete(); // "Nueva partida" descarta la anterior
+        SaveSystem.Delete(); // "Caso nuevo" descarta la investigación anterior
         gameManager?.ChooseStory(storyId);
         if (caseSelect != null)
             caseSelect.gameObject.SetActive(false);
