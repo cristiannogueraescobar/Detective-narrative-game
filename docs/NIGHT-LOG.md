@@ -646,6 +646,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   hablaba de "tu tía" en Granada sin nombre y el historial lo fijaba) → la tía se llama Remedios en las fichas
   (validador y prompts 30/30). Ronda 28 (3A ×2, misma semilla): 0 nombres inventados, dice "tía Remedios".
 
+- **20:25** Barrido de parientes sin nombre en las fichas: la tía de Sofía (historia 2) no tiene nombre pero en ~60
+  partidas nunca se le ha inventado uno (siempre "la tía de Sofía"); el resto ya tiene nombre o es un personaje.
+  Sin cambios.
+
 ## Ahora (día 3)
 - Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
   rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
