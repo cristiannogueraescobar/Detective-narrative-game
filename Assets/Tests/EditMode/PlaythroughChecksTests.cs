@@ -67,6 +67,17 @@ public class PlaythroughChecksTests
     }
 
     [Test]
+    public void ElNombreQueDijoElInspectorNoEsInventado()
+    {
+        var kinds = PlaythroughChecks.Check("No vi a Sofía subir al Opel ni nada raro.", Sheet, false, 0, 0, null,
+            "¿Sabías que Sofía subió al Opel gris?").Select(f => f.kind);
+        CollectionAssert.DoesNotContain(kinds, PlaythroughChecks.Kind.InventedName);
+        kinds = PlaythroughChecks.Check("No vi a Verónica en toda la noche.", Sheet, false, 0, 0, null,
+            "¿Viste algo raro?").Select(f => f.kind);
+        CollectionAssert.Contains(kinds, PlaythroughChecks.Kind.InventedName, "un nombre que nadie ha dicho sigue contando");
+    }
+
+    [Test]
     public void ConfesionDelCulpableSinMotivo()
     {
         CollectionAssert.Contains(Kinds("Está bien, lo hice yo.", culprit: true), PlaythroughChecks.Kind.UnmotivatedConfession);

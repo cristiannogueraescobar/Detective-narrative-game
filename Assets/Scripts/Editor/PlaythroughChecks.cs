@@ -71,7 +71,8 @@ public static class PlaythroughChecks
                 findings.Add(new Finding { kind = Kind.InventedTime, detail = m.Value });
         }
 
-        string sheetFolded = Fold(sheet);
+        // Tampoco los nombres que ya dijo el inspector (repetirlos es contestar, no inventar)
+        string sheetFolded = Fold(sheet) + " " + Fold(question ?? "");
         foreach (Match m in Capitalized.Matches(text))
         {
             string word = m.Groups[1].Value;
