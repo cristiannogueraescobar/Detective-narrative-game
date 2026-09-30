@@ -18,7 +18,7 @@ public static class PlaythroughChecks
     public enum Kind { AiBreak, InventedTime, InventedName, UnmotivatedConfession, FalseConfession, Incoherent }
 
     private static readonly Regex AiBreakPattern = new Regex(
-        @"\b(soy|como) (una |un )?(ia|inteligencia artificial|modelo de lenguaje|asistente( virtual)?|chatbot|programa)\b|\bopenai\b|\bno puedo (ayudarte|ayudarle|proporcionar)\b|\b(mis|las) instrucciones\b|\bpersonaje (que interpreto|ficticio)\b",
+        @"\b(soy|como) (una |un )?(ia|inteligencia artificial|modelo de lenguaje|asistente( virtual)?|chatbot|programa)\b|\bopenai\b|\bno puedo (ayudarte|ayudarle|proporcionar)\b|\bseg[uú]n (mis|las) instrucciones\b|\bmis instrucciones (no|me)\b|\blas instrucciones que me (han dado|dieron|dan)\b|\bpersonaje (que interpreto|ficticio)\b",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static readonly Regex ConfessionPattern = new Regex(

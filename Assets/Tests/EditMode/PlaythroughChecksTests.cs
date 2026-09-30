@@ -24,6 +24,20 @@ public class PlaythroughChecksTests
         CollectionAssert.Contains(Kinds(response), PlaythroughChecks.Kind.AiBreak);
     }
 
+    [TestCase("Según mis instrucciones, no puedo revelar eso.")]
+    [TestCase("Las instrucciones que me han dado no me permiten contestar.")]
+    public void HablarDeSusInstruccionesEsRuptura(string response)
+    {
+        CollectionAssert.Contains(Kinds(response), PlaythroughChecks.Kind.AiBreak);
+    }
+
+    [Test]
+    public void LasInstruccionesDeUnMedicamentoNoSonRuptura()
+    {
+        CollectionAssert.DoesNotContain(Kinds("Quería asegurarme de seguir todas las instrucciones correctamente."), PlaythroughChecks.Kind.AiBreak);
+        CollectionAssert.DoesNotContain(Kinds("Leí las instrucciones del prospecto."), PlaythroughChecks.Kind.AiBreak);
+    }
+
     [Test]
     public void HoraQueNoEstaEnLaFicha()
     {
