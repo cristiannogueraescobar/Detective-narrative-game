@@ -60,7 +60,7 @@ public class SuspectNotesTests
     {
         StringAssert.Contains("buen olfato", SuspectNotes.EndingLine(SuspectNote.Sospechoso, "Daniel", correct: true));
         StringAssert.Contains("«sospecha»", SuspectNotes.EndingLine(SuspectNote.Sospechoso, "Daniel", correct: true));
-        StringAssert.Contains("primera sospecha", SuspectNotes.EndingLine(SuspectNote.Sospechoso, "Daniel", correct: false));
+        StringAssert.Contains("ahí acertabas", SuspectNotes.EndingLine(SuspectNote.Sospechoso, "Daniel", correct: false));
         StringAssert.Contains("«descarte»", SuspectNotes.EndingLine(SuspectNote.Descartado, "Daniel", correct: false));
         StringAssert.Contains("Daniel", SuspectNotes.EndingLine(SuspectNote.Descartado, "Daniel", correct: true));
         Assert.IsNull(SuspectNotes.EndingLine(SuspectNote.Ninguna, "Daniel", correct: true), "sin nota, nada");
