@@ -280,4 +280,22 @@ public class GameSmokeTests
         Assert.IsTrue(select.activeInHierarchy, "tras «Jugar otra vez» se elige caso");
         Assert.IsFalse(SaveSystem.Exists, "la partida anterior no se ofrece para continuar");
     }
+
+    [UnityTest]
+    public IEnumerator TocarUnaPistaEnLaLibretaLaPreparaComoPrueba()
+    {
+        yield return StartNewGame();
+        var ui = Object.FindFirstObjectByType<InterrogationUI>();
+        var clues = CaseLibrary.AllVariants().First().variant.clues.Take(3).ToList();
+        ui.SetEvidenceOptions(clues);
+        yield return Click("ViewCluesButton");
+
+        var link = Find("CluesPanel").GetComponentInChildren<TextLinkHandler>(true);
+        Assert.IsNotNull(link, "la libreta tiene enlaces");
+        link.onLink(Notebook.ClueLinkPrefix + clues[1].id);
+        yield return null;
+
+        Assert.AreEqual(2, Find("EvidenceDropdown (auto)").GetComponent<TMP_Dropdown>().value, "queda elegida como prueba");
+        Assert.IsFalse(Find("CluesPanel").activeInHierarchy, "y la libreta se cierra");
+    }
 }
