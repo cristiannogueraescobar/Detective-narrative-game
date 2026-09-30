@@ -105,12 +105,7 @@ public class GameManager : MonoBehaviour
             data.emotions.Add(new SaveData.EmotionEntry { characterId = pair.Key, emotion = pair.Value.ToString() });
 
         if (interrogationUI != null)
-        {
-            Dictionary<string, string> texts = interrogationUI.ExportConversations(out string shared);
-            foreach (var pair in texts)
-                data.conversations.Add(new SaveData.Conversation { characterId = pair.Key, text = pair.Value });
-            data.sharedConversation = shared;
-        }
+            SaveSystem.StoreConversations(interrogationUI.Conversations, data);
 
         SaveSystem.Save(data);
     }
@@ -133,9 +128,7 @@ public class GameManager : MonoBehaviour
             data.histories.ToDictionary(h => h.characterId, h => h.messages),
             data.emotions.ToDictionary(e => e.characterId, e => (Emotion)Enum.Parse(typeof(Emotion), e.emotion)));
 
-        var texts = data.conversations.ToDictionary(c => c.characterId, c => c.text);
-        interrogationUI?.ContinueInterrogation(texts, data.sharedConversation, data.currentSuspect,
-            conversationManager.Emotions);
+        interrogationUI?.ContinueInterrogation(data, data.currentSuspect, conversationManager.Emotions);
 
         Debug.Log($"[GameManager] Partida continuada: {variant.id}, día {currentDay}");
         return true;
@@ -210,19 +203,16 @@ public class GameManager : MonoBehaviour
             interrogationUI?.ShowWaiting(true);
 
             LLMResult result;
-            string asked;
 
             try
             {
                 ClueData shownClue = string.IsNullOrEmpty(shownClueId) ? null : variant.Clue(shownClueId);
-                asked = TurnAnalyzer.BuildUserMessage(question, shownClue);
                 result = await conversationManager.AskSuspect(characterId, question, currentDay, shownClue);
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
                 result = LLMResult.Fail("Error inesperado al procesar la pregunta.");
-                asked = question;
             }
 
             interrogationUI?.ShowWaiting(false);
@@ -239,7 +229,7 @@ public class GameManager : MonoBehaviour
             // El estado va antes que la respuesta: marca la velocidad de escritura y el retrato
             interrogationUI?.SetEmotion(characterId, conversationManager.CurrentEmotion(characterId));
             RefreshNotebook();
-            interrogationUI?.AddToConversation(characterId, story.Character(characterId).DisplayName, asked, result.Text);
+            interrogationUI?.AddAnswer(characterId, story.Character(characterId).shortName, result.Text);
         }
         catch (Exception e)
         {

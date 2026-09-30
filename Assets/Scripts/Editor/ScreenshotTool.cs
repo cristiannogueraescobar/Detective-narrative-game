@@ -28,12 +28,24 @@ public static class ScreenshotTool
         public string name;
         public string panel;
         public Action<LayoutPreview.Session> prepare;
+        public Action<LayoutPreview.Session> after;   // Después de mostrar el panel (p. ej. mover un scroll)
     }
 
     public static List<View> Views()
     {
         var views = LayoutPreview.Panels.Where(p => p != "ResultPanel")
             .Select(p => new View { name = p, panel = p }).ToList();
+
+        views.Add(new View
+        {
+            name = "InterrogationPanel_ChatArriba",
+            panel = "InterrogationPanel",
+            after = s =>
+            {
+                LayoutPreview.Find(s, "ConversationScroll").GetComponent<UnityEngine.UI.ScrollRect>().verticalNormalizedPosition = 1f;
+                LayoutPreview.Rebuild((RectTransform)s.canvas.transform);
+            }
+        });
 
         foreach (Ending ending in Enum.GetValues(typeof(Ending)))
         {
@@ -106,6 +118,7 @@ public static class ScreenshotTool
             {
                 view.prepare?.Invoke(session);
                 LayoutPreview.ShowOnly(session, view.panel);
+                view.after?.Invoke(session);
                 camera.Render();
 
                 RenderTexture.active = target;

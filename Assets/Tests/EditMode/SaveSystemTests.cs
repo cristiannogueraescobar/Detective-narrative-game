@@ -47,8 +47,15 @@ public class SaveSystemTests
                 }
             },
             emotions = new List<SaveData.EmotionEntry> { new SaveData.EmotionEntry { characterId = "madre", emotion = "Triste" } },
-            conversations = new List<SaveData.Conversation> { new SaveData.Conversation { characterId = "madre", text = "TÚ: ¿Qué vio?" } },
-            sharedConversation = "DÍA 2"
+            conversations = new List<SaveData.Conversation>
+            {
+                new SaveData.Conversation
+                {
+                    characterId = "madre",
+                    entries = new List<ChatEntry> { ChatEntry.Player("¿Qué vio?", "La taza", "09:00"), ChatEntry.Suspect("CARMEN", "Una taza.", "09:00") }
+                }
+            },
+            sharedEntries = new List<ChatEntry> { ChatEntry.Day(2, "Parte de la mañana") }
         };
     }
 
@@ -66,7 +73,30 @@ public class SaveSystemTests
         Assert.IsTrue(loaded.culpritToldLie);
         Assert.AreEqual("Una taza de cacao. [ESTADO: triste]", loaded.histories[0].messages[1].content);
         Assert.AreEqual("Triste", loaded.emotions[0].emotion);
-        Assert.AreEqual("DÍA 2", loaded.sharedConversation);
+        Assert.AreEqual("Parte de la mañana", loaded.sharedEntries.Single().text);
+        ChatEntry question = loaded.conversations.Single().entries[0];
+        Assert.AreEqual(ChatEntryKind.Player, question.kind);
+        Assert.AreEqual("La taza", question.evidence);
+        Assert.AreEqual("09:00", question.time);
+    }
+
+    [Test]
+    public void GuardadoDeLaVersionAnteriorSeCargaConSuTexto()
+    {
+        SaveData old = Sample();
+        old.version = 1;
+        old.conversations = new List<SaveData.Conversation> { new SaveData.Conversation { characterId = "madre", text = "TÚ: ¿Qué vio?" } };
+        old.sharedEntries = new List<ChatEntry>();
+        old.sharedConversation = "DÍA 2";
+
+        Assert.IsTrue(SaveSystem.TryDeserialize(SaveSystem.Serialize(old), out SaveData loaded));
+
+        var store = new ConversationStore();
+        SaveSystem.RestoreConversations(loaded, store);
+        store.Select("madre");
+        Assert.AreEqual(ChatEntryKind.Legacy, store.CurrentEntries.Single().kind);
+        StringAssert.Contains("¿Qué vio?", store.CurrentEntries.Single().text);
+        Assert.AreEqual("DÍA 2", store.SharedEntries.Single().text);
     }
 
     [TestCase("")]
@@ -120,12 +150,14 @@ public class SaveSystemTests
     }
 
     [Test]
-    public void VersionAntiguaSeRechaza()
+    public void VersionesIlegiblesSeRechazan()
     {
-        SaveData data = Sample();
-        data.version = SaveData.CurrentVersion - 1;
-
-        Assert.IsFalse(SaveSystem.TryDeserialize(SaveSystem.Serialize(data), out _));
+        foreach (int version in new[] { 0, SaveData.OldestReadableVersion - 1, SaveData.CurrentVersion + 1 })
+        {
+            SaveData data = Sample();
+            data.version = version;
+            Assert.IsFalse(SaveSystem.TryDeserialize(SaveSystem.Serialize(data), out _), $"versión {version}");
+        }
     }
 
     [Test]
@@ -166,18 +198,22 @@ public class SaveSystemTests
     }
 
     [Test]
-    public void AlmacenDeConversacionesSeExportaEImporta()
+    public void AlmacenDeConversacionesSeGuardaYSeRecupera()
     {
         var store = new ConversationStore();
-        store.AppendToAll("DÍA 2 ");
+        store.AppendToAll(ChatEntry.Day(2, "Parte"));
         store.Select("madre");
-        store.Append("madre", "M1 ");
+        store.Append("madre", ChatEntry.Suspect("CARMEN", "M1", "09:00"));
+
+        SaveData data = Sample();
+        SaveSystem.StoreConversations(store, data);
+        Assert.IsTrue(SaveSystem.TryDeserialize(SaveSystem.Serialize(data), out SaveData loaded));
 
         var copy = new ConversationStore();
-        copy.Import(store.Export(), store.SharedText);
+        SaveSystem.RestoreConversations(loaded, copy);
         copy.Select("vecina");
 
-        Assert.AreEqual("DÍA 2 M1 ", copy.TextOf("madre"));
-        Assert.AreEqual("DÍA 2 ", copy.CurrentText);
+        CollectionAssert.AreEqual(new[] { "Parte", "M1" }, copy.EntriesOf("madre").Select(e => e.text).ToArray());
+        CollectionAssert.AreEqual(new[] { "Parte" }, copy.CurrentEntries.Select(e => e.text).ToArray());
     }
 }

@@ -125,9 +125,17 @@ public static class LayoutPreview
         ui.ShowContradictionNotification("La versión de alguien («una cita») choca con: Lo que vio la ventana");
         ui.ShowNotice("Un agente te informa: conviene hablar con Rosario Gil.");
         ui.ShowError("No te quedan preguntas hoy.");
-        foreach (SuspectView s in suspects)
-            ui.AddToConversation(s.id, s.displayName, "¿Dónde estaba usted entre las diez y las once de la noche del sábado?",
-                string.Join(" ", Enumerable.Repeat("respuesta larga del sospechoso", 40)));
+        // Conversación del sospechoso abierto: preguntas cortas y largas, una con prueba, respuestas de varios tamaños
+        string id = suspects[0].id;
+        string name = suspects[0].shortName;
+        ui.Conversations.Append(id, ChatEntry.Player("¿Dónde estaba usted entre las diez y las once de la noche del sábado?", null, "09:00"));
+        ui.Conversations.Append(id, ChatEntry.Suspect(name, string.Join(" ", Enumerable.Repeat("respuesta larga del sospechoso", 40)), "09:00"));
+        ui.Conversations.Append(id, ChatEntry.Player("¿Y esto?", "La taza de la mesilla", "11:17"));
+        ui.Conversations.Append(id, ChatEntry.Suspect(name, "No.", "11:17"));
+        ui.Conversations.Append(id, ChatEntry.Player("", "Lo que vio la ventana", "13:11"));
+        ui.Conversations.Append(id, ChatEntry.Suspect(name, "Eso no demuestra nada. Rosario ve lo que quiere ver desde esa ventana, siempre ha sido así.", "13:11"));
+        ui.RefreshConversationView();
+        ui.ShowWaiting(true);
     }
 
     /// <summary>
@@ -182,6 +190,10 @@ public static class LayoutPreview
         if (target.parent != session.canvas.transform)
             target.SetAsLastSibling(); // Una capa abierta se dibuja encima (como ShowCluesPanel)
         Rebuild((RectTransform)session.canvas.transform);
+
+        // Como en juego: el chat abierto se ve por el final
+        foreach (ChatView chat in target.GetComponentsInChildren<ChatView>(false))
+            chat.ScrollToBottom();
         return target;
     }
 

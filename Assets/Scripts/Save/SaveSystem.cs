@@ -10,12 +10,18 @@ using UnityEngine;
 [Serializable]
 public class SaveData
 {
-    public const int CurrentVersion = 1;
+    public const int CurrentVersion = 2;  // 2: chat en entradas (burbujas); 1: chat en texto
+    public const int OldestReadableVersion = 1;
 
     [Serializable] public class Shown { public string characterId; public string clueId; }
     [Serializable] public class History { public string characterId; public List<ChatMessage> messages = new List<ChatMessage>(); }
     [Serializable] public class EmotionEntry { public string characterId; public string emotion; }
-    [Serializable] public class Conversation { public string characterId; public string text; }
+    [Serializable] public class Conversation
+    {
+        public string characterId;
+        public List<ChatEntry> entries = new List<ChatEntry>();
+        public string text; // Solo versión 1
+    }
 
     public int version = CurrentVersion;
     public string variantId;
@@ -29,7 +35,8 @@ public class SaveData
     public List<History> histories = new List<History>();
     public List<EmotionEntry> emotions = new List<EmotionEntry>();
     public List<Conversation> conversations = new List<Conversation>();
-    public string sharedConversation = "";
+    public List<ChatEntry> sharedEntries = new List<ChatEntry>();
+    public string sharedConversation = ""; // Solo versión 1
 }
 
 /// <summary>
@@ -85,7 +92,7 @@ public static class SaveSystem
     /// </summary>
     private static bool IsValid(SaveData data)
     {
-        if (data == null || data.version != SaveData.CurrentVersion)
+        if (data == null || data.version < SaveData.OldestReadableVersion || data.version > SaveData.CurrentVersion)
             return false;
         if (!CaseLibrary.TryFind(data.variantId, out StoryData story, out VariantData variant))
             return false;
@@ -108,6 +115,33 @@ public static class SaveSystem
             && (data.histories ?? new List<SaveData.History>()).All(h => Known(h.characterId))
             && (data.emotions ?? new List<SaveData.EmotionEntry>()).All(e => Known(e.characterId) && Enum.TryParse(e.emotion, out Emotion _))
             && (data.currentSuspect == null || data.currentSuspect.Length == 0 || Known(data.currentSuspect));
+    }
+
+    /// <summary>
+    /// Copia las conversaciones del chat a la partida.
+    /// </summary>
+    public static void StoreConversations(ConversationStore store, SaveData data)
+    {
+        data.conversations = new List<SaveData.Conversation>();
+        foreach (var pair in store.Export())
+            data.conversations.Add(new SaveData.Conversation { characterId = pair.Key, entries = pair.Value });
+        data.sharedEntries = new List<ChatEntry>(store.SharedEntries);
+        data.sharedConversation = "";
+    }
+
+    /// <summary>
+    /// Recupera las conversaciones del chat (las de la versión 1 como bloques de texto).
+    /// </summary>
+    public static void RestoreConversations(SaveData data, ConversationStore store)
+    {
+        var conversations = data.conversations ?? new List<SaveData.Conversation>();
+        if (data.version < 2)
+        {
+            store.ImportLegacy(conversations.ToDictionary(c => c.characterId, c => c.text), data.sharedConversation);
+            return;
+        }
+        store.Import(conversations.ToDictionary(c => c.characterId, c => c.entries ?? new List<ChatEntry>()),
+            data.sharedEntries ?? new List<ChatEntry>());
     }
 
     public static void Save(SaveData data)

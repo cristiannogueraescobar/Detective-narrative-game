@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 
 /// <summary>
 /// Conversaciones por sospechoso: la UI solo muestra la del seleccionado.
@@ -8,16 +7,19 @@ using System.Text;
 /// </summary>
 public class ConversationStore
 {
-    private readonly Dictionary<string, StringBuilder> bySuspect = new Dictionary<string, StringBuilder>();
-    private readonly StringBuilder shared = new StringBuilder(); // Lo que verá quien empiece a hablar más tarde
+    private readonly Dictionary<string, List<ChatEntry>> bySuspect = new Dictionary<string, List<ChatEntry>>();
+    private readonly List<ChatEntry> shared = new List<ChatEntry>();   // Lo que verá quien empiece a hablar más tarde
+    private readonly List<ChatEntry> loose = new List<ChatEntry>();    // Avisos antes de elegir sospechoso
 
     public string CurrentId { get; private set; }
 
-    public string CurrentText => CurrentId == null ? "" : TextOf(CurrentId);
+    public IReadOnlyList<ChatEntry> CurrentEntries => CurrentId == null ? (IReadOnlyList<ChatEntry>)loose : EntriesOf(CurrentId);
 
-    public string TextOf(string suspectId)
+    public IReadOnlyList<ChatEntry> SharedEntries => shared;
+
+    public IReadOnlyList<ChatEntry> EntriesOf(string suspectId)
     {
-        return bySuspect.TryGetValue(suspectId, out StringBuilder sb) ? sb.ToString() : shared.ToString();
+        return suspectId != null && bySuspect.TryGetValue(suspectId, out List<ChatEntry> list) ? list : shared;
     }
 
     public void Select(string suspectId)
@@ -25,60 +27,92 @@ public class ConversationStore
         CurrentId = suspectId;
     }
 
-    public void Append(string suspectId, string entry)
+    public void Append(string suspectId, ChatEntry entry)
     {
-        Get(suspectId).Append(entry);
+        Get(suspectId).Add(entry);
     }
 
-    public void AppendToCurrent(string entry)
+    public void AppendToCurrent(ChatEntry entry)
     {
         if (CurrentId != null)
             Append(CurrentId, entry);
+        else
+            loose.Add(entry);
     }
 
-    public void AppendToAll(string entry)
+    public void AppendToAll(ChatEntry entry)
     {
-        shared.Append(entry);
-        foreach (StringBuilder sb in bySuspect.Values)
-            sb.Append(entry);
+        shared.Add(entry);
+        foreach (List<ChatEntry> list in bySuspect.Values)
+            list.Add(entry);
     }
 
-    public string SharedText => shared.ToString();
+    /// <summary>
+    /// Retira una entrada (la pregunta de una petición que falló).
+    /// </summary>
+    public bool Remove(string suspectId, ChatEntry entry)
+    {
+        if (suspectId != null && bySuspect.TryGetValue(suspectId, out List<ChatEntry> list))
+            return list.Remove(entry);
+        return loose.Remove(entry);
+    }
 
     /// <summary>
     /// Conversaciones por sospechoso (para guardar la partida).
     /// </summary>
-    public Dictionary<string, string> Export()
+    public Dictionary<string, List<ChatEntry>> Export()
     {
-        var result = new Dictionary<string, string>();
+        var result = new Dictionary<string, List<ChatEntry>>();
         foreach (var pair in bySuspect)
-            result[pair.Key] = pair.Value.ToString();
+            result[pair.Key] = new List<ChatEntry>(pair.Value);
         return result;
     }
 
-    public void Import(IDictionary<string, string> texts, string sharedText)
+    public void Import(IDictionary<string, List<ChatEntry>> entries, List<ChatEntry> sharedEntries)
     {
         Clear();
-        shared.Append(sharedText ?? "");
+        if (sharedEntries != null)
+            shared.AddRange(sharedEntries);
+        foreach (var pair in entries)
+            bySuspect[pair.Key] = new List<ChatEntry>(pair.Value ?? new List<ChatEntry>());
+    }
+
+    /// <summary>
+    /// Guardados de antes de las burbujas: cada conversación era un texto con formato.
+    /// </summary>
+    public void ImportLegacy(IDictionary<string, string> texts, string sharedText)
+    {
+        var entries = new Dictionary<string, List<ChatEntry>>();
         foreach (var pair in texts)
-            bySuspect[pair.Key] = new StringBuilder(pair.Value ?? "");
+        {
+            var list = new List<ChatEntry>();
+            if (!string.IsNullOrEmpty(pair.Value))
+                list.Add(ChatEntry.System(ChatEntryKind.Legacy, pair.Value));
+            entries[pair.Key] = list;
+        }
+
+        var sharedList = new List<ChatEntry>();
+        if (!string.IsNullOrEmpty(sharedText))
+            sharedList.Add(ChatEntry.System(ChatEntryKind.Legacy, sharedText));
+        Import(entries, sharedList);
     }
 
     public void Clear()
     {
         bySuspect.Clear();
         shared.Clear();
+        loose.Clear();
         CurrentId = null;
     }
 
-    private StringBuilder Get(string suspectId)
+    private List<ChatEntry> Get(string suspectId)
     {
-        if (!bySuspect.TryGetValue(suspectId, out StringBuilder sb))
+        if (!bySuspect.TryGetValue(suspectId, out List<ChatEntry> list))
         {
-            // Quien empieza a hablar hereda los separadores de día ya ocurridos
-            sb = new StringBuilder(shared.ToString());
-            bySuspect[suspectId] = sb;
+            // Quien empieza a hablar hereda los cambios de día ya ocurridos
+            list = new List<ChatEntry>(shared);
+            bySuspect[suspectId] = list;
         }
-        return sb;
+        return list;
     }
 }

@@ -112,6 +112,7 @@ public struct SuspectView
 {
     public string id;
     public string displayName;
+    public string shortName;
     public string portraitKey;
     public string artId;
 
@@ -119,6 +120,7 @@ public struct SuspectView
     {
         id = character.id,
         displayName = character.DisplayName,
+        shortName = character.shortName,
         portraitKey = character.portraitKey,
         artId = character.artId
     };

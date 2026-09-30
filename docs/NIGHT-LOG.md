@@ -14,8 +14,18 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   - Rojo de peligro aclarado a #E06A5E (5,2:1 sobre el panel; antes 3,2:1).
 - `.vscode/`, `*.slnx` y `.superpowers/` al `.gitignore`. Worktree `dng-layout` borrado.
 
+- 02:05 Capturas: `ScreenshotTool.CaptureFromCommandLine` (batchmode sin -nographics, cámara temporal +
+  RenderTexture): todos los paneles + 4 finales + chat arriba, a 1080x1920 y 1080x2400, en
+  docs/screenshots/<fecha>/<etiqueta>/. Script: `.superpowers/shots.sh <etiqueta> [escala]`. FUNCIONA.
+- 02:40 Layout ronda 1: zonas táctiles de 48 dp (120 px de lienzo) comprobadas por el test, SafeAreaFitter en
+  cada columna (fondo a sangre, controles dentro), scrollbar fina, campo de pregunta vacío (la escena traía la
+  pregunta de ejemplo ESCRITA, no como placeholder), "Volver" secundario, retratos en la vista previa.
+- 03:30 Chat de verdad: ChatEntry (guardado v2, lee v1), burbujas con mini-retrato y hora de juego, avisos
+  centrados, "escribiendo…", máquina de escribir (toque = completar), auto-scroll que respeta al que lee +
+  "Nuevos mensajes", pool de filas. Tests: ChatViewTests, ChatLogicTests, ConversationStoreTests, guardado.
+
 ## Ahora
-- 0. Capturas en docs/screenshots/<fecha>/ a 1080x1920 y 1080x2400, todos los paneles y los 4 finales.
+- Chat: capturas con conversación real larga; revisar en juego (PlayMode test si es posible).
 
 ## Después (orden)
 1. Layout: 3 rondas de render→revisión, safe area, zonas táctiles ≥ 48 px (añadir al test).
@@ -30,4 +40,7 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
 FINAL. Rondas de revisión.
 
 ## Decisiones (opción conservadora, para revisar)
-- (ninguna todavía)
+- Zona táctil mínima = 120 px de lienzo (48 dp en un móvil de 411 dp de ancho). Más estricto que "48 px".
+- Guardado v2: los guardados v1 se cargan, con cada conversación antigua como un bloque de texto.
+- Hora del juego: 09:00 + 2 h por pregunta (con un desfase para que no parezca un reloj), sin afectar a la lógica.
+- La pregunta del jugador aparece al enviar; si falla la petición, se retira y vuelve al campo.

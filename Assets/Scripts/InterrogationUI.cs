@@ -86,7 +86,11 @@ public class InterrogationUI : MonoBehaviour
     private readonly List<string> visibleClueNames = new List<string>(); // Pistas del aviso en pantalla
     private readonly Dictionary<string, Emotion> emotionBySuspect = new Dictionary<string, Emotion>();
     private EmotionPresenter emotionPresenter;
-    private Typewriter typewriter;
+    private ChatView chat;
+    private ChatEntry pendingQuestion;   // Pregunta enviada que aún espera respuesta
+    private string pendingSuspectId;
+    private int questionsUsedToday;
+    private int questionsPerDay = 5;
     private static Theme T => ThemeManager.Current; // Todos los colores y tamaños salen del tema
 
     public void Initialize(GameManager gm)
@@ -136,7 +140,7 @@ public class InterrogationUI : MonoBehaviour
         UIPerformance.IsolateInOwnCanvas(suspectImage);
         if (suspectImage != null && suspectImage.GetComponent<PortraitMotion>() == null)
             suspectImage.gameObject.AddComponent<PortraitMotion>(); // Respiración e inclinación al tocar
-        UIPerformance.IsolateInOwnCanvas(conversationText);
+        UIPerformance.IsolateInOwnCanvas(conversationScroll != null ? conversationScroll.content : null);
         UIPerformance.IsolateInOwnCanvas(hudText);
 
         // Iconos (con sustituto si aún no hay arte)
@@ -146,8 +150,6 @@ public class InterrogationUI : MonoBehaviour
         // Reacciones por código: no necesitan nada en la escena
         if (suspectImage != null)
             emotionPresenter = UIComponents.GetOrAdd<EmotionPresenter>(suspectImage.gameObject);
-        if (conversationText != null)
-            typewriter = UIComponents.GetOrAdd<Typewriter>(conversationText.gameObject);
 
         if (clueNotification != null)
             clueNotification.SetActive(false);
@@ -245,12 +247,9 @@ public class InterrogationUI : MonoBehaviour
             ConfigureChatScroll();
         }
 
+        // "Esperando respuesta" ahora es la burbuja de "escribiendo…" del chat
         if (waitingText != null)
-        {
-            LayoutKit.Put(waitingText, column, height: 48f);
-            waitingText.alignment = TextAlignmentOptions.Center;
-            LayoutKit.OneLine(waitingText, T.secondarySize);
-        }
+            waitingText.gameObject.SetActive(false);
 
         // Controles abajo, al alcance del pulgar
         PutDropdown(suspectDropdown, column);
@@ -301,8 +300,11 @@ public class InterrogationUI : MonoBehaviour
             UIComponents.GetOrAdd<ContentSizeFitter>(content.gameObject).verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
+        // Las burbujas sustituyen al texto único de la escena
         if (conversationText != null)
-            LayoutKit.ScrollingText(conversationText);
+            conversationText.gameObject.SetActive(false);
+        chat = UIComponents.GetOrAdd<ChatView>(conversationScroll.gameObject);
+        chat.Initialize();
     }
 
     private void ConfigureQuestionInput()
@@ -581,17 +583,10 @@ public class InterrogationUI : MonoBehaviour
         }
     }
 
-    public Dictionary<string, string> ExportConversations(out string shared)
-    {
-        shared = conversations.SharedText;
-        return conversations.Export();
-    }
-
     /// <summary>
     /// Vuelve a la partida guardada: conversaciones, sospechoso abierto y estados emocionales.
     /// </summary>
-    public void ContinueInterrogation(IDictionary<string, string> texts, string shared, string suspectId,
-                                      IReadOnlyDictionary<string, Emotion> emotions)
+    public void ContinueInterrogation(SaveData data, string suspectId, IReadOnlyDictionary<string, Emotion> emotions)
     {
         HideAllPanels();
         if (interrogationPanel != null)
@@ -600,7 +595,7 @@ public class InterrogationUI : MonoBehaviour
             UIAnimations.FadeIn(this, interrogationPanel);
         }
 
-        conversations.Import(texts, shared);
+        SaveSystem.RestoreConversations(data, conversations);
         emotionBySuspect.Clear();
         foreach (var pair in emotions)
             emotionBySuspect[pair.Key] = pair.Value;
@@ -683,6 +678,14 @@ public class InterrogationUI : MonoBehaviour
 
         questionInput.text = "";
         SetInputEnabled(false);
+
+        // La pregunta aparece al momento; si la petición falla, se retira y vuelve al campo
+        string evidenceName = shownClueId != null ? evidenceOptions.Find(c => c.id == shownClueId)?.playerName : null;
+        pendingQuestion = ChatEntry.Player(question, evidenceName, GameClock.TimeOf(questionsUsedToday, questionsPerDay));
+        pendingSuspectId = currentSuspectId;
+        conversations.Append(currentSuspectId, pendingQuestion);
+        RefreshConversationView();
+
         gameManager.AskQuestion(currentSuspectId, question, shownClueId);
     }
 
@@ -704,7 +707,6 @@ public class InterrogationUI : MonoBehaviour
             return;
 
         SelectSuspect(suspects[index].id);
-        RunRoutine(ForceScrollToBottom());
     }
 
     private void SelectSuspect(string suspectId)
@@ -712,12 +714,12 @@ public class InterrogationUI : MonoBehaviour
         if (suspectId == currentSuspectId)
             return;
 
-        typewriter?.Complete();
+        chat?.Complete();
         currentSuspectId = suspectId;
         conversations.Select(suspectId);
-        RefreshConversationView();
 
         UpdateSuspectImage(suspectId, instant: true);
+        RefreshConversationView();
     }
 
     /// <summary>
@@ -762,6 +764,7 @@ public class InterrogationUI : MonoBehaviour
             texture = ArtLibrary.Placeholder(T.placeholder);
 
         suspectImage.texture = texture;
+        chat?.SetAvatar(texture == null || texture.name.Contains("Placeholder") ? null : texture);
 
         // El arte antiguo se gradúa para casar con el tema; el nuevo ya viene con la paleta del juego
         if (legacyArt)
@@ -772,53 +775,38 @@ public class InterrogationUI : MonoBehaviour
         emotionPresenter?.Apply(emotion, instant);
     }
 
-    public void AddToConversation(string suspectId, string displayName, string question, string response)
+    /// <summary>
+    /// Respuesta del sospechoso: burbuja a la izquierda que se escribe letra a letra (un toque la completa).
+    /// </summary>
+    public void AddAnswer(string suspectId, string speaker, string answer)
     {
-        string entry = $"<color={Theme.Hex(T.playerName)}><b>TÚ:</b></color> {question}\n\n" +
-                       $"<color={Theme.Hex(T.suspectName)}><b>{displayName.ToUpper()}:</b></color> {response}\n\n" +
-                       "———————\n\n";
+        string time = pendingQuestion != null ? pendingQuestion.time : GameClock.TimeOf(questionsUsedToday, questionsPerDay);
+        pendingQuestion = null;
+        pendingSuspectId = null;
 
-        if (suspectId == currentSuspectId && conversationText != null)
-        {
-            // La respuesta se escribe letra a letra, a la velocidad del estado emocional; un toque la completa
-            int visibleBefore = typewriter != null ? typewriter.VisibleCount() : 0;
-            conversations.Append(suspectId, entry);
-            RefreshConversationView();
-            if (typewriter != null)
-            {
-                typewriter.Reveal(visibleBefore, EmotionStyle.For(EmotionOf(suspectId)).textSpeed);
-                RunRoutine(FollowTyping());
-            }
-        }
-        else
-        {
-            // Respuesta de otro sospechoso (no debería ocurrir con la entrada bloqueada): a su conversación
-            conversations.Append(suspectId, entry);
-        }
+        conversations.Append(suspectId, ChatEntry.Suspect(speaker, answer, time));
+        if (suspectId == currentSuspectId && chat != null)
+            chat.Show(conversations.CurrentEntries, typeLast: true, speed: EmotionStyle.For(EmotionOf(suspectId)).textSpeed);
 
         if (evidenceDropdown != null)
             evidenceDropdown.value = 0;
 
         SetInputEnabled(true);
-        RunRoutine(ForceScrollToBottom());
     }
 
     /// <summary>
     /// Aviso de sistema en la conversación abierta (o solo en pantalla si aún no hay sospechoso).
     /// </summary>
-    private void AppendNotice(string notice)
+    private void AppendNotice(ChatEntry notice)
     {
-        if (currentSuspectId != null)
-        {
-            conversations.AppendToCurrent(notice);
-            RefreshConversationView();
-        }
-        else if (conversationText != null)
-        {
-            conversationText.text += notice;
-            RunRoutine(ForceScrollToBottom());
-        }
+        conversations.AppendToCurrent(notice);
+        RefreshConversationView();
     }
+
+    /// <summary>
+    /// Conversaciones del chat (para guardar la partida).
+    /// </summary>
+    public ConversationStore Conversations => conversations;
 
     private UnityEngine.UI.Image contradictionOverlay;
 
@@ -838,13 +826,12 @@ public class InterrogationUI : MonoBehaviour
         return contradictionOverlay;
     }
 
-    private void RefreshConversationView()
+    /// <summary>
+    /// Vuelve a pintar la conversación abierta (también la usa la vista previa del editor).
+    /// </summary>
+    public void RefreshConversationView()
     {
-        if (conversationText == null)
-            return;
-
-        conversationText.text = conversations.CurrentText;
-        RunRoutine(ForceScrollToBottom());
+        chat?.Show(conversations.CurrentEntries);
     }
 
     // Las corrutinas solo existen en juego (el test de layout usa la UI en modo edición)
@@ -854,63 +841,11 @@ public class InterrogationUI : MonoBehaviour
             StartCoroutine(routine);
     }
 
-    private IEnumerator ForceScrollToBottom()
-    {
-        yield return null;
-        yield return null;
-
-        // Mientras se escribe una respuesta, el scroll lo lleva FollowTyping (el final aún está en blanco)
-        if (typewriter != null && typewriter.IsTyping)
-            yield break;
-
-        if (conversationScroll != null)
-        {
-            Canvas.ForceUpdateCanvases();
-            conversationScroll.verticalNormalizedPosition = 0f;
-        }
-    }
-
-    /// <summary>
-    /// Durante el efecto de escritura, el scroll sigue al último carácter visible en vez de saltar al
-    /// final del texto completo (que aún no se ve). Al terminar, baja del todo.
-    /// </summary>
-    private IEnumerator FollowTyping()
-    {
-        yield return null;
-
-        while (typewriter != null && typewriter.IsTyping && conversationScroll != null && conversationScroll.content != null)
-        {
-            KeepVisible(conversationText.maxVisibleCharacters);
-            yield return null;
-        }
-
-        RunRoutine(ForceScrollToBottom());
-    }
-
-    private void KeepVisible(int visibleCharacters)
-    {
-        TMPro.TMP_TextInfo info = conversationText.textInfo;
-        if (info == null || info.characterCount == 0)
-            return;
-
-        int index = Mathf.Clamp(visibleCharacters - 1, 0, info.characterCount - 1);
-        RectTransform content = conversationScroll.content;
-        RectTransform viewport = conversationScroll.viewport != null ? conversationScroll.viewport : (RectTransform)conversationScroll.transform;
-
-        // Posición del carácter en el espacio del contenido, medida desde su borde superior
-        Vector3 world = conversationText.rectTransform.TransformPoint(new Vector3(0f, info.characterInfo[index].descender, 0f));
-        float fromTop = content.rect.yMax - content.InverseTransformPoint(world).y;
-
-        float scrollable = content.rect.height - viewport.rect.height;
-        if (scrollable <= 0f)
-            return;
-
-        float target = Mathf.Clamp(fromTop - viewport.rect.height + T.bodySize, 0f, scrollable);
-        conversationScroll.verticalNormalizedPosition = 1f - target / scrollable;
-    }
-
     public void UpdateGameState(int day, int maxDays, int questionsUsed, int questionsMax)
     {
+        questionsUsedToday = questionsUsed;
+        questionsPerDay = questionsMax;
+
         if (hudText != null)
         {
             hudText.text = $"DÍA {day}/{maxDays}  |  PREGUNTAS: {questionsUsed}/{questionsMax}";
@@ -919,11 +854,8 @@ public class InterrogationUI : MonoBehaviour
 
     public void ShowWaiting(bool show)
     {
-        if (waitingText != null)
-        {
-            waitingText.gameObject.SetActive(show);
-            waitingText.text = show ? "Esperando respuesta..." : "";
-        }
+        SuspectView view = suspects.Find(v => v.id == currentSuspectId);
+        chat?.ShowTyping(show, view.shortName);
     }
 
     private void SetInputEnabled(bool enabled)
@@ -949,7 +881,7 @@ public class InterrogationUI : MonoBehaviour
 
     public void ShowError(string message)
     {
-        AppendNotice($"<color={Theme.Hex(T.danger)}>{message}</color>\n\n");
+        AppendNotice(ChatEntry.System(ChatEntryKind.Error, message));
     }
 
     /// <summary>
@@ -957,6 +889,15 @@ public class InterrogationUI : MonoBehaviour
     /// </summary>
     public void ShowRequestFailed(string message, string question)
     {
+        // La pregunta no llegó: su burbuja se retira y el texto vuelve al campo
+        if (pendingQuestion != null)
+        {
+            conversations.Remove(pendingSuspectId, pendingQuestion);
+            pendingQuestion = null;
+            pendingSuspectId = null;
+            RefreshConversationView();
+        }
+
         ShowError($"{message}\nLa pregunta no se ha descontado.");
 
         if (questionInput != null && string.IsNullOrEmpty(questionInput.text))
@@ -1007,7 +948,7 @@ public class InterrogationUI : MonoBehaviour
 
     public void ShowContradictionNotification(string text)
     {
-        AppendNotice($"<color={Theme.Hex(T.contradiction)}>CONTRADICCIÓN: {text}</color>\n\n");
+        AppendNotice(ChatEntry.System(ChatEntryKind.Contradiction, text));
 
         // Destello del color de contradicción y sacudida del HUD
         UIAnimations.Flash(this, ContradictionOverlay(), T.contradiction, 0.25f);
@@ -1108,26 +1049,19 @@ public class InterrogationUI : MonoBehaviour
 
     public void ShowSuspectUnlocked(string displayName)
     {
-        AppendNotice($"<color={Theme.Hex(T.success)}>NUEVO SOSPECHOSO: {displayName}</color>\n\n");
+        AppendNotice(ChatEntry.System(ChatEntryKind.Unlock, displayName));
     }
 
     public void ShowNotice(string message)
     {
-        AppendNotice($"<color={Theme.Hex(T.systemText)}><i>{message}</i></color>\n\n");
+        AppendNotice(ChatEntry.System(ChatEntryKind.Notice, message));
     }
 
     public void ShowDayTransition(int newDay, string morningReport)
     {
         // El cambio de día se anota en todas las conversaciones, no solo en la abierta
-        string header = $"\n<size={T.secondarySize}><color={Theme.Hex(T.accent)}>———————————</color></size>\n" +
-                        $"<size={T.headingSize}><b>DÍA {newDay}</b></size>\n" +
-                        $"<size={T.secondarySize}><color={Theme.Hex(T.accent)}>———————————</color></size>\n\n";
-
-        if (!string.IsNullOrEmpty(morningReport))
-            header += $"<color={Theme.Hex(T.systemText)}><i>Parte de la mañana: {morningReport}</i></color>\n\n";
-
-        typewriter?.Complete();
-        conversations.AppendToAll(header);
+        chat?.Complete();
+        conversations.AppendToAll(ChatEntry.Day(newDay, morningReport));
         RefreshConversationView();
 
         SetInputEnabled(true);
