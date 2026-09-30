@@ -672,7 +672,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   jornada) y esas respuestas reales fijadas como muestras (test). Recalibrada: **6/6 (100 %)**; 3B_noche 6/6.
   Lección: cambiar el texto de una ficha exige recalibrar sus pistas, aunque sea un nombre.
 
+- **21:25** El test de guarda (una pista no puede dispararse con la propia ficha) pilló que "nerea"/"hugo" están en el
+  secreto de Álex en 3A → fuera de las anclas. EditMode 716/716. 3A_granada recalibrada: 5/6 (83 %, como esta
+  mañana). PlayMode 56/56, build de Windows y **SMOKE OK** con el código final.
+
 ## Ahora (día 3)
-- Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
-  rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
-- Queda: rondas ligeras hasta ~22:00, cierre del informe, borrar el worktree del bot y push final.
+- Día cerrado: 31 rondas con el bot, 7 revisiones, suites en verde, build final con SMOKE OK, informe cerrado.
+- Solo queda borrar el worktree temporal del bot (C:\Dev\dng-bot) y el push final.
