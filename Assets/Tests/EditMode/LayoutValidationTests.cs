@@ -335,6 +335,13 @@ public class LayoutValidationTests
             float ratio = Contrast(arrowGraphic.color, backColor);
             if (ratio < 3f)
                 errors.Add($"flecha de desplegable invisible: {Path((RectTransform)dropdown.transform)} contraste {ratio:F1}:1");
+            // Lista abierta: el contenido de la plantilla tiene que medir al menos una opción; si no, uGUI calcula un
+            // espacio extra negativo y la lista se abre desplazada, con la primera opción cortada (ronda 5)
+            ScrollRect list = dropdown.template != null ? dropdown.template.GetComponent<ScrollRect>() : null;
+            Toggle option = dropdown.template != null ? dropdown.template.GetComponentInChildren<Toggle>(true) : null;
+            if (list != null && list.content != null && option != null
+                && list.content.rect.height < ((RectTransform)option.transform).rect.height - Tolerance)
+                errors.Add($"lista de desplegable corta: {Path((RectTransform)dropdown.transform)} contenido {list.content.rect.height:F0} < opción {((RectTransform)option.transform).rect.height:F0}");
             // Con 20 px el suavizado la deja en gris (medido en captura: 1,5:1 aunque el color sea blanco)
             Rect arrowRect = ((RectTransform)arrow).rect;
             if (arrowRect.width < 32f || arrowRect.height < 32f)

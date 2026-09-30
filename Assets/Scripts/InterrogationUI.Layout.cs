@@ -361,6 +361,10 @@ public partial class InterrogationUI
             {
                 var itemRect = (RectTransform)item.transform;
                 itemRect.sizeDelta = new Vector2(itemRect.sizeDelta.x, Theme.MinTouchSize);
+                // El contenido de la plantilla mide una opción: uGUI calcula el hueco extra con él y, si es más bajo,
+                // la lista se abría desplazada con la primera opción cortada
+                if (dropdown.template.TryGetComponent(out ScrollRect list) && list.content != null)
+                    list.content.sizeDelta = new Vector2(list.content.sizeDelta.x, itemRect.rect.height);
                 if (dropdown.itemText != null)
                 {
                     RectTransform text = dropdown.itemText.rectTransform;
