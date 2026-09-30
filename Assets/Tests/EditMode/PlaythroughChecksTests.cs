@@ -38,6 +38,8 @@ public class PlaythroughChecksTests
     [Test]
     public void LasInstruccionesDeUnMedicamentoNoSonRuptura()
     {
+        CollectionAssert.DoesNotContain(Kinds("No puedo proporcionar un horario exacto, inspector."), PlaythroughChecks.Kind.AiBreak);
+        CollectionAssert.Contains(Kinds("No puedo proporcionar esa información."), PlaythroughChecks.Kind.AiBreak);
         CollectionAssert.DoesNotContain(Kinds("Quería asegurarme de seguir todas las instrucciones correctamente."), PlaythroughChecks.Kind.AiBreak);
         CollectionAssert.DoesNotContain(Kinds("Leí las instrucciones del prospecto."), PlaythroughChecks.Kind.AiBreak);
     }
