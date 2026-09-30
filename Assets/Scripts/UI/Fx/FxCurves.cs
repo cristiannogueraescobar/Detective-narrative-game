@@ -154,7 +154,7 @@ public class EndingStyle
 public static class EndingReport
 {
     public static string Build(AccusationResult result, string accusedName, string culpritName, int maxEvidence,
-                               string epilogue, Theme t)
+                               string epilogue, Theme t, string stats = null)
     {
         EndingStyle style = EndingStyle.For(result.ending, t);
         var sb = new System.Text.StringBuilder();
@@ -164,6 +164,8 @@ public static class EndingReport
         sb.AppendLine($"{label("CULPABLE")}  <b>{culpritName}</b>");
         sb.AppendLine($"{label("PISTAS INCRIMINATORIAS")}  {result.incriminatingFound}   {label("CONTRADICCIONES")}  {result.contradictions}");
         sb.AppendLine($"{label("EVIDENCIA")}  {result.evidence}/{maxEvidence}  <size=80%>{label($"(hacen falta {InvestigationState.GoodThreshold} para una condena segura)")}</size>");
+        if (!string.IsNullOrEmpty(stats))
+            sb.AppendLine(label(stats));
         sb.AppendLine();
 
         sb.AppendLine($"<color={Theme.Hex(style.ink)}><b>{style.title.ToUpperInvariant()}</b></color>");

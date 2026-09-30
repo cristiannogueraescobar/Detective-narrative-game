@@ -35,6 +35,14 @@ public class GameTextsTests
     }
 
     [Test]
+    public void ElBalanceDiceDiaYPistas()
+    {
+        Assert.AreEqual("Día 5 de la investigación · pistas encontradas: 3 de 6", GameTexts.CaseStats(5, 3, 6));
+        StringAssert.Contains("pistas encontradas: 3 de 6",
+            EndingReport.Build(new AccusationResult { ending = Ending.Good }, "A", "B", 7, "", ThemeManager.Current, GameTexts.CaseStats(5, 3, 6)));
+    }
+
+    [Test]
     public void AcercaDeLlevaLaVersion()
     {
         StringAssert.Contains("versión 1.2", GameTexts.About(ThemeManager.Current, "1.2"));

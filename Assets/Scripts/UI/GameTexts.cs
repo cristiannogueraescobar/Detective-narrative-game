@@ -82,6 +82,14 @@ public static class GameTexts
     }
 
     /// <summary>
+    /// Balance de la partida en el informe final.
+    /// </summary>
+    public static string CaseStats(int day, int cluesFound, int cluesTotal)
+    {
+        return $"Día {day} de la investigación · pistas encontradas: {cluesFound} de {cluesTotal}";
+    }
+
+    /// <summary>
     /// Botón de continuar con el caso y el día en que se quedó.
     /// </summary>
     public static string Continue(string caseTitle, int day)

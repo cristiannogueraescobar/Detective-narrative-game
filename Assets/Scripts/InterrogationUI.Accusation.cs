@@ -216,7 +216,7 @@ public partial class InterrogationUI
     }
 
     public void ShowAccusationResult(AccusationResult result, string accusedName, string culpritName,
-                                     int maxEvidence, string epilogue)
+                                     int maxEvidence, string epilogue, string stats = null)
     {
         fx?.SetTension(false);
         ShowPanel(resultPanel);
@@ -249,7 +249,7 @@ public partial class InterrogationUI
         if (resultDetailsText == null)
             return;
 
-        resultDetailsText.text = EndingReport.Build(result, accusedName, culpritName, maxEvidence, epilogue, T);
+        resultDetailsText.text = EndingReport.Build(result, accusedName, culpritName, maxEvidence, epilogue, T, stats);
 
         if (fx != null && resultPanel != null && resultTitleText != null)
         {

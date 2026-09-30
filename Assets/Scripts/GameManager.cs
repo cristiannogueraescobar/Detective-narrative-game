@@ -464,7 +464,8 @@ public class GameManager : MonoBehaviour
             story.Character(accusedId).name,
             story.Character(variant.culpritId).name,
             InvestigationState.MaxEvidenceWithoutCulprit(variant),
-            variant.epilogue);
+            variant.epilogue,
+            GameTexts.CaseStats(Mathf.Min(currentDay, maxDays), State.DiscoveredClueIds.Count, variant.clues.Count));
     }
 
     public bool CanAskMoreQuestions()
