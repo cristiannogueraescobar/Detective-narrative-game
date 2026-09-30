@@ -91,6 +91,7 @@ importa al jugador (tiempo hasta la primera pista y partidas en blanco) es la qu
 - **Preguntas capciosas**: los sospechosos ya no aceptan premisas falsas (22 % → 2 %, sin perder pistas): el
   jugador no puede "sembrar" hechos, y lo que niega un sospechoso vuelve a significar algo.
 - **Tus notas en la libreta** (*Golden Idol*, libretas de deducción): junto a cada sospechoso, "añadir nota" →
-  "sospechoso" → "descartado". Es el razonamiento del jugador, no del juego: nada se valida (así no reabre el
+  "sospecha" → "descarte" (sustantivos: valen para cualquiera). Es el razonamiento del jugador, no del juego: nada se valida (así no reabre el
   agujero del tablero por lotes). En la rueda, a quien descartaste se le ve tachado y atenuado, "(tu descarte)",
-  pero se puede acusar igual. Se guarda con la partida.
+  pero se puede acusar igual. Se guarda con la partida, y el informe final lo recuerda ("Tu nota sobre X ya
+  decía «sospecha»: buen olfato", o «descarte»: "era quien lo hizo").
