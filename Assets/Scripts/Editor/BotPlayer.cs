@@ -39,6 +39,7 @@ public static class BotPlayer
         public bool timeRetry = true; // -noTimeRetry: sin reintento por horas inventadas (A/B)
         public bool hints = true;     // -noHints: el bot no usa "Pensar" (línea base de B3)
         public bool versions = true;  // -noVersions: la libreta no apunta lo que dice cada uno (línea base, ronda 5)
+        public bool topicQuestions;   // -topicQuestions: una pregunta corta sobre un tema (A/B del consejo, ronda 12)
     }
 
     public class Turn
@@ -91,6 +92,7 @@ public static class BotPlayer
                 case "-noTimeRetry": options.timeRetry = false; break;
                 case "-noHints": options.hints = false; break;
                 case "-noVersions": options.versions = false; break;
+                case "-topicQuestions": options.topicQuestions = true; break;
                 case "-ollama": options.ollamaUrl = args[i + 1]; break;
                 case "-model": options.model = args[i + 1]; break;
             }
@@ -316,13 +318,16 @@ public static class BotPlayer
         public string reason;
     }
 
-    private static string DetectivePrompt(StoryData story, AIConversationManager manager, List<string> unlocked, bool versions)
+    private static string DetectivePrompt(StoryData story, AIConversationManager manager, List<string> unlocked, bool versions,
+                                          bool topicQuestions = false)
     {
         string notebook = StripTags(Notebook.Format(story, manager.State, unlocked, manager.Emotions, manager.DescribeContradiction,
             interviewed: versions ? manager.Histories.Where(h => h.Value.Any(m => m.role == "assistant")).Select(h => h.Key) : null));
         var sb = new StringBuilder();
         sb.AppendLine("Eres un jugador humano de un juego de detectives en español. Interrogas a sospechosos para descubrir al culpable.");
-        sb.AppendLine("Haces preguntas cortas y naturales, como las escribiría una persona en el móvil: concretas (horas, lugares, objetos, relaciones).");
+        sb.AppendLine(topicQuestions
+            ? "Haces una sola pregunta cada vez, corta (menos de diez palabras), sobre un tema concreto: una persona, un objeto, una costumbre o una relación. No preguntes en general si vieron \"algo raro\" a una hora."
+            : "Haces preguntas cortas y naturales, como las escribiría una persona en el móvil: concretas (horas, lugares, objetos, relaciones).");
         sb.AppendLine("A veces muestras una pista ya descubierta a quien crees que miente para ver cómo reacciona.");
         sb.AppendLine();
         sb.AppendLine("PARTE DEL CASO:");
@@ -348,7 +353,7 @@ public static class BotPlayer
     private static Decision Decide(HttpClient client, Options options, StoryData story, AIConversationManager manager,
                                    List<string> unlocked, Game game, int day, int question, System.Random random, string note = null)
     {
-        string system = DetectivePrompt(story, manager, unlocked, options.versions);
+        string system = DetectivePrompt(story, manager, unlocked, options.versions, options.topicQuestions);
         var recent = game.turns.Skip(Math.Max(0, game.turns.Count - 8))
             .Select(t => $"- A {story.Character(t.suspectId).shortName}: «{t.question}» → «{Truncate(t.answer, 240)}»");
 
@@ -405,7 +410,7 @@ public static class BotPlayer
     private static Decision FinalAccusation(HttpClient client, Options options, StoryData story, AIConversationManager manager,
                                             List<string> unlocked, Game game)
     {
-        string system = DetectivePrompt(story, manager, unlocked, options.versions);
+        string system = DetectivePrompt(story, manager, unlocked, options.versions, options.topicQuestions);
         string summary = string.Join("\n", game.turns.Select(t => $"- {story.Character(t.suspectId).shortName}: «{Truncate(t.answer, 160)}»").TakeLast(20));
         string ask = "Se acabó el tiempo: tienes que acusar a uno de los sospechosos. Respuestas más recientes:\n" + summary +
                      "\n\nResponde SOLO con un JSON: {\"accuse\": \"id\", \"reason\": \"por qué\"}";
