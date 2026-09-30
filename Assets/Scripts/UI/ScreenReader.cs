@@ -105,7 +105,7 @@ public class ScreenReader : MonoBehaviour
         foreach (KeyValuePair<int, AccessibilityNode> pair in instance.nodes)
         {
             if (ReferenceEquals(pair.Value, node) && instance.bound.TryGetValue(pair.Key, out Item item))
-                return Activate(item.control);
+                return item.link != null ? ActivateLink(item) : Activate(item.control);
         }
         return false;
     }
@@ -158,6 +158,9 @@ public class ScreenReader : MonoBehaviour
         public Selectable control;
         public ScrollRect scroll;
         public bool inChat;
+        public TextLinkHandler link; // Enlace dentro de un texto (la libreta): un botón más para el lector
+        public int linkIndex;
+        public string linkId;
     }
 
     private static readonly List<Item> items = new List<Item>();
@@ -223,6 +226,7 @@ public class ScreenReader : MonoBehaviour
                     id = t.GetInstanceID(), rect = t.rectTransform, camera = camera, sortKey = SortKey(frame),
                     role = AccessibilityRole.StaticText, label = text, inChat = t.GetComponentInParent<ScrollRect>() != null
                 });
+                AddLinks(t, camera);
             }
         }
 
@@ -242,6 +246,62 @@ public class ScreenReader : MonoBehaviour
             chat--;
         }
         return items;
+    }
+
+    // Cada enlace tocable del texto (ir a interrogar, tu nota) es un botón: con el dedo se toca la palabra; con el
+    // lector, esto es lo único que lo hace posible
+    private static void AddLinks(TMP_Text t, Camera camera)
+    {
+        if (!t.TryGetComponent(out TextLinkHandler handler) || handler.onLink == null)
+            return;
+        TMP_TextInfo info = t.textInfo;
+        RectMask2D mask = t.GetComponentInParent<RectMask2D>();
+        Rect view = mask != null ? ScreenRect(mask.rectTransform, camera) : new Rect(0, 0, Screen.width, Screen.height);
+        for (int i = 0; i < info.linkCount; i++)
+        {
+            TMP_LinkInfo link = info.linkInfo[i];
+            Rect frame = LinkRect(t, i, camera);
+            if (frame.width < 1f || !frame.Overlaps(view) || !frame.Overlaps(new Rect(0, 0, Screen.width, Screen.height)))
+                continue;
+            string id = link.GetLinkID();
+            texts.Add(new Item
+            {
+                id = (t.GetInstanceID() * 397) ^ id.GetHashCode(), rect = t.rectTransform, camera = camera,
+                sortKey = SortKey(frame) + 0.25f, role = AccessibilityRole.Button,
+                label = Plain(handler.Describe(id, link.GetLinkText())), link = handler, linkIndex = i, linkId = id
+            });
+        }
+    }
+
+    // Caja de pantalla (origen arriba) de los caracteres del enlace
+    private static Rect LinkRect(TMP_Text t, int index, Camera camera)
+    {
+        TMP_TextInfo info = t.textInfo;
+        if (index < 0 || index >= info.linkCount)
+            return Rect.zero;
+        TMP_LinkInfo link = info.linkInfo[index];
+        float xMin = float.MaxValue, yMin = float.MaxValue, xMax = float.MinValue, yMax = float.MinValue;
+        for (int c = link.linkTextfirstCharacterIndex; c < link.linkTextfirstCharacterIndex + link.linkTextLength && c < info.characterCount; c++)
+        {
+            TMP_CharacterInfo ch = info.characterInfo[c];
+            if (!ch.isVisible)
+                continue;
+            Vector2 min = RectTransformUtility.WorldToScreenPoint(camera, t.transform.TransformPoint(new Vector3(ch.bottomLeft.x, ch.descender)));
+            Vector2 max = RectTransformUtility.WorldToScreenPoint(camera, t.transform.TransformPoint(new Vector3(ch.topRight.x, ch.ascender)));
+            xMin = Mathf.Min(xMin, min.x);
+            yMin = Mathf.Min(yMin, min.y);
+            xMax = Mathf.Max(xMax, max.x);
+            yMax = Mathf.Max(yMax, max.y);
+        }
+        return xMax < xMin ? Rect.zero : new Rect(xMin, Screen.height - yMax, xMax - xMin, yMax - yMin);
+    }
+
+    private static bool ActivateLink(Item item)
+    {
+        if (item.link == null || !item.link.isActiveAndEnabled || item.link.onLink == null)
+            return false;
+        item.link.onLink(item.linkId);
+        return true;
     }
 
     // De arriba abajo y de izquierda a derecha (filas de 24 px de tolerancia)
@@ -443,7 +503,11 @@ public class ScreenReader : MonoBehaviour
     {
         node.role = item.role;
         int id = item.id;
-        node.frameGetter = () => bound.TryGetValue(id, out Item it) && it.rect != null ? ScreenRect(it.rect, it.camera) : Rect.zero;
+        node.frameGetter = () => !bound.TryGetValue(id, out Item it) || it.rect == null ? Rect.zero
+            : it.link != null ? LinkRect(it.link.GetComponent<TMP_Text>(), it.linkIndex, it.camera)
+            : ScreenRect(it.rect, it.camera);
+        if (item.link != null)
+            node.invoked += () => bound.TryGetValue(id, out Item it) && ActivateLink(it);
         if (item.control != null)
             node.invoked += () => bound.TryGetValue(id, out Item it) && Activate(it.control);
         if (item.control is Slider)

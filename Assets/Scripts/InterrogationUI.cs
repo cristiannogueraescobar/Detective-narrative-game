@@ -1013,6 +1013,20 @@ public partial class InterrogationUI : MonoBehaviour
             questionInput.ActivateInputField();
     }
 
+    // Lo que oye quien usa el lector al llegar a un enlace de la libreta: qué hace y sobre quién
+    private string DescribeNotebookLink(string link, string text)
+    {
+        if (link.StartsWith(Notebook.NoteLinkPrefix))
+        {
+            string id = link.Substring(Notebook.NoteLinkPrefix.Length);
+            SuspectView view = suspects.Find(v => v.id == id);
+            return string.IsNullOrEmpty(view.displayName) ? text : $"Nota sobre {view.displayName}: {text}";
+        }
+        if (link.StartsWith(Notebook.SuspectLinkPrefix))
+            return $"Interrogar a {text}";
+        return link.StartsWith(Notebook.ClueLinkPrefix) ? $"Enseñar como prueba: {text}" : text;
+    }
+
     private void HideCluesPanel()
     {
         if (cluesPanel != null)
