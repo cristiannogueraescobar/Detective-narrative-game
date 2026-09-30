@@ -96,6 +96,44 @@ public class LayoutValidationTests
     }
 
     [Test]
+    public void PreguntasDeEjemploCabenSinTaparElChat([Values(0, 2)] int textSize, [Values(1920f, 2400f)] float height)
+    {
+        GameSettings.TextSizeLevel = textSize;
+        LayoutPreview.SetSize(session, LayoutPreview.CanvasSize(1080f, height));
+        RectTransform panel = LayoutPreview.ShowOnly(session, "InterrogationPanel");
+
+        // Un sospechoso aún sin preguntas, con el parte del día más largo de los tres casos
+        string situation = CaseLibrary.Stories.Select(s => s.situation).OrderByDescending(s => s.Length).First();
+        session.ui.ShowWaiting(false);
+        session.ui.Conversations.Append("nuevo", ChatEntry.Day(1, situation));
+        session.ui.Conversations.Select("nuevo");
+        session.ui.SetVictim("Sofía");
+        LayoutPreview.Rebuild(panel);
+
+        RectTransform box = LayoutPreview.Find(session, "Sugerencias (auto)");
+        Assert.IsNotNull(box);
+        Assert.IsTrue(box.gameObject.activeInHierarchy, "un interrogatorio sin empezar ofrece preguntas");
+
+        var errors = new List<string>();
+        Validate(panel, errors);
+        Assert.IsEmpty(errors, string.Join("\n", errors));
+
+        Button[] chips = box.GetComponentsInChildren<Button>();
+        Assert.AreEqual(3, chips.Length);
+        foreach (Button chip in chips)
+            Assert.GreaterOrEqual(((RectTransform)chip.transform).rect.height, Theme.MinTouchSize - Tolerance, chip.name);
+        StringAssert.Contains("Sofía", string.Join(" ", chips.Select(c => c.GetComponentInChildren<TMP_Text>().text)));
+
+        ScrollRect chat = LayoutPreview.Find(session, "ConversationScroll").GetComponent<ScrollRect>();
+        Assert.GreaterOrEqual(WorldRect(chat.viewport).yMin, WorldRect(box).yMax - Tolerance, "debajo del chat, sin taparlo");
+        Assert.GreaterOrEqual(WorldRect(chat.viewport).height, WorldRect(box).height * 0.5f, "el chat sigue teniendo sitio");
+
+        session.ui.Conversations.Append("nuevo", ChatEntry.Player("¿Dónde estabas?", null, "09:00"));
+        session.ui.RefreshConversationView();
+        Assert.IsFalse(box.gameObject.activeSelf, "desaparecen con la primera pregunta");
+    }
+
+    [Test]
     public void ChatSoloDesplazamientoVertical()
     {
         ScrollRect chat = LayoutPreview.Find(session, "ConversationScroll").GetComponent<ScrollRect>();

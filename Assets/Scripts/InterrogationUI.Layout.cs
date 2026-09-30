@@ -149,6 +149,7 @@ public partial class InterrogationUI
         {
             LayoutKit.Put(conversationScroll, column, height: 300f, flexibleHeight: 1f);
             ConfigureChatScroll();
+            BuildSuggestions(column);
         }
 
         // "Esperando respuesta" ahora es la burbuja de "escribiendo…" del chat
@@ -215,6 +216,42 @@ public partial class InterrogationUI
             conversationText.gameObject.SetActive(false);
         chat = UIComponents.GetOrAdd<ChatView>(conversationScroll.gameObject);
         chat.Initialize();
+    }
+
+    /// <summary>
+    /// Preguntas de ejemplo bajo un chat sin empezar, alineadas a la derecha como las del detective. Van en la
+    /// columna (no encima del chat): mientras se ven, el chat se encoge y nunca tapan el parte del día.
+    /// </summary>
+    private void BuildSuggestions(RectTransform column)
+    {
+        if (column.Find("Sugerencias (auto)") is RectTransform existing)
+        {
+            suggestionsBox = existing;
+            return;
+        }
+
+        suggestionsBox = UIFactory.Container(column, "Sugerencias (auto)", Vector2.zero, Vector2.one);
+        suggestionsBox.SetSiblingIndex(conversationScroll.transform.GetSiblingIndex() + 1);
+        var layout = UIFactory.VerticalLayout(suggestionsBox, T.spacing * 0.5f, 0f);
+        layout.padding = new RectOffset(Mathf.RoundToInt(T.spacing * 6f), 0, 0, 0);
+        layout.childAlignment = TextAnchor.LowerRight;
+
+        TMP_Text hint = UIFactory.Label(suggestionsBox, GameTexts.SuggestionsHint, T.secondarySize, T.textSecondary);
+        hint.fontStyle = FontStyles.Italic;
+        hint.alignment = TextAlignmentOptions.BottomRight;
+        LayoutKit.OneLine(hint, T.secondarySize);
+        UIComponents.GetOrAdd<LayoutElement>(hint.gameObject).minHeight = T.secondarySize * 1.5f;
+
+        suggestionLabels.Clear();
+        string[] texts = QuestionSuggestions.For(victimName);
+        for (int i = 0; i < texts.Length; i++)
+        {
+            int index = i;
+            Button chip = UIFactory.Button(suggestionsBox, texts[i], false, () => OnSuggestion(index));
+            chip.name = $"Sugerencia {i + 1}";
+            suggestionLabels.Add(chip.GetComponentInChildren<TMP_Text>(true));
+        }
+        suggestionsBox.gameObject.SetActive(false);
     }
 
     private const string QuestionPlaceholder = "Escribe tu pregunta…";

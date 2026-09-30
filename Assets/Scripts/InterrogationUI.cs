@@ -98,6 +98,9 @@ public partial class InterrogationUI : MonoBehaviour
     private int maxDaysValue = 7;
     private int dayValue = 1;
     private ChatEntry pendingQuestion;   // Pregunta enviada que aún espera respuesta
+    private RectTransform suggestionsBox; // Preguntas de ejemplo en un chat sin empezar
+    private readonly List<TMP_Text> suggestionLabels = new List<TMP_Text>();
+    private string victimName;
     private string pendingSuspectId;
     private int questionsUsedToday;
     private int questionsPerDay = 5;
@@ -638,6 +641,46 @@ public partial class InterrogationUI : MonoBehaviour
     public void RefreshConversationView()
     {
         chat?.Show(conversations.CurrentEntries);
+        RefreshSuggestions();
+    }
+
+    /// <summary>
+    /// Nombre de la víctima para las preguntas de ejemplo.
+    /// </summary>
+    public void SetVictim(string victim)
+    {
+        victimName = victim;
+        RefreshSuggestions();
+    }
+
+    // Visibles solo con un sospechoso elegido que aún no ha oído ninguna pregunta, y si se puede preguntar
+    private void RefreshSuggestions()
+    {
+        if (suggestionsBox == null)
+            return;
+
+        bool show = conversations.CurrentId != null && QuestionSuggestions.ShouldShow(conversations.CurrentEntries)
+                    && (questionInput == null || questionInput.interactable);
+        suggestionsBox.gameObject.SetActive(show);
+        if (!show)
+            return;
+
+        string[] texts = QuestionSuggestions.For(victimName);
+        for (int i = 0; i < suggestionLabels.Count && i < texts.Length; i++)
+            suggestionLabels[i].text = texts[i];
+    }
+
+    // Rellena el campo (no envía): se puede retocar y la pregunta solo se gasta al pulsar Enviar
+    private void OnSuggestion(int index)
+    {
+        if (questionInput == null || !questionInput.interactable)
+            return;
+
+        questionInput.text = QuestionSuggestions.For(victimName)[index];
+        if (Application.isPlaying)
+            UIAnimations.Pop(this, askButton != null ? askButton.transform : questionInput.transform);
+        if (!TouchScreenKeyboard.isSupported)
+            questionInput.ActivateInputField();
     }
 
     // Las corrutinas solo existen en juego (el test de layout usa la UI en modo edición)
@@ -704,6 +747,8 @@ public partial class InterrogationUI : MonoBehaviour
 
         if (evidenceDropdown != null)
             evidenceDropdown.interactable = enabled;
+
+        RefreshSuggestions();
     }
 
     public void ShowError(string message)

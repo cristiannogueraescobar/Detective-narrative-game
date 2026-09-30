@@ -13,6 +13,7 @@ public static class GameTexts
     public const string SettingsTitle = "AJUSTES";
     public const string NotebookTitle = "LIBRETA";
     public const string NoEvidence = "Mostrar prueba: ninguna";
+    public const string SuggestionsHint = "Puedes empezar por…";
     public const string PlayAgain = "Jugar otra vez";
     public const string MainMenu = "Menú principal";
 

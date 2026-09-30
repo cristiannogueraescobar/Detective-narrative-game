@@ -145,6 +145,7 @@ public class GameManager : MonoBehaviour
             data.histories.ToDictionary(h => h.characterId, h => h.messages),
             data.emotions.ToDictionary(e => e.characterId, e => (Emotion)Enum.Parse(typeof(Emotion), e.emotion)));
 
+        interrogationUI?.SetVictim(story.victim);
         interrogationUI?.ContinueInterrogation(data, data.currentSuspect, conversationManager.Emotions);
 
         Debug.Log($"[GameManager] Partida continuada: {variant.id}, día {currentDay}");
@@ -199,6 +200,7 @@ public class GameManager : MonoBehaviour
 
     private void SelectCaseUI()
     {
+        interrogationUI?.SetVictim(story.victim);
         interrogationUI?.SetEvidenceOptions(DiscoveredClues());
         RefreshNotebook();
         UpdateGameState();

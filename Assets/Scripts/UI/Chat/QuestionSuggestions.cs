@@ -1,0 +1,31 @@
+using System.Collections.Generic;
+
+/// <summary>
+/// Preguntas de ejemplo que se ofrecen en un interrogatorio sin empezar: el chat vacío deja de ser un hueco y en
+/// el móvil se ahorra teclear la primera. Tocarlas solo rellena el campo; la pregunta se gasta al enviarla.
+/// </summary>
+public static class QuestionSuggestions
+{
+    public static bool ShouldShow(IReadOnlyList<ChatEntry> entries)
+    {
+        if (entries == null)
+            return false;
+        foreach (ChatEntry entry in entries)
+        {
+            if (entry.kind == ChatEntryKind.Player)
+                return false;
+        }
+        return true;
+    }
+
+    public static string[] For(string victim)
+    {
+        string who = string.IsNullOrEmpty(victim) ? "la víctima" : victim;
+        return new[]
+        {
+            "¿Dónde estabas cuando pasó?",
+            $"¿Qué relación tenías con {who}?",
+            "¿Viste u oíste algo raro?"
+        };
+    }
+}

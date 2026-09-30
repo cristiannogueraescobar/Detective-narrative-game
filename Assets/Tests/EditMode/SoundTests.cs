@@ -42,11 +42,11 @@ public class SoundTests
     [Test]
     public void SinArchivosNoFallaYSeAnota()
     {
-        int before = SoundManager.Played.Count;
+        SoundManager.Played.Clear(); // El registro tiene tope (200): con él lleno, la cuenta no subiría
         Assert.DoesNotThrow(() => SoundManager.Play(Sfx.Clue));
         Assert.DoesNotThrow(() => SoundManager.PlayMusic(Music.Story2));
         Assert.AreEqual(Sfx.Clue, SoundManager.Played.Last());
-        Assert.GreaterOrEqual(SoundManager.Played.Count, before + 1);
+        Assert.AreEqual(1, SoundManager.Played.Count);
     }
 
     [Test]
