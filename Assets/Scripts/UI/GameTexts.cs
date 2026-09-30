@@ -146,7 +146,7 @@ public static class GameTexts
             "Cuando las gastes, pulsa «Fin del día»: por la mañana llega un parte con novedades. " +
             "No todos están disponibles al principio: aparecen cuando alguien los menciona, cuando preguntas por lo que ellos saben (la vecina, la curva, los caballos…) o cuando la policía los trae.\n\n" +
             h("LA LIBRETA") + "\n" +
-            "Las pistas, las contradicciones y cómo está cada sospechoso se apuntan solos en la libreta. Algunas pistas descartan a alguien: léelas bien. " +
+            "Las pistas, las contradicciones, lo que dice cada uno y cómo está se apuntan solos en la libreta: si una pista no cuadra con lo que alguien dice, enséñasela. Algunas pistas descartan a alguien: léelas bien. " +
             "Toca una pista para enseñarla en tu próxima pregunta, o el nombre de un sospechoso para ir a interrogarle.\n\n" +
             h("ACUSAR Y FINALES") + "\n" +
             "Puedes acusar cuando quieras; el séptimo día es obligatorio. Solo hay una oportunidad:\n" +

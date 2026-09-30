@@ -184,4 +184,10 @@ public class GameTextsTests
     {
         Assert.AreEqual(level, GameSettings.TextSizeForSystemScale(fontScale));
     }
+
+    [Test]
+    public void LasInstruccionesExplicanLasVersionesDeLaLibreta()
+    {
+        StringAssert.Contains("lo que dice cada uno", GameTexts.Instructions(ThemeManager.Current));
+    }
 }

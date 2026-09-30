@@ -464,6 +464,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   estados 95 % igual). Presupuesto de ficha 540 → 565 (medido con las fichas completas). COHERENCE.md: cerrada.
   Detector de confesiones del bot: "solo fui yo" ya no cuenta. EditMode 681/681, PlayMode 45/45.
 
+- **14:40** Ronda 5: bot en 2C, 3A, 1A con la regla de premisas ya en el juego: 5/6 resueltas, primera pista 6,3,
+  sin rupturas ni confesiones. Idea nueva de jugabilidad (Her Story / L.A. Noire: comparar lo que dicen con las
+  pruebas): **la libreta apunta la versión de cada sospechoso** en cuanto ha contestado ("Dice: «…»"), sangrada
+  bajo su nombre; las instrucciones lo explican ("si una pista no cuadra con lo que alguien dice, enséñasela").
+  Medición en curso: A/B con el bot (semilla 59, 18 + 18, -noVersions) mirando contradicciones y resueltas.
+
 ## Ahora (día 3)
 - Ronda final 2: bot para comprobar los desbloqueos tras el n.º 7; capturas tras los cambios; recorrido mental.
   Informe intermedio a las ~16:10.
