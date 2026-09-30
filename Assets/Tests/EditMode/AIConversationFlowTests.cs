@@ -92,6 +92,47 @@ public class AIConversationFlowTests
     }
 
     [Test]
+    public void UnaHoraInventadaSePideOtraVez()
+    {
+        provider.results.Enqueue(LLMResult.Ok("La vi en el salón a las 21:47. [ESTADO: tranquilo]"));
+        provider.results.Enqueue(LLMResult.Ok("La vi en el salón, no me fijé en la hora. [ESTADO: tranquilo]"));
+
+        LLMResult answer = Ask("a", "¿Cuándo la vio por última vez?");
+
+        Assert.AreEqual(2, provider.calls, "se pide una vez más");
+        Assert.AreEqual("La vi en el salón, no me fijé en la hora.", answer.Text);
+        StringAssert.Contains("horas", provider.lastUserMessage, "con una nota sobre las horas");
+        foreach (ChatMessage m in manager.Histories["a"])
+            StringAssert.DoesNotContain(AIConversationManager.TimeNudge.Trim(), m.content, "la nota no se queda en el historial");
+    }
+
+    [Test]
+    public void SiElReintentoTambienInventaSeQuedaConLaQueMenosInventa()
+    {
+        provider.results.Enqueue(LLMResult.Ok("A las 21:47 cené. [ESTADO: tranquilo]"));
+        provider.results.Enqueue(LLMResult.Ok("A las 21:47 cené y a las 22:13 me acosté. [ESTADO: tranquilo]"));
+        Assert.AreEqual("A las 21:47 cené.", Ask("a", "¿Qué hizo?").Text, "el reintento no mejora: se queda la primera");
+        Assert.AreEqual(2, provider.calls, "un solo reintento: nunca bloquea la partida");
+    }
+
+    [Test]
+    public void LaHoraQueDijoElInspectorNoProvocaReintento()
+    {
+        provider.results.Enqueue(LLMResult.Ok("A las 10:37 estaba en casa. [ESTADO: tranquilo]"));
+        Ask("a", "¿Dónde estaba a las 10:37?");
+        Assert.AreEqual(1, provider.calls);
+    }
+
+    [Test]
+    public void ElReintentoPorHorasSePuedeDesactivar()
+    {
+        manager.RetryInventedTimes = false;
+        provider.results.Enqueue(LLMResult.Ok("La vi a las 21:47. [ESTADO: tranquilo]"));
+        Ask("a", "¿Cuándo la vio?");
+        Assert.AreEqual(1, provider.calls);
+    }
+
+    [Test]
     public void SiVuelveARepetirSeQuedaConLaRespuesta()
     {
         for (int i = 0; i < 3; i++)

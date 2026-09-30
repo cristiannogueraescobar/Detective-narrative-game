@@ -110,16 +110,32 @@ public class AIConversationManager : MonoBehaviour
 
         // El modelo a veces repite palabra por palabra su respuesta anterior (suena a máquina): se pide otra vez,
         // una sola, con algo más de variedad. Si vuelve a repetir, se acepta: nunca se bloquea la partida.
+        bool retried = false;
         if (result.Success && IsRepeat(history, result.Text))
         {
-            // Copia de la ventana con una nota al final de la pregunta; el historial real no la guarda
-            var nudged = new List<ChatMessage>(ConversationWindow.Last(history, MaxHistoryMessages));
-            ChatMessage last = nudged[nudged.Count - 1];
-            nudged[nudged.Count - 1] = new ChatMessage { role = last.role, content = last.content + RepeatNudge };
-            LLMResult retry = await llmProvider.SendAsync(systemPrompt, nudged, maxTokens,
+            retried = true;
+            LLMResult retry = await llmProvider.SendAsync(systemPrompt, Nudged(history, RepeatNudge), maxTokens,
                 Mathf.Min(1f, temperature + RepeatRetryTemperatureBoost));
             if (retry.Success)
                 result = retry;
+        }
+
+        // Una hora que no está en la ficha ni en lo que preguntó el inspector puede despistar al jugador: se pide
+        // otra vez (una sola, y nunca después del reintento por repetición) y se queda la que menos horas inventa
+        if (result.Success && !retried && RetryInventedTimes)
+        {
+            string known = systemPrompt + "\n" + string.Join("\n", history.Where(m => m.role == "user").Select(m => m.content));
+            int invented = TimeCheck.Unknown(EmotionParser.Parse(result.Text).text, known).Count;
+            if (invented > 0)
+            {
+                InventedTimeRetries++;
+                LLMResult retry = await llmProvider.SendAsync(systemPrompt, Nudged(history, TimeNudge), maxTokens, temperature);
+                if (retry.Success && TimeCheck.Unknown(EmotionParser.Parse(retry.Text).text, known).Count < invented)
+                {
+                    InventedTimeRetriesImproved++;
+                    result = retry;
+                }
+            }
         }
 
         if (!result.Success)
@@ -189,6 +205,25 @@ public class AIConversationManager : MonoBehaviour
 
     public const float RepeatRetryTemperatureBoost = 0.25f;
     public const string RepeatNudge = " (No repitas lo que ya has dicho: responde con otras palabras.)";
+    public const string TimeNudge = " (Solo di horas que estén en tu ficha; si no sabes la hora, di que no te fijaste.)";
+
+    /// <summary>
+    /// Pedir otra vez las respuestas con horas inventadas (medido con el bot: ver docs/NIGHT-LOG.md, día 3, 0d).
+    /// </summary>
+    public bool RetryInventedTimes { get; set; } = true;
+
+    // Contadores para las mediciones del bot (no afectan al juego)
+    public static int InventedTimeRetries;
+    public static int InventedTimeRetriesImproved;
+
+    // Copia de la ventana con una nota al final de la pregunta; el historial real no la guarda
+    private static List<ChatMessage> Nudged(List<ChatMessage> history, string note)
+    {
+        var nudged = new List<ChatMessage>(ConversationWindow.Last(history, MaxHistoryMessages));
+        ChatMessage last = nudged[nudged.Count - 1];
+        nudged[nudged.Count - 1] = new ChatMessage { role = last.role, content = last.content + note };
+        return nudged;
+    }
 
     // ¿La respuesta nueva es la misma que la última de este personaje (sin contar la etiqueta de estado)?
     private static bool IsRepeat(List<ChatMessage> history, string answer)

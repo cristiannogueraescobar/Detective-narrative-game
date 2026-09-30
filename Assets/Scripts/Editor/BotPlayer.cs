@@ -36,10 +36,12 @@ public static class BotPlayer
         public int seed = 7;
         public string ollamaUrl = "http://localhost:11434";
         public string model = new OllamaSettings().model;
+        public bool timeRetry = true; // -noTimeRetry: sin reintento por horas inventadas (A/B)
     }
 
     public class Turn
     {
+        public long ms; // Latencia de la respuesta del sospechoso (con reintentos)
         public int day;
         public string suspectId;
         public string question;
@@ -83,6 +85,7 @@ public static class BotPlayer
                 case "-variants": options.variantIds = args[i + 1].Split(',').Select(s => s.Trim()).Where(s => s.Length > 0).ToList(); break;
                 case "-games": options.games = Math.Max(1, int.Parse(args[i + 1])); break;
                 case "-seed": options.seed = int.Parse(args[i + 1]); break;
+                case "-noTimeRetry": options.timeRetry = false; break;
                 case "-ollama": options.ollamaUrl = args[i + 1]; break;
                 case "-model": options.model = args[i + 1]; break;
             }
@@ -183,6 +186,7 @@ public static class BotPlayer
         {
             var manager = host.AddComponent<AIConversationManager>();
             manager.UseProvider(new SyncProvider(client, options));
+            manager.RetryInventedTimes = options.timeRetry;
             manager.StartCase(story, variant);
 
             var unlocked = new List<string>(story.cast.Where(c => c.startsUnlocked).Select(c => c.id));
@@ -217,7 +221,9 @@ public static class BotPlayer
 
                     ClueData shown = decision.evidence != null ? variant.Clue(decision.evidence) : null;
                     turnClues.Clear();
+                    var watch = System.Diagnostics.Stopwatch.StartNew();
                     LLMResult result = manager.AskSuspect(decision.suspect, decision.question, day, shown).GetAwaiter().GetResult();
+                    long elapsed = watch.ElapsedMilliseconds;
                     if (!result.Success)
                         throw new Exception("Ollama: " + result.ErrorMessage);
 
@@ -230,7 +236,7 @@ public static class BotPlayer
 
                     game.turns.Add(new Turn
                     {
-                        day = day, suspectId = decision.suspect, question = decision.question, evidenceId = decision.evidence,
+                        ms = elapsed, day = day, suspectId = decision.suspect, question = decision.question, evidenceId = decision.evidence,
                         answer = result.Text, emotion = emotion, newClues = new List<string>(turnClues),
                         findings = PlaythroughChecks.Check(result.Text, sheet, decision.suspect == variant.culpritId,
                             manager.State.ContradictionClueIds.Count, manager.State.ShownTo(decision.suspect).Count(), previous, decision.question)
@@ -525,6 +531,24 @@ public static class BotPlayer
         if (answers > 0)
             sb.AppendLine("**Estados emocionales:** " + string.Join(" · ", emotionTotals.OrderByDescending(p => p.Value)
                 .Select(p => $"{p.Key.ToString().ToLowerInvariant()} {(double)p.Value / answers:P0}")));
+
+        sb.AppendLine();
+        // Latencia y reintentos por horas inventadas (0d) · ritmo de la partida (B3)
+        var allTurns = all.SelectMany(g => g.turns).ToList();
+        if (allTurns.Count > 0)
+        {
+            var sorted = allTurns.Select(t => t.ms).OrderBy(x => x).ToList();
+            sb.AppendLine($"**Latencia por respuesta:** media {sorted.Average():F0} ms · p90 {sorted[(int)(0.9 * (sorted.Count - 1))]} ms · " +
+                          $"reintentos por horas {AIConversationManager.InventedTimeRetries} (mejoran {AIConversationManager.InventedTimeRetriesImproved}) · " +
+                          $"reintento {(options.timeRetry ? "activado" : "desactivado")}");
+            var firstClue = all.Select(g => g.turns.FindIndex(t => t.newClues.Count > 0)).Where(i => i >= 0).ToList();
+            int dead = allTurns.Count(t => t.newClues.Count == 0);
+            sb.AppendLine($"**Ritmo:** preguntas hasta la primera pista {(firstClue.Count > 0 ? (firstClue.Average() + 1).ToString("F1") : "—")} " +
+                          $"({all.Count - firstClue.Count} partidas sin ninguna) · turnos sin pista nueva {(double)dead / allTurns.Count:P0} · " +
+                          $"respuestas repetidas {allTurns.Count(t => t.findings.Any(f => f.kind == PlaythroughChecks.Kind.Incoherent))} · " +
+                          $"partidas resueltas (culpable) {(double)all.Count(g => g.accusedId == g.culpritId) / Math.Max(1, all.Count):P0} · " +
+                          $"duración media {all.Average(g => g.turns.Sum(t => t.ms)) / 60000.0:F1} min de respuestas");
+        }
 
         sb.AppendLine();
         sb.AppendLine("## Respuestas marcadas (para revisar a mano)");
