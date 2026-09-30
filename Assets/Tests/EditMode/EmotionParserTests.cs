@@ -112,4 +112,17 @@ public class EmotionParserTests
         Assert.AreEqual("Hola.\n[ESTADO: asustado]", EmotionParser.Canonical("Hola.  [MESTADO: asustado]"));
         Assert.AreEqual("Hola.", EmotionParser.Canonical("Hola."));
     }
+
+    // Tercera revisión: la etiqueta cortada con errata tampoco se ve; la no reconocida se conserva tal cual
+    [Test]
+    public void UnaEtiquetaCortadaConErrataNoSeVe()
+    {
+        Assert.AreEqual("Hola.", EmotionParser.Parse("Hola. [MESTADO: nerv").text);
+    }
+
+    [Test]
+    public void SinEstadoReconocidoLaFormaCanonicaNoPierdeLaEtiqueta()
+    {
+        StringAssert.Contains("[ESTADO: pensativo]", EmotionParser.Canonical("Hola. [ESTADO: pensativo]"));
+    }
 }

@@ -149,3 +149,21 @@ pantallas alargadas, flechas, textos). **0 críticos, 3 importantes, 8 menores.*
 
 Aparte: en batchmode la "pantalla" del editor es 640×480 apaisada (el chat se queda sin alto); los tests del lector
 lo tienen en cuenta.
+
+---
+
+# Revisión de código (día 3, tercera)
+Tercera revisión independiente, sobre `git diff d4beea2..HEAD` (versiones en la libreta, reintento por idioma,
+etiqueta tolerante, quinta indicación, sonido de la ficha, desplegables, motivos musicales). **0 críticos, 2
+importantes, 6 menores.** Resolución:
+
+| # | Sev. | Hallazgo | Estado |
+|---|---|---|---|
+| 1 | Importante | El reintento por idioma podía volver a la respuesta repetida (sin la nota de variedad ni la temperatura del reintento por repetición) | **Arreglado**: si ya se pidió variedad, el reintento por idioma la mantiene. *Decisión:* no se prohíbe del todo la repetición: una respuesta repetida hace menos daño que una en chino que se queda en el historial |
+| 2 | Importante | "Dice: «…»" enseñaba el guion: la mentira del culpable antes de contarla, o el nombre de alguien aún no disponible | **Arreglado**: la del culpable solo cuando ya ha contado su mentira; una versión que nombra a alguien bloqueado espera a que aparezca (tests) |
+| 3 | Menor | Hasta 3 llamadas; la respuesta del reintento por idioma no pasa el control de horas | **Documentado** como presupuesto (dos llamadas de más como mucho; horas solo si no hubo otro reintento) |
+| 4 | Menor | El reintento por idioma podía elegir una respuesta vacía | **Arreglado** (test) |
+| 5 | Menor | La quinta indicación podía salir con la libreta ya cerrada | **Arreglado** (condición al mostrarla) |
+| 6 | Menor | La forma canónica quitaba etiquetas no reconocidas; las partidas guardadas conservaban las erratas | **Arreglado**: se conserva tal cual; al continuar, el historial se normaliza (test) |
+| 7 | Menor | La etiqueta cortada con errata ("[MESTADO: nerv") seguía viéndose | **Arreglado** (test) |
+| 8 | Menor (bot) | Al rehacer una pregunta en otro alfabeto, el bot perdía la ayuda de Pensar | **Arreglado** |

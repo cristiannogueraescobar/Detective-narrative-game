@@ -373,7 +373,20 @@ public class StateMachineTests
         foreach (string id in new[] { Tutorial.Ask, Tutorial.Days, Tutorial.Evidence, Tutorial.Contradiction })
             Tutorial.MarkSeen(id);
         yield return StartNewGame();
-        yield return AskAndWait("¿Dónde estabas esa noche?");
+        // La versión del culpable no se apunta hasta que cuenta su mentira: se pregunta a inocentes hasta que haya una
+        var manager = Object.FindFirstObjectByType<AIConversationManager>();
+        var dropdown = Find("SuspectDropdown").GetComponent<TMP_Dropdown>();
+        var notebook = Find("CluesPanel").GetComponentsInChildren<TMP_Text>(true);
+        string culprit = manager.Story.Character(manager.State.Variant.culpritId).shortName;
+        for (int k = 0; k < dropdown.options.Count && !notebook.Any(t => t.text.Contains("Dice: «")); k++)
+        {
+            if (dropdown.options[k].text.StartsWith(culprit))
+                continue;
+            dropdown.value = k;
+            yield return null;
+            yield return AskAndWait("¿Dónde estabas esa noche?");
+        }
+        Assert.IsTrue(notebook.Any(t => t.text.Contains("Dice: «")), "algún inocente ya tiene su versión apuntada");
 
         yield return Tap("ViewCluesButton");
         yield return new WaitForSecondsRealtime(1.5f);
