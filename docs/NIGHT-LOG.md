@@ -142,7 +142,7 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   pasar de 460 palabras se acortaron líneas comunes ("DÍA n", "NO SABES (dilo si te preguntan)", la guía de
   estados). Midiendo: premisas, estados y pistas (si empeora algo, se revierte).
 
-- 08:35 Premisas con "afirma": 5 %; con "te atribuye": 2 % (y las dos son la custodia real de la historia 3).
+- 08:17 Premisas con "afirma": 5 %; con "te atribuye": 2 % (y las dos son la custodia real de la historia 3).
   Pero la detección de pistas baja (sin regla 85 / 84 %; con regla 83 / 80 %) y 3A_audios falla: la madre niega
   que Javier la amenazase. Brazo C en curso (recortes sí, regla no) para separar la causa. Galería regenerada.
 
