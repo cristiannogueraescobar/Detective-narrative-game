@@ -57,6 +57,7 @@ public static class BotPlayer
 
     public class Game
     {
+        public List<string> reports = new List<string>(); // Partes de la mañana ya leídos (como el jugador)
         public string variantId;
         public int index;
         public Ending ending;
@@ -223,6 +224,10 @@ public static class BotPlayer
                 // Las mismas reglas que el juego: parte de la mañana (NaturalUnlocks.DueOn)
                 foreach (var (id, _) in NaturalUnlocks.DueOn(story, unlocked, day).ToList())
                     unlocked.Add(id);
+                // El jugador lee el parte de cada mañana; el bot también (antes no lo veía: ronda 12)
+                string report = variant.morningReports != null && day - 1 < variant.morningReports.Length ? variant.morningReports[day - 1] : "";
+                if (!string.IsNullOrWhiteSpace(report))
+                    game.reports.Add($"Día {day}: {report}");
 
                 for (int q = 0; q < QuestionsPerDay && accused == null; q++)
                 {
@@ -319,7 +324,7 @@ public static class BotPlayer
     }
 
     private static string DetectivePrompt(StoryData story, AIConversationManager manager, List<string> unlocked, bool versions,
-                                          bool topicQuestions = false)
+                                          bool topicQuestions = false, IReadOnlyList<string> reports = null)
     {
         string notebook = StripTags(Notebook.Format(story, manager.State, unlocked, manager.Emotions, manager.DescribeContradiction,
             interviewed: versions ? manager.Histories.Where(h => h.Value.Any(m => m.role == "assistant")).Select(h => h.Key) : null));
@@ -333,6 +338,13 @@ public static class BotPlayer
         sb.AppendLine("PARTE DEL CASO:");
         sb.AppendLine(StripTags(CaseBriefing.Format(story)));
         sb.AppendLine();
+        if (reports != null && reports.Count > 0)
+        {
+            sb.AppendLine("PARTES DE CADA MAÑANA (novedades de la investigación):");
+            foreach (string r in reports)
+                sb.AppendLine("- " + r);
+            sb.AppendLine();
+        }
         sb.AppendLine("TU LIBRETA:");
         sb.AppendLine(notebook);
         sb.AppendLine();
@@ -353,7 +365,7 @@ public static class BotPlayer
     private static Decision Decide(HttpClient client, Options options, StoryData story, AIConversationManager manager,
                                    List<string> unlocked, Game game, int day, int question, System.Random random, string note = null)
     {
-        string system = DetectivePrompt(story, manager, unlocked, options.versions, options.topicQuestions);
+        string system = DetectivePrompt(story, manager, unlocked, options.versions, options.topicQuestions, game.reports);
         var recent = game.turns.Skip(Math.Max(0, game.turns.Count - 8))
             .Select(t => $"- A {story.Character(t.suspectId).shortName}: «{t.question}» → «{Truncate(t.answer, 240)}»");
 
@@ -414,7 +426,7 @@ public static class BotPlayer
     private static Decision FinalAccusation(HttpClient client, Options options, StoryData story, AIConversationManager manager,
                                             List<string> unlocked, Game game)
     {
-        string system = DetectivePrompt(story, manager, unlocked, options.versions, options.topicQuestions);
+        string system = DetectivePrompt(story, manager, unlocked, options.versions, options.topicQuestions, game.reports);
         string summary = string.Join("\n", game.turns.Select(t => $"- {story.Character(t.suspectId).shortName}: «{Truncate(t.answer, 160)}»").TakeLast(20));
         string ask = "Se acabó el tiempo: tienes que acusar a uno de los sospechosos. Respuestas más recientes:\n" + summary +
                      "\n\nResponde SOLO con un JSON: {\"accuse\": \"id\", \"reason\": \"por qué\"}";
