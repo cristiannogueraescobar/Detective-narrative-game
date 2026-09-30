@@ -109,6 +109,7 @@ public static class BotPlayer
             // Contadores estáticos: desde el menú del editor se sumarían de una ejecución a otra
             AIConversationManager.InventedTimeRetries = 0;
             AIConversationManager.InventedTimeRetriesImproved = 0;
+            AIConversationManager.LanguageRetries = 0;
             Run(options);
         }
         catch (Exception e)
@@ -577,6 +578,7 @@ public static class BotPlayer
             var sorted = allTurns.Select(t => t.ms).OrderBy(x => x).ToList();
             sb.AppendLine($"**Latencia por respuesta:** media {sorted.Average():F0} ms · p90 {sorted[(int)(0.9 * (sorted.Count - 1))]} ms · " +
                           $"reintentos por horas {AIConversationManager.InventedTimeRetries} (mejoran {AIConversationManager.InventedTimeRetriesImproved}) · " +
+                          $"reintentos por idioma {AIConversationManager.LanguageRetries} · " +
                           $"reintento {(options.timeRetry ? "activado" : "desactivado")}");
             var firstClue = all.Select(g => g.turns.FindIndex(t => t.newClues.Count > 0)).Where(i => i >= 0).ToList();
             int dead = allTurns.Count(t => t.newClues.Count == 0);
