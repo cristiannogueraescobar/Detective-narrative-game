@@ -51,7 +51,50 @@ Diario minuto a minuto: `docs/NIGHT-LOG.md`. Tests: **EditMode y PlayMode en ver
 
 ---
 
-## 3. Qué rama probar y en qué orden
+## 3. Métricas
+
+### Jugador bot (qwen juega de detective; los sospechosos son el juego real)
+
+Informes completos: `Logs/bot-playthroughs.md` (final) y transcripciones en `Logs/bot-final/`.
+
+| Ronda | Partidas | Acierta al culpable | Finales B/A/I/M | Pistas por partida | Horas inventadas* | "Soy una IA" |
+|---|---|---|---|---|---|---|
+| 1 (inicio de la noche) | 27 | 13/27 (48 %) | 1 / 3 / 9 / 14 | 1,5 | 50 en 945 respuestas | 0 |
+| Final (todo lo de la noche) | 18 | **13/18 (72 %)** | 2 / 6 / 5 / 5 | 2,0 | 18 en 630 (2,9 %) | 0 |
+
+\* En la ronda 1 el detector contaba también las horas que el propio inspector decía en la pregunta; corregido
+después (con test). Aun así la bajada es real: la regla "si no sabes la hora, di que no te fijaste" ayuda.
+Otras correcciones que salieron del bot: respuestas repetidas palabra por palabra (reintento automático), y
+falsos positivos del detector (nombres tras "¿", "fui yo quien entré").
+
+El bot nunca acusa antes del día 7 y descubre ~2 pistas de 5-6: es un jugador flojo, pero sirve para medir
+rupturas de personaje y coherencia. El juego sigue siendo difícil, como pediste.
+
+### Calibración de estados emocionales (144 respuestas, 4 tipos de pregunta)
+
+| | Antes (noche 1) | Final |
+|---|---|---|
+| Bien formada | 141/144 | 142/144 |
+| Coherente | 121/144 (84 %) | **141/144 (98 %)** |
+| Pregunta sobre la víctima | tranquilo 16, triste 15 | **triste 34**, nervioso 1, tranquilo 1 |
+| Pregunta neutra | tranquilo 31 | tranquilo 34 |
+
+### Pistas flojas (detección con las preguntas de calibración; objetivo ≥ 7/10)
+
+| Pista | Antes | Después |
+|---|---|---|
+| 2C_gps (cartero) | 6/10 | **16/20 (80 %)** |
+| 3A_audios (madre) | 6/10 | **10/10** |
+| 3C_fotos (madre) | 6/10 | **8/10** |
+
+### Rendimiento (PlayMode, editor)
+
+0 B de basura por fotograma del juego en el menú vivo y en el interrogatorio (restando la línea base del
+editor); < 1 ms de CPU por fotograma. `Logs/rendimiento.md`.
+
+---
+
+## 4. Qué rama probar y en qué orden
 
 **Rama `feature/noche2`.** El proyecto principal (`C:\Dev\Detective-narrative-game`) ya está en esa rama;
 abre Unity y deja que reimporte. Game View a **1080x1920 (vertical)**; después prueba 1080x2400.
