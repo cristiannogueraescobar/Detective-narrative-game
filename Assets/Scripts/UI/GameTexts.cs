@@ -24,7 +24,7 @@ public static class GameTexts
             h("TU TRABAJO") + "\n" +
             "Eres el inspector del caso. Tienes siete días para descubrir quién lo hizo y reunir pruebas suficientes para que no se libre.\n\n" +
             h("INTERROGAR") + "\n" +
-            "Elige a un sospechoso y escríbele como hablarías tú. Funcionan mejor las preguntas concretas: horas, lugares, objetos, quién estaba con quién. " +
+            "Elige a un sospechoso y escríbele como hablarías tú. Funcionan mejor las preguntas concretas: horas, lugares, objetos, quién estaba con quién. Para romper el hielo, toca una de las preguntas de ejemplo: se escribe sola y puedes retocarla. " +
             "Si algo no te cuadra, insiste: a veces la segunda pregunta abre la puerta.\n\n" +
             h("MOSTRAR UNA PRUEBA") + "\n" +
             "Con «Mostrar prueba» enseñas una pista de tu libreta junto a la pregunta. Enséñasela a quien creas que miente y mira cómo reacciona: " +

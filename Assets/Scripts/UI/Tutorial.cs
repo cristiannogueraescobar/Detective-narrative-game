@@ -56,7 +56,7 @@ public static class Tutorial
         switch (id)
         {
             case Ask:
-                return "Elige a quién interrogar y escribe tu pregunta. Funcionan las preguntas concretas: horas, lugares, objetos.";
+                return "Elige a quién interrogar y escribe tu pregunta (o toca una de ejemplo). Funcionan las concretas: horas, lugares, objetos.";
             case Days:
                 return "Tienes cinco preguntas al día. Cuando se acaben, pulsa «Fin del día» y a la mañana siguiente llegará un parte.";
             case Evidence:
