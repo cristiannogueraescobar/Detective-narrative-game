@@ -520,6 +520,9 @@ public class InterrogationUI : MonoBehaviour
         {
             cluesText.color = T.paperText;
             UIComponents.GetOrAdd<ThemeRole>(cluesText.gameObject).role = UIRole.Ignore;
+            // Tocar una pista en la libreta la prepara como prueba
+            cluesText.raycastTarget = true;
+            UIComponents.GetOrAdd<TextLinkHandler>(cluesText.gameObject).onLink = OnNotebookLink;
         }
         if (notebookScroll != null && notebookScroll.TryGetComponent(out Image scrollImage))
         {
@@ -1326,6 +1329,20 @@ public class InterrogationUI : MonoBehaviour
             UIAnimations.CardFlip(this, cluesPanel.transform);
             Debug.Log("[InterrogationUI] Panel de pistas mostrado");
         }
+    }
+
+    private void OnNotebookLink(string link)
+    {
+        if (!link.StartsWith(Notebook.ClueLinkPrefix) || evidenceDropdown == null)
+            return;
+        string clueId = link.Substring(Notebook.ClueLinkPrefix.Length);
+        int index = evidenceOptions.FindIndex(c => c.id == clueId);
+        if (index < 0)
+            return;
+        evidenceDropdown.value = index + 1; // La opción 0 es "ninguna"
+        HideCluesPanel();
+        if (questionInput != null && questionInput.interactable)
+            questionInput.ActivateInputField();
     }
 
     private void HideCluesPanel()

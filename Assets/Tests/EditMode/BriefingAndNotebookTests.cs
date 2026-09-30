@@ -30,6 +30,19 @@ public class BriefingAndNotebookTests
     }
 
     [Test]
+    public void EnLaLibretaDePapelLasPistasSonEnlaces()
+    {
+        StoryData story = TestCases.Story();
+        var state = new InvestigationState(story.variants[0]);
+        state.Discover("i1");
+        string paper = Notebook.Format(story, state, story.cast.Select(c => c.id), new System.Collections.Generic.Dictionary<string, Emotion>(), c => "x", onPaper: true);
+        string plain = Notebook.Format(story, state, story.cast.Select(c => c.id), new System.Collections.Generic.Dictionary<string, Emotion>(), c => "x");
+
+        StringAssert.Contains($"<link=\"{Notebook.ClueLinkPrefix}i1\">", paper);
+        StringAssert.DoesNotContain("<link", plain, "el texto para el bot no lleva enlaces");
+    }
+
+    [Test]
     public void LibretaListaPistasContradiccionesYSospechosos()
     {
         StoryData story = TestCases.Story();

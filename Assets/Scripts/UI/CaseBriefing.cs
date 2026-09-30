@@ -37,6 +37,8 @@ public static class CaseBriefing
 /// </summary>
 public static class Notebook
 {
+    public const string ClueLinkPrefix = "pista:";
+
     public static string Format(StoryData story, InvestigationState state, IEnumerable<string> unlocked,
                                 IReadOnlyDictionary<string, Emotion> emotions, Func<ClueData, string> describeContradiction,
                                 bool onPaper = false)
@@ -54,8 +56,14 @@ public static class Notebook
         sb.AppendLine(heading($"PISTAS ({clues.Count})"));
         if (clues.Count == 0)
             sb.AppendLine("Aún no hay pistas. Pregunta por horas, lugares y objetos concretos.");
+        else if (onPaper)
+            sb.AppendLine("<i><size=85%>Toca una pista para enseñarla en tu próxima pregunta.</size></i>");
         foreach (ClueData clue in clues)
-            sb.AppendLine($"• <b>{clue.playerName}</b>: {clue.summary}");
+        {
+            // En la libreta de papel, el nombre es un enlace: tocarlo la prepara como prueba para enseñar
+            string name = onPaper ? $"<link=\"{ClueLinkPrefix}{clue.id}\"><u>{clue.playerName}</u></link>" : clue.playerName;
+            sb.AppendLine($"• <b>{name}</b>: {clue.summary}");
+        }
         sb.AppendLine();
 
         sb.AppendLine(heading($"CONTRADICCIONES ({state.ContradictionClueIds.Count})"));
