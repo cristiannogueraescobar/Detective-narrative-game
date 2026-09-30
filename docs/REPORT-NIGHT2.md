@@ -17,7 +17,7 @@ Diario minuto a minuto: `docs/NIGHT-LOG.md`. Tests: **EditMode y PlayMode en ver
 | **Contenido** | Instrucciones y Acerca de reescritos, tutorial de 4 indicaciones (saltable), HUD claro ("quedan N preguntas"), selección de caso con el mejor final de cada historia, botón Atrás de Android. **Preguntas de ejemplo** al empezar con cada sospechoso (rellenan el campo, nunca envían), selector de pruebas que dice cuántas tienes, y la acusación recuerda lo que llevas ("En tu libreta: 3 pistas y 1 contradicción" / "acusar ahora es una apuesta"). "Fin del día" confirma si quedan preguntas. En la libreta, tocar un sospechoso lleva a interrogarle (y los enlaces perdonan un toque cercano). Consejo sin spoilers en el parte si el día 3 no tienes ninguna pista. |
 | **Narrativa con qwen** | Pistas flojas: 3A_audios 60 %→100 %, 3C_fotos 60 %→80 %, 2C_gps 60 %→80 %. Víctima: "triste" (antes "tranquilo" 16/36). **Estados variados en partida real**: nervioso 70 %→42 %, triste 17→35 %, tranquilo 5→13 % (el retrato vuelve a decir algo). Jugador bot: 9 variantes jugadas por qwen de principio a fin. Sin respuestas repetidas palabra por palabra. |
 | **Accesibilidad** | Tamaño de texto (3 niveles), alto contraste (AAA), velocidad del texto, reducir animaciones, filtro noir, vibración. Todo persistente y en caliente. |
-| **Build** | Game.unity única escena. Build de Windows OK y **el .exe arranca** (prueba de humo "SMOKE OK"). Android: módulo no instalado → pasos en `docs/BUILD.md`. |
+| **Build** | Game.unity única escena. Build de Windows en `Builds/Windows-final/` (ventana vertical 9:16) y **el .exe arranca** (prueba de humo "SMOKE OK"). Android: módulo no instalado → pasos en `docs/BUILD.md`. |
 
 
 ---
@@ -266,3 +266,14 @@ abre Unity y deja que reimporte. Game View a **1080x1920 (vertical)**; después 
 10. **Continuar**: cierra el juego a mitad de partida y vuelve: "Continuar · <caso>, día N" y el chat entero.
 11. **Build**: `Builds/Windows-final/Detectives.exe` (ver docs/BUILD.md: la ruta de siempre quedó bloqueada por
     Windows esta noche). Se abre como una ventana vertical de móvil (9:16); `-smoketest` para la prueba de humo.
+
+---
+
+## Cifras finales
+
+- **Tests:** EditMode **549/549** en verde; PlayMode **20/20** en verde (más 14 pruebas de captura *Explicit*, que
+  solo corren a mano). Al empezar la noche eran 316.
+- **Revisiones de código:** 9 por tramos más una de toda la rama con el modelo más capaz, todas con subagente.
+  Ninguna encontró fallos críticos ni importantes al final; los menores se arreglaron con test o se anotaron.
+- **Sondas nuevas** (herramientas de editor, para medir el juego con qwen): `PremiseCalibrator` (preguntas
+  capciosas) y `SuggestionProbe` (qué preguntas de ejemplo destapan más pistas), además de las que ya había.
