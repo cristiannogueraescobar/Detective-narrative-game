@@ -83,3 +83,6 @@ crashlytics-build.properties
 
 # Agent scratch
 .superpowers/
+
+# Builds del juego (BuildScript)
+/Builds/
