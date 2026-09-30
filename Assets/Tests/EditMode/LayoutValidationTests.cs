@@ -322,6 +322,25 @@ public class LayoutValidationTests
                 errors.Add($"casilla invisible: {Path((RectTransform)toggle.transform)} contraste {ratio:F1}:1");
         }
 
+        // Flecha de los desplegables: es lo único que dice que se abren (WCAG 1.4.11, 3:1 con el botón)
+        foreach (TMP_Dropdown dropdown in root.GetComponentsInChildren<TMP_Dropdown>(false))
+        {
+            Transform arrow = dropdown.transform.Find("Arrow");
+            if (arrow == null || !arrow.gameObject.activeSelf || !(dropdown.targetGraphic is Graphic back)
+                || !arrow.TryGetComponent(out Graphic arrowGraphic))
+                continue;
+            Color backColor = back.color;
+            if (dropdown.transition == Selectable.Transition.ColorTint)
+                backColor *= dropdown.colors.normalColor;
+            float ratio = Contrast(arrowGraphic.color, backColor);
+            if (ratio < 3f)
+                errors.Add($"flecha de desplegable invisible: {Path((RectTransform)dropdown.transform)} contraste {ratio:F1}:1");
+            // Con 20 px el suavizado la deja en gris (medido en captura: 1,5:1 aunque el color sea blanco)
+            Rect arrowRect = ((RectTransform)arrow).rect;
+            if (arrowRect.width < 32f || arrowRect.height < 32f)
+                errors.Add($"flecha de desplegable diminuta: {Path((RectTransform)dropdown.transform)} {arrowRect.width:F0}x{arrowRect.height:F0}");
+        }
+
         // Placeholder de los campos de texto: no debe desbordar
         foreach (TMP_InputField field in root.GetComponentsInChildren<TMP_InputField>(false))
         {

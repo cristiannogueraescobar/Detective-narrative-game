@@ -87,3 +87,17 @@ la que acusas) · *contradicción* (una mentira pillada) · *parte* (novedades d
 
 Además (WCAG 1.4.11): la parte vacía de los deslizadores tenía 1,5:1 con el fondo; ahora `Theme.sliderTrack`
 ≥ 3:1 con fondo y panel (test).
+
+## Accesibilidad (ronda final 2, skill accessibility-review, WCAG 2.2 AA)
+**Ya cubierto por tests:** contraste de texto AA en todos los paneles, con texto "Muy grande" y alto contraste
+(y medido también después del post-proceso), zonas táctiles de 48 dp, bordes de casillas y pista de los
+deslizadores ≥ 3:1, textos que no desbordan con el tamaño máximo (1.4.4), errores que dicen qué pasó y qué hacer
+(3.3.1), "Reducir animaciones" (2.3.3), el estado de ánimo con etiqueta además del color (1.4.1), velocidad del
+texto y toque para completarlo (2.2.1: nada se va sin que el jugador pueda leerlo; las pistas quedan en la libreta).
+
+| # | Hallazgo | Criterio | Gravedad | Estado |
+|---|---|---|---|---|
+| 1 | La flecha de los desplegables (sospechoso, prueba, acusación) medía 20 px y en pantalla quedaba a ~1,5:1 aunque el color era blanco: el suavizado se la comía. Es lo único que dice que se abren | 1.4.11 | Mayor | **Arreglado**: flecha propia (V gruesa) de 36 px en `textSecondary` (≥ 4,5:1); el validador exige ≥ 32 px y ≥ 3:1 |
+| 2 | Sin indicador de foco para teclado o mando (`selectedColor` = normal): solo afecta a la build de Windows | 2.4.7 | Menor | Pendiente: en táctil el "seleccionado" se queda pegado tras tocar; necesita decidir cómo se juega en PC |
+| 3 | Sin lector de pantalla (TalkBack/VoiceOver): uGUI no expone la interfaz | 4.1.2, 1.1.1 | Mayor para personas ciegas | Pendiente (decisión de alcance): Unity 6 tiene módulo de accesibilidad con TalkBack/VoiceOver (AccessibilityHierarchy; exige API 26, ver RESEARCH.md); es un bloque de trabajo propio |
+| 4 | Solo vertical | 1.3.4 | — | Aceptable: la orientación es esencial para el diseño a una mano |

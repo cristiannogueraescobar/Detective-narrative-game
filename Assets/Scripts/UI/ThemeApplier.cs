@@ -106,6 +106,14 @@ public static class ThemeApplier
 
             UIRole role = graphic.TryGetComponent(out ThemeRole themeRole) ? themeRole.role : UIRole.Auto;
 
+            // Flecha de un desplegable: grande y clara (es lo único que dice que se abre; WCAG 1.4.11)
+            if (!isText && graphic is Image arrowImage && graphic.gameObject.name == "Arrow"
+                && graphic.transform.parent != null && graphic.transform.parent.TryGetComponent(out TMP_Dropdown _))
+            {
+                StyleDropdownArrow(arrowImage, theme);
+                continue;
+            }
+
             // El fondo de un desplegable o de un campo de texto es un control, no un panel
             if (role == UIRole.Auto && !isText && (graphic.TryGetComponent(out TMP_Dropdown _) || graphic.TryGetComponent(out TMP_InputField _)))
                 role = UIRole.Field;
@@ -119,6 +127,22 @@ public static class ThemeApplier
 
             ApplyRole(graphic, role, theme, button);
         }
+    }
+
+    public const float DropdownArrowSize = 36f;
+
+    private static void StyleDropdownArrow(Image arrow, Theme theme)
+    {
+        arrow.sprite = UISprites.Chevron();
+        arrow.type = Image.Type.Simple;
+        arrow.preserveAspect = true;
+        arrow.color = theme.textSecondary; // ≥ 4,5:1 sobre el botón; no dorado (el dorado es "preguntar")
+        arrow.raycastTarget = false;
+        var rect = (RectTransform)arrow.transform;
+        rect.anchorMin = rect.anchorMax = new Vector2(1f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.sizeDelta = new Vector2(DropdownArrowSize, DropdownArrowSize);
+        rect.anchoredPosition = new Vector2(-(DropdownArrowSize / 2f + 18f), 0f); // Dentro del hueco que deja el texto (72 px)
     }
 
     private static void ApplyRole(Graphic graphic, UIRole role, Theme theme, Button button)
