@@ -196,6 +196,14 @@ public static class ThemeApplier
             text.font = font;
         text.color = color;
 
+        // La distribución ya decidió su tamaño: el tema pone color y fuente, no lo pisa
+        if (text.TryGetComponent(out TextStyle style))
+        {
+            if (font != null)
+                style.font = font;
+            return;
+        }
+
         TMP_InputField field = text.GetComponentInParent<TMP_InputField>(true);
         if (field != null && field.textComponent == text)
         {

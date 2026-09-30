@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using TMPro;
+using UnityEngine;
 
 public class ThemeApplierTests
 {
@@ -36,5 +38,28 @@ public class ThemeApplierTests
     public void IlustracionesNoSeTinenComoPaneles(string spriteName, bool isArtwork)
     {
         Assert.AreEqual(isArtwork, ThemeApplier.IsArtworkSprite(spriteName));
+    }
+
+    [Test]
+    public void ReaplicarElTemaNoPisaElTamanoQueFijoLaDistribucion()
+    {
+        var canvas = new GameObject("Canvas", typeof(RectTransform), typeof(Canvas));
+        try
+        {
+            var title = new GameObject("GameTitleText", typeof(RectTransform));
+            title.transform.SetParent(canvas.transform, false);
+            var text = title.AddComponent<TextMeshProUGUI>();
+            text.text = "DETECTIVES";
+            LayoutKit.MultiLine(text, 245f);
+
+            ThemeApplier.Apply(canvas.transform);
+
+            Assert.AreEqual(245f, text.fontSizeMax, 0.5f, "el tamaño de la distribución se conserva");
+            Assert.AreEqual(ThemeManager.Current.accent, text.color, "el color sí lo pone el tema");
+        }
+        finally
+        {
+            Object.DestroyImmediate(canvas);
+        }
     }
 }

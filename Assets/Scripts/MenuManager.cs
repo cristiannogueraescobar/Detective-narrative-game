@@ -155,28 +155,55 @@ public class MenuManager : MonoBehaviour
             return;
 
         var panel = (RectTransform)mainMenuPanel.transform;
-        RectTransform column = LayoutKit.Column(panel, out bool created);
-        if (!created)
+        if (panel.Find(LayoutKit.ColumnName) != null)
             return;
 
+        // Ilustración sin deformar, con su ambiente, y sombras para leer el título y los botones
+        RawImage backdrop = ArtBackdrop.Cover(panel);
+        if (backdrop != null)
+        {
+            MenuAmbience.AddTo(backdrop);
+            ParallaxLayer.AddTo(backdrop);
+            UIPerformance.IsolateInOwnCanvas(backdrop);
+        }
+        ArtBackdrop.Shade(panel, "Sombra arriba (auto)", top: true, heightFraction: 0.5f, alpha: 0.96f);
+        ArtBackdrop.Shade(panel, "Sombra abajo (auto)", top: false, heightFraction: 0.58f, alpha: 0.96f);
+
+        RectTransform column = LayoutKit.Column(panel, out _);
         Theme t = ThemeManager.Current;
+        var layout = column.GetComponent<VerticalLayoutGroup>();
+        layout.padding.left = layout.padding.right = 96; // Botones más estrechos: el dibujo respira por los lados
+        layout.spacing = t.spacing * 1.25f;
+
         Transform title = panel.Find("GameTitleText");
         if (title != null)
         {
-            LayoutKit.Put(title, column, height: 380f);
+            LayoutKit.Put(title, column, height: 340f); // La fuente tiene un interlineado enorme
             if (title.TryGetComponent(out TMP_Text titleText))
             {
-                LayoutKit.MultiLine(titleText, t.titleSize * 1.4f);
-                titleText.alignment = TextAlignmentOptions.Center;
+                // La fuente del título dibuja los glifos pequeños para su tamaño (en la escena estaba a 242):
+                // se deja crecer mucho y el autoajuste lo encaja en el ancho
+                LayoutKit.MultiLine(titleText, t.titleSize * 3.4f);
+                titleText.alignment = TextAlignmentOptions.Bottom; // Pegado al subtítulo
+                titleText.fontStyle = FontStyles.Normal; // Sin el subrayado de la escena
+                titleText.color = t.accent;
+                UIComponents.GetOrAdd<TitleIntro>(titleText.gameObject);
             }
         }
+
+        TMP_Text subtitle = UIFactory.Label(column, "Interrogatorios · Tres casos", t.secondarySize, t.textSecondary);
+        subtitle.name = "Subtitulo (auto)";
+        subtitle.alignment = TextAlignmentOptions.Center;
+        subtitle.characterSpacing = 6f;
+        LayoutKit.Put(subtitle, column, height: 56f);
+        LayoutKit.OneLine(subtitle, t.secondarySize);
 
         LayoutKit.Spacer(column, 1f);
 
         Transform continueButton = panel.Find("ContinueButton (auto)");
         if (continueButton != null)
         {
-            LayoutKit.Put(continueButton, column, height: 130f);
+            LayoutKit.Put(continueButton, column, height: Theme.MinTouchSize);
             LayoutKit.Label(continueButton.GetComponent<Button>(), null);
         }
 
@@ -194,8 +221,13 @@ public class MenuManager : MonoBehaviour
         if (button == null)
             return;
 
-        LayoutKit.Put(button, column, height: 130f);
+        LayoutKit.Put(button, column, height: Theme.MinTouchSize);
         LayoutKit.Label(button, label);
+
+        // La escena traía estilos sueltos (cursiva en "Acerca de")
+        TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
+        if (text != null)
+            text.fontStyle = FontStyles.Normal;
     }
 
     /// <summary>

@@ -13,6 +13,7 @@ public class PortraitMotion : MonoBehaviour, IPointerClickHandler
     private static readonly ProfilerMarker UpdateMarker = new ProfilerMarker("Detective.PortraitMotion");
 
     private Coroutine tiltRoutine;
+    private EmotionPresenter presenter;
     private float tiltSign = 1f;
 
     private void Update()
@@ -21,6 +22,8 @@ public class PortraitMotion : MonoBehaviour, IPointerClickHandler
         {
             Theme t = ThemeManager.Current;
             float scale = GameSettings.ReduceMotion ? 1f : Motion3D.Breath(Time.unscaledTime, t.breathPeriod, t.breathAmplitude);
+            if (presenter != null || TryGetComponent(out presenter))
+                scale *= presenter.PoseScale; // Postura del estado emocional
             transform.localScale = new Vector3(scale, scale, 1f);
         }
     }

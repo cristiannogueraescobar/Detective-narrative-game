@@ -87,6 +87,71 @@ public static class UISprites
         return circle;
     }
 
+    private static Sprite radial;
+    private static Sprite gradient;
+
+    /// <summary>
+    /// Punto de luz suave (centro opaco que se desvanece): halos, motas de polvo, vapor.
+    /// </summary>
+    public static Sprite Radial()
+    {
+        if (radial != null)
+            return radial;
+
+        const int size = 64;
+        var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+        {
+            name = "Radial (auto)", wrapMode = TextureWrapMode.Clamp, hideFlags = HideFlags.DontSave
+        };
+        var pixels = new Color32[size * size];
+        float r = size / 2f;
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(r, r)) / r;
+                float a = Mathf.Clamp01(1f - d);
+                a = a * a * (3f - 2f * a); // Suavizado
+                pixels[y * size + x] = new Color32(255, 255, 255, (byte)(a * 255f));
+            }
+        }
+        texture.SetPixels32(pixels);
+        texture.Apply(false, true);
+        radial = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
+        radial.name = texture.name;
+        radial.hideFlags = HideFlags.DontSave;
+        return radial;
+    }
+
+    /// <summary>
+    /// Degradado vertical: opaco abajo, transparente arriba (se gira para el de arriba).
+    /// </summary>
+    public static Sprite Gradient()
+    {
+        if (gradient != null)
+            return gradient;
+
+        const int height = 128;
+        var texture = new Texture2D(4, height, TextureFormat.RGBA32, false)
+        {
+            name = "Degradado (auto)", wrapMode = TextureWrapMode.Clamp, hideFlags = HideFlags.DontSave
+        };
+        var pixels = new Color32[4 * height];
+        for (int y = 0; y < height; y++)
+        {
+            float t = 1f - y / (float)(height - 1);
+            byte a = (byte)(t * t * (3f - 2f * t) * 255f); // Curva en S: oscuro más tiempo, final suave
+            for (int x = 0; x < 4; x++)
+                pixels[y * 4 + x] = new Color32(255, 255, 255, a);
+        }
+        texture.SetPixels32(pixels);
+        texture.Apply(false, true);
+        gradient = Sprite.Create(texture, new Rect(0, 0, 4, height), new Vector2(0.5f, 0.5f), 100f);
+        gradient.name = texture.name;
+        gradient.hideFlags = HideFlags.DontSave;
+        return gradient;
+    }
+
     /// <summary>
     /// Recorte de un retrato para el mini-retrato: un cuadrado arriba y centrado (la cara).
     /// </summary>

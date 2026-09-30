@@ -60,6 +60,16 @@ public class Theme : ScriptableObject
     public float angryTextSpeed = 1.15f;
     public float sadTextSpeed = 0.75f;
 
+    [Header("Estados emocionales: postura del retrato (EmotionPose)")]
+    [Range(0f, 0.1f)] public float scaredRecoil = 0.04f;   // Se hace un 4 % más pequeño: da un paso atrás
+    [Range(0f, 0.1f)] public float angryLean = 0.03f;      // Se acerca un 3 %
+    public float sadDrop = 14f;                            // px que baja la cabeza
+    [Range(0f, 1f)] public float sadSaturation = 0.45f;
+    public Vector2 sweatBand = new Vector2(0.78f, 0.9f);   // Altura (0-1) de la frente en el retrato
+    public float sweatInterval = 1.4f;                     // s entre gotas
+    public float sweatDropLife = 1.6f;
+    public float sweatDropFall = 36f;                      // px que resbala cada gota
+
     [Header("Gradación del arte existente (no destructiva, ver ArtGrading)")]
     [Range(0f, 1f)] public float legacyPortraitSaturation = 0.35f; // Retratos pixel art muy saturados
     public Color legacyPortraitGrade = new Color(0.95f, 0.88f, 0.78f); // Sepia suave
@@ -84,6 +94,10 @@ public class Theme : ScriptableObject
     public float clueAnimDuration = 0.6f;
     public float contradictionAnimDuration = 0.5f;
     public float typewriterCharsPerSecond = 45f;
+
+    [Header("Ambiente (menú, filtro noir)")]
+    public Color lampGlow = new Color(1f, 0.78f, 0.45f, 0.22f);  // Halo de la lámpara del menú
+    public float titleIntroDuration = 1.6f;                      // Entrada del título del menú
 
     [Header("Profundidad (pseudo-3D). Sutil: mejor imperceptible que mareante")]
     [Range(0f, 0.03f)] public float breathAmplitude = 0.012f;   // 1,2 % de escala
