@@ -26,7 +26,7 @@ public static class CaseBriefing
         sb.AppendLine(heading("SITUACIÓN"));
         sb.AppendLine(story.situation);
         sb.AppendLine();
-        sb.Append($"<color={Theme.Hex(t.textSecondary)}><i>Tienes 7 días y cinco preguntas cada día. Encuentra pruebas y contradicciones antes de acusar.</i></color>");
+        sb.Append($"<color={Theme.Hex(t.textSecondary)}><i>Tienes siete días y cinco preguntas cada día. Encuentra pruebas y contradicciones antes de acusar.</i></color>");
         return sb.ToString();
     }
 }
