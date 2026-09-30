@@ -13,6 +13,14 @@ public class TextLinkHandler : MonoBehaviour, IPointerClickHandler
 {
     public Action<string> onLink;
 
+    /// <summary>
+    /// Cómo lo nombra el lector de pantalla (id del enlace, texto del enlace) → rótulo; sin él, el texto tal cual.
+    /// Para dar contexto: "añadir nota" solo no dice de quién.
+    /// </summary>
+    public Func<string, string, string> describe;
+
+    public string Describe(string id, string text) => describe?.Invoke(id, text) ?? text;
+
     public void OnPointerClick(PointerEventData eventData)
     {
         var text = GetComponent<TMP_Text>();

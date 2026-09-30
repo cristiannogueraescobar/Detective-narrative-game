@@ -185,4 +185,27 @@ public class ScreenReaderTests
         yield return Refresh();
         Assert.IsFalse(Nodes().Any(n => n.label.Contains("Tres casos")));
     }
+
+    // Ronda 10: los enlaces de la libreta (ir a interrogar, tu nota) son botones para el lector, con contexto
+    [UnityTest]
+    public IEnumerator LosEnlacesDeLaLibretaSonBotonesParaElLector()
+    {
+        yield return Activate("Jugar");
+        yield return Activate("Caso al azar");
+        yield return Activate("Empezar");
+        Object.FindObjectsByType<Button>(FindObjectsSortMode.None).First(b => b.name == "ViewCluesButton").onClick.Invoke();
+        yield return new WaitForSecondsRealtime(1f);
+        yield return Refresh();
+
+        AccessibilityNode note = Nodes().FirstOrDefault(n => n.role == AccessibilityRole.Button && n.label.EndsWith("añadir nota"));
+        Assert.IsNotNull(note, "la nota es un botón");
+        StringAssert.StartsWith("Nota sobre ", note.label, "con el nombre de a quién se refiere");
+        string who = note.label.Substring("Nota sobre ".Length).Split(':')[0];
+        Assert.IsTrue(Nodes().Any(n => n.role == AccessibilityRole.Button && n.label == $"Interrogar a {who}"), "el nombre también: ir a interrogar");
+
+        Assert.IsTrue(ScreenReader.Invoke(note));
+        yield return Refresh();
+        Assert.IsTrue(Nodes().Any(n => n.label == $"Nota sobre {who}: tu nota: sospechoso"), "activarla cambia la nota");
+        Assert.IsTrue(Nodes().Any(n => ReferenceEquals(n, note)), "el mismo nodo: el foco no se pierde");
+    }
 }

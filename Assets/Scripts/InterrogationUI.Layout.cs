@@ -433,7 +433,9 @@ public partial class InterrogationUI
             UIComponents.GetOrAdd<ThemeRole>(cluesText.gameObject).role = UIRole.Ignore;
             // Tocar una pista en la libreta la prepara como prueba
             cluesText.raycastTarget = true;
-            UIComponents.GetOrAdd<TextLinkHandler>(cluesText.gameObject).onLink = OnNotebookLink;
+            TextLinkHandler links = UIComponents.GetOrAdd<TextLinkHandler>(cluesText.gameObject);
+            links.onLink = OnNotebookLink;
+            links.describe = DescribeNotebookLink;
         }
         if (notebookScroll != null && notebookScroll.TryGetComponent(out Image scrollImage))
         {
