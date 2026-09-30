@@ -118,7 +118,7 @@ public class LayoutValidationTests
             if (rect == root || InsideScrollContent(rect) || InsideInputField(rect))
                 continue;
 
-            if (IsRelevant(rect) && rect.parent is RectTransform parent)
+            if (IsRelevant(rect) && rect.parent is RectTransform parent && !IsClippedCover(rect))
                 CheckInside(rect, parent, errors);
 
             TMP_Text text = rect.GetComponent<TMP_Text>();
@@ -314,6 +314,13 @@ public class LayoutValidationTests
         return rect.GetComponent<TMP_Text>() != null || rect.GetComponent<Selectable>() != null
             || rect.GetComponent<LayoutGroup>() != null || rect.GetComponent<RawImage>() != null
             || rect.GetComponent<ScrollRect>() != null;
+    }
+
+    // Fondo que cubre la pantalla sin deformarse: desborda a propósito y su padre lo recorta
+    private static bool IsClippedCover(RectTransform rect)
+    {
+        return rect.TryGetComponent(out AspectRatioFitter fitter) && fitter.aspectMode == AspectRatioFitter.AspectMode.EnvelopeParent
+               && rect.parent != null && rect.parent.GetComponent<RectMask2D>() != null;
     }
 
     private static bool IsOverlay(RectTransform rect)

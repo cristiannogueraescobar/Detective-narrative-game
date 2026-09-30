@@ -44,6 +44,13 @@ public class ArtCatalogBuilder : AssetPostprocessor
             }
         }
 
+        foreach (string extra in ArtSlots.Extras)
+        {
+            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(extra);
+            if (texture != null)
+                catalog.entries.Add(new ArtCatalog.Entry { path = extra, texture = texture });
+        }
+
         catalog.entries.Sort((a, b) => string.CompareOrdinal(a.path, b.path));
         EditorUtility.SetDirty(catalog);
         AssetDatabase.SaveAssets();

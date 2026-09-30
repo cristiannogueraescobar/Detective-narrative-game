@@ -510,8 +510,13 @@ public class InterrogationUI : MonoBehaviour
     {
         ApplyIntroArt(storyId);
 
+        // El título del caso ya encabeza el parte: arriba, el número de expediente
         if (caseTitleText != null)
-            caseTitleText.text = title;
+        {
+            caseTitleText.text = $"EXPEDIENTE Nº {storyId.PadLeft(3, '0')}";
+            caseTitleText.color = T.textSecondary;
+            caseTitleText.characterSpacing = 12f;
+        }
 
         if (caseDescriptionText != null)
         {
@@ -523,7 +528,7 @@ public class InterrogationUI : MonoBehaviour
             {
                 briefing.OnFinished -= StampConfidential;
                 briefing.OnFinished += StampConfidential;
-                briefing.Reveal(0, 1f);
+                briefing.Reveal(0, 2.2f); // Un parte largo: se escribe deprisa
             }
         }
 
@@ -540,7 +545,7 @@ public class InterrogationUI : MonoBehaviour
         if (fx == null || introPanel == null || !introPanel.activeInHierarchy || confidentialStamp != null)
             return;
         confidentialStamp = fx.Stamp("CONFIDENCIAL", T.danger, angle: -12f, fontSize: 64f,
-            parent: (RectTransform)introPanel.transform, anchor: new Vector2(0.72f, 0.86f), hold: -1f);
+            parent: (RectTransform)introPanel.transform, anchor: new Vector2(0.66f, 0.2f), hold: -1f);
     }
 
     private UnityEngine.UI.RawImage introBackground;
@@ -561,6 +566,8 @@ public class InterrogationUI : MonoBehaviour
             UIComponents.GetOrAdd<LayoutElement>(rect.gameObject).ignoreLayout = true;
             introBackground = rect.gameObject.AddComponent<UnityEngine.UI.RawImage>();
             introBackground.raycastTarget = false;
+            rect.gameObject.AddComponent<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+            UIComponents.GetOrAdd<RectMask2D>(introPanel);
             ParallaxLayer.AddTo(introBackground);
         }
 
@@ -575,10 +582,20 @@ public class InterrogationUI : MonoBehaviour
             introHeader.raycastTarget = false;
         }
 
-        // El fondo se oscurece para que el texto del parte se lea encima
-        introBackground.texture = ArtSlots.LoadOrPlaceholder(ArtSlots.StoryIntro(storyId), T.background);
-        introBackground.color = new Color(0.45f, 0.45f, 0.45f, 1f);
-        introHeader.texture = ArtSlots.LoadOrPlaceholder(ArtSlots.StoryHeader(storyId), T.panel);
+        // Fondo de la historia o, si no hay, la sala de interrogatorios; oscurecido para leer el parte encima
+        Texture2D background = ArtLibrary.Load(ArtSlots.StoryIntro(storyId)) ?? ArtLibrary.Load(ArtSlots.DefaultIntroBackground);
+        introBackground.texture = background != null ? background : ArtLibrary.Placeholder(T.background);
+        introBackground.color = new Color(0.4f, 0.4f, 0.4f, 1f);
+        if (background != null)
+        {
+            introBackground.GetComponent<AspectRatioFitter>().aspectRatio = (float)background.width / background.height;
+            ArtGrading.Apply(introBackground, ArtGrading.Kind.Background);
+        }
+
+        // La cabecera solo si existe su arte (un rectángulo liso partía la pantalla)
+        Texture2D header = ArtLibrary.Load(ArtSlots.StoryHeader(storyId));
+        introHeader.texture = header;
+        introHeader.gameObject.SetActive(header != null);
     }
 
     /// <summary>

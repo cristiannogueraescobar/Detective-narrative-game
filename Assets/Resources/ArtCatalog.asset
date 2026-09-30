@@ -12,4 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7de8459e2aabb1549a52dfeb2a081c92, type: 3}
   m_Name: ArtCatalog
   m_EditorClassIdentifier: Detective::ArtCatalog
-  entries: []
+  entries:
+  - path: Assets/Art/Icons/contradiccion.png
+    texture: {fileID: 2800000, guid: d8c669a5da03c0242b4bd7223e9751ad, type: 3}
+  - path: Assets/Art/Icons/dia.png
+    texture: {fileID: 2800000, guid: b2e7c4ceba4c5904f9590618de3a99b0, type: 3}
+  - path: Assets/Art/Icons/libreta.png
+    texture: {fileID: 2800000, guid: 7dab7df32298e42428af2dc1686e6c6f, type: 3}
+  - path: Assets/Art/Icons/pista.png
+    texture: {fileID: 2800000, guid: ce758ae1954eaed4daf2e034144c88e5, type: 3}
+  - path: Assets/Art/Icons/preguntas.png
+    texture: {fileID: 2800000, guid: 138214a62d4f66349bbd99e6657f8684, type: 3}
+  - path: Assets/Backgrounds/intro_fondo.png.png
+    texture: {fileID: 2800000, guid: 8dc076834991a524db89b7fe02193f97, type: 3}

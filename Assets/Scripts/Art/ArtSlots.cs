@@ -23,6 +23,12 @@ public static class ArtSlots
 
     public const int IconSize = 128;
 
+    /// <summary>
+    /// Arte que ya estaba en el proyecto fuera de Assets/Art y se usa como respaldo (el catálogo lo incluye).
+    /// </summary>
+    public const string DefaultIntroBackground = "Assets/Backgrounds/intro_fondo.png.png";
+    public static readonly string[] Extras = { DefaultIntroBackground };
+
     public static string StoryHeader(string storyId) => $"Assets/Art/Stories/historia{storyId}_cabecera.png";
     public static string StoryIntro(string storyId) => $"Assets/Art/Stories/historia{storyId}_intro.png";
 

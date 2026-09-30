@@ -102,7 +102,7 @@ public class Theme : ScriptableObject
     public Color calendarRed = new Color32(150, 45, 38, 255);
 
     [Header("Ambiente (menú, filtro noir)")]
-    [Range(0f, 0.3f)] public float grainIntensity = 0.07f;
+    [Range(0f, 0.3f)] public float grainIntensity = 0.05f;
     [Range(0f, 1f)] public float vignetteIntensity = 0.45f;
     public float deliberationSeconds = 2.2f;                    // Pausa antes del veredicto
     public Color lampGlow = new Color(1f, 0.78f, 0.45f, 0.22f);  // Halo de la lámpara del menú
