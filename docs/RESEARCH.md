@@ -129,3 +129,7 @@ Cada entrada: fuente → qué aprendí → qué decidí con ello. La búsqueda l
   el consejo del juego ("horas, lugares, objetos").
 - Fuentes: [Homicide Desk (reseñas)](https://vaporlens.app/app/4935210/homicide_desk),
   [Narrative reliability in LLM detective games](https://arxiv.org/pdf/2609.23043).
+- **Resultado del A/B** (ronda 12; 1A, 2B, 3C; 4 partidas por variante, semilla 1212): preguntas cortas de un
+  solo tema frente a las de siempre → pistas por partida 3,5 → 3,8 y culpables 5/12 → 6/12: dentro del ruido.
+  **El consejo del juego no se toca** (y las preguntas de ejemplo ya estaban elegidas con datos, SuggestionProbe).
+  Lo que sí salió: la 2B falla siempre (ver NIGHT-LOG, ronda 12).
