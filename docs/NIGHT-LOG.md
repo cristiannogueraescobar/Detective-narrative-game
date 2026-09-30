@@ -159,6 +159,12 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   alto contraste (desbordes, glifos, contraste WCAG, zonas táctiles). Captura de alto contraste revisada.
   Tests 544/544. Revisión de código (8ª) en curso.
 
+- 08:50 8ª revisión: 0 críticos/importantes. Ventana de escritorio al 85 % (cabe en un portátil de 768 px con la
+  barra de tareas) y el reproductor arranca en ventana 540x960 sin cambio a pantalla completa (sin destello ni
+  Alt+Intro estirando la interfaz). La build de siempre falló: Windows niega crear Builds/Windows/Detectives.exe
+  (solo esa ruta, sin proceso vivo; sin admin no veo la causa). BuildScript acepta -buildPath; build final en
+  Builds/Windows-final, verificada (ventana 765x1360 en 2560x1600) y prueba de humo OK.
+
 ## Ahora
 - Ronda 6: crítica de diseño con capturas, más mejoras, informe y galería finales.
 
