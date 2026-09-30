@@ -121,6 +121,10 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   sin pistas el día 3, consejo sin spoilers; test de que el parte más largo cabe en la hoja del día (y de que el
   test detecta un parte que no cabe).
 
+- 08:05 Libreta: tocar el nombre de un sospechoso lleva a interrogarle (no mientras se espera respuesta). Los
+  enlaces de la libreta perdonan un toque cercano (a menos de media zona táctil): una línea de texto mide mucho
+  menos de 48 dp.
+
 ## Ahora
 - Ronda 6: crítica de diseño con capturas, más mejoras, informe y galería finales.
 
