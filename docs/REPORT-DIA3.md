@@ -94,6 +94,10 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 9. **Cabeceras de historia sin arte, a propósito**: con el fondo a pantalla completa repetirían la escena.
 10. **Unity Connect**: el editor lo activó solo; revertido (no subo servicios que no has pedido).
 11. **Ruta de la build**: `Builds/Windows-final/` (la habitual estaba bloqueada por el sistema en la noche 2).
+12. **Historial de la rama con ~300 MB de capturas en bruto** (error mío en el commit `ff30092`, retiradas en el
+    siguiente). No he reescrito la historia remota sin tu permiso. Para que `main` no las herede: fusiona con
+    `git merge --squash feature/dia3` (o, si prefieres limpiar la rama: `git rebase -i` quitando `ff30092` de los
+    archivos de `docs/screenshots/2026-09-30/*` y `git push --force-with-lease`).
 
 ## 7. Pendientes
 - APK de Android (instalar el módulo) y medir el post-proceso en un móvil real (estimado 1-2 ms).
