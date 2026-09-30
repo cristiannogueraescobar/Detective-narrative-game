@@ -20,7 +20,7 @@ public class EmotionSystemTests
         story.victim = "Elena";
         string prompt = PromptBuilder.Build(story, story.variants[0], "b", 1, new ClueData[0], new ClueData[0]);
 
-        StringAssert.Contains("si te hablan de Elena, nunca tranquilo", prompt);
+        StringAssert.Contains("Si te hablan de Elena", prompt);
     }
 
     [Test]

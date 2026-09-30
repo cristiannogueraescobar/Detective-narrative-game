@@ -12,7 +12,7 @@ public static class PromptBuilder
     public static string EmotionGuide(string victim)
     {
         string who = string.IsNullOrEmpty(victim) ? "la víctima" : victim;
-        return $"Triste (o nervioso si ocultas algo) si te hablan de {who}, nunca tranquilo; nervioso si tocan lo que te pone nervioso; enfadado o asustado si te acusan; tranquilo si la pregunta es neutra.";
+        return $"Por defecto, tranquilo. Si te hablan de {who}: triste (o nervioso si ocultas algo), nunca tranquilo. Nervioso si tocan lo que te pone nervioso; enfadado o asustado si te acusan.";
     }
 
     public static string Build(StoryData story, VariantData variant, string characterId, int day,

@@ -585,8 +585,8 @@ Tienes 7 días para descubrir qué pasó.",
                     fact = "«Encarna está obsesionada con Paula: tiene fotos suyas junto a las de su hija muerta, Rocío, y le regalaba ropa de Rocío. Me da miedo.»",
                     anchors = new[]
                     {
-                        new[] { "foto", "ropa", "obsesion", "vigilaba", "pendiente de", "era como", "como si fuera", "se parec", "igual que" },
-                        new[] { "rocio", "hija muerta", "hija fallecida" }
+                        new[] { "foto", "ropa", "obsesion", "vigilaba", "vigilando", "pendiente de", "era como", "como si fuera", "se parec", "igual que", "miedo" },
+                        new[] { "rocio", "hija muerta", "hija fallecida", "propia hija" }
                     },
                     calibrationQuestions = new[] { "¿Qué opina de Encarna, la vecina?", "¿Qué relación tenía Paula con Encarna?" },
                     sampleHits = new[]
@@ -594,7 +594,9 @@ Tienes 7 días para descubrir qué pasó.",
                         "Tiene fotos de Paula junto a las de su hija muerta, Rocío.",
                         "Le regalaba ropa de Rocío. A mí me daba miedo.",
                         "Paula y Encarna se llevaban bien, pero Encarna la vigilaba demasiado. Me daba miedo por lo de Rocío.",
-                        "Encarna siempre intentaba acercarse a Paula y me decía que era como Rocío, su hija fallecida."
+                        "Encarna siempre intentaba acercarse a Paula y me decía que era como Rocío, su hija fallecida.",
+                        "Encarna estaba siempre vigilando a Paula como si fuera su propia hija.",
+                        "Encarna le hablaba a mi hija de su hija fallecida, Rocío. Me da mucho miedo esa mujer."
                     },
                     sampleMisses = new[] { "Encarna es una vecina amable, poco más.", "Encarna perdió a su hija Rocío hace años, la pobre." }
                 },

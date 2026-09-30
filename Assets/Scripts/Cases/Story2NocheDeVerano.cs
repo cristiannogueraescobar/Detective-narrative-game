@@ -606,14 +606,15 @@ Tienes 7 días.",
                     fact = "«Mírelo en el GPS de la furgoneta de Correos: a las 5:15 me sitúa en la nacional, camino de la oficina. Compruébelo.»",
                     anchors = new[]
                     {
-                        new[] { "gps", "localizador" },
+                        new[] { "gps", "localizador", "me situa", "me localiza" },
                         new[] { "nacional", "oficina", "5:15", "comprobar" }
                     },
                     calibrationQuestions = new[] { "¿Alguien puede confirmar dónde estaba usted?", "¿Cómo sé que dice la verdad sobre sus horarios?" },
                     sampleHits = new[]
                     {
                         "La furgoneta lleva GPS: a las 5:15 estaba en la nacional, compruébelo.",
-                        "Mire el localizador de Correos, me sitúa camino de la oficina."
+                        "Mire el localizador de Correos, me sitúa camino de la oficina.",
+                        "A las 5:15 me sitúa en la nacional, camino de la oficina. Compruébelo."
                     },
                     sampleMisses = new[] { "Yo trabajo solo, nadie me acompaña." }
                 },
