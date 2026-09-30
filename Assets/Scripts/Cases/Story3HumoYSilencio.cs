@@ -313,7 +313,7 @@ Tienes 7 días para descubrir qué pasó.",
                     lieQuote = "estuve todo el sábado en Granada",
                     lieAnchors = new[]
                     {
-                        new[] { "todo el dia en granada", "todo el sabado en granada", "estuve en granada", "estuve todo el dia" },
+                        new[] { "todo el dia en granada", "todo el sabado en granada", "estuve en granada", "estuve todo el dia", "estaba en granada", "en granada todo", "toda la jornada" },
                         new[] { "granada", "con alex", "casa de mi hermana" }
                     },
                     versionB = "Admites que dejaste a Álex en casa de tu hermana a mediodía y saliste a dar una vuelta con el coche, pero niegas haber ido a la finca.",
@@ -326,7 +326,7 @@ Tienes 7 días para descubrir qué pasó.",
                 new CharacterRole
                 {
                     characterId = "padre",
-                    knowledge = new[] { MentionAlex, MentionEncarna },
+                    knowledge = new[] { MentionAlex, MentionEncarna, "Lucía conduce un coche pequeño rojo, un Seat Ibiza." },
                     version = "El sábado a las 18:30 fui al bar del pueblo y volví a las 21:30; pensé que Paula dormía. El domingo por la mañana ya no estaba.",
                     secret = "Bebiste mucho y no entraste a ver a Paula al volver; te avergüenza y temes que la jueza lo use contra ti.",
                     admitsWhen = "el inspector insiste",
@@ -542,7 +542,7 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     id = "3C_despedida", playerName = "La despedida", holder = "hermano", kind = ClueKind.Incriminates, exposesLie = true,
                     summary = "A las 19:50 Paula le escribió a Álex: 'Voy a despedirme de Encarna y de los caballos, luego te llamo'. Nunca llamó.",
-                    topic = "la última vez que supiste de Paula",
+                    topic = "la última vez que supiste de Paula o qué te contó que iba a hacer el sábado",
                     fact = "a las 19:50 Paula te escribió: 'Voy a despedirme de Encarna y de los caballos, luego te llamo'. Nunca te llamó.",
                     anchors = new[]
                     {
@@ -604,7 +604,7 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     id = "3C_pisadas", playerName = "Pisadas en la ceniza", holder = "padre", kind = ClueKind.Incriminates,
                     summary = "El domingo, Javier encontró en la ceniza del quemadero huellas de bota pequeña, de mujer. Él calza un 44.",
-                    topic = "si encontraste algo en el quemadero",
+                    topic = "si encontraste o viste algo raro en el quemadero",
                     fact = "el domingo encontraste en la ceniza del quemadero huellas de botas pequeñas, de mujer; tú calzas un 44.",
                     anchors = new[]
                     {

@@ -146,7 +146,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     admitsWhen = "el inspector insiste o te pregunta directamente por tus pastillas",
                     nervousAbout = "tus pastillas para dormir; temes que piensen que fue culpa tuya.",
                     ifAccused = "Lloras y dices que eres médica, que jamás le harías daño a Elena.",
-                    doesNotKnow = "Nada del dinero de la herencia de Elena ni de los papeles del despacho de Daniel."
+                    doesNotKnow = "Nada de la herencia ni de los papeles de Daniel, ni quién cerró el cuarto de Elena."
                 },
                 new CharacterRole
                 {
@@ -224,7 +224,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 {
                     id = "1A_ventana", playerName = "Lo que vio la ventana", holder = "vecina", kind = ClueKind.Incriminates, exposesLie = true,
                     summary = "Rosario vio a Daniel a las 22:35 en el cuarto de Elena, cerrando las cortinas. Él casi nunca entraba allí.",
-                    topic = "lo que viste esa noche en la casa de enfrente",
+                    topic = "lo que viste esa noche en la casa de enfrente o si viste algo raro antes de la llamada al 112",
                     fact = "a las 22:35 viste al padre, Daniel, en el cuarto de la niña cerrando las cortinas. Te extrañó porque él casi nunca entra en ese cuarto.",
                     anchors = new[]
                     {
@@ -384,7 +384,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         MentionRosario,
                         "Mamá siempre está con médicos y pastillas para Elena."
                     },
-                    version = "Estuve en mi cuarto con los cascos casi toda la noche, jugando.",
+                    version = "Estuve en mi cuarto con los cascos casi toda la noche, jugando; solo me los quité un momento.",
                     secret = "Fumas porros a escondidas en tu cuarto y no quieres que tus padres lo sepan.",
                     admitsWhen = "el inspector te insiste mucho",
                     nervousAbout = "decir algo malo de tu madre.",
@@ -473,7 +473,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 },
                 new ClueData
                 {
-                    id = "1B_luz", playerName = "La luz encendida", holder = "vecina", kind = ClueKind.Incriminates,
+                    id = "1B_luz", playerName = "La luz encendida", holder = "vecina", kind = ClueKind.Incriminates, exposesLie = true,
                     summary = "Rosario vio la luz del cuarto de Elena encendida de 22:00 a 23:15, con la madre sentada junto a la cama, muy quieta, sin llamar a nadie.",
                     topic = "lo que viste esa noche en la casa de enfrente",
                     fact = "viste a la madre, Carmen, sentada junto a la cama de la niña, muy quieta, sin llamar a nadie, desde las 22:00 hasta las 23:15.",

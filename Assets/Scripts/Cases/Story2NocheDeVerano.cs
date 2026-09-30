@@ -88,7 +88,7 @@ Tienes 7 días.",
         {
             characterId = "vecina",
             knowledge = knowledge,
-            version = "Esa madrugada me levanté a las cinco, como siempre, a encender la cocina de leña, y miré por la ventana.",
+            version = "Esa madrugada me levanté a las cinco, como siempre, a encender la cocina de leña, y estuve un buen rato mirando por la ventana.",
             secret = "Destilas orujo en casa sin licencia y lo vendes a los vecinos.",
             admitsWhen = "te preguntan qué hacías levantada tan temprano con tanto humo en la cocina",
             nervousAbout = "que la policía entre en tu casa.",
@@ -233,7 +233,7 @@ Tienes 7 días.",
                 {
                     id = "2A_curva", playerName = "Coche en la curva", holder = "vecina", kind = ClueKind.Incriminates,
                     summary = "A las 5:20 Maruxa vio un coche grande y oscuro, tipo ranchera, parado en la curva con las luces apagadas.",
-                    topic = "lo que viste en la curva esa madrugada",
+                    topic = "lo que viste en la curva esa madrugada o si viste pasar a alguien o algún vehículo",
                     fact = "a las 5:20 viste un coche grande y oscuro, tipo ranchera, parado en la curva con las luces apagadas. Ahí nunca para nadie.",
                     anchors = new[]
                     {
@@ -388,7 +388,7 @@ Tienes 7 días.",
                 {
                     id = "2B_furgoneta", playerName = "La furgoneta blanca", holder = "vecina", kind = ClueKind.Incriminates,
                     summary = "A las 5:12 Maruxa vio una furgoneta blanca pequeña parar junto a la chica en la curva. Ella subió.",
-                    topic = "lo que viste en la curva o lo que pasó por delante de tu casa esa madrugada",
+                    topic = "lo que viste en la curva o lo que pasó por delante de tu casa esa madrugada, personas o vehículos",
                     fact = "«A las 5:12 paró una furgoneta blanca pequeña junto a la rapaza, en la curva, y ella se subió.»",
                     anchors = new[]
                     {
@@ -411,14 +411,16 @@ Tienes 7 días.",
                     fact = "a las 7:30, al volver a casa, viste a Andrés lavando a manguerazos su furgoneta blanca detrás de su casa. En quince años nunca le viste lavarla.",
                     anchors = new[]
                     {
-                        new[] { "lavando", "lavaba", "manguera" },
+                        new[] { "lavando", "lavaba", "manguera", "lavarla", "lavar la" },
                         new[] { "furgoneta", "andres", "cartero" }
                     },
                     calibrationQuestions = new[] { "¿Vio algo raro esa mañana al volver a casa?", "¿Qué vio al irse a casa después de recoger el bar?" },
                     sampleHits = new[]
                     {
                         "A las 7:30 vi al cartero lavando la furgoneta a manguerazos, chaval.",
-                        "Andrés estaba con la manguera limpiando su furgoneta blanca."
+                        "Andrés estaba con la manguera limpiando su furgoneta blanca.",
+                        // Bot, día 3 (2B_1): no se detectó
+                        "Andrés se fue con una furgoneta blanca y vino a lavarla a las siete y media detrás de su casa."
                     },
                     sampleMisses = new[] { "Por la mañana no vi a nadie, estaba reventado." }
                 },
@@ -531,13 +533,15 @@ Tienes 7 días.",
                     anchors = new[]
                     {
                         new[] { "grabado", "grabo", "video" },
-                        new[] { "puerto", "muelle", "algo gordo" }
+                        new[] { "puerto", "muelle", "algo gordo", "algo importante", "no se fiaba de la policia" }
                     },
                     calibrationQuestions = new[] { "¿Cómo estaba Sofía esa noche?", "¿Le contó Sofía algo antes de irse?" },
                     sampleHits = new[]
                     {
                         "A las 4:40 volvió blanca, chaval: dijo que había grabado algo gordo en el puerto.",
-                        "Me contó que tenía un vídeo del muelle y que no se fiaba de la policía."
+                        "Me contó que tenía un vídeo del muelle y que no se fiaba de la policía.",
+                        // Bot, día 3 (2C_1): no se detectó
+                        "Me dijo que había grabado algo importante y que no se fiaba de la policía."
                     },
                     sampleMisses = new[] { "Sofía estaba de fiesta con sus amigas, como siempre." }
                 },
@@ -545,18 +549,20 @@ Tienes 7 días.",
                 {
                     id = "2C_opel", playerName = "Un coche conocido", holder = "vecina", kind = ClueKind.Incriminates, exposesLie = true,
                     summary = "A las 5:10 Maruxa vio el Opel gris del inspector Ruiz parar junto a la chica en la curva. Ella subió.",
-                    topic = "lo que viste en la curva esa madrugada",
+                    topic = "lo que viste en la curva esa madrugada o si viste pasar a alguien o algún vehículo",
                     fact = "a las 5:10 viste el Opel gris del inspector Ruiz, lo conoces de sobra, parar junto a la chica en la curva; ella se subió.",
                     anchors = new[]
                     {
-                        new[] { "opel", "coche del inspector", "coche de ruiz", "coche gris" },
+                        new[] { "opel", "coche del inspector", "coche de ruiz", "coche gris", "ruiz con su coche", "ruiz en su coche", "inspector con su coche", "inspector en su coche" },
                         new[] { "ruiz", "inspector", "se subio", "5:10" }
                     },
                     calibrationQuestions = new[] { "¿Vio algo raro en la curva esa madrugada?", "¿Pasó algún coche por delante de su casa hacia las cinco?" },
                     sampleHits = new[]
                     {
                         "A las 5:10 paró el Opel gris del inspector Ruiz junto a la rapaza, fillo.",
-                        "Era el coche de Ruiz, lo conozco de sobra; la chica se subió."
+                        "Era el coche de Ruiz, lo conozco de sobra; la chica se subió.",
+                        // Bot, día 3 (2C_1): no se detectó
+                        "A esas horas solo vi pasar al inspector Ruiz con su coche, fillo."
                     },
                     sampleMisses = new[] { "Pasaron coches, como siempre en fiestas." }
                 },
