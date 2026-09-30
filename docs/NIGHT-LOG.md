@@ -537,6 +537,15 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   = guardado a medio turno) y 6 menores; arreglados todos menos uno (GC con lector, anotado). Además: el informe
   final recuerda tu nota sobre el culpable. EditMode 707/707, PlayMode 51/51.
 
+- **17:20** Ronda 12. Idea de la web (frustra la pregunta vaga que gasta turno) → medido antes de tocar nada: A/B
+  del bot con preguntas cortas de un tema (`-topicQuestions`) = sin efecto (pistas 3,5 → 3,8; culpables 5 → 6 de
+  12): el consejo no cambia. Pero **la 2B sale mal 10 de 10** (ronda 8 y las dos ramas): el bot acusa a Marcos
+  incluso con la pista que lo descarta, y la ⚡ (el fichaje, que tiene Ruiz) no sale nunca. Causa medible: **el bot
+  no leía los partes de la mañana** (el del día 5 dice que los registros de fichaje están en comisaría); un jugador
+  sí los lee → todas las métricas del bot tiraban a "difícil". Arreglado en BotPlayer (lee los partes ya dados);
+  ronda 13 para medirlo. De paso: el bot a veces ponía el id de una pista como sospechoso (5 turnos perdidos) → va
+  a quien la sabe. Build de Windows rehecha: SMOKE OK. Galería: hoja 23 (notas).
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
