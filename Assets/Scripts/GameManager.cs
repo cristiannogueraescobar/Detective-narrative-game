@@ -43,6 +43,11 @@ public class GameManager : MonoBehaviour
     public IReadOnlyDictionary<string, SuspectNote> Notes => notes;
 
     /// <summary>
+    /// ¿Lo descarta una pista que el jugador ya tiene? (la rueda lo marca como en la libreta)
+    /// </summary>
+    public bool IsClearedByClue(string characterId) => State != null && State.IsClearedByClue(characterId);
+
+    /// <summary>
     /// Tocar la nota de un sospechoso en la libreta: sin nota → sospechoso → descartado → sin nota.
     /// </summary>
     public void CycleNote(string characterId)

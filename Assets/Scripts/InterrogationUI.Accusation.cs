@@ -204,12 +204,14 @@ public partial class InterrogationUI
             face.GetComponent<AspectRatioFitter>().aspectRatio = 0.75f;
 
             // Quien el jugador ha descartado en su libreta: atenuado (se puede elegir igual: es su nota, no una regla)
-            bool cleared = gameManager != null && gameManager.Notes.TryGetValue(view.id, out SuspectNote note)
-                           && note == SuspectNote.Descartado;
+            // Y quien descarta una pista ya encontrada, con las mismas palabras que la libreta
+            bool byClue = gameManager != null && gameManager.IsClearedByClue(view.id);
+            bool cleared = byClue || (gameManager != null && gameManager.Notes.TryGetValue(view.id, out SuspectNote note)
+                                      && note == SuspectNote.Descartado);
             if (cleared)
                 frame.gameObject.AddComponent<CanvasGroup>().alpha = 0.45f;
 
-            TMP_Text name = UIFactory.Label(cell, cleared ? $"<s>{view.shortName}</s> (tu descarte)" : view.shortName, T.bodySize,
+            TMP_Text name = UIFactory.Label(cell, cleared ? $"<s>{view.shortName}</s> ({(byClue ? "pista de descarte" : "tu descarte")})" : view.shortName, T.bodySize,
                                             cleared ? T.textSecondary : T.textPrimary);
             name.alignment = TextAlignmentOptions.Center;
             name.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;

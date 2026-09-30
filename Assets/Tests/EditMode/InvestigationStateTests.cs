@@ -112,4 +112,15 @@ public class InvestigationStateTests
         // i1, i2, i3, x = 4 incriminatorias + 1 contradicción × 2
         Assert.AreEqual(6, InvestigationState.MaxEvidenceWithoutCulprit(TestCases.Variant()));
     }
+
+    // Ronda 13: la rueda marca a quien una pista ya encontrada descarta (el bot acusaba igual: 2B)
+    [Test]
+    public void UnaPistaDeDescarteEncontradaDescartaASuPersonaje()
+    {
+        var state = new InvestigationState(TestCases.Story().variants[0]);
+        Assert.IsFalse(state.IsClearedByClue("b"), "sin la pista, nada");
+        state.Discover("d");
+        Assert.IsTrue(state.IsClearedByClue("b"));
+        Assert.IsFalse(state.IsClearedByClue("a"), "solo a quien descarta");
+    }
 }

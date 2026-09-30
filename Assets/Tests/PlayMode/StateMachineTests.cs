@@ -467,4 +467,24 @@ public class StateMachineTests
         Assert.IsTrue(game.Notes.TryGetValue(id, out SuspectNote note));
         Assert.AreEqual(SuspectNote.Sospechoso, note);
     }
+
+    // Ronda 13: la rueda marca a quien descarta una pista ya encontrada (en 2B el bot lo acusaba igual)
+    [UnityTest]
+    public IEnumerator LaRuedaMarcaAQuienDescartaUnaPista()
+    {
+        yield return StartNewGame();
+        var manager = Object.FindFirstObjectByType<AIConversationManager>();
+        ClueData clearing = manager.State.Variant.clues.FirstOrDefault(c => c.kind == ClueKind.Clears && manager.Story.Character(c.clears).startsUnlocked);
+        if (clearing == null)
+            Assert.Ignore("esta variante no tiene pista de descarte");
+        manager.State.Discover(clearing.id);
+        var game = Object.FindFirstObjectByType<GameManager>();
+
+        game.ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(0.3f);
+        GameObject cell = Find("Sospechoso " + manager.Story.Character(clearing.clears).shortName);
+        Assert.IsNotNull(cell);
+        StringAssert.Contains("(pista de descarte)", cell.GetComponentInChildren<TMP_Text>().text);
+        Assert.IsTrue(cell.GetComponent<Button>().interactable, "se puede elegir igual");
+    }
 }
