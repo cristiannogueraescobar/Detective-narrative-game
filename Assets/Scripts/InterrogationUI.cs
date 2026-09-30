@@ -930,6 +930,26 @@ public class InterrogationUI : MonoBehaviour
         ShowTutorial(Tutorial.Days, endDayButton != null ? (RectTransform)endDayButton.transform : null, 2.5f);
     }
 
+    /// <summary>
+    /// Botón Atrás (Android) en la partida: cierra la libreta o vuelve de la acusación. En el interrogatorio no
+    /// hace nada (salir por error perdería el hilo; el guardado es automático).
+    /// </summary>
+    public bool HandleBack()
+    {
+        if (cluesPanel != null && cluesPanel.activeInHierarchy)
+        {
+            HideCluesPanel();
+            return true;
+        }
+        if (accusationPanel != null && accusationPanel.activeInHierarchy && gameManager != null && gameManager.CanCancelAccusation
+            && (accuseButton == null || accuseButton.interactable))
+        {
+            gameManager.CancelAccusation();
+            return true;
+        }
+        return false;
+    }
+
     // ============================================
     // TUTORIAL
     // ============================================

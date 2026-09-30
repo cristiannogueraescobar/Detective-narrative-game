@@ -49,6 +49,7 @@ public class MenuManager : MonoBehaviour
         SetUpContinueButton();
 
         BuildLayout();
+        BackButtonRouter.Ensure(gameObject);
         
         if (instructionsButton != null)
             UIComponents.SetOnlyListener(instructionsButton, ShowInstructions);
@@ -338,6 +339,31 @@ public class MenuManager : MonoBehaviour
         caseSelect.gameObject.SetActive(true);
         caseSelect.SetAsLastSibling();
         UIAnimations.FadeIn(this, caseSelect.gameObject);
+    }
+
+    /// <summary>
+    /// Botón Atrás (Android) en el menú: cierra la selección de caso o vuelve de una página. Nunca sale del juego.
+    /// </summary>
+    public bool HandleBack()
+    {
+        if (caseSelect != null && caseSelect.gameObject.activeInHierarchy)
+        {
+            caseSelect.gameObject.SetActive(false);
+            return true;
+        }
+        foreach (GameObject page in new[] { instructionsPanel, settingsPanel, aboutPanel })
+        {
+            if (page != null && page.activeInHierarchy)
+            {
+                Transform confirm = page.transform.Find("ConfirmarReinicio");
+                if (confirm != null && confirm.gameObject.activeSelf)
+                    confirm.gameObject.SetActive(false);
+                else
+                    ShowMainMenu();
+                return true;
+            }
+        }
+        return false;
     }
 
     private void BuildCaseSelect()

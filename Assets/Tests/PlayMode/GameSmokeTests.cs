@@ -240,4 +240,28 @@ public class GameSmokeTests
         Assert.IsTrue(Find("Nuevo dia (auto)") == null, "la hoja se cierra con toques");
         Assert.GreaterOrEqual(Rows("Dia (auto)").Count, 2, "el chat tiene el día 1 y el día 2");
     }
+
+    [UnityTest]
+    public IEnumerator ElBotonAtrasVuelveUnPasoSinSalirDelJuego()
+    {
+        var router = Object.FindFirstObjectByType<BackButtonRouter>();
+        Assert.IsNotNull(router);
+
+        yield return Click("InstructionsButton");
+        Assert.IsTrue(router.Back());
+        yield return null;
+        Assert.IsTrue(Find("MainMenuPanel").activeInHierarchy, "de instrucciones al menú");
+        Assert.IsFalse(router.Back(), "en el menú no hace nada");
+
+        yield return Click("PlayButton");
+        Assert.IsTrue(router.Back(), "cierra la selección de caso");
+        yield return null;
+
+        yield return StartNewGame();
+        yield return Click("ViewCluesButton");
+        Assert.IsTrue(router.Back());
+        yield return null;
+        Assert.IsFalse(Find("CluesPanel").activeInHierarchy, "cierra la libreta");
+        Assert.IsFalse(router.Back(), "en el interrogatorio no hace nada");
+    }
 }
