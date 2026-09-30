@@ -102,6 +102,12 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
 - 06:20 Selector de pruebas: "Mostrar prueba: ninguna · N en la libreta" y salto al llegar una prueba nueva.
   Build de Windows + prueba de humo: OK.
 
+- 07:05 A/B de calibración de pistas (48 pistas × 2 preguntas × 3 intentos, misma temperatura): guía antigua
+  40/48 (85 % de media), guía nueva 44/48 (84 %). Las pistas que fallan cambian de un brazo a otro: ruido. La guía
+  nueva no cuesta pistas; la bajada del bot era ruido. Informes en Logs/bot-guia2/.
+- 07:00 Acusación: "En tu libreta: N pistas y M contradicciones" / "acusar ahora es una apuesta". Maruxa habla
+  español con toque gallego (su ejemplo en gallego provocaba respuestas enteras en gallego, ~1 de 60).
+
 ## Ahora
 - Ronda 4: bot en 3 variantes al azar sobre HEAD, crítica de diseño, revisión de código.
 
