@@ -34,6 +34,10 @@ public static class PromptBuilder
 
         sb.AppendLine(character.identity);
         sb.AppendLine($"CÓMO HABLAS: {character.speech} Ejemplo: \"{character.speechExample}\"");
+        if (!string.IsNullOrEmpty(character.personality))
+            sb.AppendLine($"CARÁCTER: {character.personality} {character.wound}".TrimEnd());
+        if (!string.IsNullOrEmpty(character.tellsLying) || !string.IsNullOrEmpty(character.pressureArc))
+            sb.AppendLine($"SI MIENTES, SE TE NOTA: {character.tellsLying} BAJO PRESIÓN: {character.pressureArc}".Trim());
         sb.AppendLine($"EL CASO: {story.caseBrief}");
 
         if (role.knowledge != null && role.knowledge.Length > 0)
@@ -60,6 +64,8 @@ public static class PromptBuilder
         {
             sb.AppendLine("ERES EL CULPABLE, pero nunca lo confiesas. Mantén tu versión con calma y no des detalles de más.");
             sb.AppendLine($"SI EL INSPECTOR TE MUESTRA UNA PRUEBA QUE CONTRADICE TU VERSIÓN: {role.versionB}");
+            if (!string.IsNullOrEmpty(role.lieStrategy))
+                sb.AppendLine($"CÓMO SOSTIENES LA MENTIRA: {role.lieStrategy}");
         }
         else
         {

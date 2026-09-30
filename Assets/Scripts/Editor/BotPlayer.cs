@@ -205,9 +205,9 @@ public static class BotPlayer
             for (int day = 1; day <= MaxDays && accused == null; day++)
             {
                 game.daysUsed = day;
-                if (day >= GameManager.SafetyUnlockDay)
-                    foreach (CharacterData c in story.cast.Where(c => !unlocked.Contains(c.id)))
-                        unlocked.Add(c.id);
+                // Las mismas reglas que el juego: parte de la mañana (NaturalUnlocks.DueOn)
+                foreach (var (id, _) in NaturalUnlocks.DueOn(story, unlocked, day).ToList())
+                    unlocked.Add(id);
 
                 for (int q = 0; q < QuestionsPerDay && accused == null; q++)
                 {
@@ -218,6 +218,10 @@ public static class BotPlayer
                         game.accusationReason = decision.reason;
                         break;
                     }
+
+                    // … y preguntar por un tema trae a quien lo conoce (NaturalUnlocks.TriggeredBy)
+                    foreach (string id in NaturalUnlocks.TriggeredBy(story, unlocked, decision.question).ToList())
+                        unlocked.Add(id);
 
                     ClueData shown = decision.evidence != null ? variant.Clue(decision.evidence) : null;
                     turnClues.Clear();

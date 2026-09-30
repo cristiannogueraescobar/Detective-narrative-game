@@ -69,7 +69,8 @@ public class GameTextsTests
     public void LasInstruccionesCoincidenConLasReglas()
     {
         string text = GameTexts.Instructions(ThemeManager.Current);
-        StringAssert.Contains(GameManager.SafetyUnlockDay == 3 ? "tercer día" : "?", text, "el día en que se desbloquea a todos");
+        StringAssert.Contains("cuando preguntas por lo que ellos saben", text, "cómo aparecen los personajes nuevos");
+        StringAssert.Contains("siete en Historia", text, "las preguntas según la dificultad");
         StringAssert.Contains("cinco", text);
     }
 

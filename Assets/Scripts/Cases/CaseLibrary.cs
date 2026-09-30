@@ -20,6 +20,8 @@ public static class CaseLibrary
                     Story2NocheDeVerano.Build(),
                     Story3HumoYSilencio.Build()
                 };
+                // Profundidad de los personajes y desbloqueos naturales
+                StoriesDatabase.Apply(stories);
                 // Línea temporal real de cada variante (solo para el validador narrativo)
                 foreach (VariantData variant in stories.SelectMany(s => s.variants))
                     variant.timeline = CaseTimelines.For(variant.id);

@@ -48,8 +48,11 @@ public static class CoherenceReport
             sb.AppendLine("|---|---|---|---|");
             foreach (CharacterData c in story.cast)
             {
+                UnlockTrigger t = story.unlockTriggers.FirstOrDefault(x => x.id == c.id);
                 string appears = c.startsUnlocked ? "desde el día 1"
-                    : $"cuando lo mencionan (alias: {string.Join(", ", c.mentionAliases ?? new string[0])}) o, como tarde, el día {GameManager.SafetyUnlockDay}";
+                    : $"cuando lo mencionan (alias: {string.Join(", ", c.mentionAliases ?? new string[0])})" +
+                      (t != null ? $", cuando el jugador pregunta por «{string.Join("», «", t.playerStems)}» o, si no, el día {t.fallbackDay} (parte: «{t.fallbackText}»)"
+                                 : $" o, como tarde, el día {NaturalUnlocks.DefaultDay}");
                 sb.AppendLine($"| `{c.id}` | {c.name} | {c.roleLabel} | {appears} |");
             }
             sb.AppendLine();

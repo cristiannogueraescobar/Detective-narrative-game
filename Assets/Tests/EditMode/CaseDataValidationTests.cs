@@ -7,9 +7,11 @@ using NUnit.Framework;
 /// </summary>
 public class CaseDataValidationTests
 {
+    // Día 3: la profundidad de los personajes (StoriesDatabase.json) añade 50-75 palabras; el límite pasa de 460 a
+    // 540 solo si la calibración de pistas y estados lo aguanta (docs/NIGHT-LOG.md, día 3).
     // Ficha base (sin pruebas mostradas); el spec pide 250-350 palabras de contenido. Las reglas fijas
     // (incluida la etiqueta de estado emocional, ~50 palabras) se suman a ese contenido.
-    private const int MaxPromptWords = 460;
+    private const int MaxPromptWords = 540;
 
     private static IEnumerable<TestCaseData> Variants()
     {

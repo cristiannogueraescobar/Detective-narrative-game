@@ -1,0 +1,146 @@
+{
+  "note": "Profundidad de los personajes (ficción; patrones tomados de casos reales, ver docs/REAL-CASES.md) y desbloqueos naturales. Lo lee StoriesDatabase.cs al construir las historias.",
+  "stories": [
+    {
+      "id": "1",
+      "characters": [
+        {
+          "id": "padre",
+          "personality": "Frío y meticuloso; necesita controlar la versión oficial de todo.",
+          "wound": "Su padre arruinó el bufete familiar; le aterra perder la reputación.",
+          "tellsLying": "das horas exactas sin que te las pidan y corriges detalles menores.",
+          "pressureArc": "cortés, luego pedante, luego amenazas con abogados; solo cedes lo que una prueba demuestra.",
+          "lieStrategies": [ { "variant": "1A", "text": "Siembras que Elena dormía mal y que el zolpidem era de Carmen: que parezca un accidente con pastillas ajenas." } ]
+        },
+        {
+          "id": "madre",
+          "personality": "Abnegada y perfeccionista; se define por cuidar a los demás.",
+          "wound": "Perdió a un paciente pequeño en una guardia; duerme mal y se culpa.",
+          "tellsLying": "te refugias en jerga médica en vez de recuerdos.",
+          "pressureArc": "serena, luego técnica, luego ofendida como médica; al final llanto.",
+          "lieStrategies": [ { "variant": "1B", "text": "Presentas a Elena como frágil desde hace años, para que su muerte encaje con su arritmia." } ]
+        },
+        {
+          "id": "hermano",
+          "personality": "Irónico e inseguro; esconde el miedo tras la desgana.",
+          "wound": "TDAH desde los ocho; siempre comparado con Elena, la hija fácil.",
+          "tellsLying": "contestas con dos palabras y repites 'no sé, tío'.",
+          "pressureArc": "pasota, luego borde, luego gritas; se te quiebra la voz y lo sueltas todo.",
+          "lieStrategies": [ { "variant": "1C", "text": "Te agarras a los cascos y minimizas: 'estaba bien, hablaba'." } ]
+        },
+        {
+          "id": "vecina",
+          "personality": "Curiosa, sola y cariñosa; convierte la soledad en vigilancia del barrio.",
+          "wound": "Su marido murió una noche mientras ella dormía; desde entonces apenas duerme.",
+          "tellsLying": "te vas por las ramas y hablas de otros vecinos.",
+          "pressureArc": "charlatana, luego ofendida, luego avergonzada por los prismáticos; aliviada al contarlo.",
+          "lieStrategies": []
+        }
+      ],
+      "unlocks": [
+        {
+          "id": "vecina",
+          "playerStems": [ "vecin", "enfrente", "ventana", "cortina", "testig", "desde fuera", "alguien vio", "rosario" ],
+          "fallbackDay": 2,
+          "fallbackText": "Una vecina de enfrente se presenta en comisaría: dice que esa noche no durmió y quiere hablar."
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "characters": [
+        {
+          "id": "bar",
+          "personality": "Campechano en público y rencoroso en privado; el pueblo es su escenario.",
+          "wound": "Heredó el bar endeudado de su padre; un mal verano lo hunde.",
+          "tellsLying": "bromeas, invitas y hablas del pueblo en general en vez de esa noche.",
+          "pressureArc": "colega, luego quejica, luego golpeas la mesa; al final sudor y silencios.",
+          "lieStrategies": [ { "variant": "2A", "text": "Te ofreces a organizar la búsqueda y repites que Sofía se caería en las rocas." } ]
+        },
+        {
+          "id": "cartero",
+          "personality": "Metódico y tímido; vive dentro de una rutina que le protege.",
+          "wound": "Le dejaron plantado ante el altar; desde entonces, soledad y horarios fijos.",
+          "tellsLying": "recitas tu ruta como un horario, sin un solo detalle de ese día.",
+          "pressureArc": "correcto, luego rígido, luego susurras; al final te paralizas.",
+          "lieStrategies": [ { "variant": "2B", "text": "Usas quince años de puntualidad como coartada y dices que lavaste la furgoneta por el salitre." } ]
+        },
+        {
+          "id": "detective",
+          "personality": "Cínico y territorial; confunde autoridad con tener razón.",
+          "wound": "Un compañero murió en una operación que él dirigía; le mandaron a Portomar.",
+          "tellsLying": "restas importancia y apelas a tu experiencia: 'son cosas que pasan'.",
+          "pressureArc": "condescendiente, luego hostil, luego amenaza velada; al final frialdad total.",
+          "lieStrategies": [ { "variant": "2C", "text": "Controlas el caso: informe corto, la tesis de una caída y la prueba 'extraviada'." } ]
+        },
+        {
+          "id": "vecina",
+          "personality": "Desconfiada y socarrona; lo ve todo y lo suelta con cuentagotas.",
+          "wound": "Su marido, marinero, desapareció en el mar y nunca apareció.",
+          "tellsLying": "te haces la vieja despistada y hablas de la cocina.",
+          "pressureArc": "evasiva, luego irónica, luego nerviosa por el orujo; confías si te tratan con respeto.",
+          "lieStrategies": []
+        }
+      ],
+      "unlocks": [
+        {
+          "id": "vecina",
+          "playerStems": [ "curva", "vecin", "testig", "madrug", "furgoneta", "vehicul", "coche", "quien vio", "maruxa" ],
+          "fallbackDay": 2,
+          "fallbackText": "Una patrulla recorre la carretera de la costa: la vecina de la casa de la curva pide hablar con el inspector."
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "characters": [
+        {
+          "id": "padre",
+          "personality": "Orgulloso y rencoroso; se siente víctima del divorcio y del pueblo.",
+          "wound": "Su padre bebía y pegaba; se juró no ser como él.",
+          "tellsLying": "atacas a Lucía en cuanto la pregunta roza el sábado.",
+          "pressureArc": "víctima, luego furioso, luego culpas a tu ex; al final lloras.",
+          "lieStrategies": [ { "variant": "3A", "text": "Dices que pensaste que Paula se fue con su madre y que el humo eran rastrojos." } ]
+        },
+        {
+          "id": "madre",
+          "personality": "Contenida y protectora hasta el extremo; desconfía de jueces e instituciones.",
+          "wound": "Su madre la abandonó de niña; teme que le arrebaten a Paula.",
+          "tellsLying": "repites las mismas frases, como ensayadas.",
+          "pressureArc": "firme, luego cortante, luego helada; al final susurras.",
+          "lieStrategies": [ { "variant": "3B", "text": "Insistes en Granada con detalles de casa de tu hermana y culpas a Javier en cuanto puedes." } ]
+        },
+        {
+          "id": "hermano",
+          "personality": "Serio y leal; se hizo el hombre de la casa demasiado pronto.",
+          "wound": "Cuando su padre se fue, cargó con su madre y con Paula.",
+          "tellsLying": "contestas por tu madre y dices 'nosotros'.",
+          "pressureArc": "seco, luego protector, luego aprietas los puños; al final cuentas lo que callabas.",
+          "lieStrategies": []
+        },
+        {
+          "id": "vecina",
+          "personality": "Dulce, piadosa y maternal hasta la asfixia; vive entre recuerdos.",
+          "wound": "Rocío murió en 1998, con 15 años, volviendo de unas fiestas.",
+          "tellsLying": "invocas a la Virgen y hablas de Rocío en vez de Paula.",
+          "pressureArc": "dulce, luego rezos, luego llanto; al final confundes a Paula con Rocío.",
+          "lieStrategies": [ { "variant": "3C", "text": "Te ofreces a rezar y a buscar, y recuerdas la bebida de Javier cada vez que puedes." } ]
+        }
+      ],
+      "unlocks": [
+        {
+          "id": "hermano",
+          "playerStems": [ "hermano", "alex", "mensaje", "whatsapp", "movil de paula", "ultima vez", "con quien hablaba", "supiste de" ],
+          "fallbackDay": 2,
+          "fallbackText": "El hermano de Paula llega al cuartel desde Granada con el móvil en la mano: quiere enseñarle algo."
+        },
+        {
+          "id": "vecina",
+          "playerStems": [ "vecin", "finca de al lado", "caballo", "cancela", "pozo", "quien vio", "encarna" ],
+          "fallbackDay": 3,
+          "fallbackText": "La Guardia Civil toma declaración en las fincas vecinas: la dueña de la de al lado vio humo el sábado."
+        }
+      ]
+    }
+  ]
+}

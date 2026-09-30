@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
         Caso3A, Caso3B, Caso3C
     }
 
-    public const int SafetyUnlockDay = 3; // Al empezar este día se desbloquea todo el elenco
+    public const int SafetyUnlockDay = NaturalUnlocks.DefaultDay; // Solo para personajes sin disparador en StoriesDatabase.json
 
     [Header("Referencias")]
     [SerializeField] private AIConversationManager conversationManager;
@@ -248,6 +248,10 @@ public class GameManager : MonoBehaviour
         }
 
         requestInFlight = true;
+
+        // Preguntar por un tema lleva a quien lo conoce ("¿alguna vecina vio algo?" → la vecina)
+        foreach (string id in NaturalUnlocks.TriggeredBy(story, unlocked, question).ToList())
+            Unlock(id, $"Tu pregunta te pone sobre la pista de {story.Character(id).name}.");
         notices.BeginDefer();
         bool answered = false;
 
@@ -318,11 +322,9 @@ public class GameManager : MonoBehaviour
 
         interrogationUI?.ShowDayTransition(currentDay, MorningReport(currentDay));
 
-        if (currentDay >= SafetyUnlockDay)
-        {
-            foreach (CharacterData character in story.cast.Where(c => !unlocked.Contains(c.id)))
-                Unlock(character.id, $"Un agente te informa: conviene hablar con {character.name}.");
-        }
+        // Quien nadie ha traído aparece con un hecho de la historia (un agente lo lleva a comisaría), no por magia
+        foreach (var (id, text) in NaturalUnlocks.DueOn(story, unlocked, currentDay).ToList())
+            Unlock(id, text);
 
         UpdateGameState();
         SaveGame();

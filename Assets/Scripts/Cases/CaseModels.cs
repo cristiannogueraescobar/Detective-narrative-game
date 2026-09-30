@@ -52,6 +52,12 @@ public class CharacterData
     public bool startsUnlocked;
     public string[] mentionAliases; // Palabras que, en una respuesta, lo desbloquean
 
+    // Profundidad (Resources/Stories/StoriesDatabase.json)
+    public string personality;    // Carácter
+    public string wound;          // Herida o presión vital
+    public string tellsLying;     // Cómo se le nota al mentir
+    public string pressureArc;    // Cómo reacciona según aprieta el interrogatorio
+
     public string DisplayName => $"{shortName} ({roleLabel})";
 }
 
@@ -73,6 +79,7 @@ public class CharacterRole
     public string lieQuote;       // Cita corta de su mentira, para el texto de la contradicción
     public string[][] lieAnchors; // Detecta que ha contado su mentira
     public string versionB;       // Verdad parcial cuando le muestran una prueba que le contradice
+    public string lieStrategy;    // Culpable: cómo sostiene la mentira (StoriesDatabase.json)
     public string[] admissionSamples; // Frases de la versión B que NO deben contar como la mentira
 }
 
@@ -94,6 +101,19 @@ public class VariantData
 /// Un momento de la línea temporal real de una variante: quién estaba dónde y haciendo qué. "~22:30" = aproximado
 /// (no cuenta para "dos sitios a la vez"). Solo la usa el validador narrativo; no llega a las fichas.
 /// </summary>
+/// <summary>
+/// Cómo aparece un personaje bloqueado: por un tema de las preguntas del jugador o, si nadie lo trae, con un parte
+/// de la mañana el día indicado (NaturalUnlocks).
+/// </summary>
+[System.Serializable]
+public class UnlockTrigger
+{
+    public string id;
+    public string[] playerStems;
+    public int fallbackDay;
+    public string fallbackText;
+}
+
 public class TimelineEvent
 {
     public string time;
@@ -124,6 +144,7 @@ public class StoryData
     public string caseBrief;      // "EL CASO" en las fichas de personaje
     public List<CharacterData> cast = new List<CharacterData>();
     public List<VariantData> variants = new List<VariantData>();
+    public List<UnlockTrigger> unlockTriggers = new List<UnlockTrigger>(); // Desbloqueos naturales (StoriesDatabase.json)
 
     public CharacterData Character(string characterId) => cast.First(c => c.id == characterId);
 }
