@@ -2,7 +2,7 @@
 
 El juego pide cada sonido en el momento justo (`SoundManager`). **Ahora mismo suenan provisionales sintetizados
 por código** (`Tools/make_placeholder_audio.py` → `Assets/Resources/Audio/**.wav`): efectos discretos y ambientes
-de 30 s (lluvia en el menú, mar en la historia 2, viento en la 3, pulso grave en la acusación). Son para que el
+de 30 s (lluvia en el menú con un motivo noir de piano y contrabajo en La menor, mar en la historia 2, viento en la 3, pulso grave en la acusación). Son para que el
 juego no esté mudo mientras tanto: sustitúyelos por los definitivos con **el mismo nombre** (cualquier formato:
 `.ogg`, `.wav`, `.mp3`) y borra el `.wav` provisional. Si borras la carpeta entera, el juego funciona en silencio. Para añadir uno, suelta el archivo en la ruta indicada (`.ogg` recomendado; también vale `.wav`
 o `.mp3`), sin extensión en el nombre del recurso. No hay que tocar código ni la escena.
@@ -12,6 +12,11 @@ Carpeta base: `Assets/Resources/`. Ejemplo: `Audio/sfx/clic` → `Assets/Resourc
 Tono general: noir de los años 40-50 trasladado a la España actual. Seco, analógico, con algo de sala (reverb corta).
 Nada de sonidos de videojuego "brillantes". Los volúmenes se mezclan en el juego (Ajustes → Música / Efectos);
 normaliza todo a −16 LUFS aprox. y deja 5 ms de silencio al principio.
+
+**Mezcla:** no hace falta AudioMixer. Bajo los golpes (pista, contradicción, acusación, día nuevo, finales) la
+música se aparta ≈ 7 dB mientras suena el golpe (máx. 3 s) y vuelve en 1,5 s (`SoundMix`). Los golpes no necesitan
+ir más altos que el resto. Control de calidad: `python Tools/check_audio.py` (pico, DC, 5 ms de silencio inicial,
+salto en el bucle).
 
 ## Efectos (`Audio/sfx/`)
 

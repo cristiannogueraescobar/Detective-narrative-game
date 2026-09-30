@@ -125,6 +125,17 @@ public class SoundManager : MonoBehaviour
     private Music currentMusic = Music.None;
     private Coroutine fade;
 
+    // Mezcla: volumen "de base" de cada fuente de música (fundido × ajustes) y el apartado bajo los golpes
+    private float baseA, baseB;
+    private float duck = 1f;
+    private float stingerAt = float.NegativeInfinity;
+    private float stingerHold;
+
+    /// <summary>
+    /// Ganancia actual de la música por la mezcla (1 = entera). Para tests.
+    /// </summary>
+    public static float MusicDuck => instance != null ? instance.duck : 1f;
+
     /// <summary>
     /// Sonidos pedidos desde que arrancó (para tests: comprueban que un evento suena aunque no haya archivo).
     /// </summary>
@@ -202,6 +213,12 @@ public class SoundManager : MonoBehaviour
         manager.nextVoice = (manager.nextVoice + 1) % manager.voices.Length;
         voice.pitch = 1f + Random.Range(-pitchVariation, pitchVariation);
         voice.PlayOneShot(clip, Mathf.Clamp01(volume) * GameSettings.SfxVolume);
+
+        if (SoundMix.Ducks(sfx))
+        {
+            manager.stingerAt = Time.unscaledTime;
+            manager.stingerHold = SoundMix.HoldFor(clip.length);
+        }
     }
 
     /// <summary>
@@ -224,27 +241,27 @@ public class SoundManager : MonoBehaviour
     private IEnumerator Crossfade(AudioClip clip)
     {
         // A la fuente libre entra la nueva; la otra se apaga
-        AudioSource from = musicA.isPlaying && musicA.volume >= musicB.volume ? musicA : musicB;
+        AudioSource from = musicA.isPlaying && baseA >= baseB ? musicA : musicB;
         AudioSource to = from == musicA ? musicB : musicA;
 
         if (clip != null)
         {
             to.clip = clip;
-            to.volume = 0f;
+            SetBase(to, 0f);
             to.Play();
         }
 
-        float startFrom = from.volume;
+        float startFrom = BaseOf(from);
         AudioSource other = to;
-        float startOther = clip == null ? other.volume : 0f;
+        float startOther = clip == null ? BaseOf(other) : 0f;
         for (float e = 0f; e < CrossfadeSeconds; e += Time.unscaledDeltaTime)
         {
             float t = e / CrossfadeSeconds;
-            from.volume = startFrom * (1f - t);
+            SetBase(from, startFrom * (1f - t));
             if (clip == null)
-                other.volume = startOther * (1f - t);
+                SetBase(other, startOther * (1f - t));
             if (clip != null)
-                to.volume = GameSettings.MusicVolume * t;
+                SetBase(to, GameSettings.MusicVolume * t);
             yield return null;
         }
 
@@ -254,11 +271,33 @@ public class SoundManager : MonoBehaviour
             if (clip != null && source == to)
                 continue;
             source.Stop();
-            source.volume = 0f;
+            SetBase(source, 0f);
         }
         if (clip != null)
-            to.volume = GameSettings.MusicVolume;
+            SetBase(to, GameSettings.MusicVolume);
         fade = null;
+    }
+
+    private float BaseOf(AudioSource source) => source == musicA ? baseA : baseB;
+
+    // Volumen de base (fundido × ajustes); lo que suena es base × apartado
+    private void SetBase(AudioSource source, float value)
+    {
+        if (source == musicA)
+            baseA = value;
+        else
+            baseB = value;
+        source.volume = value * duck;
+    }
+
+    private void Update()
+    {
+        float target = SoundMix.DuckGain(Time.unscaledTime - stingerAt, stingerHold);
+        if (Mathf.Approximately(target, duck))
+            return;
+        duck = target;
+        musicA.volume = baseA * duck;
+        musicB.volume = baseB * duck;
     }
 
     private void ApplyVolumes()
@@ -269,7 +308,7 @@ public class SoundManager : MonoBehaviour
         foreach (AudioSource source in new[] { musicA, musicB })
         {
             if (source.isPlaying)
-                source.volume = GameSettings.MusicVolume;
+                SetBase(source, GameSettings.MusicVolume);
         }
     }
 

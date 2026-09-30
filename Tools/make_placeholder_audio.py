@@ -174,8 +174,80 @@ def rain(seconds, sr=MSR, density=18):
     return base + drops * 0.4
 
 
+def hz(note):
+    """'A4' -> 440; admite sostenidos ('G#4') y bemoles ('Bb3')."""
+    names = {'C': -9, 'D': -7, 'E': -5, 'F': -4, 'G': -2, 'A': 0, 'B': 2}
+    semis = names[note[0]] + (1 if '#' in note else -1 if 'b' in note[1:-1] else 0)
+    return 440.0 * 2 ** ((semis + 12 * (int(note[-1]) - 4)) / 12)
+
+
+def piano(freq, seconds, sr=MSR, rng=None):
+    """Nota de piano aditiva: parciales algo inarmónicos que se apagan antes cuanto más agudos, y martillo."""
+    x = t(seconds, sr)
+    out = np.zeros_like(x)
+    for k in range(1, 7):
+        f = freq * k * np.sqrt(1 + 0.0004 * k * k)
+        if f > sr / 2 - 500:
+            break
+        out += np.sin(2 * np.pi * f * x) * (0.6 ** (k - 1)) * np.exp(-x * (1.2 + 0.9 * k))
+    hammer = rng.standard_normal(len(x)) * np.exp(-x * 90) * 0.05
+    return (out + hammer) * np.clip(x / 0.004, 0, 1)
+
+
+def bass(freq, seconds, sr=MSR):
+    """Contrabajo pizzicato: fundamental con algo de segundo armónico, ataque seco y cola corta."""
+    x = t(seconds, sr)
+    s = np.sin(2 * np.pi * freq * x) + 0.35 * np.sin(2 * np.pi * 2 * freq * x) + 0.1 * np.sin(2 * np.pi * 3 * freq * x)
+    return low(s * np.exp(-x * 2.6) * np.clip(x / 0.008, 0, 1), 900, sr)
+
+
+def noir_motif(bars=8, bpm=64, sr=MSR, seed=11):
+    """Motivo noir en La menor (Am | Am | Fmaj7 | Fmaj7 | Dm6 | Dm6 | E7b9 | E7b9): piano escaso, contrabajo en
+    1 y 3, escobillas muy bajas en 2 y 4. Dura exactamente bars compases, para que el bucle no pierda el pulso."""
+    rng = np.random.default_rng(seed)
+    beat = 60.0 / bpm
+    bar = 4 * beat
+    out = np.zeros(int(bars * bar * sr) + sr * 4)
+
+    def put(sig, at):
+        i = int(at * sr)
+        out[i:i + len(sig)] += sig[:max(0, len(out) - i)]
+
+    chords = [['A2', 'E3', 'B3', 'C4'], ['A2', 'E3', 'B3', 'C4'], ['F2', 'C3', 'E3', 'A3'], ['F2', 'C3', 'E3', 'A3'],
+              ['D2', 'A2', 'F3', 'B3'], ['D2', 'A2', 'F3', 'B3'], ['E2', 'G#3', 'D4', 'F4'], ['E2', 'G#3', 'D4', 'F4']]
+    roots = [('A1', 'E2'), ('A1', 'C2'), ('F1', 'C2'), ('F1', 'A1'), ('D2', 'A1'), ('D2', 'F2'), ('E2', 'B1'), ('E2', 'G#1')]
+    # Melodía: (compás, pulso, nota, pulsos). Mucho silencio: se oye la lluvia entre frases
+    melody = [(0, 0, 'E5', 1.5), (0, 1.5, 'C5', 0.5), (0, 2, 'B4', 2), (1, 0, 'A4', 3),
+              (2, 1, 'C5', 1), (2, 2, 'E5', 1), (2, 3, 'A5', 1), (3, 0, 'G5', 3.5),
+              (4, 0, 'F5', 1.5), (4, 1.5, 'E5', 0.5), (4, 2, 'D5', 2), (5, 0, 'B4', 3),
+              (6, 0, 'G#4', 1), (6, 1, 'B4', 1), (6, 2, 'D5', 1), (6, 3, 'F5', 1), (7, 0, 'E5', 3.5)]
+
+    for b in range(bars):
+        start = b * bar
+        # Acorde apagado a contratiempo (el piano de la mano izquierda), ligeramente arpegiado
+        for k, n in enumerate(chords[b][1:]):
+            put(piano(hz(n), bar, sr, rng) * 0.16, start + beat * 0.5 + k * 0.03)
+        for i, n in enumerate(roots[b]):
+            put(bass(hz(n), beat * 1.9, sr) * 0.55, start + i * 2 * beat)
+        for p in (1, 3):
+            swish = band(rng.standard_normal(int(beat * 0.6 * sr)), 2500, 7000, sr)
+            put(swish * np.exp(-np.arange(len(swish)) / (sr * 0.12)) * 0.02, start + p * beat)
+    for b, p, n, d in melody:
+        put(piano(hz(n), d * beat + 1.2, sr, rng) * 0.3, b * bar + p * beat)
+
+    # Cola: lo que suena después del último compás vuelve al principio (bucle sin corte)
+    body_len = int(bars * bar * sr)
+    body = out[:body_len].copy()
+    tail = out[body_len:]
+    body[:len(tail)] += tail
+    return body
+
+
 seconds = 31.5
-made.append(save('musica/menu', loop(rain(seconds) * 0.8 + drone([55.0, 82.41, 110.0], seconds) * 0.25), 0.35, MSR, fade_out=False))
+menu_bed = loop(rain(seconds) * 0.8 + drone([55.0, 82.41, 110.0], seconds) * 0.25)  # 30 s exactos (31,5 − 1,5)
+motif = noir_motif()
+menu_bed = menu_bed / np.max(np.abs(menu_bed)) * 0.55 + motif[:len(menu_bed)] / np.max(np.abs(motif)) * 0.45
+made.append(save('musica/menu', menu_bed, 0.35, MSR, fade_out=False))
 made.append(save('musica/historia1', loop(drone([73.42, 110.0, 146.83, 174.61], seconds) * 0.5 + low(RNG.standard_normal(int(seconds * MSR)), 400, MSR) * 0.05), 0.3, MSR, fade_out=False))
 sea = low(RNG.standard_normal(int(seconds * MSR)), 700, MSR) * (0.6 + 0.4 * np.sin(2 * np.pi * 0.09 * t(seconds, MSR)) ** 2)
 made.append(save('musica/historia2', loop(sea * 0.7 + drone([65.41, 98.0, 130.81], seconds) * 0.35), 0.3, MSR, fade_out=False))
