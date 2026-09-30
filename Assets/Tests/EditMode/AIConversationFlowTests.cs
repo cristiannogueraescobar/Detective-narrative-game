@@ -269,4 +269,14 @@ public class AIConversationFlowTests
         Assert.IsFalse(result.Success);
         Object.DestroyImmediate(bare.gameObject);
     }
+
+    [Test]
+    public void ElHistorialGuardaLaEtiquetaBienEscrita()
+    {
+        provider.results.Enqueue(LLMResult.Ok("No estuve allí. [MESTADO: asustado]"));
+        Ask("a", "¿Estuvo allí?");
+        ChatMessage last = manager.Histories["a"].Last(m => m.role == "assistant");
+        StringAssert.Contains("[ESTADO: asustado]", last.content, "el modelo no copia la errata en la siguiente");
+        StringAssert.DoesNotContain("MESTADO", last.content);
+    }
 }

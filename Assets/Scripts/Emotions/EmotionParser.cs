@@ -26,11 +26,23 @@ public static class EmotionParser
         "Termina SIEMPRE con una línea aparte que diga cómo te sientes: [ESTADO: tranquilo], [ESTADO: nervioso], " +
         "[ESTADO: asustado], [ESTADO: enfadado] o [ESTADO: triste].";
 
-    private static readonly Regex Bracketed = new Regex(@"\[\s*estado\s*:\s*([^\]]*?)\s*\]", RegexOptions.IgnoreCase);
+    // Tolera erratas alrededor de "estado" ("[MESTADO: x]", "[ESTADOS: x]"): si no, la etiqueta se veía en el chat
+    private static readonly Regex Bracketed = new Regex(@"\[\s*[a-záéíóú]{0,3}estado[a-z]{0,3}\s*:\s*([^\]]*?)\s*\]", RegexOptions.IgnoreCase);
+    private static readonly Regex Exact = new Regex(@"\[\s*estado\s*:", RegexOptions.IgnoreCase);
     // Etiqueta cortada por el límite de tokens: "[ESTADO: nerv", "[EST"
     private static readonly Regex Truncated = new Regex(@"\[\s*es[^\]\n]*$", RegexOptions.IgnoreCase);
     private static readonly Regex Bare = new Regex(@"(^|\n)\s*estado\s*:\s*(\S+)\s*$", RegexOptions.IgnoreCase);
     private static readonly Regex Spaces = new Regex(@"[ \t]+");
+
+    /// <summary>
+    /// La respuesta con la etiqueta bien escrita al final (para el historial: el modelo copia lo que ve, erratas
+    /// incluidas). Sin estado reconocible, solo el texto.
+    /// </summary>
+    public static string Canonical(string raw)
+    {
+        EmotionParse parse = Parse(raw);
+        return parse.emotion.HasValue ? $"{parse.text}\n[ESTADO: {parse.emotion.Value.ToString().ToLowerInvariant()}]" : parse.text;
+    }
 
     public static EmotionParse Parse(string raw)
     {
@@ -66,7 +78,7 @@ public static class EmotionParser
         {
             text = Spaces.Replace(text, " ").Trim(),
             emotion = emotion,
-            wellFormed = bracketed && emotion.HasValue
+            wellFormed = bracketed && emotion.HasValue && Exact.IsMatch(raw)
         };
     }
 

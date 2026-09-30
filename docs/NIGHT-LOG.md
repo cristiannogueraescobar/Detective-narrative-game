@@ -492,6 +492,15 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
 - **15:13** Tutorial: quinta indicación, la primera vez que la libreta ya apunta lo que dice alguien ("Si una pista
   no cuadra con su versión, enséñasela: así se pilla una mentira"). Test de juego. EditMode 686/686, PlayMode 46/46.
 
+- **15:23** A/B de las versiones en la libreta (semilla 59, 18 + 18): contradicciones 3 → 2, resueltas 13 → 12,
+  primera pista 8,0 → 6,8: **sin efecto medible en el bot** (su detective no compara versiones con pistas: límite
+  del bot, no prueba en contra). Se mantiene por diseño (Her Story / L.A. Noire), anotado en Decisiones.
+  Del A/B salió un **fallo visible**: qwen escribió la etiqueta como "[MESTADO: asustado]", el analizador no la
+  reconocía y se veía en el chat; en el historial, el modelo la copiaba (10 respuestas seguidas en 3B). Ahora el
+  analizador tolera erratas alrededor de "ESTADO" (bien formada sigue siendo solo la exacta, para las
+  calibraciones) y el historial guarda la etiqueta canónica. Otra deriva al chino en 3B (brazo con el código de
+  antes del reintento por idioma). EditMode 692/692, PlayMode 46/46.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).

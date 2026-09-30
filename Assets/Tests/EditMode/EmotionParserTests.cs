@@ -87,4 +87,29 @@ public class EmotionParserTests
         Assert.AreEqual("", EmotionParser.Parse(null).text);
         Assert.IsNull(EmotionParser.Parse("").emotion);
     }
+
+    // Bot (ronda 5): qwen escribió "[MESTADO: asustado]" y la etiqueta se veía en el chat (y se copiaba después)
+    [TestCase("No estuve en la finca.  [MESTADO: asustado]", Emotion.Asustado)]
+    [TestCase("No estuve en la finca. [ESTADOS: triste]", Emotion.Triste)]
+    [TestCase("No estuve en la finca. [Estado: Nervioso]", Emotion.Nervioso)]
+    public void UnaEtiquetaConErratasNoSeVe(string raw, Emotion expected)
+    {
+        EmotionParse parse = EmotionParser.Parse(raw);
+        Assert.AreEqual("No estuve en la finca.", parse.text);
+        Assert.AreEqual(expected, parse.emotion);
+    }
+
+    [Test]
+    public void LaEtiquetaConErratasNoCuentaComoBienFormada()
+    {
+        Assert.IsFalse(EmotionParser.Parse("Hola. [MESTADO: asustado]").wellFormed);
+        Assert.IsTrue(EmotionParser.Parse("Hola. [ESTADO: asustado]").wellFormed);
+    }
+
+    [Test]
+    public void LaFormaCanonicaCorrigeLaEtiqueta()
+    {
+        Assert.AreEqual("Hola.\n[ESTADO: asustado]", EmotionParser.Canonical("Hola.  [MESTADO: asustado]"));
+        Assert.AreEqual("Hola.", EmotionParser.Canonical("Hola."));
+    }
 }

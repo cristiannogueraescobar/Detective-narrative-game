@@ -161,7 +161,7 @@ public class AIConversationManager : MonoBehaviour
 
         // El historial guarda la respuesta con su etiqueta para que el modelo mantenga el formato;
         // el análisis y la pantalla usan el texto limpio
-        history.Add(new ChatMessage { role = "assistant", content = result.Text });
+        history.Add(new ChatMessage { role = "assistant", content = EmotionParser.Canonical(result.Text) });
         EmotionParse parsed = EmotionParser.Parse(result.Text);
         string clean = string.IsNullOrWhiteSpace(parsed.text) ? "…" : parsed.text;
 
