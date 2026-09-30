@@ -309,7 +309,7 @@ public static class ThemeApplier
         colors.normalColor = normal;
         colors.highlightedColor = Color.Lerp(normal, Color.white, 0.15f);
         colors.pressedColor = Color.Lerp(normal, Color.black, 0.2f);
-        colors.selectedColor = normal;
+        colors.selectedColor = Color.Lerp(normal, Color.white, 0.3f); // Foco visible con teclado o mando (WCAG 2.4.7)
         colors.disabledColor = disabled;
         return colors;
     }

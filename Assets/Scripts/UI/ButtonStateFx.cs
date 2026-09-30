@@ -55,6 +55,9 @@ public class ButtonStateFx : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     public void OnPointerUp(PointerEventData eventData)
     {
         transform.localScale = Vector3.one;
+        // Con el dedo, el botón tocado no se queda enfocado: el foco visible es para teclado y mando
+        if (eventData != null && eventData.selectedObject == gameObject)
+            eventData.selectedObject = null;
     }
 
     public void OnPointerExit(PointerEventData eventData)
