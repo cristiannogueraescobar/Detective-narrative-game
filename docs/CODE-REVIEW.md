@@ -210,3 +210,14 @@ rueda, `TryFind`, que la temperatura fría solo toque el reintento por horas y q
 | 4 | Plausible (bot) | Un id de pista que contenga un nombre corto se resolvería a ese sospechoso | **Anotado** (solo el bot; los ids actuales no lo hacen) |
 | 5 | Confirmado, menor | El lector leía "Daniel tu descarte" sin separación | **Arreglado**: "(tu descarte)" entre paréntesis |
 | 6 | Bajo | Los partes del caso peor del layout no son necesariamente los más largos | **Anotado** |
+
+# Revisión de código (día 3, séptima)
+Séptima revisión independiente, sobre `git diff 3ad2d11..HEAD` (resumen de ayer en la tarjeta del día, texto de la
+2B, marcas de la rueda para el bot). **Nada serio.** Dio por buenos: último día, acusación forzada, otras formas de
+encontrar pistas, que el resumen no salga dos veces ni en la libreta, gramática y lector.
+
+| # | Sev. | Hallazgo | Estado |
+|---|---|---|---|
+| 1 | Confirmado, bajo | Al continuar a mitad de día, "Ayer: …" perdía lo conseguido antes de guardar | **Arreglado**: las cuentas del día se guardan (test de juego visto en rojo) |
+| 2 | Plausible, bajo | El resumen va dentro de la entrada del parte ("Parte de la mañana: …"); si una variante no tuviera parte ese día, parecería del parte | **Anotado**: hoy todas lo tienen (el validador lo comprueba) |
+| 3 | Trivial | Comentario de documentación descolocado | **Arreglado** |
