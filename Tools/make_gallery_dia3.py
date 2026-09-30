@@ -20,6 +20,7 @@ SCREENS = [
     ('12_dialogo', 'dialogo_reiniciar'), ('13_texto_grande', 'texto_grande_interrogatorio'),
     ('14_alto_contraste', 'alto_contraste_interrogatorio'), ('15_emocion', 'emocion_nervioso_1500'),
     ('16_pista', 'pista_1800'), ('17_contradiccion', 'contradiccion_1900'), ('18_tutorial', 'tutorial_preguntar'),
+    ('21_ficha_policial', 'veredicto_ficha'),
 ]
 
 
@@ -49,10 +50,13 @@ made = 0
 for name, shot in SCREENS:
     before = os.path.join(BASE, 'dia3-antes-C', shot + '.png')
     after = os.path.join(BASE, 'anim', shot + '.png')
-    if not (os.path.exists(before) and os.path.exists(after)):
+    if not os.path.exists(after):
         print('falta', shot)
         continue
-    sheet = labelled([Image.open(before).convert('RGB'), Image.open(after).convert('RGB')], ['ANTES', 'AHORA'])
+    if os.path.exists(before):
+        sheet = labelled([Image.open(before).convert('RGB'), Image.open(after).convert('RGB')], ['ANTES', 'AHORA'])
+    else:  # Pantalla nueva de hoy: no hay antes
+        sheet = labelled([Image.open(after).convert('RGB')], ['NUEVO'])
     sheet.save(os.path.join(OUT, name + '.jpg'), quality=85)
     made += 1
 
