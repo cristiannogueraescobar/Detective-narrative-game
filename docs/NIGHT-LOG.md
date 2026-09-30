@@ -188,12 +188,12 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
 - 09:37 ART-NEEDED: los estados de retrato pedidos por personaje salen ahora de los datos (frecuencias tras la
   guía nueva, ~1.500 respuestas): p. ej. Javier, Maruxa y Álex piden "triste" en vez de "enfadado".
 
-- 09:52 Bot definitivo (18 partidas, semilla 59): culpable 9/18, pistas 1,7, horas inventadas 26/630 (4,1 %),
+- 09:50 Bot definitivo (18 partidas, semilla 59): culpable 9/18, pistas 1,7, horas inventadas 26/630 (4,1 %),
   0 rupturas reales (el único "IA" era "No puedo proporcionar un horario exacto": detector afinado con test).
   Estados: triste 40 % · nervioso 39 % · tranquilo 15 %. Build final en Builds/Windows-final, SMOKE OK.
   Reporte rápido enviado al usuario a petición suya.
 
-- 10:05 Ronda 10: los tests en una copia limpia de la rama (worktree en HEAD): EditMode 549/549, PlayMode 20/20;
+- 09:54 Ronda 10: los tests en una copia limpia de la rama (worktree en HEAD): EditMode 549/549, PlayMode 20/20;
   nada depende de archivos sin subir. Horas inventadas de la definitiva: casi todas rutinas aproximadas
   ("me acosté sobre las 23:00"); las dañinas son avistamientos inventados (anotado en el informe).
 
