@@ -363,6 +363,7 @@ public class GameManager : MonoBehaviour
         foreach (var (id, text) in NaturalUnlocks.DueOn(story, unlocked, currentDay).ToList())
             Unlock(id, text);
 
+        RefreshNotebook(); // El parte nuevo queda en la libreta
         UpdateGameState();
         SaveGame();
     }
@@ -436,7 +437,7 @@ public class GameManager : MonoBehaviour
         interrogationUI?.UpdateNotebook(Notebook.Format(story, State, unlocked,
             conversationManager.Emotions, conversationManager.DescribeContradiction, onPaper: true,
             interviewed: conversationManager.Histories.Where(h => h.Value.Any(m => m.role == "assistant")).Select(h => h.Key),
-            notes: notes));
+            notes: notes, reports: Notebook.ReportsUpTo(variant, Mathf.Min(currentDay, maxDays))));
     }
 
     private void OnClueRevealed(ClueData clue)

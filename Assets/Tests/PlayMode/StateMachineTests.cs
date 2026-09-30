@@ -487,4 +487,17 @@ public class StateMachineTests
         StringAssert.Contains("(pista de descarte)", cell.GetComponentInChildren<TMP_Text>().text);
         Assert.IsTrue(cell.GetComponent<Button>().interactable, "se puede elegir igual");
     }
+
+    // Ronda 15: al empezar un día, su parte queda en la libreta para releerlo
+    [UnityTest]
+    public IEnumerator ElParteDelDiaQuedaEnLaLibreta()
+    {
+        yield return StartNewGame();
+        var game = Object.FindFirstObjectByType<GameManager>();
+        game.EndDay();
+        yield return null;
+        string notebook = Find("CluesPanel").GetComponentsInChildren<TMP_Text>(true).Select(t => t.text).First(t => t.Contains("SOSPECHOSOS"));
+        StringAssert.Contains("PARTES DE LA MAÑANA", notebook);
+        StringAssert.Contains("Día 2:", notebook);
+    }
 }

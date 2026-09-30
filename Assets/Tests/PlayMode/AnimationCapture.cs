@@ -306,6 +306,34 @@ public class AnimationCapture
         Shot("veredicto_ficha");
     }
 
+    // Ronda 15: los partes de la mañana quedan al final de la libreta
+    [UnityTest]
+    public IEnumerator LibretaConPartes()
+    {
+        Tutorial.SkipAll();
+        yield return ToInterrogation();
+        var manager = UnityEngine.Object.FindFirstObjectByType<GameManager>();
+        for (int d = 0; d < 3; d++)
+        {
+            manager.EndDay();
+            yield return new WaitForSecondsRealtime(3.5f);
+            for (int t = 0; t < 2; t++) // El primer toque termina de escribir el parte; el segundo lo cierra
+                foreach (TapHandler tap in UnityEngine.Object.FindObjectsByType<TapHandler>(FindObjectsSortMode.None))
+                    tap.onTap?.Invoke();
+            yield return new WaitForSecondsRealtime(0.6f);
+        }
+        yield return Click("ViewCluesButton");
+        yield return new WaitForSecondsRealtime(0.8f);
+        var scroll = Find("CluesPanel")?.GetComponentInChildren<ScrollRect>();
+        if (scroll != null)
+        {
+            Canvas.ForceUpdateCanvases();
+            scroll.verticalNormalizedPosition = 0f;
+        }
+        yield return null;
+        Shot("libreta_partes");
+    }
+
     // Ronda 9: las notas del jugador (una sospechosa, otra descartada) en la libreta y en la rueda
     [UnityTest]
     public IEnumerator NotasDelJugador()
