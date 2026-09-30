@@ -138,6 +138,8 @@ public class GameManager : MonoBehaviour
             hintsUsed = hintMemory.count,
             hintsGiven = hintMemory.ToSave(),
             suspectNotes = SuspectNotes.ToSave(notes),
+            dayStartClues = cluesAtDayStart,
+            dayStartContradictions = contradictionsAtDayStart,
             currentSuspect = interrogationUI != null ? interrogationUI.CurrentSuspectId : null,
             unlocked = new List<string>(unlocked),
             discovered = new List<string>(State.DiscoveredClueIds),
@@ -184,9 +186,9 @@ public class GameManager : MonoBehaviour
             data.emotions.ToDictionary(e => e.characterId, e => (Emotion)Enum.Parse(typeof(Emotion), e.emotion)));
 
         interrogationUI?.SetVictim(story.victim);
-        // Al continuar a mitad de día, "ayer" cuenta desde aquí
-        cluesAtDayStart = DiscoveredClues().Count;
-        contradictionsAtDayStart = State.ContradictionClueIds.Count;
+        // Lo que llevaba el día al guardar (en guardados anteriores, desde aquí)
+        cluesAtDayStart = data.dayStartClues >= 0 ? data.dayStartClues : DiscoveredClues().Count;
+        contradictionsAtDayStart = data.dayStartContradictions >= 0 ? data.dayStartContradictions : State.ContradictionClueIds.Count;
         dayRecap = null;
         interrogationUI?.ContinueInterrogation(data, data.currentSuspect, conversationManager.Emotions);
 
