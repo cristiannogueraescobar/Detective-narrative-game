@@ -85,3 +85,10 @@ Cada entrada: fuente → qué aprendí → qué decidí con ello. La búsqueda l
 8. Ritmo: que cada día pueda dar algo nuevo; nada que regale al culpable pronto.
 
 (Las decisiones concretas y lo que se implementó están en docs/GAME-DESIGN.md.)
+
+## Android: nivel de API objetivo (Bloque E, 30-09-2026)
+- Desde el **31-08-2026**, las apps nuevas y las actualizaciones en Google Play deben apuntar a **Android 16 (API
+  36)**; las ya publicadas, a la 35 como mínimo para seguir visibles a usuarios nuevos; se podía pedir prórroga
+  hasta el 01-11-2026. → `AndroidSetup.TargetSdk = 36`.
+  Fuentes: [developer.android.com: target SDK](https://developer.android.com/google/play/requirements/target-sdk),
+  [Ayuda de Play Console](https://support.google.com/googleplay/android-developer/answer/11926878).

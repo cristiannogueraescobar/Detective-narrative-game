@@ -24,6 +24,7 @@ public static class BuildScript
     [MenuItem("Detective/Build de Android (APK)")]
     public static void BuildAndroid()
     {
+        AndroidSetup.Apply(); // Paquete, IL2CPP ARM64, API 25-36, vertical, red (docs/ANDROID-BUILD.md)
         EditorUserBuildSettings.buildAppBundle = false;
         Build(BuildTarget.Android, OutputPath(Environment.GetCommandLineArgs(), "Builds/Android/Detectives.apk"));
     }
