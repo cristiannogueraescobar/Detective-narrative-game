@@ -42,6 +42,8 @@ public static class FontAssetBuilder
         if (!string.IsNullOrEmpty(missing))
             Debug.LogWarning($"[Fuente] La fuente no trae: {missing}");
 
+        // Con todos los caracteres ya dentro, el atlas se congela: no crece en juego ni ensucia el repositorio
+        font.atlasPopulationMode = AtlasPopulationMode.Static;
         AssetDatabase.CreateAsset(font, OutputPath);
         font.material.name = font.name + " Material";
         font.atlasTexture.name = font.name + " Atlas";
@@ -50,5 +52,21 @@ public static class FontAssetBuilder
         EditorUtility.SetDirty(font);
         AssetDatabase.SaveAssets();
         Debug.Log($"[Fuente] Creada {OutputPath} ({font.characterTable.Count} caracteres)");
+    }
+
+    /// <summary>
+    /// Congela el atlas del asset ya creado (mismo GUID: el tema sigue apuntando a él).
+    ///   Unity -batchmode -nographics -projectPath . -executeMethod FontAssetBuilder.FreezeTitleFont -quit
+    /// </summary>
+    public static void FreezeTitleFont()
+    {
+        var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(OutputPath);
+        if (font == null)
+            return;
+        font.TryAddCharacters(Characters(), out _);
+        font.atlasPopulationMode = AtlasPopulationMode.Static;
+        EditorUtility.SetDirty(font);
+        AssetDatabase.SaveAssets();
+        Debug.Log($"[Fuente] {OutputPath} congelada con {font.characterTable.Count} caracteres");
     }
 }
