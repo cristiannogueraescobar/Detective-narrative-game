@@ -240,7 +240,8 @@ public static class BotPlayer
                     Decision decision = forced ?? Decide(client, options, story, manager, unlocked, game, day, q, random, note);
                     // El detective (qwen) a veces escribe en chino y arrastra al sospechoso: una vez más, en español
                     if (forced == null && decision.question != null && LanguageCheck.IsForeign(decision.question))
-                        decision = Decide(client, options, story, manager, unlocked, game, day, q, random, "Escribe la pregunta en español.");
+                        decision = Decide(client, options, story, manager, unlocked, game, day, q, random,
+                            (note != null ? note + " " : "") + "Escribe la pregunta en español."); // Sin perder la ayuda de Pensar
                     forced = null;
                     note = null;
                     if (decision.accuse != null && day >= EarliestAccusationDay)

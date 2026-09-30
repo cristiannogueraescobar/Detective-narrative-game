@@ -279,4 +279,32 @@ public class AIConversationFlowTests
         StringAssert.Contains("[ESTADO: asustado]", last.content, "el modelo no copia la errata en la siguiente");
         StringAssert.DoesNotContain("MESTADO", last.content);
     }
+
+    // Tercera revisión: un reintento por idioma vacío (solo la etiqueta) no sustituye a la respuesta
+    [Test]
+    public void UnReintentoPorIdiomaVacioNoSeElige()
+    {
+        provider.results.Enqueue(LLMResult.Ok("我存放在一个专用的小棚子里。 [ESTADO: tranquilo]"));
+        provider.results.Enqueue(LLMResult.Ok("[ESTADO: tranquilo]"));
+
+        LLMResult answer = Ask("a", "¿Dónde guardas las garrafas?");
+
+        Assert.IsNotEmpty(EmotionParser.Parse(answer.Text).text, "nunca una respuesta vacía");
+    }
+
+    [Test]
+    public void AlContinuarLaPartidaElHistorialQuedaConLaEtiquetaBienEscrita()
+    {
+        var histories = new Dictionary<string, List<ChatMessage>>
+        {
+            { "a", new List<ChatMessage>
+                {
+                    new ChatMessage { role = "user", content = "¿Dónde estaba?" },
+                    new ChatMessage { role = "assistant", content = "En casa. [MESTADO: nervioso]" }
+                } }
+        };
+        manager.RestoreCase(manager.Story, manager.State, histories, new Dictionary<string, Emotion>());
+
+        StringAssert.Contains("[ESTADO: nervioso]", manager.Histories["a"][1].content);
+    }
 }

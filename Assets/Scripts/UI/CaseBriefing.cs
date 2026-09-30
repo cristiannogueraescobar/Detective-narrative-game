@@ -96,8 +96,14 @@ public static class Notebook
 
             // Lo que dice que hizo, en cuanto ha contestado algo: el jugador lo compara con sus pistas (si una
             // pista choca con la versión de alguien, enseñársela es como se destapa una mentira)
+            // Solo lo que el jugador ya ha podido oír: la del culpable es su mentira (hasta que la cuenta, no), y una
+            // versión que nombra a alguien aún no disponible espera a que aparezca
             CharacterRole role = state.Variant.roles.FirstOrDefault(r => r.characterId == character.id);
-            if (interviewedSet.Contains(character.id) && !string.IsNullOrEmpty(role?.version))
+            bool heard = interviewedSet.Contains(character.id) && !string.IsNullOrEmpty(role?.version)
+                         && (character.id != state.Variant.culpritId || state.CulpritToldLie)
+                         && !story.cast.Any(o => !unlockedSet.Contains(o.id) && !string.IsNullOrEmpty(o.shortName)
+                                                 && role.version.Contains(o.shortName));
+            if (heard)
                 sb.AppendLine($"<indent=6%><i><size=90%>Dice: «{role.version}»</size></i></indent>");
         }
 

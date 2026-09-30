@@ -122,11 +122,17 @@ public class AIConversationManager : MonoBehaviour
 
         // Otro idioma (qwen a veces se pasa al chino; en el historial arrastraría el resto de la partida): se pide
         // otra vez en español, una sola, y se queda la que menos caracteres extraños tenga
+        // (Presupuesto: como mucho dos llamadas de más, y solo si la primera ya repetía; el reintento por horas va
+        // únicamente cuando no ha habido ningún otro)
         if (result.Success && LanguageCheck.IsForeign(EmotionParser.Parse(result.Text).text))
         {
             LanguageRetries++;
-            LLMResult retry = await llmProvider.SendAsync(systemPrompt, Nudged(history, LanguageNudge), maxTokens, temperature);
-            if (retry.Success && LanguageCheck.ForeignCount(retry.Text) < LanguageCheck.ForeignCount(result.Text))
+            // Si ya se pidió variedad, se mantiene (nota y temperatura): así no se vuelve a la respuesta repetida
+            LLMResult retry = await llmProvider.SendAsync(systemPrompt,
+                Nudged(history, retried ? RepeatNudge + LanguageNudge : LanguageNudge), maxTokens,
+                retried ? Mathf.Min(1f, temperature + RepeatRetryTemperatureBoost) : temperature);
+            if (retry.Success && EmotionParser.Parse(retry.Text).text.Length > 0
+                && LanguageCheck.ForeignCount(retry.Text) < LanguageCheck.ForeignCount(result.Text))
                 result = retry;
             retried = true;
         }
@@ -210,8 +216,10 @@ public class AIConversationManager : MonoBehaviour
         conversationHistory.Clear();
         emotions.Clear();
 
+        // Las partidas guardadas antes del arreglo pueden traer etiquetas con erratas: el modelo las copiaría
         foreach (var pair in histories)
-            conversationHistory[pair.Key] = new List<ChatMessage>(pair.Value);
+            conversationHistory[pair.Key] = pair.Value.Select(m => m.role == "assistant"
+                ? new ChatMessage { role = m.role, content = EmotionParser.Canonical(m.content) } : m).ToList();
         foreach (var pair in savedEmotions)
             emotions[pair.Key] = pair.Value;
     }

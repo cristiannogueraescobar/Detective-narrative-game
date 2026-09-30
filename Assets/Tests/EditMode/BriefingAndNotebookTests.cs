@@ -88,13 +88,46 @@ public class BriefingAndNotebookTests
     {
         StoryData story = TestCases.Story();
         var state = new InvestigationState(story.variants[0]);
-        string versionA = story.variants[0].Role("a").version;
         string versionB = story.variants[0].Role("b").version;
+        string versionC = story.variants[0].Role("c").version;
 
-        string notebook = Notebook.Format(story, state, new[] { "a", "b" }, new Dictionary<string, Emotion>(), c => "x",
+        string notebook = Notebook.Format(story, state, new[] { "a", "b", "c" }, new Dictionary<string, Emotion>(), c => "x",
+            onPaper: true, interviewed: new[] { "b" });
+
+        StringAssert.Contains(versionB, notebook, "b ya ha hablado: su versión queda apuntada");
+        StringAssert.DoesNotContain(versionC, notebook, "a c aún no le has preguntado");
+    }
+
+    // Tercera revisión: la versión del culpable es su mentira; no se apunta hasta que la ha contado
+    [Test]
+    public void LaMentiraDelCulpableSoloSeApuntaCuandoLaHaContado()
+    {
+        StoryData story = TestCases.Story();
+        var state = new InvestigationState(story.variants[0]);
+        string lie = story.variants[0].Role("a").version;
+        string Format() => Notebook.Format(story, state, new[] { "a", "b" }, new Dictionary<string, Emotion>(), c => "x",
             onPaper: true, interviewed: new[] { "a" });
 
-        StringAssert.Contains(versionA, notebook, "a ya ha hablado: su versión queda apuntada");
-        StringAssert.DoesNotContain(versionB, notebook, "a b aún no le has preguntado");
+        StringAssert.DoesNotContain(lie, Format(), "contestó, pero aún no ha contado su versión");
+        state.RegisterLieTold();
+        StringAssert.Contains(lie, Format());
+    }
+
+    // Tercera revisión: una versión que nombra a alguien aún no disponible no se apunta todavía
+    [Test]
+    public void UnaVersionQueNombraANadieBloqueadoEspera()
+    {
+        StoryData story = TestCases.Story();
+        var state = new InvestigationState(story.variants[0]);
+        story.variants[0].Role("b").version = "Trabajé, y luego vi a " + story.Character("c").shortName + " en la calle.";
+        string version = story.variants[0].Role("b").version;
+
+        string locked = Notebook.Format(story, state, new[] { "a", "b" }, new Dictionary<string, Emotion>(), c => "x",
+            onPaper: true, interviewed: new[] { "b" });
+        string open = Notebook.Format(story, state, new[] { "a", "b", "c" }, new Dictionary<string, Emotion>(), c => "x",
+            onPaper: true, interviewed: new[] { "b" });
+
+        StringAssert.DoesNotContain(version, locked);
+        StringAssert.Contains(version, open);
     }
 }

@@ -501,6 +501,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   calibraciones) y el historial guarda la etiqueta canónica. Otra deriva al chino en 3B (brazo con el código de
   antes del reintento por idioma). EditMode 692/692, PlayMode 46/46.
 
+- **15:36** Pared de alturas de comisaría detrás de la rueda de reconocimiento (cifras 130-190 cm; Theme.lineupWall).
+  Tercera revisión independiente (0 críticos, 2 importantes, 6 menores) → CODE-REVIEW.md, todo resuelto: sobre
+  todo, la libreta ya no enseña la mentira del culpable antes de que la cuente ni nombres de quien aún no está.
+  Ronda 6 (bot 2C, 1C, 3B, con los arreglos de idioma y etiqueta): 0 respuestas incoherentes, 4/6 resueltas,
+  primera pista 5,3. EditMode 700/700, PlayMode 46/46.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).

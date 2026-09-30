@@ -565,14 +565,14 @@ public partial class InterrogationUI : MonoBehaviour
     // TUTORIAL
     // ============================================
 
-    private void ShowTutorial(string id, RectTransform target, float delay)
+    private void ShowTutorial(string id, RectTransform target, float delay, System.Func<bool> stillValid = null)
     {
         if (fx == null || !Tutorial.ShouldShow(id))
             return;
-        RunRoutine(TutorialAfter(id, target, delay));
+        RunRoutine(TutorialAfter(id, target, delay, stillValid));
     }
 
-    private IEnumerator TutorialAfter(string id, RectTransform target, float delay)
+    private IEnumerator TutorialAfter(string id, RectTransform target, float delay, System.Func<bool> stillValid)
     {
         yield return new WaitForSecondsRealtime(delay);
 
@@ -582,6 +582,8 @@ public partial class InterrogationUI : MonoBehaviour
                || (interrogationPanel != null && ConfirmDialog.IsOpen(interrogationPanel.transform, EndDayDialog)))
             yield return null;
         if (!Tutorial.ShouldShow(id) || interrogationPanel == null || !interrogationPanel.activeInHierarchy)
+            yield break;
+        if (stillValid != null && !stillValid()) // P. ej. la libreta ya se cerró: queda para la próxima vez
             yield break;
 
         Tutorial.MarkSeen(id);
@@ -936,7 +938,7 @@ public partial class InterrogationUI : MonoBehaviour
             UIAnimations.CardFlip(this, cluesPanel.transform);
             // La primera vez que ya hay versiones apuntadas: cómo se usan para pillar una mentira
             if (cluesText != null && cluesText.text.Contains("Dice: «"))
-                ShowTutorial(Tutorial.Versions, null, 0.6f);
+                ShowTutorial(Tutorial.Versions, null, 0.6f, () => cluesPanel != null && cluesPanel.activeInHierarchy);
             Debug.Log("[InterrogationUI] Panel de pistas mostrado");
         }
     }

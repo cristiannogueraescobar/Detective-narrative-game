@@ -30,7 +30,7 @@ public static class EmotionParser
     private static readonly Regex Bracketed = new Regex(@"\[\s*[a-záéíóú]{0,3}estado[a-z]{0,3}\s*:\s*([^\]]*?)\s*\]", RegexOptions.IgnoreCase);
     private static readonly Regex Exact = new Regex(@"\[\s*estado\s*:", RegexOptions.IgnoreCase);
     // Etiqueta cortada por el límite de tokens: "[ESTADO: nerv", "[EST"
-    private static readonly Regex Truncated = new Regex(@"\[\s*es[^\]\n]*$", RegexOptions.IgnoreCase);
+    private static readonly Regex Truncated = new Regex(@"\[\s*[a-záéíóú]{0,3}es[^\]\n]*$", RegexOptions.IgnoreCase);
     private static readonly Regex Bare = new Regex(@"(^|\n)\s*estado\s*:\s*(\S+)\s*$", RegexOptions.IgnoreCase);
     private static readonly Regex Spaces = new Regex(@"[ \t]+");
 
@@ -41,7 +41,8 @@ public static class EmotionParser
     public static string Canonical(string raw)
     {
         EmotionParse parse = Parse(raw);
-        return parse.emotion.HasValue ? $"{parse.text}\n[ESTADO: {parse.emotion.Value.ToString().ToLowerInvariant()}]" : parse.text;
+        // Sin estado reconocible se guarda tal cual: quitar la etiqueta dejaría al modelo sin el ejemplo del formato
+        return parse.emotion.HasValue ? $"{parse.text}\n[ESTADO: {parse.emotion.Value.ToString().ToLowerInvariant()}]" : raw.Trim();
     }
 
     public static EmotionParse Parse(string raw)
