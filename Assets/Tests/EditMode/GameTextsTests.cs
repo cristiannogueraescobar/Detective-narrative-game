@@ -48,6 +48,16 @@ public class GameTextsTests
     }
 
     [Test]
+    public void ElParteDeLaMananaSinLineasVacias()
+    {
+        Assert.AreEqual("Consejo", GameTexts.MorningReport("", "Consejo", 3, 7), "sin parte del caso no empieza con una línea en blanco");
+        Assert.AreEqual("Parte\nConsejo", GameTexts.MorningReport("Parte", "Consejo", 3, 7));
+        Assert.AreEqual("Parte\nQuedan dos días de investigación.", GameTexts.MorningReport("Parte", null, 6, 7));
+        StringAssert.EndsWith("tendrás que acusar a alguien.", GameTexts.MorningReport("", null, 7, 7));
+        Assert.AreEqual("", GameTexts.MorningReport(null, null, 2, 7));
+    }
+
+    [Test]
     public void LasInstruccionesExplicanTodoElJuego()
     {
         string text = GameTexts.Instructions(ThemeManager.Current);

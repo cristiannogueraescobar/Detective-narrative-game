@@ -568,7 +568,9 @@ public partial class InterrogationUI : MonoBehaviour
         yield return new WaitForSecondsRealtime(delay);
 
         // Una cosa cada vez: espera a que acaben las fichas de pista y otras indicaciones
-        while (fx.HintVisible || fx.ClueCardsPending)
+        // (y a que se conteste el aviso de fin del día: las indicaciones van en otro lienzo, por encima)
+        while (fx.HintVisible || fx.ClueCardsPending
+               || (interrogationPanel != null && ConfirmDialog.IsOpen(interrogationPanel.transform, EndDayDialog)))
             yield return null;
         if (!Tutorial.ShouldShow(id) || interrogationPanel == null || !interrogationPanel.activeInHierarchy)
             yield break;

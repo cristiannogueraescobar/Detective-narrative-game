@@ -5,11 +5,14 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Pregunta de confirmación a pantalla completa: fondo oscuro, caja centrada que mide lo que su contenido, botón
-/// principal y botón de cancelar. Se crea una vez por nombre dentro de 'parent' y después se reutiliza.
-/// Los botones se llaman como su texto (los tests y la navegación los encuentran por nombre).
+/// principal y botón de cancelar. Se crea una vez por nombre dentro de 'parent' y después se reutiliza; la
+/// pregunta, los textos de los botones y la acción se renuevan en cada uso.
 /// </summary>
 public static class ConfirmDialog
 {
+    public const string ConfirmName = "Confirmar";
+    public const string CancelName = "Cancelar";
+
     public static RectTransform Show(Transform parent, string name, string question, string yes, string no, Action onYes)
     {
         Theme theme = ThemeManager.Current;
@@ -35,16 +38,17 @@ public static class ConfirmDialog
             label.name = "Pregunta";
             label.alignment = TextAlignmentOptions.Center;
             label.GetComponent<LayoutElement>().minHeight = theme.bodySize * 3.2f; // Dos líneas holgadas
-            UIFactory.Button(box, yes, true, () => { }).name = yes;
+            UIFactory.Button(box, yes, true, () => { }).name = ConfirmName;
             Button cancel = UIFactory.Button(box, no, false, () => { });
-            cancel.name = no;
+            cancel.name = CancelName;
             cancel.onClick.AddListener(() => dialog.gameObject.SetActive(false));
         }
 
-        // El texto y la acción pueden cambiar entre usos (p. ej. cuántas preguntas quedan)
         dialog.Find("Caja/Pregunta").GetComponent<TMP_Text>().text = question;
-        Button confirm = dialog.Find("Caja/" + yes).GetComponent<Button>();
-        confirm.onClick.RemoveAllListeners();
+        Button confirm = dialog.Find("Caja/" + ConfirmName).GetComponent<Button>();
+        confirm.GetComponentInChildren<TMP_Text>(true).text = yes;
+        dialog.Find("Caja/" + CancelName).GetComponentInChildren<TMP_Text>(true).text = no;
+        confirm.onClick.RemoveAllListeners(); // El sonido del clic no depende de onClick (ClickSound)
         confirm.onClick.AddListener(() =>
         {
             dialog.gameObject.SetActive(false);
@@ -57,14 +61,22 @@ public static class ConfirmDialog
     }
 
     /// <summary>
+    /// ¿Está abierto el aviso con este nombre?
+    /// </summary>
+    public static bool IsOpen(Transform parent, string name)
+    {
+        Transform dialog = parent != null ? parent.Find(name) : null;
+        return dialog != null && dialog.gameObject.activeSelf;
+    }
+
+    /// <summary>
     /// Cierra el aviso si está abierto (botón Atrás). Devuelve true si había algo que cerrar.
     /// </summary>
     public static bool Hide(Transform parent, string name)
     {
-        Transform dialog = parent != null ? parent.Find(name) : null;
-        if (dialog == null || !dialog.gameObject.activeSelf)
+        if (!IsOpen(parent, name))
             return false;
-        dialog.gameObject.SetActive(false);
+        parent.Find(name).gameObject.SetActive(false);
         return true;
     }
 }

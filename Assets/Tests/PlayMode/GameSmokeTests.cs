@@ -88,6 +88,16 @@ public class GameSmokeTests
         yield return null;
     }
 
+    private static IEnumerator ClickInDialog(string buttonName)
+    {
+        GameObject dialog = Find("ConfirmarFinDelDia");
+        Assert.IsTrue(dialog != null && dialog.activeInHierarchy, "el aviso de fin del día está abierto");
+        Button button = dialog.GetComponentsInChildren<Button>().First(b => b.name == buttonName);
+        button.onClick.Invoke();
+        yield return null;
+        yield return null;
+    }
+
     private static IEnumerator WaitUntil(System.Func<bool> condition, float timeout, string what)
     {
         float end = Time.realtimeSinceStartup + timeout;
@@ -257,7 +267,7 @@ public class GameSmokeTests
     {
         yield return StartNewGame();
         yield return Click("EndDayButton");
-        yield return Click("Terminar el día"); // Quedaban preguntas: se confirma
+        yield return ClickInDialog(ConfirmDialog.ConfirmName); // Quedaban preguntas: se confirma
         yield return new WaitForSecondsRealtime(0.2f);
 
         GameObject card = Find("Nuevo dia (auto)");
@@ -290,12 +300,12 @@ public class GameSmokeTests
         StringAssert.Contains("DÍA 1", Find("HudText").GetComponent<TMP_Text>().GetParsedText());
 
         yield return Click("EndDayButton");
-        yield return Click("Seguir preguntando");
+        yield return ClickInDialog(ConfirmDialog.CancelName);
         Assert.IsFalse(dialog.activeInHierarchy);
         StringAssert.Contains("DÍA 1", Find("HudText").GetComponent<TMP_Text>().GetParsedText());
 
         yield return Click("EndDayButton");
-        yield return Click("Terminar el día");
+        yield return ClickInDialog(ConfirmDialog.ConfirmName);
         yield return null;
         StringAssert.Contains("DÍA 2", Find("HudText").GetComponent<TMP_Text>().GetParsedText());
     }

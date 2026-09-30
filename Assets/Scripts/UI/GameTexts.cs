@@ -42,6 +42,24 @@ public static class GameTexts
                "quién puede confirmarlo. Y habla con todos: cada uno sabe algo.";
     }
 
+    /// <summary>
+    /// Parte de la mañana: el del caso, el consejo si lo hay y el aviso de los últimos días, sin líneas vacías.
+    /// </summary>
+    public static string MorningReport(string caseReport, string hint, int day, int maxDays)
+    {
+        var parts = new System.Collections.Generic.List<string>();
+        foreach (string part in new[] { caseReport, hint })
+        {
+            if (!string.IsNullOrWhiteSpace(part))
+                parts.Add(part.Trim());
+        }
+        if (day == maxDays)
+            parts.Add("Último día: al terminarlo tendrás que acusar a alguien.");
+        else if (day == maxDays - 1)
+            parts.Add("Quedan dos días de investigación.");
+        return string.Join("\n", parts);
+    }
+
     public const string EndDayYes = "Terminar el día";
     public const string EndDayNo = "Seguir preguntando";
 

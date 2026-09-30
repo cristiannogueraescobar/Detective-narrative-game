@@ -323,17 +323,7 @@ public class GameManager : MonoBehaviour
     private string MorningReport(int day)
     {
         string report = day - 1 < variant.morningReports.Length ? variant.morningReports[day - 1] : "";
-
-        string hint = GameTexts.StuckHint(day, DiscoveredClues().Count);
-        if (hint != null)
-            report += "\n" + hint;
-
-        if (day == maxDays)
-            report += "\nÚltimo día: al terminarlo tendrás que acusar a alguien.";
-        else if (day == maxDays - 1)
-            report += "\nQuedan dos días de investigación.";
-
-        return report.Trim();
+        return GameTexts.MorningReport(report, GameTexts.StuckHint(day, DiscoveredClues().Count), day, maxDays);
     }
 
     public void ForceAccusationPanel()
