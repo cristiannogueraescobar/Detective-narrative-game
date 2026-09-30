@@ -95,6 +95,13 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   decía nada). Causa: la guía decía "nervioso si ocultas algo" y todos ocultan algo. Ahora: nervioso solo por su
   tema de TE PONE NERVIOSO. Medición antes/después en curso.
 
+- 06:30 Medición de la guía de estados (misma semilla 59, 18 partidas): nervioso 70 % → 42 %, triste 17 → 35 %,
+  tranquilo 5 → 13 %. Calibración de estados: coherente 137/144 (95 %). Culpable 11/18 → 9/18 y pistas 1,8 → 1,4
+  por partida: dentro del ruido de 18 partidas, pero se comprueba con A/B de calibración de pistas (en curso).
+  Falso positivo del detector ("seguir las instrucciones" de un medicamento) corregido con test.
+- 06:20 Selector de pruebas: "Mostrar prueba: ninguna · N en la libreta" y salto al llegar una prueba nueva.
+  Build de Windows + prueba de humo: OK.
+
 ## Ahora
 - Ronda 4: bot en 3 variantes al azar sobre HEAD, crítica de diseño, revisión de código.
 
