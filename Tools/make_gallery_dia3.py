@@ -65,6 +65,14 @@ intros = [Image.open(os.path.join(BASE, 'anim', f'intro_historia{i}.png')).conve
 labelled([Image.open(os.path.join(BASE, 'dia3-antes-C', 'panel_intro.png')).convert('RGB')] + intros,
          ['ANTES (todas)', 'AHORA: historia 1', 'historia 2', 'historia 3']).save(os.path.join(OUT, '19_intros_por_historia.jpg'), quality=85)
 
+# Libreta con las versiones de cada sospechoso (render del editor: peor caso, todos interrogados)
+import glob
+renders = sorted(glob.glob(os.path.join(BASE, '[0-9][0-9][0-9][0-9]', '1080x1920_CluesPanel.png')))
+if renders:
+    labelled([Image.open(os.path.join(BASE, 'dia3-antes-C', 'panel_libreta.png')).convert('RGB'),
+              Image.open(renders[-1]).convert('RGB').resize((540, 960))],
+             ['ANTES (vacía)', 'AHORA: con lo que dice cada uno']).save(os.path.join(OUT, '22_libreta_versiones.jpg'), quality=85)
+
 # Personajes: los 7 retratos, plano (antes) y relieve (ahora)
 proto = os.path.join(BASE, 'c3-prototipo')
 chars = ['padre', 'madre', 'hermano', 'vecina', 'cartero', 'duenio_bar', 'detective']
