@@ -32,7 +32,7 @@ tocado.** Diario minuto a minuto: `docs/NIGHT-LOG.md`. *Borrador vivo: se comple
 | 03_expediente / 19_intros_por_historia | Fondo propio por historia (lluvia, cala, olivar) en vez de la sala genérica; reglas con las cifras de la dificultad |
 | 04_interrogatorio | Chat anclado abajo, Acusar en aviso (no dorado), retrato 2.5D |
 | 05_libreta / 22_libreta_versiones | Botón "Pensar"; lo que dice cada sospechoso, para compararlo con las pistas |
-| 06_acusacion | Retratos 2.5D en la rueda, prueba clave explicada (solo cuando hay pistas), flechas legibles |
+| 06_acusacion | Retratos 2.5D en la rueda sobre una pared de alturas de comisaría, prueba clave explicada (solo cuando hay pistas), flechas legibles |
 | 07-09 veredicto y finales | Rango del detective, prueba clave, "lo que se te escapó", "solidez de las pruebas N de M" |
 | 21_ficha_policial | Nuevo: el informe se cierra con la ficha del culpable (retrato 2.5D, nombre a máquina) |
 | 10_ajustes | Dificultad, pista de los deslizadores visible (WCAG 1.4.11) |
