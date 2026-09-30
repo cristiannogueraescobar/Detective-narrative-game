@@ -256,7 +256,7 @@ Tienes 7 días para descubrir qué pasó.",
                     id = "3A_granada", playerName = "Sábado en Granada", holder = "hermano", kind = ClueKind.Clears, clears = "madre",
                     summary = "Álex y Lucía pasaron todo el sábado en casa de su tía, en Granada, a cien kilómetros.",
                     topic = "dónde estuvisteis tu madre y tú el sábado",
-                    fact = "tu madre y tú pasasteis todo el sábado en casa de tu tía en Granada, a cien kilómetros; tu tía y tus primos lo pueden decir.",
+                    fact = "tu madre y tú pasasteis todo el sábado en casa de tu tía Remedios en Granada, a cien kilómetros; tu tía y tus primos lo pueden decir.",
                     anchors = new[]
                     {
                         new[] { "granada", "casa de mi tia" },
@@ -338,7 +338,7 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     characterId = "hermano",
                     knowledge = new[] { "Paula quería vivir con mamá, pero no quería hacerle daño a papá." },
-                    version = "El sábado estuve en casa de mi tía en Granada.",
+                    version = "El sábado estuve en casa de mi tía Remedios en Granada.",
                     secret = "Mamá te pidió que dijeras que estuvo contigo todo el sábado; te sientes fatal por mentir.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "dónde estuvo tu madre el sábado.",
@@ -393,7 +393,7 @@ Tienes 7 días para descubrir qué pasó.",
                     id = "3B_noche", playerName = "Una noche larga", holder = "hermano", kind = ClueKind.Incriminates, exposesLie = true, isSecret = true,
                     summary = "Lucía dejó a Álex en Granada a mediodía y volvió de madrugada, sobre las cuatro, con un ticket de peaje de Huelva.",
                     topic = "si tu madre estuvo contigo todo el sábado",
-                    fact = "«Mamá me dejó en casa de la tía a mediodía y no volvió hasta las cuatro de la madrugada; en su coche vi un ticket de peaje de Huelva.»",
+                    fact = "«Mamá me dejó en casa de la tía Remedios a mediodía y no volvió hasta las cuatro de la madrugada; en su coche vi un ticket de peaje de Huelva.»",
                     anchors = new[]
                     {
                         new[] { "madrugada", "las cuatro", "4:00", "mediodia", "me dejo" },
