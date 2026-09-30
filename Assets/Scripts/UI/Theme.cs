@@ -106,6 +106,23 @@ public class Theme : ScriptableObject
     [Range(0f, 1f)] public float vignetteIntensity = 0.45f;
     public float deliberationSeconds = 2.2f;                    // Pausa antes del veredicto
     [Range(0f, 1f)] public float roomBrightness = 0.38f;        // Sala de interrogatorios detrás del chat
+    public Color story1Tint = new Color(0.85f, 0.92f, 1.05f);  // Casa en Santiago: fría
+    public Color story2Tint = new Color(1.05f, 0.9f, 0.8f);    // Noche de verano en la costa: cálida
+    public Color story3Tint = new Color(1.0f, 0.85f, 0.65f);   // Finca y humo: ámbar
+
+    /// <summary>
+    /// Tinte de ambiente de cada historia (fondo de la intro y de la sala).
+    /// </summary>
+    public Color StoryTint(string storyId)
+    {
+        switch (storyId)
+        {
+            case "1": return story1Tint;
+            case "2": return story2Tint;
+            case "3": return story3Tint;
+            default: return Color.white;
+        }
+    }
     public Color lampGlow = new Color(1f, 0.78f, 0.45f, 0.22f);  // Halo de la lámpara del menú
     public float titleIntroDuration = 1.6f;                      // Entrada del título del menú
 

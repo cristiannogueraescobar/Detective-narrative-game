@@ -63,7 +63,8 @@ public partial class InterrogationUI
             roomImage.texture = room;
             roomImage.raycastTarget = false;
             ArtGrading.Apply(roomImage, ArtGrading.Kind.Background);
-            roomImage.color = new Color(T.roomBrightness, T.roomBrightness, T.roomBrightness, 1f);
+            roomImage.color = ScaleRgb(storyTint, T.roomBrightness);
+            roomBackdrop = roomImage;
             var roomFit = roomRect.gameObject.AddComponent<AspectRatioFitter>();
             roomFit.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
             roomFit.aspectRatio = (float)room.width / room.height;

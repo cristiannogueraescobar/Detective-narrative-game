@@ -228,6 +228,24 @@ public partial class InterrogationUI : MonoBehaviour
     /// <summary>
     /// Fondo y cabecera de la intro de cada historia (Assets/Art/Stories/...), o color plano si faltan.
     /// </summary>
+    private Color storyTint = Color.white;
+    private RawImage roomBackdrop;
+
+    /// <summary>
+    /// Color de ambiente de la historia en la sala del interrogatorio (también al continuar una partida).
+    /// </summary>
+    public void SetStoryAmbience(string storyId)
+    {
+        storyTint = T.StoryTint(storyId);
+        if (roomBackdrop != null)
+            roomBackdrop.color = ScaleRgb(storyTint, T.roomBrightness);
+    }
+
+    private static Color ScaleRgb(Color c, float k)
+    {
+        return new Color(Mathf.Clamp01(c.r * k), Mathf.Clamp01(c.g * k), Mathf.Clamp01(c.b * k), 1f);
+    }
+
     private void ApplyIntroArt(string storyId)
     {
         if (introPanel == null)
@@ -259,7 +277,8 @@ public partial class InterrogationUI : MonoBehaviour
         // Fondo de la historia o, si no hay, la sala de interrogatorios; oscurecido para leer el parte encima
         Texture2D background = ArtLibrary.Load(ArtSlots.StoryIntro(storyId)) ?? ArtLibrary.Load(ArtSlots.DefaultIntroBackground);
         introBackground.texture = background != null ? background : ArtLibrary.Placeholder(T.background);
-        introBackground.color = new Color(0.4f, 0.4f, 0.4f, 1f);
+        introBackground.color = ScaleRgb(T.StoryTint(storyId), 0.4f);
+        SetStoryAmbience(storyId);
         if (background != null)
         {
             introBackground.GetComponent<AspectRatioFitter>().aspectRatio = (float)background.width / background.height;

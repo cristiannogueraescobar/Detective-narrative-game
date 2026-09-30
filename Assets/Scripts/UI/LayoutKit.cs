@@ -119,6 +119,9 @@ public static class LayoutKit
         Size((RectTransform)scroll.transform, height: minHeight, flexibleHeight: flexibleHeight);
         UIComponents.GetOrAdd<LayoutElement>(scroll.gameObject).minHeight = minHeight;
 
+        // Un poco de aire a los lados: la cursiva sobresale y la máscara del scroll la cortaba
+        scroll.content.GetComponent<VerticalLayoutGroup>().padding = new RectOffset(8, 8, 0, 0);
+
         var textRect = (RectTransform)text.transform;
         textRect.SetParent(scroll.content, false);
         textRect.localScale = Vector3.one;
