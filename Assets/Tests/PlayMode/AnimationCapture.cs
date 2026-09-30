@@ -205,6 +205,20 @@ public class AnimationCapture
         ThemeManager.Override(null);
     }
 
+    // El menú de quien vuelve: "Continuar · caso, día N" y "Caso nuevo"
+    [UnityTest]
+    public IEnumerator MenuConPartidaGuardada()
+    {
+        yield return ToInterrogation();
+        UnityEngine.Object.FindFirstObjectByType<GameManager>().EndDay(); // Guarda
+        yield return new WaitForSecondsRealtime(1f);
+        yield return SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
+        yield return null;
+        RedirectCanvases();
+        yield return new WaitForSecondsRealtime(2.5f);
+        Shot("menu_continuar");
+    }
+
     [UnityTest]
     public IEnumerator Emociones()
     {

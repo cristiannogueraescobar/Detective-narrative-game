@@ -247,6 +247,9 @@ public class GameSmokeTests
         // "Continuar · <caso>, día N": todas las letras en la misma fuente (la de la escena solo trae ASCII)
         TMP_Text label = Find("ContinueButton (auto)").GetComponentInChildren<TMP_Text>();
         StringAssert.StartsWith("Continuar ·", label.text);
+        // Quien vuelve, sigue: "Continuar" es el botón principal (dorado) y "Caso nuevo" el secundario
+        Assert.AreEqual(UIRole.PrimaryButton, Find("ContinueButton (auto)").GetComponent<ThemeRole>().role);
+        Assert.AreEqual(UIRole.SecondaryButton, Find("PlayButton").GetComponent<ThemeRole>().role);
         label.ForceMeshUpdate();
         for (int i = 0; i < label.textInfo.characterCount; i++)
         {
