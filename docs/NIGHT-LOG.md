@@ -514,6 +514,9 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
 - **16:09** **CHECKPOINT 6 h**: "Informe intermedio" en docs/REPORT-DIA3.md y push de seguridad. Ronda 8 (bot 3A,
   3B, 2A): 5/6 resueltas, 0 reintentos por idioma, latencia media 839 ms.
 
+- **16:17** Ronda 9, el menú de quien vuelve (nueva captura menu_continuar): "Continuar · caso, día N" salía como botón
+  secundario y "Nueva partida" en dorado → Continuar es el principal y el otro dice "Caso nuevo" (glosario). Tests.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).

@@ -122,6 +122,11 @@ public class MenuManager : MonoBehaviour
         CaseLibrary.TryFind(saved.variantId, out StoryData savedStory, out _);
         SetLabel(clone, GameTexts.Continue(savedStory != null ? savedStory.title : null, saved.day));
         SetLabel(playButton.gameObject, GameTexts.NewCaseButton);
+        // Quien vuelve, sigue: "Continuar" es el principal (dorado); empezar otro caso pasa a secundario
+        UIComponents.GetOrAdd<ThemeRole>(clone).role = UIRole.PrimaryButton;
+        UIComponents.GetOrAdd<ThemeRole>(playButton.gameObject).role = UIRole.SecondaryButton;
+        ThemeApplier.Apply(clone.transform);
+        ThemeApplier.Apply(playButton.transform);
     }
 
     private static void SetLabel(GameObject button, string text)
