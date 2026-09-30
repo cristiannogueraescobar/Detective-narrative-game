@@ -392,6 +392,14 @@ public class AnimationCapture
             yield return Click(open);
             yield return new WaitForSecondsRealtime(0.5f);
             Shot("panel_" + name);
+            // Lo de abajo de la lista (en Ajustes, la dificultad) también se revisa
+            var scroll = Find(open.Replace("Button", "Panel").Replace("Setings", "Settings"))?.GetComponentInChildren<ScrollRect>();
+            if (scroll != null)
+            {
+                scroll.verticalNormalizedPosition = 0f;
+                yield return null;
+                Shot("panel_" + name + "_final");
+            }
             yield return Click(back);
         }
 
@@ -472,7 +480,7 @@ public class AnimationCapture
     public IEnumerator Dialogos()
     {
         yield return Click("SetingsButton");
-        Find("AjustesControles").GetComponentsInChildren<Button>(true).First(b => b.GetComponentInChildren<TMPro.TMP_Text>().text == "Reiniciar partida").onClick.Invoke();
+        Find("AjustesControles").GetComponentsInChildren<Button>(true).First(b => b.GetComponentInChildren<TMPro.TMP_Text>().text == GameTexts.RestartButton).onClick.Invoke();
         yield return new WaitForSecondsRealtime(0.4f);
         Shot("dialogo_reiniciar");
         yield return Click("BackFromSettingsButton");
