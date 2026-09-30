@@ -20,7 +20,7 @@ SCREENS = [
     ('12_dialogo', 'dialogo_reiniciar'), ('13_texto_grande', 'texto_grande_interrogatorio'),
     ('14_alto_contraste', 'alto_contraste_interrogatorio'), ('15_emocion', 'emocion_nervioso_1500'),
     ('16_pista', 'pista_1800'), ('17_contradiccion', 'contradiccion_1900'), ('18_tutorial', 'tutorial_preguntar'),
-    ('21_ficha_policial', 'veredicto_ficha'),
+    ('21_ficha_policial', 'veredicto_ficha'), ('24_libreta_partes', 'libreta_partes'),
 ]
 
 
