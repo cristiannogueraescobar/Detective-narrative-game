@@ -243,6 +243,8 @@ public class GameSmokeTests
         game.ForceAccusationPanel();
         yield return null;
         Assert.AreEqual(Music.Tension, SoundManager.CurrentMusic);
+        string prompt = Find("AccusatonPanel").GetComponentsInChildren<TMP_Text>().First(t => t.name == "Text (TMP)").GetParsedText();
+        StringAssert.Contains("libreta está vacía", prompt, "sin pistas, la acusación avisa de que es una apuesta");
 
         game.CancelAccusation();
         yield return null;
