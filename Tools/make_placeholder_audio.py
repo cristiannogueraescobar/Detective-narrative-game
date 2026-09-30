@@ -248,11 +248,106 @@ menu_bed = loop(rain(seconds) * 0.8 + drone([55.0, 82.41, 110.0], seconds) * 0.2
 motif = noir_motif()
 menu_bed = menu_bed / np.max(np.abs(menu_bed)) * 0.55 + motif[:len(menu_bed)] / np.max(np.abs(motif)) * 0.45
 made.append(save('musica/menu', menu_bed, 0.35, MSR, fade_out=False))
-made.append(save('musica/historia1', loop(drone([73.42, 110.0, 146.83, 174.61], seconds) * 0.5 + low(RNG.standard_normal(int(seconds * MSR)), 400, MSR) * 0.05), 0.3, MSR, fade_out=False))
+# --- Motivos de cada historia (día 3): escasos y bajos, porque suenan mientras se interroga. Cada uno con su RNG
+# para no cambiar el ruido de los ambientes. 8 compases a 64 ppm = 30 s exactos (el bucle no pierde el pulso).
+
+def organ(freq, seconds, sr=MSR):
+    """Lengüeta suave (tipo acordeón): impares fuertes, ataque lento y un vibrato leve."""
+    x = t(seconds, sr)
+    vib = 1 + 0.004 * np.sin(2 * np.pi * 5.2 * x)
+    s = sum(np.sin(2 * np.pi * freq * k * vib * x) * a for k, a in ((1, 1.0), (2, 0.35), (3, 0.5), (5, 0.18)))
+    return low(s * np.clip(x / 0.12, 0, 1) * np.clip((seconds - x) / 0.25, 0, 1), 2500, sr)
+
+
+def pluck(freq, seconds, sr=MSR, rng=None, bright=0.5):
+    """Cuerda punteada (Karplus-Strong): guitarra seca."""
+    n = int(seconds * sr)
+    period = max(2, int(sr / freq))
+    buf = rng.uniform(-1, 1, period)
+    out = np.zeros(n)
+    for i in range(n):
+        out[i] = buf[i % period]
+        nxt = (i + 1) % period
+        buf[i % period] = 0.996 * (bright * buf[i % period] + (1 - bright) * buf[nxt])
+    return low(out, 3500, sr)
+
+
+def score(bars, bar, events, sr=MSR):
+    """events: (inicio en s, señal). Devuelve exactamente bars*bar segundos, con la cola vuelta al principio."""
+    out = np.zeros(int(bars * bar * sr) + sr * 5)
+    for at, sig in events:
+        i = int(at * sr)
+        out[i:i + len(sig)] += sig[:max(0, len(out) - i)]
+    body_len = int(bars * bar * sr)
+    body = out[:body_len].copy()
+    tail = out[body_len:]
+    body[:len(tail)] += tail
+    return body
+
+
+BEAT = 60.0 / 64
+BAR = 4 * BEAT
+
+
+def motif_story1(seed=21):
+    """La hija perfecta: casa en Santiago, lluvia. Piano solo en Re menor, muy escaso, y un reloj de pared."""
+    rng = np.random.default_rng(seed)
+    ev = []
+    chords = [['D3', 'A3', 'F4'], ['D3', 'A3', 'F4'], ['Bb2', 'F3', 'D4'], ['A2', 'E3', 'C#4'],
+              ['D3', 'A3', 'F4'], ['G2', 'D3', 'Bb3'], ['Bb2', 'F3', 'D4'], ['A2', 'E3', 'C#4']]
+    for b, ch in enumerate(chords):
+        for k, n in enumerate(ch):
+            ev.append((b * BAR + k * 0.05, piano(hz(n), BAR + 1.0, MSR, rng) * 0.14))
+    melody = [(0, 0, 'D5', 2), (0, 2, 'A4', 2), (1, 0, 'F4', 3.5), (3, 0, 'E5', 1), (3, 1, 'D5', 1), (3, 2, 'C#5', 2),
+              (4, 0, 'D5', 2), (4, 2, 'F5', 2), (5, 0, 'E5', 3.5), (7, 0, 'A4', 3.5)]
+    for b, p, n, d in melody:
+        ev.append((b * BAR + p * BEAT, piano(hz(n), d * BEAT + 1.5, MSR, rng) * 0.26))
+    tick = band(rng.standard_normal(int(0.03 * MSR)), 1800, 5000, MSR) * np.exp(-np.arange(int(0.03 * MSR)) / (MSR * 0.004))
+    for k in range(int(8 * 4)):
+        ev.append((k * BEAT, tick * (0.05 if k % 2 == 0 else 0.035)))  # Tic, tac
+    return score(8, BAR, ev)
+
+
+def motif_story2(seed=22):
+    """Noche de verano: costa gallega de madrugada. Frase lenta en Mi eolio, de lengüeta, como una gaita lejana."""
+    ev = []
+    for b, n in enumerate(['E3', 'E3', 'C3', 'D3', 'E3', 'E3', 'C3', 'B2']):
+        ev.append((b * BAR, organ(hz(n), BAR, MSR) * 0.12))
+    melody = [(0, 0, 'E5', 1.5), (0, 1.5, 'F#5', 0.5), (0, 2, 'G5', 2), (1, 0, 'F#5', 1), (1, 1, 'E5', 3),
+              (2, 0, 'D5', 2), (2, 2, 'E5', 2), (3, 0, 'B4', 4),
+              (4, 0, 'E5', 1.5), (4, 1.5, 'G5', 0.5), (4, 2, 'A5', 2), (5, 0, 'G5', 1), (5, 1, 'F#5', 3),
+              (6, 0, 'E5', 2), (6, 2, 'D5', 2), (7, 0, 'E5', 4)]
+    for b, p, n, d in melody:
+        ev.append((b * BAR + p * BEAT, organ(hz(n), d * BEAT, MSR) * 0.16))
+    return score(8, BAR, ev)
+
+
+def motif_story3(seed=23):
+    """Humo y silencio: olivar en Jaén. Guitarra punteada con la cadencia andaluza (Lam-Sol-Fa-Mi), sin prisa."""
+    rng = np.random.default_rng(seed)
+    ev = []
+    progression = [['A2', 'C4', 'E4', 'A4'], ['G2', 'B3', 'D4', 'G4'], ['F2', 'A3', 'C4', 'F4'], ['E2', 'G#3', 'B3', 'E4']] * 2
+    for b, notes in enumerate(progression):
+        ev.append((b * BAR, pluck(hz(notes[0]), 2.5, MSR, rng, 0.45) * 0.5))           # Bajo en el uno
+        for k, n in enumerate(notes[1:] + notes[1:2]):                                 # Arpegio en corcheas
+            ev.append((b * BAR + (k + 1) * BEAT * 0.75, pluck(hz(n), 1.6, MSR, rng) * 0.3))
+    for b, n in ((3, 'F4'), (7, 'F4')):                                                # La segunda frigia
+        ev.append((b * BAR + 2.5 * BEAT, pluck(hz(n), 1.4, MSR, rng) * 0.25))
+    return score(8, BAR, ev)
+
+
+def with_motif(bed, motif, bed_share=0.7):
+    bed = bed / np.max(np.abs(bed))
+    motif = motif[:len(bed)] / np.max(np.abs(motif))
+    return bed * bed_share + motif * (1 - bed_share)
+
+
+bed1 = loop(drone([73.42, 110.0, 146.83, 174.61], seconds) * 0.5 + low(RNG.standard_normal(int(seconds * MSR)), 400, MSR) * 0.05)
+made.append(save('musica/historia1', with_motif(bed1, motif_story1()), 0.3, MSR, fade_out=False))
 sea = low(RNG.standard_normal(int(seconds * MSR)), 700, MSR) * (0.6 + 0.4 * np.sin(2 * np.pi * 0.09 * t(seconds, MSR)) ** 2)
-made.append(save('musica/historia2', loop(sea * 0.7 + drone([65.41, 98.0, 130.81], seconds) * 0.35), 0.3, MSR, fade_out=False))
+made.append(save('musica/historia2', with_motif(loop(sea * 0.7 + drone([82.41, 123.47, 164.81], seconds) * 0.35), motif_story2()), 0.3, MSR, fade_out=False))
 wind = band(RNG.standard_normal(int(seconds * MSR)), 300, 1600, MSR) * (0.5 + 0.5 * np.sin(2 * np.pi * 0.05 * t(seconds, MSR)) ** 2)
-made.append(save('musica/historia3', loop(wind * 0.6 + drone([61.74, 92.5, 123.47], seconds) * 0.35), 0.3, MSR, fade_out=False))
+made.append(save('musica/historia3', with_motif(loop(wind * 0.6 + drone([55.0, 110.0, 220.0], seconds) * 0.35), motif_story3()), 0.3, MSR, fade_out=False))
 pulse = drone([41.2, 61.74], seconds) * 0.6
 x = t(seconds, MSR)
 pulse *= 0.55 + 0.45 * np.clip(np.sin(2 * np.pi * (70 / 60) * x), 0, 1) ** 8

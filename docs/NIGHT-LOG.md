@@ -475,6 +475,12 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   contenido de la plantilla seguía en 28 px y uGUI calculaba un hueco negativo. Arreglado (el validador lo exige
   ahora en los tres desplegables). La ficha policial suena con un sello suave al caer. EditMode 683/683.
 
+- **15:01** Sonido, ronda 5: cada historia con su motivo (antes solo ambiente): 1) piano solo en Re menor y reloj de
+  pared; 2) frase de lengüeta en Mi eolio, como gaita lejana, sobre el mar; 3) guitarra punteada (Karplus-Strong) con
+  la cadencia andaluza sobre el viento. Comprobado por espectro (notas de cada compás): los drones viejos chocaban
+  (Si-Fa# bajo La menor, Do-Sol bajo Mi eolio) → retocados al tono del motivo; un sed se llevó por delante el drone
+  del menú y lo devolví (menu.wav idéntico al anterior). check_audio: todo bien.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
