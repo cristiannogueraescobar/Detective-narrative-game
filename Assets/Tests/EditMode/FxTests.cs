@@ -128,7 +128,7 @@ public class EndingReportTests
         string text = Build(Ending.Bad);
         StringAssert.Contains("Daniel Mendoza", text);
         StringAssert.Contains("Carmen Vidal", text);
-        StringAssert.Contains("3/7", text);
+        StringAssert.Contains("3 de 7", text);
     }
 
     [Test]
@@ -153,7 +153,7 @@ public class EndingReportTests
         // En 1080 de ancho dos datos en una línea partían la cifra a la línea siguiente
         string[] lines = Build(Ending.Good).Split('\n');
         Assert.IsFalse(lines.Any(l => l.Contains("PISTAS") && l.Contains("CONTRADICCIONES")));
-        Assert.IsFalse(lines.Any(l => l.Contains("EVIDENCIA") && l.Contains("hacen falta")));
+        Assert.IsFalse(lines.Any(l => l.Contains("SOLIDEZ") && l.Contains("hacen falta")));
         Assert.IsTrue(lines.Any(l => l.Contains("CONTRADICCIONES") && l.Contains("1")));
     }
 
@@ -161,8 +161,8 @@ public class EndingReportTests
     public void SoloSeDiceCuantoFaltoSiAcertasteSinPruebasSuficientes()
     {
         // La base de estos casos tiene evidencia 3 (el umbral de condena segura es 5)
-        StringAssert.Contains("Con 2 más de evidencia habría sido una condena segura.", Build(Ending.Bittersweet));
-        StringAssert.Contains("Con 2 más de evidencia", Build(Ending.Insufficient));
+        StringAssert.Contains("Con 2 puntos más de solidez habría sido una condena segura.", Build(Ending.Bittersweet));
+        StringAssert.Contains("Con 2 puntos más de solidez", Build(Ending.Insufficient));
         StringAssert.DoesNotContain("condena segura", Build(Ending.Good), "ganaste: no hay nada que te faltase");
         StringAssert.DoesNotContain("condena segura", Build(Ending.Bad), "acusaste a otra persona: la cuenta no aplica");
     }
@@ -198,5 +198,15 @@ public class EndingReportTests
     public void DescartarUnaPistaPropiaSeExplica()
     {
         StringAssert.Contains("descartaban", Build(Ending.Bad, ignored: true));
+    }
+
+    // Ronda final 3: "EVIDENCIA 0/6" junto a "pistas encontradas: 0 de 5" parecían dos recuentos de lo mismo
+    [Test]
+    public void LaSolidezNoSeConfundeConElRecuentoDePistas()
+    {
+        string report = Build(Ending.Bittersweet);
+        StringAssert.DoesNotContain("EVIDENCIA", report);
+        StringAssert.Contains("SOLIDEZ DE LAS PRUEBAS", report);
+        StringAssert.IsMatch(@"SOLIDEZ DE LAS PRUEBAS.*\d+ de \d+", report);
     }
 }

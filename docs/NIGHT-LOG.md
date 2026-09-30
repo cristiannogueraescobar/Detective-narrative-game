@@ -426,6 +426,14 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   añadidas a .gitignore; no reescribo la historia remota sin permiso → Decisiones para Cristian (fusionar con
   --squash o limpiar con rebase + force-with-lease). A partir de aquí, solo `git add` de rutas concretas.
 
+- **13:42** Ronda final 3 (crítica de los finales): (1) "EVIDENCIA 0/6" junto a "pistas encontradas: 0 de 5"
+  parecían dos cuentas de lo mismo → "SOLIDEZ DE LAS PRUEBAS 0 de 6" y "Con 2 puntos más de solidez…". (2) Los
+  finales tenían media pantalla vacía y nunca enseñaban la cara del culpable → **ficha policial** (Mugshot.cs):
+  foto del culpable con el relieve 2.5D en una cartulina torcida, "CULPABLE / nombre" a máquina, dentro del
+  informe tras la verdad (se desplaza con él, nunca tapa texto) y aparece al terminar de descubrirse. Tres
+  iteraciones con capturas (pie diminuto → nombre cortado → dos líneas). Theme.endingMugshot la quita. Nueva
+  captura veredicto_ficha. EditMode 669/669, PlayMode 36/36.
+
 ## Ahora (día 3)
 - Ronda final 2: bot para comprobar los desbloqueos tras el n.º 7; capturas tras los cambios; recorrido mental.
   Informe intermedio a las ~16:10.

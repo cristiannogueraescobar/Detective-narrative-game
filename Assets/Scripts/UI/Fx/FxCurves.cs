@@ -160,6 +160,7 @@ public class CaseSummary
 {
     public string rank;
     public string keyClueLine;                 // null si no se eligió prueba clave
+    public SuspectView culprit;                // Para la ficha policial del final (id null = sin ficha)
     public System.Collections.Generic.List<string> missed = new System.Collections.Generic.List<string>();
 }
 
@@ -181,11 +182,13 @@ public static class EndingReport
         // Un dato por línea: dos en la misma partían la cifra a la línea siguiente en pantallas estrechas
         sb.AppendLine($"{label("PISTAS INCRIMINATORIAS")}  {result.incriminatingFound}");
         sb.AppendLine($"{label("CONTRADICCIONES")}  {result.contradictions}");
-        sb.AppendLine($"{label("EVIDENCIA")}  <b>{result.evidence}/{maxEvidence}</b>");
+        // Puntuación (pistas incriminatorias + contradicciones, que pesan más), no un recuento de pistas: con "0/6"
+        // junto a "pistas encontradas: 0 de 5" parecían dos cuentas de lo mismo
+        sb.AppendLine($"{label("SOLIDEZ DE LAS PRUEBAS")}  <b>{result.evidence} de {maxEvidence}</b>");
         // Cuánto faltó, solo si acertaste sin pruebas suficientes (ganando o acusando a otro no aporta nada)
         int missing = InvestigationState.GoodThreshold - result.evidence;
         if ((result.ending == Ending.Bittersweet || result.ending == Ending.Insufficient) && missing > 0)
-            sb.AppendLine($"<size=80%>{label($"Con {missing} más de evidencia habría sido una condena segura.")}</size>");
+            sb.AppendLine($"<size=80%>{label($"Con {missing} {(missing == 1 ? "punto" : "puntos")} más de solidez habría sido una condena segura.")}</size>");
         if (!string.IsNullOrEmpty(stats))
             sb.AppendLine(label(stats));
         sb.AppendLine();

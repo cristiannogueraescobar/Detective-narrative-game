@@ -278,6 +278,18 @@ public class AnimationCapture
         yield return Frames("acusacion", 0.1f, 1.5f, 4f);
         UnityEngine.Object.FindFirstObjectByType<InterrogationUI>().OnAccuseClick();
         yield return Frames("veredicto", 0.3f, 1.2f, 2.9f, 3.4f, 5f, 8f);
+        // Informe completo (un toque lo termina) y la ficha policial del culpable al final
+        var reveal = UnityEngine.Object.FindFirstObjectByType<StepReveal>();
+        reveal?.OnPointerClick(null);
+        yield return new WaitForSecondsRealtime(1f);
+        var scroll = reveal != null ? reveal.GetComponentInParent<ScrollRect>() : null;
+        if (scroll != null)
+        {
+            Canvas.ForceUpdateCanvases();
+            scroll.verticalNormalizedPosition = 0f; // Al final del informe
+        }
+        yield return null;
+        Shot("veredicto_ficha");
     }
 
     [UnityTest]

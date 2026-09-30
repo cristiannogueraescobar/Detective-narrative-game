@@ -531,7 +531,8 @@ public class GameManager : MonoBehaviour
         var summary = new CaseSummary
         {
             rank = DetectiveRank.For(result.ending, keyRight, hintMemory.count, Mathf.Max(0, maxDays - currentDay)),
-            keyClueLine = keyLine
+            keyClueLine = keyLine,
+            culprit = SuspectView.From(story.Character(variant.culpritId))
         };
         foreach (ClueData clue in variant.clues.Where(c => !State.IsDiscovered(c.id)))
             summary.missed.Add($"{clue.playerName} (lo sabía {story.Character(clue.holder).shortName})");

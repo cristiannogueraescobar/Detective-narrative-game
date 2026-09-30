@@ -99,6 +99,7 @@ public class Theme : ScriptableObject
 
     [Header("Retratos 2.5D: relieve + lámpara (desactivar = plano 2D)")]
     public bool portraitLit = true;
+    public bool endingMugshot = true;                                  // Ficha policial del culpable al final del informe
     public Vector3 portraitLightDir = new Vector3(-0.5f, 0.6f, 0.6f);   // Lámpara arriba a la izquierda
     public Color portraitLightColor = new Color(1f, 0.9f, 0.75f);       // Bombilla cálida
     [Range(0f, 1f)] public float portraitAmbient = 0.35f;
