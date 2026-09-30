@@ -127,6 +127,16 @@ public static class GameTexts
 
     public const string SuggestionsHint = "Puedes empezar por…";
     public const string PlayAgain = "Jugar otra vez";
+
+    /// <summary>
+    /// Última línea del informe: cuántos culpables de esta historia quedan por ver (rejugar trae otro).
+    /// </summary>
+    public static string ReplayLine(int remaining)
+    {
+        return remaining <= 0 ? "Has visto todos los culpables posibles de esta historia."
+             : remaining == 1 ? "Esta historia tiene otro culpable posible: juega otra vez para descubrirlo."
+             : $"Esta historia tiene otros {remaining} culpables posibles: juega otra vez para descubrirlos.";
+    }
     public const string MainMenu = "Menú principal";
 
     public static string Instructions(Theme t)

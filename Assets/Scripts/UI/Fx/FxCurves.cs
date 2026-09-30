@@ -161,6 +161,7 @@ public class CaseSummary
     public string rank;
     public string keyClueLine;                 // null si no se eligió prueba clave
     public string notesLine;                   // Lo que apuntó el jugador sobre el culpable (null: nada)
+    public string replayLine;                  // Cuántos culpables de la historia quedan por ver (null: nada)
     public SuspectView culprit;                // Para la ficha policial del final (id null = sin ficha)
     public System.Collections.Generic.List<string> missed = new System.Collections.Generic.List<string>();
 }
@@ -224,6 +225,11 @@ public static class EndingReport
             sb.AppendLine($"<color={Theme.Hex(t.accent)}><b>LO QUE SE TE ESCAPÓ</b></color>");
             foreach (string m in summary.missed)
                 sb.AppendLine($"<color={Theme.Hex(t.accent)}>•</color>  {m}");
+        }
+        if (summary != null && !string.IsNullOrEmpty(summary.replayLine))
+        {
+            sb.AppendLine();
+            sb.AppendLine($"<i>{summary.replayLine}</i>");
         }
         return sb.ToString().TrimEnd();
     }

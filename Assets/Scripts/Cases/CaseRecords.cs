@@ -82,6 +82,15 @@ public static class CaseRecords
 
     public static bool Played(string variantId) => GameSettings.GetValue(PlayedKey(variantId), 0f) > 0f;
 
+    public static int Unplayed(System.Collections.Generic.IEnumerable<string> variantIds)
+    {
+        int count = 0;
+        foreach (string id in variantIds)
+            if (!Played(id))
+                count++;
+        return count;
+    }
+
     /// <summary>
     /// Índice de la variante que toca entre 'variantIds': una aún no jugada; si ya se jugaron todas, cualquiera
     /// menos la última de su historia. 'roll' es el azar (Random.Range en el juego, fijo en los tests).
