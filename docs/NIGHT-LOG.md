@@ -572,6 +572,11 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   glosario al día. Bot al azar (1A, 2C, 3B; semilla 1515): 4/6 culpables, 0 respuestas marcadas.
   EditMode 713/713, PlayMode 53/53. Acumulado del bot al azar: 39/50.
 
+- **18:05** Quinta revisión independiente (CODE-REVIEW.md): 1 confirmado (el mapeo del bot no se ejecutaba) y 4
+  plausibles; arreglados 3 + tests, 1 aceptado (decisión 15). Error mío: una edición por heredoc metió un salto de
+  línea real dentro de una cadena C#; la captura "pasó" leyendo un XML viejo → ahora borro los resultados antes de
+  cada captura y miro la hora del PNG. EditMode 713/713, PlayMode 54/54.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
