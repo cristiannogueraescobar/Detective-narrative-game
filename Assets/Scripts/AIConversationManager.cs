@@ -147,7 +147,8 @@ public class AIConversationManager : MonoBehaviour
             if (invented > 0)
             {
                 InventedTimeRetries++;
-                LLMResult retry = await llmProvider.SendAsync(systemPrompt, Nudged(history, TimeNudge), maxTokens, temperature);
+                float retryTemperature = CoolTimeRetry ? Mathf.Min(temperature, CoolRetryTemperature) : temperature;
+                LLMResult retry = await llmProvider.SendAsync(systemPrompt, Nudged(history, TimeNudge), maxTokens, retryTemperature);
                 if (retry.Success && !IsRepeat(history, retry.Text)
                     && TimeCheck.Unknown(EmotionParser.Parse(retry.Text).text, known).Count < invented)
                 {
@@ -234,6 +235,12 @@ public class AIConversationManager : MonoBehaviour
     /// Pedir otra vez las respuestas con horas inventadas (medido con el bot: ver docs/NIGHT-LOG.md, día 3, 0d).
     /// </summary>
     public bool RetryInventedTimes { get; set; } = true;
+
+    /// <summary>
+    /// El reintento por horas, más frío (A/B de la ronda 20 con el bot: ver NIGHT-LOG).
+    /// </summary>
+    public bool CoolTimeRetry { get; set; }
+    public const float CoolRetryTemperature = 0.3f;
 
     // Contadores para las mediciones del bot (no afectan al juego)
     public static int InventedTimeRetries;
