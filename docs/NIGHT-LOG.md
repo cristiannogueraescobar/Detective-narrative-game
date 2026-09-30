@@ -616,6 +616,11 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   seguida (el reintento frío se nota); 2B otra vez 0/2 (0/16 en todo el día). 3C va 15/20 en el día, sin patrón en
   los fallos. Acumulado al azar: 51/68.
 
+- **19:39** Ronda 23, última prueba sobre la 2B: el parte del día 5 dice ahora quién tiene los registros ("los tiene
+  Ruiz en comisaría"; validador 22/22). Bot 2B ×4 (semilla 1212): sigue 0/4 y sigue sin preguntar a Ruiz por el
+  fichaje → confirmado: es el razonamiento del bot, no la información. El texto se queda (más claro para una
+  persona, sin coste). 2B en el día: 0/20.
+
 ## Ahora (día 3)
 - Rondas finales 9-21 hechas (notas del jugador, lector en la libreta, partes en la libreta, rueda que tacha,
   rejugar con otro culpable, reintento frío; seis revisiones independientes). Build de Windows + SMOKE OK.
