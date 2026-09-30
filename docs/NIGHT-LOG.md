@@ -112,20 +112,20 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   21 %. 5ª revisión de código: 0 críticos/importantes, 3 menores arreglados (con test). Tests 507/507 + PlayMode
   12/12 (+12 capturas explícitas).
 
-- 07:25 Ronda 6 (diseño): "Fin del día" está justo bajo el selector de sospechoso y terminaba el día al
+- 07:10 Ronda 6 (diseño): "Fin del día" está justo bajo el selector de sospechoso y terminaba el día al
   momento aunque quedasen preguntas: un toque por error costaba hasta 5. Ahora pide confirmación si quedan
   ("Te quedan 3 preguntas y se perderán"); Atrás la cierra. Diálogo de confirmación común con el de reiniciar.
 
-- 07:45 Checker del bot: los nombres que dijo el inspector en la pregunta no son inventados (Ruiz, Opel,
+- 07:15 Checker del bot: los nombres que dijo el inspector en la pregunta no son inventados (Ruiz, Opel,
   Granada eran falsos positivos). Resumen de la acusación al 90 % (legible en "Muy grande"). Parte de la mañana:
   sin pistas el día 3, consejo sin spoilers; test de que el parte más largo cabe en la hoja del día (y de que el
   test detecta un parte que no cabe).
 
-- 08:05 Libreta: tocar el nombre de un sospechoso lleva a interrogarle (no mientras se espera respuesta). Los
+- 07:25 Libreta: tocar el nombre de un sospechoso lleva a interrogarle (no mientras se espera respuesta). Los
   enlaces de la libreta perdonan un toque cercano (a menos de media zona táctil): una línea de texto mide mucho
   menos de 48 dp.
 
-- 08:20 Ronda 7: bot en 3B, 3C, 2A (semilla 11): culpable 2/6, triste 53 % (historia 3: casi todo gira en torno a
+- 07:37 Ronda 7: bot en 3B, 3C, 2A (semilla 11): culpable 2/6, triste 53 % (historia 3: casi todo gira en torno a
   Paula, así que la guía hace lo que dice; se vigila). 7ª revisión de código: 0 críticos/importantes; arreglados
   con test el diálogo reutilizable (nombres fijos), la indicación del tutorial encima del aviso de fin del día y
   el parte sin línea en blanco. Decisiones: un enlace de sospechoso tocado mientras se espera respuesta no hace
