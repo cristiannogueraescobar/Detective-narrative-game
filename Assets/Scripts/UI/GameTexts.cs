@@ -70,6 +70,18 @@ public static class GameTexts
     }
 
     /// <summary>
+    /// La misma barra con los números resaltados (color de acento).
+    /// </summary>
+    public static string HudRich(int day, int maxDays, int questionsUsed, int questionsPerDay, Theme t)
+    {
+        string n(object v) => $"<color={Theme.Hex(t.accent)}><b>{v}</b></color>";
+        int left = Mathf.Max(0, questionsPerDay - questionsUsed);
+        string questions = left == 0 ? $"<color={Theme.Hex(t.accent)}><b>SIN PREGUNTAS HOY</b></color>"
+            : left == 1 ? $"QUEDA {n(1)} PREGUNTA" : $"QUEDAN {n(left)} PREGUNTAS";
+        return $"DÍA {n(day)} DE {maxDays}  ·  {questions}";
+    }
+
+    /// <summary>
     /// Botón de continuar con el caso y el día en que se quedó.
     /// </summary>
     public static string Continue(string caseTitle, int day)

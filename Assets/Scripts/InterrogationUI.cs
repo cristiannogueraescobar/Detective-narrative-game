@@ -1033,7 +1033,26 @@ public class InterrogationUI : MonoBehaviour
 
         if (hudText != null)
         {
-            hudText.text = GameTexts.Hud(day, maxDays, questionsUsed, questionsMax);
+            string previous = hudText.text;
+            hudText.richText = true;
+            hudText.text = GameTexts.HudRich(day, maxDays, questionsUsed, questionsMax, T);
+            if (previous != hudText.text && Application.isPlaying)
+                UIAnimations.Pop(this, hudText.transform);
+        }
+
+        // Sin preguntas, lo siguiente es terminar el día: el botón pasa a ser el principal y late
+        if (endDayButton != null)
+        {
+            bool dayDone = questionsUsed >= questionsMax;
+            UIRole wanted = dayDone ? UIRole.PrimaryButton : UIRole.SecondaryButton;
+            ThemeRole role = UIComponents.GetOrAdd<ThemeRole>(endDayButton.gameObject);
+            if (role.role != wanted)
+            {
+                role.role = wanted;
+                ThemeApplier.Apply(endDayButton.transform);
+            }
+            if (dayDone && Application.isPlaying)
+                UIAnimations.Pop(this, endDayButton.transform);
         }
     }
 
