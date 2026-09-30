@@ -174,7 +174,7 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   última vez?" 14. Las preguntas de ejemplo pasan a ser dónde estabas / cuándo supiste de X / algo raro.
   Tests 548/548 + PlayMode 17/17.
 
-- 09:25 Ronda 9: bot en 2B, 1B, 1A (semilla 23): culpable 4/6; estados nervioso 45 % · triste 32 % · tranquilo
+- 09:21 Ronda 9: bot en 2B, 1B, 1A (semilla 23): culpable 4/6; estados nervioso 45 % · triste 32 % · tranquilo
   13 %. Alucinación a vigilar: la vecina de 1A "ve" a Elena a las 00:05 (ya muerta) y lo repite; límite conocido
   del 7B (horas y hechos inventados, en pendientes). 9ª revisión: sin problemas bloqueantes; sondas que fallan
   con Ollama apagado y -buildPath con nombre suelto, arreglados con test. Galería con las preguntas finales.
