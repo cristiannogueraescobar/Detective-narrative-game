@@ -9,7 +9,7 @@ Diario minuto a minuto: `docs/NIGHT-LOG.md`. Tests: **EditMode y PlayMode en ver
 
 | Área | Qué hay ahora |
 |---|---|
-| **Ver mi trabajo** | Capturas en batchmode: `ScreenshotTool` (vista previa, todos los paneles + 4 finales, 1080x1920 y 1080x2400) y `AnimationCapture` (en juego, fotogramas de cada animación). Todo en `docs/screenshots/2026-09-30/`. |
+| **Ver mi trabajo** | Capturas en batchmode: `ScreenshotTool` (vista previa, todos los paneles + 4 finales, 1080x1920 y 1080x2400) y `AnimationCapture` (en juego, fotogramas de cada animación). Todo en `docs/screenshots/2026-09-30/`; galería antes/después en `docs/screenshots/galeria/`. |
 | **Layout** | LayoutGroups en todos los paneles, textos que no desbordan, zonas táctiles de 48 dp, safe area, scroll solo vertical. Test automático (`LayoutValidationTests`): desbordes, solapes, glifos, contraste WCAG de textos y casillas, zonas táctiles, 3 pantallas y texto "muy grande". |
 | **Chat** | Burbujas (tú a la derecha, sospechoso a la izquierda con mini-retrato y hora de juego), avisos centrados, "escribiendo…", máquina de escribir que se salta con un toque, auto-scroll que respeta al que lee + "Nuevos mensajes", pool de filas. |
 | **Animación y ambiente** | Menú vivo (polvo en la luz, parpadeo de lámpara, lluvia en el cristal, vapor del café, título que se enciende), retratos con postura por emoción (temblor y sudor, retroceso, sacudida y rojo, bajada y desaturación), ficha de pista que vuela a la libreta, sello CONTRADICCIÓN, calendario del nuevo día, viñeta y latido en la acusación, "El jurado delibera…", finales con sello, color propio y línea temporal, expediente con sello CONFIDENCIAL, filtro noir (grano + viñeta). |
@@ -65,12 +65,22 @@ Diario minuto a minuto: `docs/NIGHT-LOG.md`. Tests: **EditMode y PlayMode en ver
 
 ### Jugador bot (qwen juega de detective; los sospechosos son el juego real)
 
-Informes completos: `Logs/bot-playthroughs.md` (final) y transcripciones en `Logs/bot-final/`.
+Informes completos en `Logs/` (`bot-final/`, `bot-baseline-0600/`, `bot-guia2/`, `bot-ronda5/`, `bot-ronda7/`).
 
-| Ronda | Partidas | Acierta al culpable | Finales B/A/I/M | Pistas por partida | Horas inventadas* | "Soy una IA" |
-|---|---|---|---|---|---|---|
-| 1 (inicio de la noche) | 27 | 13/27 (48 %) | 1 / 3 / 9 / 14 | 1,5 | 50 en 945 respuestas | 0 |
-| Final (todo lo de la noche) | 18 | **13/18 (72 %)** | 2 / 6 / 5 / 5 | 2,0 | 18 en 630 (2,9 %) | 0 |
+| Ronda | Partidas | Acierta al culpable | Pistas por partida | Horas inventadas* | "Soy una IA" |
+|---|---|---|---|---|---|
+| 1 (inicio de la noche) | 27 | 13/27 (48 %) | 1,5 | 50 en 945 respuestas | 0 |
+| 04:32 (semilla 31) | 18 | 13/18 (72 %) | 2,0 | 18 en 630 (2,9 %) | 0 |
+| 06:00 (semilla 59) | 18 | 11/18 (61 %) | 1,8 | 36 en 630 (5,7 %) | 0 |
+| 06:30, guía de estados nueva (semilla 59) | 18 | 9/18 (50 %) | 1,4 | 20 en 630 (3,2 %) | 0** |
+| Ronda 5 (2B, 2C, 3A) | 6 | 4/6 | 1,8 | 4 en 210 | 0** |
+| Ronda 7 (3B, 3C, 2A) | 6 | 2/6 | 1,0 | 8 en 210 | 0 |
+
+Con 18 partidas la tasa de acierto baila ±2 partidas de una ronda a otra: el detective también es qwen y sus
+preguntas cambian cada vez. Lo estable es que no hay rupturas de personaje ni confesiones sin motivo.
+
+\*\* Los dos "IA" que marcó el detector eran falsos positivos ("seguir las instrucciones" de un medicamento) o
+dudosos ("Lo siento, no puedo ayudarte con eso", dicho por un adolescente); el detector se afinó con tests.
 
 \* En la ronda 1 el detector contaba también las horas que el propio inspector decía en la pregunta; corregido
 después (con test). Aun así la bajada es real: la regla "si no sabes la hora, di que no te fijaste" ayuda.
@@ -117,12 +127,12 @@ misma que midió las pistas al 84–85 %. Queda como pendiente con los datos: `L
 
 ### Calibración de estados emocionales (144 respuestas, 4 tipos de pregunta)
 
-| | Antes (noche 1) | Final |
-|---|---|---|
-| Bien formada | 141/144 | 142/144 |
-| Coherente | 121/144 (84 %) | **141/144 (98 %)** |
-| Pregunta sobre la víctima | tranquilo 16, triste 15 | **triste 34**, nervioso 1, tranquilo 1 |
-| Pregunta neutra | tranquilo 31 | tranquilo 34 |
+| | Antes (noche 1) | 04:33 | Final (guía de estados nueva, 06:03) |
+|---|---|---|---|
+| Bien formada | 141/144 | 142/144 | 142/144 |
+| Coherente | 121/144 (84 %) | 141/144 (98 %) | **137/144 (95 %)** |
+| Pregunta sobre la víctima | tranquilo 16, triste 15 | triste 34 | **triste 33**, tranquilo 1 |
+| Pregunta neutra | tranquilo 31 | tranquilo 34 | tranquilo 33 |
 
 ### Pistas flojas (detección con las preguntas de calibración; objetivo ≥ 7/10)
 
@@ -181,6 +191,11 @@ Cómo regenerarlas: `ScreenshotTool.CaptureFromCommandLine` (vista previa) y el 
 - **Horas inventadas**: qwen 7B aún dice alguna hora que no está en su ficha (3–6 % de las respuestas según la
   partida). La regla ya está en la ficha; bajarlo más pediría otro modelo o más texto en fichas que ya están en
   el límite de 460 palabras.
+- **Preguntas capciosas**: un 23 % de los sospechosos acepta una acusación inventada si el inspector la da por
+  hecha. Una regla en la ficha lo bajaba al 2–5 %, pero hacía que la madre de 3A negase las amenazas de Javier
+  (pista 3A_audios). La revertí; hay datos y sonda (`PremiseCalibrator`) para probar otra redacción.
+- **README.md** está desactualizado (habla de 9 casos con Claude y 7 personajes). No lo he tocado: es la cara
+  pública del repositorio y el texto es tuyo.
 - **El bot es un detective flojo**: acierta al culpable en la mitad o dos tercios de las partidas y descubre ~2
   pistas de 5-6. Sirve para medir el juego, no su dificultad real para una persona.
 - **Cuelgue al salir en `-batchmode -nographics`**: en 1 de cada 4 a 12 ejecuciones del editor sin gráficos.
