@@ -95,3 +95,6 @@ importa al jugador (tiempo hasta la primera pista y partidas en blanco) es la qu
   agujero del tablero por lotes). En la rueda, a quien descartaste se le ve tachado y atenuado, "(tu descarte)",
   pero se puede acusar igual. Se guarda con la partida, y el informe final lo recuerda ("Tu nota sobre X ya
   decía «sospecha»: buen olfato", o «descarte»: "era quien lo hizo").
+- **La rueda marca también a quien descarta una pista ya encontrada** ("(pista de descarte)", como la libreta): en
+  la 2B el bot acusaba a Marcos teniendo la grabación que lo descarta, 10 de 10 veces; un jugador cansado puede
+  caer en lo mismo. No impide elegirlo (el final malo lo explica si lo hace).
