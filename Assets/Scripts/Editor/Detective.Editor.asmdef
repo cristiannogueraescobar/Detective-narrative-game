@@ -2,7 +2,9 @@
     "name": "Detective.Editor",
     "rootNamespace": "",
     "references": [
-        "Detective"
+        "Detective",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [
         "Editor"
