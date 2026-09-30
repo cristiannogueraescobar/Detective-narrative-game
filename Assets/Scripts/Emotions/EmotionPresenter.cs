@@ -162,17 +162,21 @@ public class EmotionPresenter : MonoBehaviour
         if (current == ownMaterial && ownMaterial != null)
             return;
 
-        Shader shader = Shader.Find(ArtGrading.ShaderName);
+        // El arte antiguo trae su gradación (y quizá el relieve 2.5D): se conserva y la emoción se aplica encima
+        bool graded = current != null && current != image.defaultMaterial && current.HasProperty(SaturationId);
+        Shader shader = graded ? current.shader : Shader.Find(ArtGrading.ShaderName);
         if (shader == null)
             return;
 
-        if (ownMaterial == null)
+        if (ownMaterial == null || ownMaterial.shader != shader)
         {
+            if (ownMaterial != null)
+                DestroyImmediate(ownMaterial);
             ownMaterial = new Material(shader) { name = "Retrato (emoción)", hideFlags = HideFlags.DontSave };
         }
+        if (graded)
+            ownMaterial.CopyPropertiesFromMaterial(current); // Luz y relieve del tema
 
-        // El arte antiguo trae su gradación: se conserva y la emoción se aplica encima
-        bool graded = current != null && current != image.defaultMaterial && current.HasProperty(SaturationId);
         baseSaturation = graded ? current.GetFloat(SaturationId) : 1f;
         ownMaterial.SetColor(GradeId, graded && current.HasProperty(GradeId) ? current.GetColor(GradeId) : Color.white);
         ownMaterial.SetFloat(BrightnessId, graded && current.HasProperty(BrightnessId) ? current.GetFloat(BrightnessId) : 1f);

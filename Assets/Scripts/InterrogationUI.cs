@@ -481,7 +481,7 @@ public partial class InterrogationUI : MonoBehaviour
         string cropKey = legacyArt ? view.portraitKey : null;
         suspectImage.uvRect = PortraitCrops.Bust(cropKey);
         bool placeholder = texture == null || texture.name.Contains("Placeholder");
-        chat?.SetAvatar(placeholder ? null : texture, PortraitCrops.Face(cropKey, texture));
+        chat?.SetAvatar(placeholder ? null : texture, PortraitCrops.Face(cropKey, texture), legacyArt);
 
         // El arte antiguo se gradúa para casar con el tema; el nuevo ya viene con la paleta del juego
         if (legacyArt)

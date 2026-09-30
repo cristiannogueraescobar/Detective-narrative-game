@@ -51,6 +51,7 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
     private GameObject newMessages;
     private Texture avatarTexture;
     private Rect avatarFace = new Rect(0f, 0f, 1f, 1f);
+    private bool avatarLegacy;
     private string typingSpeaker;
     private bool stick = true;
 
@@ -157,11 +158,13 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
     }
 
     /// <summary>
-    /// Mini-retrato de las respuestas (el del sospechoso de esta conversación).
+    /// Mini-retrato de las respuestas (el del sospechoso de esta conversación). El arte antiguo lleva la misma
+    /// gradación que el retrato grande (ArtGrading); el nuevo se ve tal cual.
     /// </summary>
-    public void SetAvatar(Texture texture, Rect? face = null)
+    public void SetAvatar(Texture texture, Rect? face = null, bool legacyArt = false)
     {
         avatarTexture = texture;
+        avatarLegacy = legacyArt && texture != null;
         avatarFace = face ?? UISprites.FaceCrop(texture);
         foreach (Row row in rows)
             ApplyAvatar(row);
@@ -550,6 +553,10 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
         row.face.texture = avatarTexture;
         row.face.color = avatarTexture != null ? Color.white : T.placeholder;
         row.face.uvRect = avatarFace;
+        if (avatarLegacy)
+            ArtGrading.Apply(row.face, ArtGrading.Kind.LegacyPortrait);
+        else
+            ArtGrading.Clear(row.face);
     }
 
     private Row CreateNoticeRow()

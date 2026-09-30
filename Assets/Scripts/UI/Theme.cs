@@ -95,6 +95,18 @@ public class Theme : ScriptableObject
     public Color legacyPortraitGrade = new Color(0.95f, 0.88f, 0.78f); // Sepia suave
     [Range(0f, 2f)] public float legacyPortraitBrightness = 0.9f;
     public bool legacyPortraitPointFilter = true;
+
+    [Header("Retratos 2.5D: relieve + lámpara (desactivar = plano 2D)")]
+    public bool portraitLit = true;
+    public Vector3 portraitLightDir = new Vector3(-0.5f, 0.6f, 0.6f);   // Lámpara arriba a la izquierda
+    public Color portraitLightColor = new Color(1f, 0.9f, 0.75f);       // Bombilla cálida
+    [Range(0f, 1f)] public float portraitAmbient = 0.35f;
+    [Range(0f, 8f)] public float portraitRelief = 4.5f;
+    [Range(1f, 24f)] public float portraitReliefRadius = 6f;            // Texels de muestreo
+    public Color portraitRimColor = new Color(0.55f, 0.65f, 0.8f);      // Contraluz frío
+    [Range(0f, 2f)] public float portraitRimStrength = 0.7f;
+    [Range(0f, 1f)] public float portraitLampFalloff = 0.35f;
+    [Range(0.5f, 2f)] public float portraitLitBoost = 1.3f;             // Compensa la luz que quita el relieve
     [Range(0f, 1f)] public float backgroundSaturation = 0.7f;
     public Color backgroundGrade = new Color(0.92f, 0.9f, 0.88f);
     [Range(0f, 2f)] public float backgroundBrightness = 0.75f;          // Fondos más oscuros: el texto va encima

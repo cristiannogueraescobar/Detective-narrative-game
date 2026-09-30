@@ -10,6 +10,7 @@ using UnityEngine.UI;
 public static class ArtGrading
 {
     public const string ShaderName = "Detective/UI/Desaturate";
+    public const string LitShaderName = "Detective/UI/LitPortrait"; // Retratos 2.5D (tema: portraitLit)
 
     private static readonly Dictionary<string, Material> materials = new Dictionary<string, Material>();
 
@@ -30,7 +31,9 @@ public static class ArtGrading
         Color grade = portrait ? t.legacyPortraitGrade : t.backgroundGrade;
         float brightness = portrait ? t.legacyPortraitBrightness : t.backgroundBrightness;
 
-        graphic.material = MaterialFor(saturation, grade, brightness);
+        graphic.material = portrait && t.portraitLit
+            ? LitMaterialFor(t, saturation, grade, brightness * t.portraitLitBoost)
+            : MaterialFor(saturation, grade, brightness);
 
         // Pixel art nítido: filtrado sin suavizar (propiedad en memoria, no cambia la importación)
         if (portrait && t.legacyPortraitPointFilter && graphic is RawImage raw && raw.texture != null)
@@ -44,6 +47,37 @@ public static class ArtGrading
     {
         if (graphic != null)
             graphic.material = null;
+    }
+
+    private static Material LitMaterialFor(Theme t, float saturation, Color grade, float brightness)
+    {
+        string key = $"lit|{saturation:F2}|{ColorUtility.ToHtmlStringRGB(grade)}|{brightness:F2}|{t.portraitLightDir}|" +
+                     $"{ColorUtility.ToHtmlStringRGB(t.portraitLightColor)}|{t.portraitAmbient:F2}|{t.portraitRelief:F2}|" +
+                     $"{t.portraitReliefRadius:F1}|{ColorUtility.ToHtmlStringRGB(t.portraitRimColor)}|{t.portraitLampFalloff:F2}|{t.portraitRimStrength:F2}";
+        if (materials.TryGetValue(key, out Material cached) && cached != null)
+            return cached;
+
+        Shader shader = Shader.Find(LitShaderName);
+        if (shader == null)
+        {
+            Debug.LogWarning($"[Arte] Falta el shader {LitShaderName}; el retrato se muestra plano.");
+            return MaterialFor(saturation, grade, brightness);
+        }
+
+        var material = new Material(shader) { name = "Relieve " + key, hideFlags = HideFlags.DontSave };
+        material.SetFloat("_Saturation", saturation);
+        material.SetColor("_Grade", grade);
+        material.SetFloat("_Brightness", brightness);
+        material.SetVector("_LightDir", t.portraitLightDir);
+        material.SetColor("_LightColor", t.portraitLightColor);
+        material.SetFloat("_Ambient", t.portraitAmbient);
+        material.SetFloat("_Relief", t.portraitRelief);
+        material.SetFloat("_Radius", t.portraitReliefRadius);
+        material.SetColor("_RimColor", t.portraitRimColor);
+        material.SetFloat("_Falloff", t.portraitLampFalloff);
+        material.SetFloat("_RimStrength", t.portraitRimStrength);
+        materials[key] = material;
+        return material;
     }
 
     private static Material MaterialFor(float saturation, Color grade, float brightness)

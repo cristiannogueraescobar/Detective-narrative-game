@@ -52,3 +52,17 @@ de botón poco marcados.
 1. **Anclar el chat abajo** — la pantalla principal deja de tener un agujero en el centro.
 2. **Acusar deja de ser el botón dorado del interrogatorio** — el dorado guía a preguntar.
 3. **Expedientes completos y estados de botón claros** — acabado de juego publicado.
+
+## C3: personajes (2.5D frente a vóxel)
+Prototipos con los mismos retratos (padre, madre, vecina, cartero), capturas en
+`docs/screenshots/2026-09-30/c3-prototipo/` (`comparativa_*.png`).
+
+| Opción | Cómo | Resultado |
+|--------|------|-----------|
+| Plano 2D (antes) | Gradación sepia (Desaturate) | Correcto pero plano: pegatina sobre el fondo. |
+| **2.5D (elegida)** | Shader `Detective/UI/LitPortrait`: relieve calculado en pantalla desde el alfa y la luminancia de la propia imagen, lámpara cálida arriba a la izquierda y contraluz frío en el filo contrario | Se lee volumen y luz de interrogatorio sin perder el dibujo; ~9 lecturas de textura por píxel, sin mallas ni cámaras. |
+| Vóxel 3D | Rejilla de 40 o 64 columnas extruida (hondo según la distancia al borde), cámara propia a textura | Pierde la cara y la expresión (el arte no es pixel art limpio: está reescalado); 9-23 k vértices y una cámara por retrato. Descartado. |
+
+Aplicado a los 12 personajes (todos usan los 7 retratos antiguos): interrogatorio, rueda de reconocimiento y
+mini-retrato del chat (que antes salía sin gradación). Las emociones conservan el relieve.
+**Reversible:** `Theme.portraitLit = false` devuelve el plano 2D; lámpara, relieve y contraluz son valores del tema.

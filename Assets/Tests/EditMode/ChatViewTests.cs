@@ -177,4 +177,20 @@ public class ChatViewTests
         Assert.IsNull(session.ui.CurrentSuspectId);
         Assert.AreEqual(0, chat.RowCount);
     }
+
+    [Test]
+    public void MiniRetratoAntiguoConLaMismaGradacionQueElGrande()
+    {
+        var texture = new Texture2D(8, 8);
+        chat.SetAvatar(texture, null, legacyArt: true);
+        Show(ChatEntry.Suspect("CARMEN", "En casa.", "09:00"));
+
+        var face = chat.GetComponentsInChildren<UnityEngine.UI.RawImage>(false).First(r => r.name == "Cara");
+        Assert.IsNotNull(face.material);
+        Assert.IsTrue(face.material.HasProperty("_Saturation"), "gradación del arte antiguo");
+
+        chat.SetAvatar(texture, null, legacyArt: false);
+        Assert.IsFalse(face.material.HasProperty("_Saturation"), "el arte nuevo se ve tal cual");
+        Object.DestroyImmediate(texture);
+    }
 }
