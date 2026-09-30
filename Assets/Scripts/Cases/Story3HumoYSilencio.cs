@@ -116,7 +116,7 @@ Tienes 7 días para descubrir qué pasó.",
                 FirstReport,
                 "El laboratorio encuentra restos de neumático y gasoil en la hoguera.",
                 "La gasolinera del pueblo vendió gasoil en garrafas el sábado a las 21:40.",
-                "El juzgado confirma que Paula iba a declarar en la vista de custodia del lunes.",
+                "El juzgado confirma que Paula iba a declarar en la vista de custodia del lunes. Su móvil se conectó por última vez el sábado a las 20:41.",
                 "Los perros de la Guardia Civil marcan un punto en el olivar, cerca del quemadero.",
                 LastDay
             },
@@ -162,7 +162,7 @@ Tienes 7 días para descubrir qué pasó.",
                     characterId = "hermano",
                     knowledge = new[] { "Paula no quería ir a la finca ese fin de semana." },
                     version = "El sábado no pisé la finca. Paula estaba con mi padre.",
-                    secret = "Paula te pidió ayuda y no se lo dijiste a nadie porque estabas bebiendo con tus primos Nerea y Hugo en Granada; no te lo perdonas.",
+                    secret = "Paula te pidió que fueras a por ella y no fuiste porque estabas bebiendo con tus primos Nerea y Hugo en casa de tu tía Remedios; no te lo perdonas.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "por qué no fuiste a por Paula.",
                     ifAccused = "Aprietas los puños y te callas.",
@@ -331,7 +331,7 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     characterId = "padre",
                     knowledge = new[] { MentionAlex, MentionEncarna, "Lucía conduce un coche pequeño rojo, un Seat Ibiza." },
-                    version = "El sábado a las 18:30 fui al bar del pueblo y volví a las 21:30; pensé que Paula dormía. El domingo ya no estaba; creí que se había ido con su madre.",
+                    version = "El sábado de 18:30 a 21:30 estuve en el bar Casino; al volver pensé que Paula dormía. El domingo ya no estaba; creí que se había ido con su madre.",
                     secret = "Bebiste mucho y no entraste a ver a Paula al volver; te avergüenza y temes que la jueza lo use contra ti.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "lo que bebiste el sábado.",
@@ -342,7 +342,7 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     characterId = "hermano",
                     knowledge = new[] { "Paula quería vivir con mamá, pero no quería hacerle daño a papá." },
-                    version = "El sábado estuve en casa de mi tía Remedios en Granada.",
+                    version = "El sábado mamá y yo estuvimos todo el día en casa de mi tía Remedios, en Granada.",
                     secret = "Mamá te pidió que dijeras que estuvo contigo todo el sábado; te sientes fatal por mentir.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "dónde estuvo tu madre el sábado.",
@@ -357,12 +357,12 @@ Tienes 7 días para descubrir qué pasó.",
                 new ClueData
                 {
                     id = "3B_coche", playerName = "Un coche rojo", holder = "vecina", kind = ClueKind.Incriminates, exposesLie = true,
-                    summary = "A las 19:00 del sábado Encarna vio un coche pequeño rojo subir a la finca. La camioneta de Javier no estaba.",
+                    summary = "A las 19:00 del sábado Encarna vio subir a la finca un coche pequeño rojo, como el Seat Ibiza de Lucía. Javier no estaba; al rato salió humo del quemadero.",
                     topic = "si viste algún coche en la finca el sábado por la tarde",
-                    fact = "a las 19:00 del sábado viste un coche pequeño rojo subir por el camino de la finca de Javier; la camioneta de Javier no estaba, él estaba en el pueblo.",
+                    fact = "a las 19:00 del sábado viste subir por el camino de la finca de Javier un coche pequeño rojo, como el de Lucía, la madre de la niña; la camioneta de Javier no estaba, él estaba en el pueblo. Al rato salió humo del quemadero.",
                     anchors = new[]
                     {
-                        new[] { "rojo", "ibiza" },
+                        new[] { "rojo", "ibiza", "coche de lucia" },
                         new[] { "19:00", "siete", "subir", "subio", "camino" }
                     },
                     calibrationQuestions = new[] { "¿Vio algún coche en la finca de Javier el sábado por la tarde?", "¿Subió alguien a la finca el sábado?" },
@@ -419,14 +419,14 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     id = "3B_armario", playerName = "El armario medio vacío", holder = "hermano", kind = ClueKind.Incriminates,
                     summary = "En casa de Lucía faltan la maleta grande y el pasaporte de Paula.",
-                    topic = "si echas en falta algo de Paula en casa",
+                    topic = "si echas en falta algo de Paula en casa o dónde está su pasaporte",
                     fact = "en casa de tu madre faltan la maleta grande y el pasaporte de Paula; te diste cuenta el domingo.",
                     anchors = new[]
                     {
                         new[] { "maleta", "pasaporte" },
                         new[] { "falta", "no esta", "desaparec" }
                     },
-                    calibrationQuestions = new[] { "¿Echas en falta algo de Paula en casa?", "¿Se llevó Paula algo de casa?" },
+                    calibrationQuestions = new[] { "¿Echas en falta algo de Paula en casa?", "¿Se llevó Paula algo de casa?", "¿Sabes dónde está el pasaporte de Paula?" },
                     sampleHits = new[]
                     {
                         "Faltan la maleta grande y el pasaporte de Paula.",
@@ -443,9 +443,9 @@ Tienes 7 días para descubrir qué pasó.",
                     anchors = new[]
                     {
                         new[] { "bar", "casino" },
-                        new[] { "21:25", "camarero", "me cobro", "ticket" }
+                        new[] { "21:25", "camarero", "me cobro", "ticket", "me vio", "me vieron" }
                     },
-                    calibrationQuestions = new[] { "¿Dónde estuvo usted el sábado por la tarde?", "¿Alguien puede confirmar dónde estaba el sábado?" },
+                    calibrationQuestions = new[] { "¿Dónde estuvo usted el sábado por la tarde?", "¿Alguien puede confirmar dónde estaba el sábado?", "¿Dónde estuvo el sábado por la tarde? ¿Quién le vio allí?" },
                     sampleHits = new[]
                     {
                         "Estuve en el Casino de 18:30 a 21:30; el camarero me cobró a las 21:25.",
@@ -474,7 +474,7 @@ Tienes 7 días para descubrir qué pasó.",
             {
                 "",
                 FirstReport,
-                "Las zapatillas medio quemadas tienen barro que no es del quemadero.",
+                "Las zapatillas medio quemadas tienen barro que no es del quemadero. El móvil de Paula se conectó por última vez el sábado a las 19:51.",
                 "El candado de la cancela entre las dos fincas está recién engrasado.",
                 "Los perros de la Guardia Civil se detienen junto a un pozo de la zona.",
                 "Las amigas de Paula dicen que se iba a Madrid y que solo le daba pena despedirse de alguien.",
@@ -510,7 +510,7 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     characterId = "padre",
                     knowledge = new[] { MentionAlex, MentionEncarna },
-                    version = "El sábado estuve en el bar del pueblo. Volví tarde y pensé que Paula dormía. El domingo ya no estaba.",
+                    version = "El sábado estuve en el bar Casino hasta las diez. Volví tarde y pensé que Paula dormía. El domingo ya no estaba.",
                     secret = "Esa noche bebiste demasiado y no entraste a ver a Paula al volver; te avergüenza.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "lo que bebiste el sábado.",
@@ -533,7 +533,7 @@ Tienes 7 días para descubrir qué pasó.",
                     characterId = "hermano",
                     knowledge = new[] { "Paula le tenía mucho cariño a Encarna y a sus caballos." },
                     version = "El sábado estuve en Granada con mi madre.",
-                    secret = "Leíste el último mensaje de Paula tarde, a medianoche, porque estabas de fiesta; no te lo perdonas.",
+                    secret = "Estabas de fiesta y no miraste el móvil hasta medianoche; no te lo perdonas.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "por qué tardaste en leer el mensaje de Paula.",
                     ifAccused = "Aprietas los puños y te callas.",
@@ -546,11 +546,11 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     id = "3C_despedida", playerName = "La despedida", holder = "hermano", kind = ClueKind.Incriminates, exposesLie = true,
                     summary = "A las 19:50 Paula le escribió a Álex: 'Voy a despedirme de Encarna y de los caballos, luego te llamo'. Nunca llamó.",
-                    topic = "la última vez que supiste de Paula o qué te contó que iba a hacer el sábado",
-                    fact = "a las 19:50 Paula te escribió: 'Voy a despedirme de Encarna y de los caballos, luego te llamo'. Nunca te llamó.",
+                    topic = "la última vez que supiste de Paula, qué te contó que iba a hacer el sábado o de quién quería despedirse",
+                    fact = "a las 19:50, estando tú en Granada, Paula te escribió por WhatsApp: 'Voy a despedirme de Encarna y de los caballos, luego te llamo'. Nunca te llamó.",
                     anchors = new[]
                     {
-                        new[] { "despedir", "despedida" },
+                        new[] { "despedir", "despid", "despedida", "adios" },
                         new[] { "encarna", "caballos", "vecina" }
                     },
                     calibrationQuestions = new[] { "¿Cuándo supiste de Paula por última vez?", "¿Te dijo Paula qué iba a hacer el sábado por la tarde?" },
@@ -564,15 +564,15 @@ Tienes 7 días para descubrir qué pasó.",
                 new ClueData
                 {
                     id = "3C_llave", playerName = "La llave de la cancela", holder = "padre", kind = ClueKind.Incriminates,
-                    summary = "Encarna es la única con llave de la cancela que une su finca con la de Javier.",
-                    topic = "quién más puede entrar en tu finca",
-                    fact = "Encarna es la única persona con llave de la cancela que une su finca con la tuya.",
+                    summary = "Aparte de Javier, solo Encarna tiene llave de la cancela entre las dos fincas: por ahí se llega al quemadero sin pasar por la casa.",
+                    topic = "quién más puede entrar en tu finca o quién tiene llave de la cancela entre las dos fincas",
+                    fact = "aparte de ti, Encarna es la única con llave de la cancela que une su finca con la tuya; por ahí se llega al quemadero sin pasar por tu casa.",
                     anchors = new[]
                     {
-                        new[] { "llave", "cancela" },
+                        new[] { "llave", "cancela", "candado" },
                         new[] { "entre las fincas", "encarna" }
                     },
-                    calibrationQuestions = new[] { "¿Quién más puede entrar en su finca?", "¿Hay otra entrada al quemadero además de la suya?" },
+                    calibrationQuestions = new[] { "¿Quién más puede entrar en su finca?", "¿Hay otra entrada al quemadero además de la suya?", "¿Quién tiene llave del candado de la cancela?" },
                     sampleHits = new[]
                     {
                         "Encarna tiene llave de la cancela; se la dio mi padre y nunca la devolvió.",
@@ -625,10 +625,10 @@ Tienes 7 días para descubrir qué pasó.",
                 },
                 new ClueData
                 {
-                    id = "3C_bar", playerName = "La noche del bar", holder = "padre", kind = ClueKind.Clears, clears = "padre", isSecret = true,
-                    summary = "Javier estuvo en el bar Casino de 19:30 a 22:00; volvió borracho y no entró a ver a Paula.",
+                    id = "3C_bar", playerName = "La noche del bar", holder = "padre", kind = ClueKind.Clears, clears = "padre",
+                    summary = "Javier estuvo en el bar Casino de 19:30 a 22:00; el camarero lo confirma. No estaba en casa cuando Paula salió.",
                     topic = "qué hiciste el sábado y a qué hora volviste",
-                    fact = "Estuviste en el bar Casino de 19:30 a 22:00, el camarero lo sabe; volviste borracho y no entraste a ver a Paula.",
+                    fact = "estuviste en el bar Casino de 19:30 a 22:00; el camarero te vio toda la noche.",
                     anchors = new[]
                     {
                         new[] { "bar", "casino" },
@@ -637,7 +637,7 @@ Tienes 7 días para descubrir qué pasó.",
                     calibrationQuestions = new[]
                     {
                         "¿Dónde estuvo el sábado por la tarde? || No me cuadra. ¿Qué hizo exactamente y hasta qué hora?",
-                        "¿Entró a ver a Paula al volver a casa? || Insisto, dígame la verdad."
+                        "¿Entró a ver a Paula al volver a casa? || Insisto, dígame la verdad.", "¿Alguien puede confirmar que estuvo en el bar?"
                     },
                     sampleHits = new[]
                     {

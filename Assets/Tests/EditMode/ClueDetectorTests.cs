@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 
 public class ClueDetectorTests
@@ -102,5 +103,16 @@ public class ClueDetectorTests
     {
         Assert.IsTrue(ClueDetector.MentionsAny(ClueDetector.Normalize("Amparo, la de enfrente"), new[] { "Amparo" }));
         Assert.IsFalse(ClueDetector.MentionsAny(ClueDetector.Normalize("Nadie más"), new[] { "Amparo" }));
+    }
+
+    // Sesión A: la ⚡ de 3C se perdía porque "despidiéndose" o "se despidió" no contienen "despedir" (4 de 26 partidas)
+    [TestCase("Estaba despidiéndose de Encarna y de los caballos, me escribió a las 19:50.")]
+    [TestCase("Me escribió que se despidió de los caballos de la vecina.")]
+    [TestCase("Iba a despedirse de Encarna, eso me dijo.")]
+    public void LaDespedidaDe3CSeDetectaConcualquierFormaDelVerbo(string answer)
+    {
+        CaseLibrary.TryFind("3C", out StoryData _, out VariantData v);
+        ClueData clue = v.clues.First(c => c.id == "3C_despedida");
+        Assert.IsTrue(ClueDetector.Evaluate(clue.anchors, ClueDetector.Normalize(answer)).Matched, answer);
     }
 }

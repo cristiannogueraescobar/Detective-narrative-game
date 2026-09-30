@@ -132,13 +132,13 @@
           "id": "hermano",
           "playerStems": [ "hermano", "alex", "mensaje", "whatsapp", "movil de paula", "con quien hablaba" ],
           "fallbackDay": 2,
-          "fallbackText": "El hermano de Paula llega al cuartel desde Granada con el móvil en la mano: quiere enseñarle algo."
+          "fallbackText": "El hermano de Paula llega al cuartel desde Granada: dice que Paula se lo cuenta todo y quiere hablar con usted."
         },
         {
           "id": "vecina",
-          "playerStems": [ "vecin", "finca de al lado", "caballo", "cancela", "pozo", "quien vio", "encarna" ],
+          "playerStems": [ "vecin", "finca de al lado", "caballo", "cancela", "pozo", "quien vio", "alguien vio", "testig", "encarna" ],
           "fallbackDay": 3,
-          "fallbackText": "La Guardia Civil toma declaración en las fincas vecinas: la dueña de la de al lado vio humo el sábado."
+          "fallbackText": "La Guardia Civil toma declaración en las fincas vecinas: la dueña de la de al lado dice que desde su ventana se ve la finca de Javier."
         }
       ]
     }
