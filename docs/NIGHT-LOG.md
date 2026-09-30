@@ -132,7 +132,7 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   nada (igual que los de pistas); el aviso no se recolorea si cambia el alto contraste con él abierto (los
   ajustes solo se abren desde el menú). Tests 520/520 + PlayMode 16/16.
 
-- 07:55 El informe final solo dice cuánto faltó si acertaste sin condena segura. La build de Windows se abría a
+- 07:42 El informe final solo dice cuánto faltó si acertaste sin condena segura. La build de Windows se abría a
   pantalla completa con la interfaz vertical estirada en un monitor apaisado: ahora es una ventana 9:16 al 90 %
   del alto (comprobado en la build real: 2560x1600 → 810x1440). Prueba de humo OK.
 
