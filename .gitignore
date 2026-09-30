@@ -76,3 +76,7 @@ crashlytics-build.properties
 
 # Anthropic API key (never commit)
 /anthropic_api_key.txt
+
+# IDE
+.vscode/
+*.slnx
