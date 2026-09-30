@@ -154,6 +154,8 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 - El proveedor LLM del móvil (punto 1 de las decisiones).
 - Arte definitivo (retratos nuevos por emoción, intros, cabeceras) y audio definitivo (ART-NEEDED / AUDIO-NEEDED).
 - Firma de publicación (keystore fuera del repositorio).
+- Con el lector de pantalla activo, los enlaces de la libreta crean cadenas cada medio segundo (revisión 4, #6): medir en
+  un Android modesto con TalkBack y, si se nota, cachear por texto.
 
 ## 8. Cómo probarlo en Unity (en este orden)
 1. Abrir el proyecto con **Unity 6000.3.2f1** y esperar a que importe (la primera vez tarda).
