@@ -96,8 +96,8 @@ Todas tomadas de forma conservadora y reversibles; aquí para que las confirmes 
 11. **Ruta de la build**: `Builds/Windows-final/` (la habitual estaba bloqueada por el sistema en la noche 2).
 12. **Historial de la rama con ~300 MB de capturas en bruto** (error mío en el commit `ff30092`, retiradas en el
     siguiente). No he reescrito la historia remota sin tu permiso. Para que `main` no las herede: fusiona con
-    `git merge --squash feature/dia3` (o, si prefieres limpiar la rama: `git rebase -i` quitando `ff30092` de los
-    archivos de `docs/screenshots/2026-09-30/*` y `git push --force-with-lease`).
+    `git merge --squash feature/dia3`. Si prefieres limpiar la propia rama: `git rebase -i 5745bb2`, marcar
+    `98f436d` ("Untrack raw captures…") como `fixup` justo debajo de `ff30092`, y `git push --force-with-lease`.
 
 ## 7. Pendientes
 - APK de Android (instalar el módulo) y medir el post-proceso en un móvil real (estimado 1-2 ms).

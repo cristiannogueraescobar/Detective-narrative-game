@@ -422,6 +422,10 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   anotados: foco visible con teclado (PC) y lector de pantalla (Unity 6 lo permite; exige API 26 → RESEARCH.md).
   EditMode 668/668.
 
+- **13:26** ERROR MÍO: `git add docs` en ff30092 subió 512 capturas en bruto (~300 MB). Retiradas en 98f436d y
+  añadidas a .gitignore; no reescribo la historia remota sin permiso → Decisiones para Cristian (fusionar con
+  --squash o limpiar con rebase + force-with-lease). A partir de aquí, solo `git add` de rutas concretas.
+
 ## Ahora (día 3)
 - Ronda final 2: bot para comprobar los desbloqueos tras el n.º 7; capturas tras los cambios; recorrido mental.
   Informe intermedio a las ~16:10.
