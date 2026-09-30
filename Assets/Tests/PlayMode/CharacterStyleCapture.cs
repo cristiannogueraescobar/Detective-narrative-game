@@ -16,8 +16,8 @@ public class CharacterStyleCapture
 {
     private const int Width = 540;
     private const int Height = 720;
-    private static readonly string[] Characters = { "padre", "madre", "vecina", "cartero" };
-    private static readonly string[] Keys = { "Padre", "Madre", "Vecina", "Cartero" };
+    private static readonly string[] Characters = { "padre", "madre", "hermano", "vecina", "cartero", "duenio_bar", "detective" };
+    private static readonly string[] Keys = { "Padre", "Madre", "Hermano", "Vecina", "Cartero", "Dueño del Bar", "Detective" };
 
     private string folder;
 
