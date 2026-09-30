@@ -91,9 +91,11 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 - **superpowers:test-driven-development** en todo el código (cada arreglo de la revisión: test en rojo → verde).
 - **design:design-critique** (C1, docs/DESIGN-CRITIQUE.md), **design:ux-copy** (C6, glosario y tabla de textos) y
   **design:accessibility-review** (auditoría WCAG 2.2 AA en las rondas finales).
-- **Subagentes**: auditoría editorial (A2), investigación con búsqueda web (B1), revisión de código independiente
-  con el modelo más capaz (D3).
-- **Búsqueda web**: juegos de detectives (RESEARCH.md), nivel de API de Google Play (E).
+- **Subagentes**: auditoría editorial (A2), investigación con búsqueda web (B1) y **cinco revisiones de código
+  independientes** (D3 y rondas finales), cada una sobre lo cambiado desde la anterior.
+- **Búsqueda web**: juegos de detectives (RESEARCH.md), nivel de API de Google Play (E), libretas de deducción
+  (→ tus notas), reseñas de juegos de interrogatorio con IA y bucles de "un caso más" (→ A/B de preguntas,
+  rejugar con otro culpable).
 - Medición propia: bot jugador (BotPlayer), calibradores de pistas/estados/premisas, capturas en batchmode,
   `Tools/check_audio.py`, `AnimationCapture.CosteVisual`.
 - No disponibles en esta sesión (sustituidos por lo anterior): design-skills, unity-perf, finecomb, plugin de Unity.
@@ -107,6 +109,9 @@ jugador nuevo) hasta ~22:00; informe final; limpiar el worktree temporal.
 - **Datos que decidieron**: reintento por horas (A/B), límite de 540 y luego 565 palabras (calibración), regla
   contra premisas falsas (sonda + calibración completa), 2.5D frente a vóxel (capturas y vértices), raíces de
   desbloqueo (bot: el hermano salía el día 1 en 8/12 partidas), tonos de los drones de la música (espectro).
+- **Rondas finales, con datos**: el consejo de preguntar "horas, lugares, objetos" se queda (A/B del bot sin
+  efecto); la 2B no se toca (su pista clave sale 10/10 al preguntarla; falla el razonamiento del bot) pero la
+  rueda marca a quien descarta una pista; el bot ahora lee los partes (antes no, y sesgaba todo a "difícil").
 - Documentos: GAME-DESIGN.md, DESIGN-CRITIQUE.md, CODE-REVIEW.md, RENDIMIENTO.md, ANDROID-BUILD.md, COHERENCE.md,
   STORY-AUDIT.md.
 
