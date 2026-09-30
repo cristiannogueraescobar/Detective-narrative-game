@@ -156,6 +156,24 @@ public class GameSmokeTests
     }
 
     [UnityTest]
+    public IEnumerator UnaPreguntaDeEjemploRellenaElCampoYSeVaAlPreguntar()
+    {
+        yield return StartNewGame();
+        GameObject box = Find("Sugerencias (auto)");
+        Assert.IsTrue(box != null && box.activeInHierarchy, "un interrogatorio sin empezar ofrece preguntas");
+
+        yield return Click("Sugerencia 1");
+        TMP_InputField input = Find("QuestionInput").GetComponent<TMP_InputField>();
+        Assert.AreEqual("¿Dónde estabas cuando pasó?", input.text, "tocarla solo la escribe");
+        Assert.AreEqual(0, provider.calls, "no se envía sola");
+        Assert.IsFalse(box.activeSelf, "con el campo escrito se apartan");
+
+        yield return Click("AskButton");
+        yield return WaitUntil(() => provider.calls == 1 && Find("AskButton").GetComponent<Button>().interactable, 5f, "respuesta");
+        Assert.IsFalse(box.activeSelf, "tras la primera pregunta ya no salen");
+    }
+
+    [UnityTest]
     public IEnumerator PeticionFallidaRetiraLaPreguntaYLaDevuelveAlCampo()
     {
         yield return StartNewGame();
