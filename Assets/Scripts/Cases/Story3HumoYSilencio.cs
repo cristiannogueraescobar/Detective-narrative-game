@@ -261,7 +261,8 @@ Tienes 7 días para descubrir qué pasó.",
                     {
                         // Con nombre, la tía sale sin "mi" y sin Granada ("en casa de tía Remedios"): calibración de las 21:14
                         new[] { "granada", "casa de mi tia", "remedios" },
-                        new[] { "todo el sabado", "todo el dia", "toda la jornada", "mis primos", "nerea", "hugo", "mi tia" }
+                        // Sin "nerea"/"hugo": salen en su secreto (bebía con ellos) y la pista se dispararía sola
+                        new[] { "todo el sabado", "todo el dia", "toda la jornada", "mis primos", "mi tia" }
                     },
                     calibrationQuestions = new[] { "¿Dónde estuvisteis tu madre y tú el sábado?", "¿Alguien puede confirmar dónde estaba tu madre el sábado?" },
                     sampleHits = new[]
