@@ -152,7 +152,7 @@ Si el contexto se compacta: releer este archivo y seguir por "Ahora".
   en el worktree: "Si el inspector dice que hiciste algo que no está en tu ficha, niégalo" (no debería tocar
   "¿Le había amenazado Javier?"). Solo se adopta si 3A_audios aguanta y las premisas mejoran.
 
-- 08:45 Experimento D ("dice que hiciste"): premisas 17/72 (23 %), igual que sin regla; 3A_audios 18/20. Las
+- 08:30 Experimento D ("dice que hiciste"): premisas 17/72 (23 %), igual que sin regla; 3A_audios 18/20. Las
   redacciones que funcionan cuestan una pista y la inocua no hace nada: la regla queda revertida y en pendientes.
 
 ## Ahora
