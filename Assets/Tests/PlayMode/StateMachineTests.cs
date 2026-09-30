@@ -364,4 +364,23 @@ public class StateMachineTests
         yield return new WaitForSecondsRealtime(0.5f);
         Assert.Greater(dropdown.options.Count, before, "con la respuesta, sí");
     }
+
+    // Ronda 5: la primera vez que la libreta ya apunta versiones, una indicación enseña a compararlas con las pistas
+    [UnityTest]
+    public IEnumerator LaLibretaEnsenaAUsarLasVersiones()
+    {
+        Tutorial.Reset();
+        foreach (string id in new[] { Tutorial.Ask, Tutorial.Days, Tutorial.Evidence, Tutorial.Contradiction })
+            Tutorial.MarkSeen(id);
+        yield return StartNewGame();
+        yield return AskAndWait("¿Dónde estabas esa noche?");
+
+        yield return Tap("ViewCluesButton");
+        yield return new WaitForSecondsRealtime(1.5f);
+
+        Assert.IsTrue(Object.FindObjectsByType<TMP_Text>(FindObjectsSortMode.None)
+                .Any(t => t.isActiveAndEnabled && t.text.Contains(Tutorial.TextOf(Tutorial.Versions))),
+            "indicación sobre lo que dice cada uno");
+        Tutorial.SkipAll();
+    }
 }

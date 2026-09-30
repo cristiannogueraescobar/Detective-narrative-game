@@ -934,6 +934,9 @@ public partial class InterrogationUI : MonoBehaviour
             cluesPanel.SetActive(true);
             cluesPanel.transform.SetAsLastSibling(); // Por encima del retrato y los desplegables
             UIAnimations.CardFlip(this, cluesPanel.transform);
+            // La primera vez que ya hay versiones apuntadas: cómo se usan para pillar una mentira
+            if (cluesText != null && cluesText.text.Contains("Dice: «"))
+                ShowTutorial(Tutorial.Versions, null, 0.6f);
             Debug.Log("[InterrogationUI] Panel de pistas mostrado");
         }
     }

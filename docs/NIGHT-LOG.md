@@ -489,6 +489,9 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   BotPlayer.cs tenía finales de línea CR CR LF
  (una edición mía de la tarde): normalizado.
 
+- **15:13** Tutorial: quinta indicación, la primera vez que la libreta ya apunta lo que dice alguien ("Si una pista
+  no cuadra con su versión, enséñasela: así se pilla una mentira"). Test de juego. EditMode 686/686, PlayMode 46/46.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).
