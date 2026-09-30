@@ -188,12 +188,15 @@ abre Unity y deja que reimporte. Game View a **1080x1920 (vertical)**; después 
    - Arriba el retrato en plano medio con su etiqueta de estado; a la derecha sospechoso / Fin del día / Acusar.
    - El chat empieza con la tarjeta del DÍA 1. Sale la primera indicación del tutorial (prueba "Saltar tutorial"
      en otra partida).
+   - Bajo el chat, "Puedes empezar por…" con tres preguntas: toca una. Se escribe en el campo pero no se
+     envía; al escribir o enviar desaparecen. Cambia de sospechoso: vuelven (con él aún no has hablado).
    - Pregunta algo: tu burbuja sale al momento, luego "escribiendo…", luego la respuesta letra a letra (un toque
      la completa). Mira que el retrato cambie según el estado.
    - Sube a leer mientras responde: no te mueve; aparece "Nuevos mensajes".
-   - Si sale una pista: ficha que cae, destella y vuela a "Libreta" (contador rojo). Abre la libreta: papel.
+   - Si sale una pista: el selector pasa a decir "ninguna · 1 en la libreta" y da un saltito; ficha que cae, destella y vuela a "Libreta" (contador rojo). Abre la libreta: papel.
    - Gasta las 5 preguntas: "Fin del día" pasa a dorado. Púlsalo: hoja de calendario con el parte (dos toques).
-8. **Acusar**: rueda de reconocimiento con los bustos; el que tocas se marca. "Volver" (o Esc) vuelve y
+8. **Acusar**: bajo la pregunta, "En tu libreta: N pistas y M contradicciones" (sin pistas: "acusar ahora es
+   una apuesta"). Rueda de reconocimiento con los bustos; el que tocas se marca. "Volver" (o Esc) vuelve y
    recupera la música del caso. Acusa: "El jurado delibera…" y el final con su sello y la línea temporal.
 9. **Jugar otra vez** → selección de caso: el expediente muestra el mejor final que sacaste.
 10. **Continuar**: cierra el juego a mitad de partida y vuelve: "Continuar · <caso>, día N" y el chat entero.
