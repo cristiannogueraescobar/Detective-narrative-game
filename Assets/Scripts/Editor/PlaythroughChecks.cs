@@ -15,7 +15,7 @@ using System.Text.RegularExpressions;
 /// </summary>
 public static class PlaythroughChecks
 {
-    public enum Kind { AiBreak, InventedTime, InventedName, UnmotivatedConfession, FalseConfession, Incoherent }
+    public enum Kind { AiBreak, InventedTime, InventedName, UnmotivatedConfession, FalseConfession, Incoherent, FalseMemory }
 
     private static readonly Regex AiBreakPattern = new Regex(
         @"\b(soy|como) (una |un )?(ia|inteligencia artificial|modelo de lenguaje|asistente( virtual)?|chatbot|programa)\b|\bopenai\b|\bno puedo (ayudarte|ayudarle|proporcionar(te|le)? (esa |esta )?(informaci[oó]n|ayuda|asistencia))\b|\bseg[uú]n (mis|las) instrucciones\b|\bmis instrucciones (dicen|indican|son|establecen|no|me)\b|\bde acuerdo con (mis|las) instrucciones\b|\b(revelar|compartir) mis instrucciones\b|\banthropic\b|\blas instrucciones que me (han dado|dieron|dan)\b|\bpersonaje (que interpreto|ficticio)\b",
@@ -107,6 +107,10 @@ public static class PlaythroughChecks
             findings.Add(new Finding { kind = Kind.Incoherent, detail = "etiqueta de estado visible" });
         if (!string.IsNullOrEmpty(previousResponse) && trimmed.Length > 20 && trimmed == previousResponse.Trim())
             findings.Add(new Finding { kind = Kind.Incoherent, detail = "respuesta repetida" });
+
+        // "Como ya le dije" en su primera respuesta: finge recordar otra conversación (Sesión A)
+        if (previousResponse == null && AIConversationManager.ClaimsPriorTalk(text))
+            findings.Add(new Finding { kind = Kind.FalseMemory, detail = "primera respuesta" });
 
         return findings;
     }

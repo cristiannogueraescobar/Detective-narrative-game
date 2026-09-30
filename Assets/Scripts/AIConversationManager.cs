@@ -137,6 +137,18 @@ public class AIConversationManager : MonoBehaviour
             retried = true;
         }
 
+        // "Como ya le dije…" sin haberle dicho nada: en la primera conversación con este sospechoso suena a que
+        // recuerda otra partida (lo notó Cristian). Se pide otra vez, una sola, si no ha habido otro reintento
+        bool firstContact = !history.Take(history.Count - 1).Any(m => m.role == "assistant");
+        if (result.Success && !retried && firstContact && ClaimsPriorTalk(EmotionParser.Parse(result.Text).text))
+        {
+            FirstContactRetries++;
+            retried = true;
+            LLMResult retry = await llmProvider.SendAsync(systemPrompt, Nudged(history, FirstContactNudge), maxTokens, temperature);
+            if (retry.Success && EmotionParser.Parse(retry.Text).text.Length > 0 && !ClaimsPriorTalk(EmotionParser.Parse(retry.Text).text))
+                result = retry;
+        }
+
         // Una hora que no está en la ficha ni en lo que preguntó el inspector puede despistar al jugador: se pide
         // otra vez (una sola, y nunca después del reintento por repetición) y se queda la que menos horas inventa
         if (result.Success && !retried && RetryInventedTimes)
@@ -229,6 +241,16 @@ public class AIConversationManager : MonoBehaviour
     public const string RepeatNudge = " (No repitas lo que ya has dicho: responde con otras palabras.)";
     public const string LanguageNudge = " (Responde solo en español.)";
     public static int LanguageRetries;
+    public const string FirstContactNudge = " (Es la primera vez que hablas con este inspector: no digas «como le dije» ni «ya se lo conté».)";
+    public static int FirstContactRetries;
+
+    // "Como le dije", "lo que ya te conté", "como te he dicho antes"… dicho al inspector (no "se lo dije a otro")
+    private static readonly System.Text.RegularExpressions.Regex PriorTalk = new System.Text.RegularExpressions.Regex(
+        @"\b(como|lo que)\s+(ya\s+)?(le|te)\s+(he\s+)?(dicho|dije|contado|conté|comentado|comenté|decía)\b|\bya\s+(le|te)\s+(lo\s+)?(he\s+)?(dicho|dije|contado|conté)\b",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    public static bool ClaimsPriorTalk(string text) => !string.IsNullOrEmpty(text) && PriorTalk.IsMatch(text);
+
     public const string TimeNudge = " (Solo di horas que estén en tu ficha; si no sabes la hora, di que no te fijaste.)";
     // "No me fijé, pero creo que sobre las 23:30": la nota estricta prohíbe también la hora aproximada (A/B, ronda 30)
     public const string TimeNudgeStrict = " (Solo di horas que estén en tu ficha; si no sabes la hora, di que no te fijaste, sin dar ninguna hora aproximada.)";

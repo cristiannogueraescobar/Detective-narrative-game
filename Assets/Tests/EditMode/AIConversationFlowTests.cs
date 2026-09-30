@@ -320,4 +320,43 @@ public class AIConversationFlowTests
 
         StringAssert.Contains("[ESTADO: nervioso]", manager.Histories["a"][1].content);
     }
+
+    // Sesión A: "como ya le dije" en la primera conversación con un sospechoso parece memoria de otra partida
+    [Test]
+    public void EnLaPrimeraConversacionNoFingeRecordarNada()
+    {
+        provider.results.Enqueue(LLMResult.Ok("Como ya le dije, estuve en casa toda la noche. [ESTADO: tranquilo]"));
+        provider.results.Enqueue(LLMResult.Ok("Estuve en casa toda la noche. [ESTADO: tranquilo]"));
+
+        LLMResult answer = Ask("a", "¿Dónde estuvo esa noche?");
+
+        Assert.AreEqual(2, provider.calls, "se pide otra vez");
+        Assert.AreEqual("Estuve en casa toda la noche.", answer.Text);
+        StringAssert.Contains("primera vez", provider.lastUserMessage, "con una nota: es la primera vez que hablan");
+        foreach (ChatMessage m in manager.Histories["a"])
+            StringAssert.DoesNotContain(AIConversationManager.FirstContactNudge.Trim(), m.content, "la nota no se queda");
+    }
+
+    [Test]
+    public void SiYaHablaronPuedeDecirComoLeDije()
+    {
+        provider.results.Enqueue(LLMResult.Ok("Estuve en casa. [ESTADO: tranquilo]"));
+        provider.results.Enqueue(LLMResult.Ok("Como ya le dije, estuve en casa. [ESTADO: tranquilo]"));
+        Ask("a", "¿Dónde estuvo?");
+        int before = provider.calls;
+
+        LLMResult answer = Ask("a", "¿Seguro?");
+
+        Assert.AreEqual(before + 1, provider.calls, "ya le había contestado: no es memoria inventada");
+        Assert.AreEqual("Como ya le dije, estuve en casa.", answer.Text);
+    }
+
+    [TestCase("Como te he dicho antes, no vi nada.", true)]
+    [TestCase("Lo que ya le conté: estaba en el bar.", true)]
+    [TestCase("Ya se lo dije al otro agente.", false)] // Se lo dijo a otra persona, no al inspector
+    [TestCase("Le digo que no vi nada.", false)]
+    public void DetectaLaMemoriaFingida(string text, bool expected)
+    {
+        Assert.AreEqual(expected, AIConversationManager.ClaimsPriorTalk(text));
+    }
 }

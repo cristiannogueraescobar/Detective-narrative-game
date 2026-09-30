@@ -121,4 +121,12 @@ public class PlaythroughChecksTests
         string repeated = "Estaba en casa toda la noche, ya se lo he dicho.";
         CollectionAssert.Contains(Kinds(repeated, previous: repeated), PlaythroughChecks.Kind.Incoherent);
     }
+
+    // Sesión A: "como ya le dije" en la primera respuesta de un sospechoso es memoria fingida (parece otra partida)
+    [Test]
+    public void LaMemoriaFingidaSoloCuentaEnLaPrimeraRespuesta()
+    {
+        CollectionAssert.Contains(Kinds("Como ya le dije, estuve en casa.", previous: null), PlaythroughChecks.Kind.FalseMemory);
+        CollectionAssert.DoesNotContain(Kinds("Como ya le dije, estuve en casa.", previous: "Estuve en casa."), PlaythroughChecks.Kind.FalseMemory);
+    }
 }
