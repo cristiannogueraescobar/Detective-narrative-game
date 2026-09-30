@@ -532,6 +532,11 @@ sus funciones se cubren con subagentes de revisión, búsqueda web y medición p
   reintentos por idioma, 0 confesiones/incoherencias; marcadas 2 (un nombre inventado, "Iago" = 1/178, dentro de
   la tasa conocida; una hora que solo repite la franja de la pregunta). Acumulado del día: 35/44.
 
+- **16:52** Ronda 11. Render a 2400: "tu nota: sospechoso" se partía en dos líneas → `<nobr>` (test). Revisión
+  independiente del diff desde el checkpoint (CODE-REVIEW.md, cuarta): 1 importante (nota durante una pregunta
+  = guardado a medio turno) y 6 menores; arreglados todos menos uno (GC con lector, anotado). Además: el informe
+  final recuerda tu nota sobre el culpable. EditMode 707/707, PlayMode 51/51.
+
 ## Ahora (día 3)
 - A/B de las versiones en la libreta (bot, semilla 59, 18 + 18) en curso; luego informe intermedio (16:09) y más
   rondas finales hasta ~22:00 (capturas y crítica, diff, bot en variantes al azar, recorrido de jugador nuevo).

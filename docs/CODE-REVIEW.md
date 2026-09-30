@@ -167,3 +167,18 @@ importantes, 6 menores.** Resolución:
 | 6 | Menor | La forma canónica quitaba etiquetas no reconocidas; las partidas guardadas conservaban las erratas | **Arreglado**: se conserva tal cual; al continuar, el historial se normaliza (test) |
 | 7 | Menor | La etiqueta cortada con errata ("[MESTADO: nerv") seguía viéndose | **Arreglado** (test) |
 | 8 | Menor (bot) | Al rehacer una pregunta en otro alfabeto, el bot perdía la ayuda de Pensar | **Arreglado** |
+
+# Revisión de código (día 3, cuarta)
+Cuarta revisión independiente (subagente, contexto limpio), sobre `git diff 87d4932..HEAD` (notas del jugador,
+enlaces de la libreta para el lector, menú con "Continuar" principal). **0 críticos, 1 importante, 6 menores.**
+
+| # | Sev. | Hallazgo | Estado |
+|---|---|---|---|
+| 1 | Importante | Tocar una nota con una pregunta en marcha guardaba la partida a medio turno (la pregunta sin respuesta quedaba en el historial guardado; al continuar, dos mensajes de usuario seguidos) | **Arreglado**: con la pregunta en marcha la nota se guarda al terminar el turno (test visto en rojo) |
+| 2 | Menor | Ids repetidos en el lector (enlace = hash de texto + id) descuadrarían la jerarquía | **Arreglado**: el segundo id igual no entra |
+| 3 | Menor | El marco del enlace usaba el índice guardado; al llegar una pista con la libreta abierta, el foco se dibujaba en otro enlace durante medio segundo | **Arreglado**: se busca por id |
+| 4 | Menor | En la rueda se atenuaba la celda entera: también el anillo de selección y el nombre (contraste) | **Arreglado**: solo el retrato; el nombre en color secundario, a todo contraste |
+| 5 | Menor | "tu nota: sospechoso/descartado" en masculino para todos; la ayuda prometía que la rueda tenía en cuenta "sospechoso" | **Arreglado**: "sospecha" / "descarte" (sustantivos); la ayuda dice lo que hace; el lector dice "Nota sobre X: sospecha" |
+| 6 | Menor | Cadenas nuevas cada medio segundo por enlace con el lector activo (GC en móviles modestos) | **Pendiente**, anotado: solo con lector activo; cachear por texto si se nota en un móvil real |
+| 7 | Menor (tests) | La nota no se probaba con "Continuar" ni durante una pregunta | **Arreglado**: dos tests de juego nuevos |
+| — | Nit | Comentario de `RestartButton` pegado a `NewCaseButton` | **Arreglado** |
