@@ -817,3 +817,14 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
 - **21:35** Medición en marcha (worktrees `../dng-main` y `../dng-dos`): 48 pistas ×10 en main (base del bloque A y
   de las dos pistas), bot en la rama y en main (semilla 1919), y después las dos pistas ×10 en la rama. Un error
   mío al preparar la carpeta de la rama hizo fallar ese primer paso; se repite al final de la serie.
+
+## Parte 2
+- **21:36 Bloque B.** finecomb carga (se lanzó sin error). Auditoría de `Assets/Scripts` por un subagente con su
+  método, solo lectura, orden de riesgo: 2 importantes (Continuar borra la partida ante cualquier excepción; el
+  jugador puede inyectar instrucciones al sospechoso) y 6 menores. **Error mío:** cambié de rama (a
+  revision-textos) mientras el subagente leía, así que auditó `main` y no el cambio de dos portadores.
+- **21:53 Bloque C** (rama `feature/revision-textos`, `37cd95a`, skill ux-copy): 462 textos revisados, 18 cambios
+  (concordancia sin género, glosario, números en letra, «Cómo se juega», «Mostrar prueba» más corto, comillas).
+  4 cambios para Cristian (etiquetas de estado sin género, títulos, error de Anthropic, historia/caso).
+  `docs/TEXT-REVIEW.md`. EditMode 765/766 con LayoutValidationTests, PlayMode 64, 0 fallos. Dos tests que fijaban
+  el texto antiguo los actualicé después del código y no antes (FxTests, GameSmokeTests): fallo de orden TDD.
