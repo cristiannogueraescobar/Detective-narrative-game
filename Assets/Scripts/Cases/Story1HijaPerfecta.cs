@@ -288,7 +288,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     fact = "Tu frasco de zolpidem, que abriste hace una semana, estaba casi vacío por la mañana: faltaban muchas pastillas que tú no tomaste.",
                     anchors = new[]
                     {
-                        new[] { "frasco", "bote", "caja" },
+                        new[] { "frasco", "bote", "caja", "zolpidem" },
                         new[] { "vacio", "faltaban", "faltan", "faltaba" }
                     },
                     calibrationQuestions = new[]
@@ -299,7 +299,8 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     sampleHits = new[]
                     {
                         "Mi frasco de zolpidem estaba casi vacío, faltaban pastillas que yo no tomé.",
-                        "El bote de pastillas para dormir... faltaban muchas, inspector."
+                        "El bote de pastillas para dormir... faltaban muchas, inspector.",
+                        "El zolpidem está en mi mesita de noche y estaba casi vacío por la mañana."
                     },
                     sampleMisses = new[] { "Me tomé mi pastilla para dormir a las diez y me dormí." }
                 }
@@ -686,14 +687,15 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     fact = "a la mañana siguiente, al recoger el cuarto de Lucas, encontraste debajo de su cama el móvil de Elena con la pantalla rota. No se lo has dicho a nadie porque te da miedo lo que significa; si el inspector te pregunta por el móvil, se lo cuentas. Elena nunca soltaba su móvil.",
                     anchors = new[]
                     {
-                        new[] { "movil", "telefono" },
-                        new[] { "pantalla", "cuarto de lucas", "habitacion de lucas", "debajo de la cama" }
+                        new[] { "movil", "telefono", "pantalla rota" },
+                        new[] { "pantalla", "cuarto de lucas", "habitacion de lucas", "debajo de la cama", "cama de lucas" }
                     },
                     calibrationQuestions = new[] { "¿Dónde estaba el móvil de Elena?", "¿Encontró algo fuera de su sitio esa noche?" },
                     sampleHits = new[]
                     {
                         "El móvil de Elena estaba en el cuarto de Lucas, con la pantalla rota.",
-                        "Encontré su teléfono debajo de la cama de Lucas, roto."
+                        "Encontré su teléfono debajo de la cama de Lucas, roto.",
+                        "Al día siguiente lo encontré debajo del cajón de la cama de Lucas con la pantalla rota."
                     },
                     sampleMisses = new[] { "No sé dónde estará su móvil, supongo que en su cuarto.", "Estoy rota, inspector. Daniel me llamó por teléfono y vine corriendo." }
                 },

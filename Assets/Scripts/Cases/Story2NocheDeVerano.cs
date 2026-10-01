@@ -596,13 +596,14 @@ Tienes 7 días.",
                     anchors = new[]
                     {
                         new[] { "movil", "telefono", "prueba" },
-                        new[] { "extravi", "se perdio", "perdido", "traslado", "desaparecio" }
+                        new[] { "extravi", "se perdio", "perdido", "traslado", "desaparecio", "cosas que pasan", "no llego a vigo" }
                     },
                     calibrationQuestions = new[] { "¿Dónde está el móvil de Sofía?", "¿Encontraron el teléfono de la chica?", "¿Por qué el móvil de Sofía no está entre las pruebas enviadas a Vigo?" },
                     sampleHits = new[]
                     {
                         "El móvil se extravió en el traslado a Vigo, compañero. Pasa.",
-                        "Encontramos el teléfono en la cala, pero se perdió por el camino."
+                        "Encontramos el teléfono en la cala, pero se perdió por el camino.",
+                        "El móvil de la chica apareció en la cala, se registró como prueba y... bueno, son cosas que pasan."
                     },
                     sampleMisses = new[] { "El móvil lo tiene la científica, no se preocupe." }
                 },

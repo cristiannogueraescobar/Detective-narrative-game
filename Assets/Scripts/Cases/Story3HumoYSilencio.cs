@@ -637,7 +637,7 @@ Tienes 7 días para descubrir qué pasó.",
                     calibrationQuestions = new[]
                     {
                         "¿Dónde estuvo el sábado por la tarde? || No me cuadra. ¿Qué hizo exactamente y hasta qué hora?",
-                        "¿Entró a ver a Paula al volver a casa? || Insisto, dígame la verdad.", "¿Alguien puede confirmar que estuvo en el bar?"
+                        "¿Alguien puede confirmar que estuvo en el bar?"
                     },
                     sampleHits = new[]
                     {
