@@ -809,3 +809,11 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
 - Mensaje nuevo de Cristian a mitad del punto 5: retratos completos por derivación de código, después de terminar
   lo pendiente (puntos 4, bloques A-D). Respondida su pregunta sobre retratos ya hechos (sesión A: 6 derivados en
   el juego; sesión B: generados con IA fuera del repo, sin integrar; sesión C: ninguno).
+- **21:33 Punto 4** (rama `feature/pistas-dos-portadores`, `bf9068b`, test primero): `ClueData.alsoHeldBy` + vista
+  `ForHolder` (tema, hecho, anclas y preguntas propias). Ficha, detector, ayudas, calibrador, validador y resumen
+  final usan todos los portadores. Segundo portador de 1B_cena y 1C_llamada: **Amparo** (1B: conoce a Marta, la del
+  bufete, que trae a Daniel a casa; 1C: tras el golpe ve a Lucas llorando al móvil y a las 22:15 llega el coche del
+  padre). EditMode 764/765, 0 fallos.
+- **21:35** Medición en marcha (worktrees `../dng-main` y `../dng-dos`): 48 pistas ×10 en main (base del bloque A y
+  de las dos pistas), bot en la rama y en main (semilla 1919), y después las dos pistas ×10 en la rama. Un error
+  mío al preparar la carpeta de la rama hizo fallar ese primer paso; se repite al final de la serie.
