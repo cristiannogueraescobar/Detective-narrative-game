@@ -863,3 +863,11 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
   Marcos, Maruxa y Encarna se lee como "enfadado" (0/3). Integradas como arte antiguo (mismo encuadre). Fallo de TDD:
   `make_expressions.py` lo escribí antes que sus tests.
 - **22:39** `docs/art/RETRATOS-FINAL.jpg` y `docs/art/ANTES-DESPUES.jpg`.
+- **23:04** Bot en la rama final (`fd2b041`, semilla 1919, 18 partidas): culpable **17/18**. Los 5 nombres inventados
+  de 1B son de Carmen (un fármaco y García Márquez), no de la vía nueva de Amparo. Bot de main en marcha.
+- **23:06 Bloque D** (`docs/PRIMERA-PARTIDA.md`, skill journey-mapping, capturas reales y datos del bot): el día 1
+  termina sin pistas en 12 de 18 partidas (primera pista en la pregunta 6,1 con 5 al día); 2-4 de 7 días sin pista.
+  5 fricciones con una propuesta cada una. Solo análisis.
+- **23:11 Pistas entre el 70 y el 80 %** (`241d8d1`, test primero): anclas que recuperan respuestas reales en
+  2A_curva, 2C_prueba, 2C_gps y 3A_garrafas, y una pregunta de 2A_curva que no empuja a negar. 1A_partida, 2C_puerto,
+  2C_comisaria y 3B_armario sin cambios (modelo o sin datos). Medición ×10 en cola tras el bot de main.
