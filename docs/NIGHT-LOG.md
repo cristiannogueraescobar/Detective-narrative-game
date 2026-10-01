@@ -759,3 +759,29 @@ retratos → 4 gráficos.
   tamaño real y midiendo. EditMode 740/740, PlayMode 64/64 (+24 capturas/mediciones ignoradas como siempre).
 - **02:25** Informe final `docs/REPORT-SESION-A.md` (los cuatro bloques, HECHO CUANDO de cada uno, galería antes/después
   y lo pendiente). Sesión A cerrada; todo en `feature/sesion-a`, `main` sin tocar.
+
+# Sesión de skills (01-10-2026) — rama `feature/skills` (desde `main`, sin tocar el código del juego)
+
+## Bloque 1: por qué no cargaban los plugins
+- **09:40** `finecomb`, `unity-perf`, `design-skills` y `unity` daban `Unknown skill`. `claude plugin list` los mostraba
+  `✔ loaded`, y un `claude -p` nuevo los cargaba los cuatro. Causa: esta conversación era el mismo proceso desde el
+  28-09 a las 20:12, y esos cuatro plugins se sincronizaron el 30-09 a las 10:05, después. Los plugins se registran al
+  arrancar. No era la instalación, ni el alcance, ni la versión (2.1.285). Al crear `.claude/skills/`, la sesión volvió a
+  leer la lista de skills y ya los vio. `docs/SKILLS-SETUP.md` dice cómo comprobarlo al empezar y qué hacer si no cargan.
+
+## Bloque 2: 14 skills del proyecto (`.claude/skills/`)
+- **10:20** Escritas con `writing-skills` a partir de NIGHT-LOG, los REPORT, COHERENCE, CLUE-LOGIC y CODE-REVIEW (un
+  agente extrajo 4-8 casos reales por skill, con su archivo:línea). Prueba: 14 tareas simuladas en procesos nuevos,
+  primero sin skills y luego con ellas, sin `CLAUDE.md` ni mapa para que cada una se activara solo por su descripción.
+  Se activaron **14/14**. Comprobaciones: 53/70 → 63/70 (≈67 revisadas a mano). Herramientas: 140 → 93. Tiempo:
+  13,3 → 9,9 min. Coste: 6,19 → 4,24 $. Cinco tareas ya salían 5/5 sin skill (el agente lee los docs).
+  La prueba sacó dos cosas: `.gitignore` solo ignoraba `anim/` del 30-09 (las 200 capturas del 01-10 aparecían como
+  nuevas), y faltaba `.claude/scheduled_tasks.lock`. Las dos están en `.gitignore`, y `git-hygiene` se volvió a probar.
+  Banco de pruebas: `Tools/skill-tests/` (resultados en `Logs/skill-tests/`).
+- Error mío: creé `CLAUDE.md` con las líneas base aún en marcha. Lo aparté a los ~20 s, antes de que arrancara ningún
+  proceso nuevo (las 4 primeras habían empezado antes), así que la línea base no se contaminó.
+
+## Bloque 3: mapa
+- **10:35** `docs/SKILLS-MAP.md`: qué skill del proyecto y cuál instalada usar en cada tipo de tarea. Solo nombres
+  comprobados en disco. `CLAUDE.md` nuevo con la línea "lee SKILLS-MAP.md al empezar". Probado en un proceso nuevo:
+  leyó el mapa solo y siguió la fila de Animaciones.
