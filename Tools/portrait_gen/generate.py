@@ -48,6 +48,14 @@ JAVIER = ('pixel art sprite, full body, 44 year old weathered heavy-set man, tir
 JAVIER_NEGATIVE = ('moustache, mustache, apron, vest, cigarette, beer mug, red plaid, lumberjack, young, handsome, smiling, '
                    'slim, athletic, braces, suspenders, photorealistic, 3d render, blurry, anime, chibi, cropped feet, '
                    'scenery, text, watermark, multiple characters, glasses')
+# Prueba ciega (3 de 3 señalaron al candidato): paleta turbia y sin contraste, sombreado ruidoso, cara borrosa sin ojos
+# claros. Variante con el estilo explícito (cel shading, colores vivos, ojos expresivos) y negativo contra el ruido.
+JAVIER_CEL = ('pixel art sprite, anime style, clean flat cel shading, vibrant saturated colors, big expressive eyes, full '
+              'body, 44 year old weathered heavy-set man, bitter defensive scowl, stubble beard, no moustache, dark hair '
+              'grey temples, olive and brown flannel shirt, brown trousers, boots, green beer bottle')
+JAVIER_CEL_NEGATIVE = ('muted colors, desaturated, dithering, noise, painterly, blurry face, realistic face, moustache, '
+                       'apron, vest, mug, young, handsome, slim, suspenders, photorealistic, 3d render, anime chibi, '
+                       'cropped feet, scenery, text, watermark, multiple characters')
 CHARACTER = ('pixel art sprite, full body, plain light grey background, 44 year old heavy-set farmer, red plaid flannel '
              'shirt with rolled sleeves, dark stubble beard, short dark brown hair grey at the temples, tired face, '
              'holding a green beer bottle, brown work trousers, work boots, thick black outline')
@@ -213,6 +221,7 @@ def main():
     ap.add_argument('--strength', type=float, default=0.65, help='cuánto se aleja de --init (0 = igual, 1 = nada)')
     ap.add_argument('--pose-kind', default='standing', choices=sorted(pose.POSES))
     ap.add_argument('--javier', action='store_true', help='prompt de la revisión de Cristian (JAVIER, JAVIER_NEGATIVE)')
+    ap.add_argument('--cel', action='store_true', help='con --javier: variante JAVIER_CEL (tras la prueba ciega)')
     args = ap.parse_args()
 
     for sub in ('raw', 'final'):
@@ -223,8 +232,8 @@ def main():
     skeleton = pose.render(pose.POSES[args.pose_kind](W, H), W, H)
     skeleton.save(os.path.join(args.out, 'pose.png'))
     refs = [on_white_square(os.path.join(REPO, p)) for p in REFERENCES]
-    prompt = JAVIER if args.javier else f'{CHARACTER}, {EXPRESSIONS[args.expression]}'
-    negative = JAVIER_NEGATIVE if args.javier else NEGATIVE
+    prompt = (JAVIER_CEL if args.cel else JAVIER) if args.javier else f'{CHARACTER}, {EXPRESSIONS[args.expression]}'
+    negative = (JAVIER_CEL_NEGATIVE if args.cel else JAVIER_NEGATIVE) if args.javier else NEGATIVE
 
     (prompt_embeds, negative_embeds, pooled, negative_pooled), ip_embeds = encode_once(pipe, prompt, negative, refs)
     init = None
@@ -269,17 +278,17 @@ def main():
             print(rows[-1], flush=True)
             continue
         try:
-            clean, report = rwb.process(image)
+            if args.javier:  # Revisión de Cristian: la misma cadena que finish.py (contorno, color, contraste)
+                import finish
+                final, report = finish.finish(image, cell=args.cell)
+            else:
+                clean, report = rwb.process(image)
+                if report['shadow_pixels'] == 0:
+                    clean = style.add_shadow(clean)  # Fondo de color: sombra sintética medida sobre los originales
+                final = style.pixelate(clean, cell=args.cell)
         except ValueError as e:
             rows.append({'seed': seed, 'score': 999, 'error': str(e)})
             continue
-        if report['shadow_pixels'] == 0:
-            clean = style.add_shadow(clean)  # Fondo de color: sombra sintética medida sobre los originales
-        final = style.pixelate(clean, cell=args.cell)
-        if args.javier:  # Revisión de Cristian: contorno negro grueso y color medido sobre Marcos y Lucía
-            import numpy as np
-            final = style.reinforce_outline(final, cell=args.cell)
-            final = Image.fromarray(colour.correct(np.asarray(final)), 'RGBA')
         final.save(os.path.join(args.out, 'final', f'{seed}.png'))
         m = style.measure(final)
         leak = style.background_leak(image)

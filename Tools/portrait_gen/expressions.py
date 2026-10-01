@@ -37,13 +37,21 @@ EDITS = {
                  'eyes glancing sideways, a sweat drop on the temple, shoulders tense', 'cara'),
     'botella': ('pixel art, a hand holding a green glass beer bottle by the neck, the bottle hanging down beside the '
                 'leg, red plaid flannel sleeve', 'mano'),
+    # Prueba ciega (6 de 6 lo señalaron): "cara realista, ojos pequeños entornados" frente a las caras de los originales
+    'cara_estilo': ('pixel art, anime style face, large dark expressive eyes with white highlights, thick black '
+                    'eyebrows, simple clean cel shading, bitter defensive scowl, short dark stubble beard, no moustache, '
+                    '44 year old weathered man, dark hair grey at the temples', 'cara'),
+    # A 0,7 la cara ganaba estilo pero dejaba de ser Javier (joven, sin barba, mechones rojizos de Lucía)
+    'cara_estilo_mayor': ('pixel art, middle-aged weathered man in his forties, full dark stubble beard on cheeks and '
+                          'jaw, wrinkles, tired bags under the eyes, dark expressive eyes with white highlights, thick '
+                          'black eyebrows, bitter scowl, clean cel shading, dark brown hair grey at the temples', 'cara'),
 }
 
 
-def edit_mask(raw, zone):
+def edit_mask(raw, zone, pose_kind='standing'):
     """Máscara de la zona a repintar, a partir de los puntos del esqueleto y limitada a la figura."""
     w, h = raw.size
-    p = pose.standing_three_quarter(w, h)
+    p = pose.POSES[pose_kind](w, h)
     fh = h * 0.90
     head = fh * 0.20
     mask = np.zeros((h, w), bool)
@@ -71,13 +79,16 @@ def main():
     ap.add_argument('--first-seed', type=int, default=7000)
     ap.add_argument('--strength', type=float, default=0.75)
     ap.add_argument('--cell', type=int, default=5)
+    ap.add_argument('--pose-kind', default='standing', choices=sorted(pose.POSES))
+    ap.add_argument('--style', type=float, default=0.3)
+    ap.add_argument('--refs', default='', help='referencias de estilo separadas por comas (por defecto las de generate)')
     args = ap.parse_args()
 
     from diffusers import StableDiffusionXLControlNetInpaintPipeline
     # Misma gestión de memoria que generate.py: modelos en la GPU, codificadores una vez en la CPU y eliminados (antes,
     # enable_model_cpu_offload: ~13-14 GB de RAM)
-    base = generate.load_pipeline(lora_scale=0.8, style_scale=0.3)
-    refs = [generate.on_white_square(os.path.join(REPO, p)) for p in generate.REFERENCES]
+    base = generate.load_pipeline(lora_scale=0.8, style_scale=args.style)
+    refs = [generate.on_white_square(os.path.join(REPO, p)) for p in (args.refs.split(',') if args.refs else generate.REFERENCES)]
     prompt, zone = EDITS[args.edit]
     (prompt_embeds, negative_embeds, pooled, negative_pooled), ip_embeds = generate.encode_once(
         base, prompt, generate.NEGATIVE, refs)
@@ -85,8 +96,8 @@ def main():
     pipe = StableDiffusionXLControlNetInpaintPipeline.from_pipe(base, torch_dtype=torch.float16)
 
     raw = Image.open(args.raw).convert('RGB')
-    mask = edit_mask(raw, zone)
-    skeleton = pose.render(pose.standing_three_quarter(raw.width, raw.height), raw.width, raw.height)
+    mask = edit_mask(raw, zone, args.pose_kind)
+    skeleton = pose.render(pose.POSES[args.pose_kind](raw.width, raw.height), raw.width, raw.height)
     for sub in ('raw', 'final'):
         os.makedirs(os.path.join(args.out, sub), exist_ok=True)
     mask.save(os.path.join(args.out, 'mask.png'))
@@ -100,10 +111,9 @@ def main():
         # Fuera de la máscara, el original exacto (el VAE retoca todos los píxeles al codificar y decodificar)
         merged = Image.composite(edited.resize(raw.size), raw, mask)
         merged.save(os.path.join(args.out, 'raw', f'{seed}.png'))
-        clean, report = rwb.process(merged)
-        if report['shadow_pixels'] == 0:
-            clean = style.add_shadow(clean)
-        style.pixelate(clean, cell=args.cell).save(os.path.join(args.out, 'final', f'{seed}.png'))
+        import finish
+        final, report = finish.finish(merged, cell=args.cell)
+        final.save(os.path.join(args.out, 'final', f'{seed}.png'))
         print(seed, report['warnings'], flush=True)
 
 

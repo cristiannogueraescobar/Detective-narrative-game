@@ -110,6 +110,30 @@ class LeakTests(unittest.TestCase):
         self.assertGreater(style.background_leak(on_gradient(eaten_sleeve=True)), 0.05)
 
 
+class CelFlattenTests(unittest.TestCase):
+    """Prueba ciega 2 (3 de 3): "sombreado moteado, rayado en la camisa y el pantalón". Las motas sueltas de una celda
+    se igualan a su entorno; los bordes entre zonas de color no se mueven."""
+
+    def setUp(self):
+        a = np.zeros((1024, 768, 4), np.uint8)
+        a[100:900, 200:400] = (90, 100, 50, 255)       # Camisa oliva
+        a[100:900, 400:600] = (80, 55, 35, 255)        # Pantalón marrón (borde vertical en x=400)
+        for y in range(120, 880, 40):                  # Motas sueltas de una celda dentro de la camisa
+            a[y:y + 5, 260:265] = (130, 125, 70, 255)
+        self.before = a
+        self.after = np.asarray(style.cel_flatten(Image.fromarray(a, 'RGBA'), cell=5))
+
+    def test_quita_las_motas_sueltas(self):
+        self.assertTrue((self.after[120:880, 260:265, :3] == (90, 100, 50)).all())
+
+    def test_conserva_el_borde_entre_zonas(self):
+        self.assertTrue((self.after[500, 395, :3] == (90, 100, 50)).all())
+        self.assertTrue((self.after[500, 400, :3] == (80, 55, 35)).all())
+
+    def test_no_toca_el_fondo_ni_el_alfa(self):
+        self.assertTrue(np.array_equal(self.after[..., 3], self.before[..., 3]))
+
+
 class SkinTests(unittest.TestCase):
     def test_la_ropa_ocre_no_cuenta_como_piel(self):
         # Caso real (Javier 6111): la camisa oliva-ocre cae en el mismo matiz que la piel (8-40°) y la corrección de

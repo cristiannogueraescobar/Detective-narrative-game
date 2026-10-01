@@ -130,6 +130,36 @@ def add_shadow(image):
     return Image.fromarray(rgba, 'RGBA')
 
 
+def cel_flatten(image, cell=5, passes=2, tol=20, majority=6):
+    """Sombreado limpio por zonas, como el de los originales: en la rejilla de `cell` px, una celda que difiere de un
+    color que comparten al menos `majority` de sus 8 vecinas (±`tol`) toma ese color. Quita las motas sueltas (la textura
+    ruidosa del generador) sin mover los bordes entre zonas, donde las vecinas se reparten (p. ej. 3 y 5).
+    Prueba ciega 2: "sombreado moteado, rayado en la camisa y el pantalón"."""
+    rgba = np.asarray(image.convert('RGBA')).copy()
+    h, w = rgba.shape[:2]
+    gh, gw = h // cell, w // cell
+    small = rgba[:gh * cell:cell, :gw * cell:cell].copy()
+    opaque = small[..., 3] == 255
+    offsets = [(dy, dx) for dy in (-1, 0, 1) for dx in (-1, 0, 1) if (dy, dx) != (0, 0)]
+    for _ in range(passes):
+        rgb = small[..., :3].astype(int)
+        pad = np.pad(rgb, ((1, 1), (1, 1), (0, 0)), mode='edge')
+        pad_op = np.pad(opaque, 1, constant_values=False)
+        neigh = [pad[1 + dy:1 + dy + gh, 1 + dx:1 + dx + gw] for dy, dx in offsets]
+        neigh_op = [pad_op[1 + dy:1 + dy + gh, 1 + dx:1 + dx + gw] for dy, dx in offsets]
+        best_count = np.zeros((gh, gw), int)
+        best = rgb.copy()
+        for cand in neigh:
+            count = sum((np.abs(n - cand).max(-1) <= tol) & o for n, o in zip(neigh, neigh_op))
+            better = count > best_count
+            best_count = np.where(better, count, best_count)
+            best = np.where(better[..., None], cand, best)
+        change = opaque & (best_count >= majority) & (np.abs(best - rgb).max(-1) > tol)
+        small[change, :3] = best[change]
+    rgba[:gh * cell, :gw * cell] = np.repeat(np.repeat(small, cell, axis=0), cell, axis=1)
+    return Image.fromarray(rgba, 'RGBA')
+
+
 def reinforce_outline(image, cell=5, cells=2):
     """Contorno negro grueso como el de los originales (revisión de Cristian: a los generados les faltaba). Sobre la
     rejilla de `cell` px (aplicar después de pixelate):
