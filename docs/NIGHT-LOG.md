@@ -828,3 +828,16 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
   4 cambios para Cristian (etiquetas de estado sin género, títulos, error de Anthropic, historia/caso).
   `docs/TEXT-REVIEW.md`. EditMode 765/766 con LayoutValidationTests, PlayMode 64, 0 fallos. Dos tests que fijaban
   el texto antiguo los actualicé después del código y no antes (FxTests, GameSmokeTests): fallo de orden TDD.
+- **22:03 Bloque B, arreglos** (rama `feature/revision-finecomb`, `35ebc73`, test primero): la partida que no se puede
+  restaurar se aparta en vez de borrarse; los corchetes del jugador no pueden fingir una prueba; reemplazo atómico
+  del guardado y recuperación del `.tmp` (ese test no lo vi en rojo); EndDay/Think ignorados con una pregunta en
+  vuelo; el bot resuelve antes la pista que el nombre (revisión 5, n.º 4); TearDown de PlayMode vacía la cola.
+  Pendientes con prioridad en CODE-REVIEW.md. EditMode 763/764, PlayMode 65, 0 fallos.
+- **22:05** Inventario de retratos (`feature/retratos-completos`): 12 personajes, 36 expresiones que faltan.
+- **22:08 Revisión del cambio de dos portadores** (lo que finecomb no cubrió): **4 importantes** en mi versión
+  (Daniel "recordaba" la confesión si la contaba Amparo; anclas de Amparo que su habla normal y su propia ficha
+  disparaban; incoherencia del coche en 1B). **Paro la serie** antes de medir esa versión (habría sido una medida
+  inválida; el bot de la rama no llegó a empezar).
+- **22:13** Arreglos con test primero (`c68b2ab`): quién contó cada pista (guardado), resumen por portador, anclas
+  precisas, versión coherente, ayuda a la versión abierta, comprobación de datos de todos los portadores.
+  EditMode 776/777, PlayMode 64, 0 fallos. Medición relanzada en cola.
