@@ -153,16 +153,17 @@ public class AIConversationManager : MonoBehaviour
         // otra vez (una sola, y nunca después del reintento por repetición) y se queda la que menos horas inventa
         if (result.Success && !retried && RetryInventedTimes)
         {
-            // Conocido: la ficha, lo que preguntó el inspector y lo que el personaje ya dijo (una hora ya aceptada es su versión)
-            string known = systemPrompt + "\n" + string.Join("\n", history.Select(m => m.content));
-            int invented = TimeCheck.Unknown(EmotionParser.Parse(result.Text).text, known).Count;
+            // Conocido: la ficha, lo que preguntó el inspector y lo que el personaje ya dijo (una hora ya aceptada es su
+            // versión). Sin concatenarlo en cada respuesta: TimeCheck lo cachea por texto (PERFORMANCE-AUDIT, mejora 2)
+            var known = history.Select(m => m.content).ToList();
+            int invented = TimeCheck.Unknown(EmotionParser.Parse(result.Text).text, systemPrompt, known).Count;
             if (invented > 0)
             {
                 InventedTimeRetries++;
                 float retryTemperature = CoolTimeRetry ? Mathf.Min(temperature, CoolRetryTemperature) : temperature;
                 LLMResult retry = await llmProvider.SendAsync(systemPrompt, Nudged(history, StrictTimeNudge ? TimeNudgeStrict : TimeNudge), maxTokens, retryTemperature);
                 if (retry.Success && !IsRepeat(history, retry.Text)
-                    && TimeCheck.Unknown(EmotionParser.Parse(retry.Text).text, known).Count < invented)
+                    && TimeCheck.Unknown(EmotionParser.Parse(retry.Text).text, systemPrompt, known).Count < invented)
                 {
                     InventedTimeRetriesImproved++;
                     result = retry;

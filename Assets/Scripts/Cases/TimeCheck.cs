@@ -12,12 +12,61 @@ public static class TimeCheck
 
     public static List<string> Unknown(string answer, string known)
     {
-        var result = new List<string>();
         if (string.IsNullOrEmpty(answer))
-            return result;
+            return new List<string>();
+        MatchCollection times = DigitTime.Matches(answer);
+        return times.Count == 0 ? new List<string>() : Collect(times, MinutesIn(known));
+    }
 
-        HashSet<int> knownMinutes = MinutesIn(known);
-        foreach (Match m in DigitTime.Matches(answer))
+    // PERFORMANCE-AUDIT, mejora 2: era lo más caro de cada respuesta (dos expresiones regulares sobre 6,6 KB de ficha e
+    // historial, aunque la respuesta no tuviera horas). Ahora: sin horas en la respuesta no se mira nada; con horas, las
+    // de la ficha (cambia por sospechoso y día) y las de cada mensaje salen de una caché por texto.
+    private static readonly Dictionary<string, HashSet<int>> KnownCache = new Dictionary<string, HashSet<int>>();
+    private const int CacheLimit = 256;
+
+    /// <summary>Textos conocidos analizados (no servidos por la caché): para los tests.</summary>
+    public static int KnownScans { get; private set; }
+
+    public static void ResetCache()
+    {
+        KnownCache.Clear();
+        KnownScans = 0;
+    }
+
+    /// <summary>
+    /// Igual que Unknown(answer, ficha + historial juntos), sin concatenar nada y con caché por texto.
+    /// </summary>
+    public static List<string> Unknown(string answer, string systemPrompt, IEnumerable<string> history)
+    {
+        if (string.IsNullOrEmpty(answer))
+            return new List<string>();
+        MatchCollection times = DigitTime.Matches(answer);
+        if (times.Count == 0)
+            return new List<string>(); // La mayoría de las respuestas: sin horas, nada que comprobar
+        var known = new HashSet<int>(Cached(systemPrompt));
+        foreach (string message in history)
+            known.UnionWith(Cached(message));
+        return Collect(times, known);
+    }
+
+    private static HashSet<int> Cached(string text)
+    {
+        text = text ?? "";
+        if (!KnownCache.TryGetValue(text, out HashSet<int> minutes))
+        {
+            if (KnownCache.Count >= CacheLimit)
+                KnownCache.Clear();
+            KnownScans++;
+            minutes = MinutesIn(text);
+            KnownCache[text] = minutes;
+        }
+        return minutes;
+    }
+
+    private static List<string> Collect(MatchCollection times, HashSet<int> knownMinutes)
+    {
+        var result = new List<string>();
+        foreach (Match m in times)
         {
             // "5:30" puede ser la de la mañana o la de la tarde: vale si alguna de las dos es conocida
             int minutes = Minutes(m);

@@ -52,7 +52,7 @@ public static class ClueDetector
 
         foreach (string[] group in groups)
         {
-            List<string> found = group.Where(anchor => Occurs(normalizedText, Normalize(anchor), negationGuard)).ToList();
+            List<string> found = group.Where(anchor => Occurs(normalizedText, NormalizedAnchor(anchor), negationGuard)).ToList();
             trace.Groups.Add(new GroupTrace { Anchors = group, Found = found });
 
             if (found.Count == 0)
@@ -80,18 +80,71 @@ public static class ClueDetector
         return false;
     }
 
+    // Las NegationWindow palabras antes del ancla, dentro de su frase (hasta el último signo de ClauseBreaks).
+    // Antes: dos Substring y un Split por cada aparición; ahora se recorren hacia atrás sin copiar la frase.
     private static bool IsNegated(string text, int anchorIndex)
     {
-        string before = text.Substring(0, anchorIndex);
-        string clause = before.Substring(before.LastIndexOfAny(ClauseBreaks) + 1);
-        string[] words = clause.Split(new[] { ' ', '¿', '¡' }, System.StringSplitOptions.RemoveEmptyEntries);
-
-        return words.Skip(System.Math.Max(0, words.Length - NegationWindow)).Any(Negations.Contains);
+        int start = anchorIndex > 0 ? text.LastIndexOfAny(ClauseBreaks, anchorIndex - 1) + 1 : 0;
+        int i = anchorIndex - 1;
+        for (int seen = 0; seen < NegationWindow; seen++)
+        {
+            while (i >= start && IsWordBreak(text[i]))
+                i--;
+            if (i < start)
+                return false;
+            int end = i + 1;
+            while (i >= start && !IsWordBreak(text[i]))
+                i--;
+            if (Negations.Contains(text.Substring(i + 1, end - i - 1)))
+                return true;
+        }
+        return false;
     }
+
+    private static bool IsWordBreak(char c) => c == ' ' || c == '¿' || c == '¡';
 
     public static bool MentionsAny(string normalizedText, IEnumerable<string> aliases)
     {
-        return aliases != null && aliases.Any(alias => normalizedText.Contains(Normalize(alias)));
+        return aliases != null && aliases.Any(alias => normalizedText.Contains(NormalizedAnchor(alias)));
+    }
+
+    // PERFORMANCE-AUDIT, mejora 3: las anclas y los alias son datos fijos de la historia, pero se normalizaban en cada
+    // llamada (~60 por respuesta, 65 µs cada una). Se normalizan una vez y se recuerdan.
+    private static readonly Dictionary<string, string> AnchorCache = new Dictionary<string, string>();
+    private static readonly object AnchorLock = new object();
+
+    /// <summary>Anclas normalizadas de verdad (no servidas por la caché): para los tests.</summary>
+    public static int AnchorNormalizations { get; private set; }
+
+    public static void ResetAnchorCache()
+    {
+        lock (AnchorLock)
+        {
+            AnchorCache.Clear();
+            AnchorNormalizations = 0;
+        }
+    }
+
+    private static string NormalizedAnchor(string anchor)
+    {
+        string key = anchor ?? "";
+        lock (AnchorLock)
+        {
+            if (AnchorCache.TryGetValue(key, out string cached))
+                return cached;
+        }
+        string normalized = Normalize(key);
+        lock (AnchorLock)
+        {
+            if (!AnchorCache.ContainsKey(key))
+            {
+                if (AnchorCache.Count >= 4096)
+                    AnchorCache.Clear();
+                AnchorCache[key] = normalized;
+                AnchorNormalizations++;
+            }
+        }
+        return normalized;
     }
 }
 
