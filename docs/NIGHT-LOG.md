@@ -889,3 +889,11 @@ retratos → 4 gráficos.
   1A_papeles, 1C_pantalla, 3C_bar (fallan en la rama) y 2C_grabacion (falla en main): con 6-9 respuestas por pista es
   lo esperable, pero no lo doy por ruido sin medirlo.
 - **19:37** Confirmación con `-tries 10` de esas 6 pistas en los dos worktrees: en marcha.
+- **19:40** Confirmación con 10 intentos (main / rama): 1B_cena 35 / 20 %, 1C_llamada 53 / 37 %, 1A_papeles 80 / 60 %,
+  1C_pantalla 50 / 40 %, 2C_grabacion 50 / 45 %, 3C_bar 85 / 90 %. **La subida a 56 % con 3 intentos era ruido.** La
+  pregunta con la palanca de Amparo acierta 1 de 10: Daniel niega la aventura igual. **Segundas vías revertidas**
+  (`848a690`, git revert). `NegationEquivalenceTests` (`a86f6e1`): el detector decide igual que antes en todas las
+  anclas y textos, así que 1A_papeles es variación del modelo. CLUE-LOGIC y PERFORMANCE-AUDIT al día (`69470d7`).
+- **19:47** Suites de la rama en su estado final: EditMode 754/755 (el que falta es el banco, Explicit), 0 fallos;
+  PlayMode 64 pasan, 0 fallos. **La suite PlayMode carga qwen en Ollama** (confirmado: estaba cargado al acabar):
+  esa fue la causa de mi error de las 16:50. Descargado con `ollama stop`.
