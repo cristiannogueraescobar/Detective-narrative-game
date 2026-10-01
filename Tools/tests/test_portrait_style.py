@@ -193,5 +193,22 @@ class HeadCropTests(unittest.TestCase):
         self.assertLess(bottom - top, 500, 'es la cabeza, no la figura')
 
 
+
+class FaceFixTests(unittest.TestCase):
+    def test_pegar_la_cara_no_toca_nada_fuera_del_recuadro(self):
+        # facefix.py: la cara se repinta aparte a 1024 y se pega con borde suave. Fuera del recuadro, ni un píxel cambia.
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'portrait_gen'))
+        import facefix
+        base = Image.new('RGB', (864, 1152), (10, 20, 30))
+        face = Image.new('RGB', (1024, 1024), (200, 150, 100))
+        box = (300, 100, 500, 300)
+        out = np.asarray(facefix.paste_back(base, face, box))
+        self.assertTrue((out[50, 50] == (10, 20, 30)).all(), 'fuera, igual')
+        self.assertTrue((out[99, 400] == (10, 20, 30)).all(), 'justo encima, igual')
+        self.assertTrue((out[200, 400] == (200, 150, 100)).all(), 'el centro es la cara nueva')
+        mid = out[101, 400].astype(int)
+        self.assertTrue(10 <= mid[0] <= 200, 'el borde mezcla')
+
+
 if __name__ == '__main__':
     unittest.main()
