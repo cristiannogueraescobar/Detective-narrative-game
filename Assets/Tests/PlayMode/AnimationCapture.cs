@@ -387,6 +387,43 @@ public class AnimationCapture
         }
     }
 
+    // Sesión C, retratos completos: cada personaje de la historia con sus tres expresiones en el interrogatorio, y la
+    // rueda de acusación. retratos_<historia>_<artId>_<estado> y acusacion_<historia>
+    [UnityTest] public IEnumerator RetratosHistoria1() { yield return RetratosDe(0); }
+    [UnityTest] public IEnumerator RetratosHistoria2() { yield return RetratosDe(1); }
+    [UnityTest] public IEnumerator RetratosHistoria3() { yield return RetratosDe(2); }
+
+    private IEnumerator RetratosDe(int index)
+    {
+        Tutorial.SkipAll();
+        StoryData story = CaseLibrary.Stories[index];
+        yield return Click("PlayButton");
+        yield return Click("Caso " + story.id);
+        yield return Click("StartButton");
+        yield return new WaitForSecondsRealtime(0.5f);
+        var ui = UnityEngine.Object.FindFirstObjectByType<InterrogationUI>();
+        var dropdown = Find("SuspectDropdown").GetComponent<TMPro.TMP_Dropdown>();
+        var views = story.cast.Select(c => SuspectView.From(c)).ToList();
+        ui.SetSuspects(views);
+        for (int i = 0; i < views.Count; i++)
+        {
+            dropdown.value = i;
+            dropdown.onValueChanged.Invoke(i);
+            yield return new WaitForSecondsRealtime(0.6f);
+            foreach (Emotion e in new[] { Emotion.Tranquilo, Emotion.Triste, Emotion.Nervioso, Emotion.Enfadado })
+            {
+                if (e != Emotion.Tranquilo && ArtLibrary.Load($"{LegacyExpressions.Folder}/{views[i].artId}_{e.ToString().ToLowerInvariant()}.png") == null)
+                    continue; // Solo las que tiene
+                ui.SetEmotion(views[i].id, e);
+                yield return new WaitForSecondsRealtime(0.6f);
+                Shot($"retratos_{index + 1}_{views[i].artId}_{e.ToString().ToLowerInvariant()}");
+            }
+        }
+        UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(1.5f);
+        Shot($"acusacion_{index + 1}");
+    }
+
     // Ronda 15: los partes de la mañana quedan al final de la libreta
     [UnityTest]
     public IEnumerator LibretaConPartes()
