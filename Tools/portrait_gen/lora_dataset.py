@@ -7,7 +7,7 @@ Las imágenes se rellenan a cuadrado (el script recorta a cuadrado y cortaría c
 Cada descripción lleva la palabra de activación y lo que hay en la imagen, para que aprenda el estilo, no a esos
 personajes. Arte del propio juego: sin problema de licencia.
 
-Uso: python Tools/portrait_gen/lora_dataset.py C:/AI/lora/dataset"""
+Uso: python Tools/portrait_gen/lora_dataset.py C:/AI/lora/dataset [--caras]"""
 import json
 import os
 import sys
@@ -34,7 +34,24 @@ ITEMS = {
 }
 
 
-def main(out):
+FACE = 'jvstyle pixel art character portrait, close-up of the face, big clear expressive eyes'
+
+
+def head_box(figure):
+    """Cuadrado alrededor de la cabeza: el 26 % superior de la figura (con margen), centrado en lo opaco de esa franja.
+    v2 (sesión B, tras 7 pruebas ciegas): en la figura entera la cara mide ~60 px y el LoRA no aprendía los ojos."""
+    import numpy as np
+    alpha = np.asarray(figure.convert('RGBA'))[..., 3] > 0
+    ys = np.where(alpha.any(axis=1))[0]
+    top, height = int(ys.min()), int(ys.max() - ys.min())
+    side = int(height * 0.26 * 1.2)
+    band = alpha[top:top + int(height * 0.26)]
+    cx = int(np.where(band.any(axis=0))[0].mean())
+    y0 = max(0, top - side // 10)
+    return cx - side // 2, y0, cx - side // 2 + side, y0 + side
+
+
+def main(out, faces=False):
     os.makedirs(out, exist_ok=True)
     rows = []
     for key, text in ITEMS.items():
@@ -47,6 +64,13 @@ def main(out):
         name = f'{key}.png'
         square.convert('RGB').save(os.path.join(out, name))
         rows.append({'file_name': name, 'text': f'{TRIGGER}, {text}'})
+        if faces:
+            square_bg = Image.new('RGBA', figure.size, BG + (255,))
+            square_bg.alpha_composite(figure)
+            face = square_bg.crop(head_box(figure)).convert('RGB').resize((1024, 1024), Image.NEAREST)
+            face_name = f'{key}_cara.png'
+            face.save(os.path.join(out, face_name))
+            rows.append({'file_name': face_name, 'text': f'{FACE}, {text}'})
     with open(os.path.join(out, 'metadata.jsonl'), 'w', encoding='utf-8') as f:
         for r in rows:
             f.write(json.dumps(r, ensure_ascii=False) + '\n')
@@ -54,4 +78,4 @@ def main(out):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    main(sys.argv[1], faces='--caras' in sys.argv)

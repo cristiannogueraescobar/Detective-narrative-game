@@ -173,5 +173,25 @@ class SkinTests(unittest.TestCase):
         self.assertTrue(np.array_equal(out, a), 'sin piel que medir, no se corrige nada')
 
 
+
+class HeadCropTests(unittest.TestCase):
+    def test_el_recorte_de_cabeza_es_cuadrado_y_contiene_la_cara(self):
+        # LoRA v2 (sesión B): en una figura entera de 1024 la cara mide ~60 px y el LoRA no aprende los ojos de los
+        # originales (prueba ciega: "ojos pequeños", "cara emborronada"). Se añaden recortes de la cabeza ampliados.
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'portrait_gen'))
+        import lora_dataset
+        a = np.zeros((1024, 768, 4), np.uint8)
+        a[100:300, 330:430] = (225, 160, 110, 255)   # Cabeza
+        a[300:960, 250:520] = (60, 110, 50, 255)     # Cuerpo
+        box = lora_dataset.head_box(Image.fromarray(a, 'RGBA'))
+        left, top, right, bottom = box
+        self.assertEqual(right - left, bottom - top, 'cuadrado')
+        self.assertLessEqual(top, 100)
+        self.assertGreaterEqual(bottom, 300, 'entra la cabeza entera')
+        self.assertLessEqual(left, 330)
+        self.assertGreaterEqual(right, 430)
+        self.assertLess(bottom - top, 500, 'es la cabeza, no la figura')
+
+
 if __name__ == '__main__':
     unittest.main()
