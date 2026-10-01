@@ -13,7 +13,7 @@
 
 | Bloque | HECHO CUANDO | Resultado | Rama y commits |
 |---|---|---|---|
-| 1. Retrato de Javier | Prueba ciega: los subagentes no lo distinguen de los originales, y no se parece a Marcos | **NO aprueba** (cerrado a las 18:00; trabajo extra 19:50-20:37, tampoco) | `feature/retratos-javier`: `b23bac2` … `2abb948` |
+| 1. Retrato de Javier | Prueba ciega: los subagentes no lo distinguen de los originales, y no se parece a Marcos | **NO aprueba** (cerrado a las 18:00; trabajo extra 19:50-20:37, tampoco) | `feature/retratos-javier`: `b23bac2` … `e05015d` (ronda 12: `cfd95b9`) |
 | 2. (dependía de Javier) | — | **Saltado** por regla | — |
 | 3a. Mejoras de rendimiento 2-4 | Tests en verde, antes/después medido, calibración sin bajar | ✓ (+ revisión independiente: 1 Importante arreglado) | `feature/mejoras-seguras`: `560e71e`, `2e6b103`, `99d79a4`, `a86f6e1`, `69470d7`, `5f3f9c4`, `2aa7841` |
 | 3b. Segundas vías 1B_cena / 1C_llamada | Que suban de forma medible | ✗ No suben; **revertido** | `b92d6c2` → revert `848a690` |
@@ -37,14 +37,14 @@ Tests al cerrar `feature/mejoras-seguras` (tras `2aa7841`): **EditMode 756/757 (
 | 6 | 8611 | Máscara de piel arreglada | 3/3, dos dudan | cara, grano |
 | 7 | 8611 aplanado | Aplanado fuerte en toda la figura | 3/3 | la cara empeora ("manchas") |
 | 8 | 8611 + cara | **LoRA v2** (con recortes de cara) + **facefix** (repinta la cabeza a 1024) | 3/3, confianzas media/baja | "cabeza pequeña, ~1/7" |
-| **9** | **8702** | Cabeza del esqueleto 0,20 → 0,24 | **2/3** | grano, piel naranja |
+| **9** | **8702** | Cabeza del esqueleto 0,20 (valor por defecto de `pose.py`) → 0,24 | **2/3** | grano, piel naranja |
 | **10** | **8700** | Ropa aplanada fuera de la cabeza | **2/3** (agrupa a Javier con Marcos y Lucía) | "contorno negro grueso y uniforme" |
 | 11 | 8700 sin contorno | Sin el contorno reforzado | 3/3 | "borde blando": el contorno ayuda |
 | 12 | 8700 selout | Contorno coloreado (oscuro de cada zona) | 3/3 | "contorno blando y roto": el casi negro era mejor |
 
 **Por qué no llega, en una frase:** lo que aún lo delata es de dibujo, no de color: los originales tienen la cara **dibujada con líneas** (ojos con blanco y pupila) y la ropa en dos o tres tonos limpios, y el generador pinta la cara con manchas y la ropa con grano. (El contorno coloreado se probó en la ronda 12 y salió peor.)
 
-**Siguiente paso, si se quiere seguir por aquí:** un LoRA con más recortes de cara y más pasos, y limpiar la ropa a mano o con una paleta fija por zona. **Mi recomendación honesta: encargarlo a un artista con `docs/art/javier/BRIEF.md`**: el generador ha pasado de "otro juego" a "casi", pero 11 rondas sin aprobar dicen que el último tramo es de oficio.
+**Siguiente paso, si se quiere seguir por aquí:** un LoRA con más recortes de cara y más pasos, y limpiar la ropa a mano o con una paleta fija por zona. **Mi recomendación honesta: encargarlo a un artista con `docs/art/javier/BRIEF.md`**: el generador ha pasado de "otro juego" a "casi", pero 12 rondas sin aprobar dicen que el último tramo es de oficio.
 
 Todo lo pesado está fuera del repositorio: modelos en `C:\AI\hf-cache`, LoRA en `C:\AI\lora\jvstyle` y `jvstyle2` (entrenados con arte del propio juego; script oficial de diffusers, Apache-2.0), salidas en `C:\AI\portrait-gen\out`.
 
@@ -99,7 +99,7 @@ bloquea, el orden y el borrado, la equivalencia de TimeCheck y de IsNegated, y l
 
 1. **Horas estimadas en vez de leídas, dos veces.** En el bloque 1 escribí 16:45-17:38 cuando el reloj decía 16:25-16:40 (y por eso creí que se acababa el tiempo del bloque); después, 18:03 y 18:06 a las 18:00. Corregido en el NIGHT-LOG las dos veces (`a9691b7`, `032922c`); desde entonces cada hora sale de `date`.
 2. **Regla de la GPU incumplida sin verlo.** La suite PlayMode carga qwen en Ollama (5,6 GB) y la lancé a las 16:50 mientras entrenaba el LoRA. Lo vi a las 17:16 con `ollama ps`; confirmado a las 19:47 (al acabar la suite estaba cargado otra vez). Desde entonces, `ollama ps` y `ollama stop` antes de cada tarea pesada.
-3. **Diagnóstico equivocado de las siluetas negras.** Lo atribuí a un fondo oscuro (17:20) y cambié el prompt; la causa real era `colour.correct` con la máscara de piel vacía: media NaN → negro. Arreglado con test primero (`0f03a3e`). Le siguió el mismo patrón con la piel amarilla (máscara de 8-40°, la cara estaba a 56°; `e7dfeb1`).
+3. **Diagnóstico equivocado de las siluetas negras.** Lo atribuí a un fondo oscuro (17:20) y cambié el prompt; la causa real era `colour.correct` con la máscara de piel vacía: media NaN → negro. Arreglado con test primero (`0f03a3e`). Le siguió el mismo patrón con la piel amarilla (máscara de 8-40°, la cara estaba a 56°; `e7dfeb1` sube el límite a 60° solo en la franja de la cabeza).
 4. **Segunda vía como séptima pista.** Mi primer intento añadía una pista a 1B, que ya tenía 6, contra el diseño aprobado de 5-6. El test `4-6 pistas` lo paró; lo convertí en testigo.
 5. **Casi doy por buena una mejora que era ruido** (33 → 56 % con 3 intentos). La confirmación con 10 intentos la desmintió y lo revertí (`848a690`).
 6. **Estimación de CPU mal hecha** en PERFORMANCE-AUDIT (0,5-0,8 ms): rehecha con la derivación escrita, 0,4-1,0 ms (`5f3f9c4`).
@@ -108,9 +108,9 @@ bloquea, el orden y el borrado, la equivalencia de TimeCheck y de IsNegated, y l
 
 ## Decisiones para Cristian
 
-1. **Fusionar `feature/mejoras-seguras` a `main` primero.** 9 commits (revisado por un subagente independiente), 15 archivos (código: TimeCheck, ClueDetector, EmotionParser, SaveSystem, AIConversationManager; tests; docs). Ningún dato de historias cambia. Se deshace con `git revert -m 1 <merge>`.
+1. **Fusionar `feature/mejoras-seguras` a `main` primero.** 9 commits (revisado por un subagente independiente), 16 archivos (código: TimeCheck, ClueDetector, EmotionParser, SaveSystem, AIConversationManager, GameManager; tests; docs). Ningún dato de historias cambia. Se deshace con `git revert -m 1 <merge>`.
 2. **Después, `feature/retratos-javier`**, si quieres las herramientas de arte (`Tools/portrait_gen`, tests), los informes, el NIGHT-LOG y este documento. Toca 6 archivos del juego, todos de esta mañana, antes de la sesión B (`8261f81` encuadre del arte nuevo `PortraitCrops`, `e01f67d` filtro de importación, y sus tests). Ningún retrato del juego cambia. Si prefieres no fusionar código de arte aún, basta con traer `docs/`.
-3. **Javier:** encargo a un artista con el BRIEF (recomendado), o una sesión más con contorno coloreado y LoRA de caras. No integrar nada generado hasta que pase la prueba ciega y tu revisión.
+3. **Javier:** encargo a un artista con el BRIEF (recomendado), o una sesión más con un LoRA de caras con más pasos y la ropa limpiada por zonas (el contorno coloreado ya se probó en la ronda 12 y salió peor). No integrar nada generado hasta que pase la prueba ciega y tu revisión.
 4. **1B_cena y 1C_llamada siguen en 20-55 %.** Dos salidas, las dos tuyas: (a) que una pista admita dos portadores (cambio de código en TurnAnalyzer, PromptBuilder, HintAdvisor y el calibrador), o (b) permitir 7 pistas en 1B (cambia el diseño de 5-6). Mientras tanto, nada cambia.
 5. **La suite PlayMode carga qwen en Ollama aunque los tests usan un proveedor falso.** Causa: `OllamaProvider.preloadOnStart = true`
    (`OllamaProvider.cs:16`); al cargar la escena, `AIConversationManager.cs:53` llama a `WarmUpAsync()` antes de que el test
