@@ -785,3 +785,23 @@ retratos → 4 gráficos.
 - **10:35** `docs/SKILLS-MAP.md`: qué skill del proyecto y cuál instalada usar en cada tipo de tarea. Solo nombres
   comprobados en disco. `CLAUDE.md` nuevo con la línea "lee SKILLS-MAP.md al empezar". Probado en un proceso nuevo:
   leyó el mapa solo y siguió la fila de Animaciones.
+
+# Arte de Javier, revisión de Cristian (01-10-2026)
+- **Medido sobre los 7 originales:** Daniel tiene un píxel de 9 px (118 de alto) y cabeza 0,28 (≈1/3,6). Marcos y
+  Álex tienen 5 px y cabeza 0,19 (≈1/5,3); Lucía queda entre medias (6 px, 0,24). La cabeza se leyó en recortes con
+  regla, porque dos métodos automáticos fallaron en 5 de 7. 02-04 llevan sombra suave a la derecha de los pies (≈18 % de
+  opacidad, 46-50/255); Daniel no. Referencias 02 (principal), 04 (secundaria) y 03 (solo paleta); la 01 fuera.
+  Daniel, anotado en ART-NEEDED para rehacerlo.
+- **`Tools/remove_white_bg.py`:** relleno desde el borde, hueco blanco encerrado, sombra conservada, avisos de halo y
+  de cuadros, 768×1024 por vecino más cercano. 10 tests. Con las 7 originales sobre blanco salió un hueco opaco (el
+  cable de Álex) y una falsa alarma de halo; ambos se arreglaron con test en rojo antes. El umbral de halo se calibró
+  con los originales (0,31-0,62 px por px de contorno; se avisa por encima de 1,0).
+- **Rama `feature/encuadre-arte-nuevo`** (desde `main`, sin fusionar): `PortraitCrops.For` y la entrada de `javier`.
+  Tests primero (`NewArtCropsTests`). Mientras no haya arte nuevo, el juego sigue igual: capturas de `main` y de la
+  rama dentro del ruido del grano. Una primera comparación salió distinta porque el caso era al azar (historia 2
+  frente a 1), no por el cambio. Filtro de importación: A/B a 1080×1920 reales; gana bilineal con mipmaps, porque
+  Point rompe las líneas finas en la rueda. EditMode 746/746, PlayMode 64 sin fallos.
+- **Skill `art-brief`:** actualizada y vuelta a probar en un proceso nuevo; se activa sola y aplica las reglas nuevas.
+  La prueba rápida de SKILLS-SETUP en PowerShell da LOADED.
+- Errores míos: un heredoc para un script de edición (inofensivo, con asserts; luego volví a Write) y la primera
+  captura del filtro, que salió a 540×1920 deformada y con `CopyTexture` fallando en anchos que no son múltiplo de 4.
