@@ -61,11 +61,18 @@ public static class SaveSystem
 
     public static string FilePath => Path.Combine(DirectoryOverride ?? Application.persistentDataPath, FileName);
 
-    public static bool Exists => File.Exists(FilePath);
+    public static bool Exists
+    {
+        get
+        {
+            Flush();
+            return File.Exists(FilePath);
+        }
+    }
 
     public static string Serialize(SaveData data)
     {
-        return JsonUtility.ToJson(data, true);
+        return JsonUtility.ToJson(data, false); // Compacto: -42 % (las partidas antiguas con sangría se leen igual)
     }
 
     public static bool TryDeserialize(string json, out SaveData data)
@@ -151,18 +158,55 @@ public static class SaveSystem
             data.sharedEntries ?? new List<ChatEntry>());
     }
 
+    // PERFORMANCE-AUDIT, mejora 4: se guardaba ~40 veces por caso, síncrono en el hilo principal y con sangría
+    // (41,6 KB frente a 24,3). Ahora el JSON se hace aquí (los datos no pueden cambiar mientras se leen) y el disco se
+    // toca en otro hilo, en una cola de uno: las escrituras van en orden, una antigua nunca pisa a una nueva (número de
+    // versión) y Delete, TryLoad y Exists esperan a lo pendiente (un borrado no lo resucita una escritura atrasada).
+    private static readonly object WriteLock = new object();
+    private static System.Threading.Tasks.Task pending = System.Threading.Tasks.Task.CompletedTask;
+    private static int version;
+
+    /// <summary>Hilo que hizo la última escritura en disco: para los tests.</summary>
+    public static int LastWriterThread { get; private set; }
+
     public static void Save(SaveData data)
     {
+        string json;
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
-            string temp = FilePath + ".tmp";
-            File.WriteAllText(temp, Serialize(data));
+            json = Serialize(data);
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[Guardado] No se pudo preparar la partida: {e.Message}");
+            return;
+        }
+        string path = FilePath; // Se fija ahora: DirectoryOverride puede cambiar antes de escribir
+        lock (WriteLock)
+        {
+            int mine = ++version;
+            pending = pending.ContinueWith(_ => Write(path, json, mine), System.Threading.Tasks.TaskScheduler.Default);
+        }
+    }
+
+    private static void Write(string path, string json, int mine)
+    {
+        lock (WriteLock)
+        {
+            if (mine != version)
+                return; // Ya hay un guardado más nuevo, o un borrado, detrás
+        }
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            string temp = path + ".tmp";
+            File.WriteAllText(temp, json);
 
             // Escritura atómica: nunca queda un guardado a medias
-            if (File.Exists(FilePath))
-                File.Delete(FilePath);
-            File.Move(temp, FilePath);
+            if (File.Exists(path))
+                File.Delete(path);
+            File.Move(temp, path);
+            LastWriterThread = System.Threading.Thread.CurrentThread.ManagedThreadId;
         }
         catch (Exception e)
         {
@@ -170,9 +214,32 @@ public static class SaveSystem
         }
     }
 
+    /// <summary>Espera a que se escriba lo pendiente (antes de leer, borrar o salir).</summary>
+    public static void Flush()
+    {
+        System.Threading.Tasks.Task wait;
+        lock (WriteLock)
+            wait = pending;
+        try
+        {
+            wait.Wait();
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[Guardado] Escritura pendiente fallida: {e.Message}");
+        }
+    }
+
+    [RuntimeInitializeOnLoadMethod]
+    private static void FlushOnQuit()
+    {
+        Application.quitting += Flush; // Que la última partida guardada llegue al disco al cerrar
+    }
+
     public static bool TryLoad(out SaveData data)
     {
         data = null;
+        Flush();
         try
         {
             return File.Exists(FilePath) && TryDeserialize(File.ReadAllText(FilePath), out data);
@@ -187,6 +254,9 @@ public static class SaveSystem
 
     public static void Delete()
     {
+        lock (WriteLock)
+            version++; // Lo que esté en cola ya no se escribe
+        Flush();
         try
         {
             if (File.Exists(FilePath))

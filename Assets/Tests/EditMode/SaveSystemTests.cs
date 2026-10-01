@@ -248,4 +248,61 @@ public class SaveSystemTests
 
         CollectionAssert.AreEqual(new[] { "1A_puerta:2" }, loaded.hintsGiven);
     }
+
+    // PERFORMANCE-AUDIT, mejora 4: guardado compacto y escritura fuera del hilo principal, sin cruzarse
+
+    [Test]
+    public void ElGuardadoEsCompacto()
+    {
+        SaveData data = Sample();
+        string json = SaveSystem.Serialize(data);
+        StringAssert.DoesNotContain(NewLine, json);
+        Assert.Less(json.Length, UnityEngine.JsonUtility.ToJson(data, true).Length * 0.8, "al menos un 20 % menos");
+        Assert.IsTrue(SaveSystem.TryDeserialize(json, out SaveData back));
+        Assert.AreEqual(data.variantId, back.variantId);
+    }
+
+    [Test]
+    public void UnGuardadoAntiguoConSangriaSigueCargando()
+    {
+        Directory.CreateDirectory(directory);
+        File.WriteAllText(SaveSystem.FilePath, UnityEngine.JsonUtility.ToJson(Sample(), true));
+        Assert.IsTrue(SaveSystem.TryLoad(out SaveData data));
+        Assert.AreEqual(3, data.day);
+    }
+
+    [Test]
+    public void VariosGuardadosSeguidosDejanElUltimo()
+    {
+        // 30 guardados; solo el último es del día 7 (la partida valida días 1-7): si uno antiguo pisara al último, no saldría 7
+        for (int i = 1; i <= 30; i++)
+        {
+            SaveData data = Sample();
+            data.day = i < 30 ? 1 + i % 6 : 7;
+            SaveSystem.Save(data);
+        }
+        Assert.IsTrue(SaveSystem.TryLoad(out SaveData loaded), "leer espera a lo pendiente");
+        Assert.AreEqual(7, loaded.day, "ninguno escrito fuera de orden");
+        Assert.IsFalse(File.Exists(SaveSystem.FilePath + ".tmp"), "sin temporales a medias");
+    }
+
+    [Test]
+    public void BorrarDespuesDeGuardarNoResucitaLaPartida()
+    {
+        SaveSystem.Save(Sample());
+        SaveSystem.Delete();
+        SaveSystem.Flush();
+        Assert.IsFalse(SaveSystem.Exists, "una escritura pendiente no puede volver a crear el archivo borrado");
+    }
+
+    [Test]
+    public void LaEscrituraNoSeHaceEnElHiloQueGuarda()
+    {
+        int caller = System.Threading.Thread.CurrentThread.ManagedThreadId;
+        SaveSystem.Save(Sample());
+        SaveSystem.Flush();
+        Assert.AreNotEqual(caller, SaveSystem.LastWriterThread, "el disco se toca en otro hilo");
+    }
+
+    private static readonly string NewLine = System.Environment.NewLine.Substring(System.Environment.NewLine.Length - 1);
 }
