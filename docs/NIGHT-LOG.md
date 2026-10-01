@@ -803,3 +803,9 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
   `docs/art/encargo/`. Culpables en alguna variante: Daniel (1A), Javier (3A), Encarna (3C) → ninguna expresión
   delata. **Cambios frente a ART-NEEDED:** la "sonrisa dulce que inquieta" de Encarna la delataba (culpable en 3C)
   → cálida, nunca siniestra; sin los prismáticos de Amparo (son su secreto). Herramientas de generación: aparcadas.
+- **21:28 Punto 5** (rama `feature/tests-sin-precarga`, test primero): `OllamaProvider.PreloadDisabled`, solo lo enciende
+  un `[SetUpFixture]` de PlayMode; el juego sigue precargando (test). Comprobado: Ollama vacío antes y después de la
+  suite PlayMode completa (antes la suite cargaba qwen, 5,6 GB). PlayMode 65, EditMode 758/759, 0 fallos.
+- Mensaje nuevo de Cristian a mitad del punto 5: retratos completos por derivación de código, después de terminar
+  lo pendiente (puntos 4, bloques A-D). Respondida su pregunta sobre retratos ya hechos (sesión A: 6 derivados en
+  el juego; sesión B: generados con IA fuera del repo, sin integrar; sesión C: ninguno).
