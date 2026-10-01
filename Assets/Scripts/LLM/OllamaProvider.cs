@@ -30,6 +30,15 @@ public class OllamaProvider : ILLMProvider
 {
     private readonly OllamaSettings settings;
 
+    /// <summary>
+    /// Solo para tests: la suite PlayMode abre la escena con el proveedor real antes de cambiarlo por uno falso, y la
+    /// precarga cargaba el modelo en la GPU (sesión C). El juego nunca lo cambia: sigue precargando con preloadOnStart.
+    /// </summary>
+    public static bool PreloadDisabled;
+
+    /// <summary>Precargas enviadas a Ollama: para los tests.</summary>
+    public static int PreloadRequests { get; private set; }
+
     public OllamaProvider(OllamaSettings settings)
     {
         this.settings = settings;
@@ -96,7 +105,7 @@ public class OllamaProvider : ILLMProvider
     /// </summary>
     public async Task WarmUpAsync()
     {
-        if (!settings.preloadOnStart)
+        if (!settings.preloadOnStart || PreloadDisabled)
             return;
 
         try
@@ -111,6 +120,7 @@ public class OllamaProvider : ILLMProvider
             };
 
             float start = Time.realtimeSinceStartup;
+            PreloadRequests++;
             var response = await LLMHttp.PostJsonAsync(ChatUrl, JsonUtility.ToJson(body), settings.timeoutSeconds);
 
             if (response.Result == UnityWebRequest.Result.Success)
