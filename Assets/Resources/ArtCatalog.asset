@@ -13,6 +13,54 @@ MonoBehaviour:
   m_Name: ArtCatalog
   m_EditorClassIdentifier: Detective::ArtCatalog
   entries:
+  - path: Assets/Art/Derived/Expressions/alex_nervioso.png
+    texture: {fileID: 2800000, guid: b864a1f1a1b14b0e9588668cae71a3b6, type: 3}
+  - path: Assets/Art/Derived/Expressions/alex_triste.png
+    texture: {fileID: 2800000, guid: 930717f55fe647b1b99cdc92561727a1, type: 3}
+  - path: Assets/Art/Derived/Expressions/andres_nervioso.png
+    texture: {fileID: 2800000, guid: c3a19addf08a4aa4a6d0a20b7b2362a1, type: 3}
+  - path: Assets/Art/Derived/Expressions/andres_triste.png
+    texture: {fileID: 2800000, guid: 50de42d27d414c50ad0df1506c90275b, type: 3}
+  - path: Assets/Art/Derived/Expressions/carmen_nervioso.png
+    texture: {fileID: 2800000, guid: 1e367e11eea74ee6aab02f19ffa94706, type: 3}
+  - path: Assets/Art/Derived/Expressions/carmen_triste.png
+    texture: {fileID: 2800000, guid: 96974f0c128746e69d4517a317b5fa57, type: 3}
+  - path: Assets/Art/Derived/Expressions/daniel_enfadado.png
+    texture: {fileID: 2800000, guid: 9c704810562e4980902fe10c060bdae9, type: 3}
+  - path: Assets/Art/Derived/Expressions/daniel_nervioso.png
+    texture: {fileID: 2800000, guid: 7a522ad801694d88a7eb8e4453826926, type: 3}
+  - path: Assets/Art/Derived/Expressions/encarna_nervioso.png
+    texture: {fileID: 2800000, guid: 706797bc84bd47c2a9e95930f1b1fb47, type: 3}
+  - path: Assets/Art/Derived/Expressions/encarna_triste.png
+    texture: {fileID: 2800000, guid: e28b049c438a4771aa2aa975d2117d2f, type: 3}
+  - path: Assets/Art/Derived/Expressions/javier_nervioso.png
+    texture: {fileID: 2800000, guid: 7a7e69c628db4060b0c5b0aaf519c30d, type: 3}
+  - path: Assets/Art/Derived/Expressions/javier_triste.png
+    texture: {fileID: 2800000, guid: ad5e7f66e5da49cf8d61254746f46cda, type: 3}
+  - path: Assets/Art/Derived/Expressions/lucas_nervioso.png
+    texture: {fileID: 2800000, guid: f5a4064d6a524677a482f77ad880b115, type: 3}
+  - path: Assets/Art/Derived/Expressions/lucas_triste.png
+    texture: {fileID: 2800000, guid: dab85f785b924f6e8d74074a4b1fc023, type: 3}
+  - path: Assets/Art/Derived/Expressions/lucia_nervioso.png
+    texture: {fileID: 2800000, guid: 36865d1059f3403093faa035a974f9cb, type: 3}
+  - path: Assets/Art/Derived/Expressions/lucia_triste.png
+    texture: {fileID: 2800000, guid: dbf746bab4e84808b72627602e581409, type: 3}
+  - path: Assets/Art/Derived/Expressions/marcos_nervioso.png
+    texture: {fileID: 2800000, guid: 09bfe01829144d69a740748c57b12c5d, type: 3}
+  - path: Assets/Art/Derived/Expressions/marcos_triste.png
+    texture: {fileID: 2800000, guid: e990d8148d81436f8cd399eead01a75f, type: 3}
+  - path: Assets/Art/Derived/Expressions/maruxa_nervioso.png
+    texture: {fileID: 2800000, guid: b091b47fcf434ed38e4bc8e97d29f5be, type: 3}
+  - path: Assets/Art/Derived/Expressions/maruxa_triste.png
+    texture: {fileID: 2800000, guid: 6e86a94620294ae5beb5573131ae0616, type: 3}
+  - path: Assets/Art/Derived/Expressions/rosario_nervioso.png
+    texture: {fileID: 2800000, guid: 6567e74b298b467a87385b4a97f4df04, type: 3}
+  - path: Assets/Art/Derived/Expressions/rosario_triste.png
+    texture: {fileID: 2800000, guid: 4d7ca1cd897a4d32aac4c32ee0ce23de, type: 3}
+  - path: Assets/Art/Derived/Expressions/ruiz_enfadado.png
+    texture: {fileID: 2800000, guid: 5369240c9fa4430380027ee543a79d95, type: 3}
+  - path: Assets/Art/Derived/Expressions/ruiz_nervioso.png
+    texture: {fileID: 2800000, guid: e196057bf1964453b75977e6c82495f3, type: 3}
   - path: Assets/Art/Derived/alex.png
     texture: {fileID: 2800000, guid: 7ac94d340e7a4f21a4dbcb97b1bf5f27, type: 3}
   - path: Assets/Art/Derived/amparo.png

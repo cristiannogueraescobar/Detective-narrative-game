@@ -522,6 +522,10 @@ public partial class InterrogationUI : MonoBehaviour
             texture = ArtLibrary.LoadFirst(PortraitPaths.Candidates(view.artId, emotion));
         if (texture != null)
             return (texture, false);
+        // Expresión hecha sobre el retrato de hoy (sesión C): mismo encuadre y tratamiento que él
+        Texture2D expression = view.artId != null ? ArtLibrary.LoadFirst(LegacyExpressions.Candidates(view.artId, emotion)) : null;
+        if (expression != null && view.portraitKey != null && suspectImages.ContainsKey(view.portraitKey))
+            return (expression, true);
         if (view.portraitKey != null && suspectImages.TryGetValue(view.portraitKey, out Texture2D legacy) && legacy != null)
             return (legacy, true);
         return (ArtLibrary.Placeholder(T.placeholder), false);
