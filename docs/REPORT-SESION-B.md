@@ -102,7 +102,10 @@ Las pistas que cambiaron de lado se midieron otra vez con **10 intentos**, en lo
 2. **Después, `feature/retratos-javier`**, si quieres las herramientas de arte (`Tools/portrait_gen`, tests), los informes, el NIGHT-LOG y este documento. Toca 6 archivos del juego, todos de esta mañana, antes de la sesión B (`8261f81` encuadre del arte nuevo `PortraitCrops`, `e01f67d` filtro de importación, y sus tests). Ningún retrato del juego cambia. Si prefieres no fusionar código de arte aún, basta con traer `docs/`.
 3. **Javier:** encargo a un artista con el BRIEF (recomendado), o una sesión más con contorno coloreado y LoRA de caras. No integrar nada generado hasta que pase la prueba ciega y tu revisión.
 4. **1B_cena y 1C_llamada siguen en 20-55 %.** Dos salidas, las dos tuyas: (a) que una pista admita dos portadores (cambio de código en TurnAnalyzer, PromptBuilder, HintAdvisor y el calibrador), o (b) permitir 7 pistas en 1B (cambia el diseño de 5-6). Mientras tanto, nada cambia.
-5. **La suite PlayMode usa Ollama.** ¿Marcamos esos tests para que no carguen el modelo o se acepta? Con GPU compartida conviene saberlo.
+5. **La suite PlayMode carga qwen en Ollama aunque los tests usan un proveedor falso.** Causa: `OllamaProvider.preloadOnStart = true`
+   (`OllamaProvider.cs:16`); al cargar la escena, `AIConversationManager.cs:53` llama a `WarmUpAsync()` antes de que el test
+   cambie de proveedor. No lo toqué (capa de proveedores, fuera de límites). Propuesta: que los tests pongan
+   `preloadOnStart = false` antes de cargar la escena (cambio solo en tests), o aceptarlo y descargar con `ollama stop`.
 
 ## Pendiente y riesgos
 - Los worktrees de calibración (`../dng-main`, `../dng-mejoras`) se borran al cerrar; los informes de calibración vivían en sus `Logs/` (no versionados). Las cifras quedan en este informe, en CLUE-LOGIC.md y en PERFORMANCE-AUDIT.md.
