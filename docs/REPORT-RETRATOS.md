@@ -63,7 +63,11 @@ jugador ve «tranquilo» en la etiqueta y «enfado» en la cara. Arreglarlo es r
 - Capturas del interrogatorio y la rueda de acusación de las tres historias: ver la sección siguiente.
 
 ## Capturas
-(pendiente: se hacen con la GPU libre, después de las calibraciones; ver NIGHT-LOG)
+`docs/art/CAPTURAS-RETRATOS.jpg` (reducción de 39 capturas a 1080×1920 de `AnimationCapture.RetratosHistoria1-3`):
+el interrogatorio de cada personaje con cada una de sus expresiones y la rueda de acusación de las tres historias.
+Comprobado mirándolas: la expresión se ve en el busto (lágrimas, gota de sudor, ceño y rubor), con la etiqueta de
+estado, el mismo encuadre que el retrato tranquilo, y la rueda muestra a todos a su altura. Las capturas en bruto
+están en `docs/screenshots/2026-10-01/anim/` (no se suben).
 
 ## Pruebas, tal cual
 - Parecido: lámina con el original (1) y el derivado (2) a la misma escala; pregunta «¿la misma persona o dos
