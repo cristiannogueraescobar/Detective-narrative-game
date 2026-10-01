@@ -882,3 +882,10 @@ retratos → 4 gráficos.
   de alta a media) pero la cara delata: el LoRA vio 6 figuras enteras con la cara a ~60 px y no aprende los ojos de los
   originales. Siguiente paso propuesto (no hecho): LoRA con recortes de cara ampliados, o encargo con el BRIEF.
   Hoja: `docs/art/javier/evolucion_sesion_b.jpg`. Nada se integra en el juego.
+- **18:02-19:26** Bloque 3, medición completa en dos worktrees (`../dng-main` = main, `../dng-mejoras` = rama), en
+  serie (una GPU), mismo modelo, umbral y semilla del bot (1919, 2 partidas × 9 variantes):
+  pistas 43/48 y 86 % (main) frente a 41/48 y 82 % (rama); 1B_cena 33 → 56 %, 1C_llamada 33 → 56 %; premisas 2/72 →
+  3/72 (≤5 %); estados bien formados 97 % y 97 %; bot culpable 17/18 → 15/18 (≥14; ±2 es ruido). Cambian de lado
+  1A_papeles, 1C_pantalla, 3C_bar (fallan en la rama) y 2C_grabacion (falla en main): con 6-9 respuestas por pista es
+  lo esperable, pero no lo doy por ruido sin medirlo.
+- **19:37** Confirmación con `-tries 10` de esas 6 pistas en los dos worktrees: en marcha.
