@@ -43,7 +43,7 @@ Tienes 7 días para descubrir qué pasó.",
             {
                 new CharacterData
                 {
-                    id = "padre", name = "Javier Romero", shortName = "Javier", artId = "javier", roleLabel = "padre", portraitKey = "Padre",
+                    id = "padre", name = "Javier Romero", shortName = "Javier", artId = "javier", roleLabel = "padre", portraitKey = "Javier",
                     identity = "Eres Javier Romero, 44 años, olivarero, dueño de la finca Los Olivares. Divorciado de Lucía hace tres meses; el lunes hay vista de custodia de Paula.",
                     speech = "Amargado y a la defensiva; pasas de hacerte la víctima a enfadarte. Hablas mal de tu ex.",
                     speechExample = "Claro, ahora el malo soy yo. Como siempre.",
@@ -52,7 +52,7 @@ Tienes 7 días para descubrir qué pasó.",
                 },
                 new CharacterData
                 {
-                    id = "madre", name = "Lucía Navarro", shortName = "Lucía", artId = "lucia", roleLabel = "madre", portraitKey = "Madre",
+                    id = "madre", name = "Lucía Navarro", shortName = "Lucía", artId = "lucia", roleLabel = "madre", portraitKey = "Lucía",
                     identity = "Eres Lucía Navarro, 41 años, profesora de instituto en Granada. Madre de Paula y de Álex. Estás en tratamiento por depresión.",
                     speech = "Contenida y firme, con frases cortas. Cuando te rompes, hablas muy bajo.",
                     speechExample = "Paula es lo único que me importa. Lo único.",
@@ -61,7 +61,7 @@ Tienes 7 días para descubrir qué pasó.",
                 },
                 new CharacterData
                 {
-                    id = "hermano", name = "Álex Romero", shortName = "Álex", artId = "alex", roleLabel = "hermano", portraitKey = "Hermano",
+                    id = "hermano", name = "Álex Romero", shortName = "Álex", artId = "alex", roleLabel = "hermano", portraitKey = "Álex",
                     identity = "Eres Álex Romero, 17 años, hermano de Paula. Vives con tu madre en Granada; Paula te lo cuenta todo.",
                     speech = "Seco y protector; respuestas cortas, a veces cortantes. Eres serio para tu edad.",
                     speechExample = "Pregúntame lo que quieras. Pero rápido.",
@@ -70,7 +70,7 @@ Tienes 7 días para descubrir qué pasó.",
                 },
                 new CharacterData
                 {
-                    id = "vecina", name = "Encarna Molina", shortName = "Encarna", artId = "encarna", roleLabel = "vecina", portraitKey = "Vecina",
+                    id = "vecina", name = "Encarna Molina", shortName = "Encarna", artId = "encarna", roleLabel = "vecina", portraitKey = "Encarna",
                     identity = "Eres Encarna Molina, 63 años, viuda, dueña de la finca de al lado de Los Olivares. Perdiste a tu hija Rocío en 1998, con 15 años. Tienes caballos.",
                     speech = "Andaluza, piadosa y dulce; hablas de la Virgen y de tu Rocío en presente. Llamas 'hijo' al inspector.",
                     speechExample = "Ay, hijo, qué cosas más malas pasan. Que la Virgen la proteja.",

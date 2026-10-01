@@ -724,3 +724,15 @@ retratos → 4 gráficos.
   calibración; quedan 1B_cena y 1C_llamada (comportamiento del modelo). Un aviso de "memoria" del bot era un falso
   positivo (respuesta idéntica por ser la ficha): chequeo corregido con test. Tabla completa en `docs/CLUE-LOGIC.md`.
   EditMode 730/730, PlayMode 61/61.
+
+## Bloque 3: personajes sin retrato propio
+- **01:42** Inventario: **7 retratos para 12 personajes**. Compartían cara Daniel y Javier, Carmen y Lucía, Lucas y
+  Álex, y las tres vecinas (Amparo, Maruxa, Encarna); la carpeta de retratos por personaje no existía. Seis derivados
+  por código en archivos nuevos (`Tools/make_derived_portraits.py` → `Assets/Art/Derived/`, el original intacto):
+  recolor por zonas y tonos (la piel y las rayas del polo comparten color: zonas además de tono), canas, gafas para
+  Lucía, luto para Encarna, espejo para los de la historia 3. Se usan como los originales: mismo encuadre (el del
+  original, reflejado si va en espejo), mismo tratamiento de pixel art y relieve 2.5D. Test: ningún personaje comparte
+  retrato, cada derivado tiene archivo y encuadre. Galería a tamaño real (`retratos_12.jpg`); la primera captura
+  mezclaba historias (los ids se repiten entre ellas) y la rehice historia a historia. Honesto: Javier y las tres
+  vecinas comparten cara y pose con su original (se distinguen por ropa, pelo y orientación) → prompts en
+  ART-NEEDED.md. EditMode 733/733, PlayMode 61/61.

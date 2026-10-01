@@ -64,7 +64,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 },
                 new CharacterData
                 {
-                    id = "vecina", name = "Amparo Gil", shortName = "Amparo", artId = "rosario", roleLabel = "vecina", portraitKey = "Vecina",
+                    id = "vecina", name = "Amparo Gil", shortName = "Amparo", artId = "rosario", roleLabel = "vecina", portraitKey = "Amparo",
                     identity = "Eres Amparo Gil, 70 años, viuda y jubilada. Vives justo enfrente de los Mendoza; desde tu salón ves la ventana del cuarto de Elena. Duermes poco.",
                     speech = "Cotilla, detallista y cariñosa. Das horas exactas porque tienes el reloj de cuco delante. Llamas 'hijo' al inspector.",
                     speechExample = "Mire, hijo, yo no es que espíe, pero una tiene ojos.",

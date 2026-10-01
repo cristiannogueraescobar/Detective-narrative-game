@@ -15,7 +15,7 @@ Todo el arte es **opcional**: si falta un archivo, el juego usa un sustituto y s
 | Daniel Mendoza (1, padre) | `daniel_*.png` | tranquilo, nervioso, enfadado | 48 años, abogado, traje oscuro impecable, gesto contenido y frío |
 | Carmen Vidal (1, madre) | `carmen_*.png` | tranquilo, nervioso, triste | 45 años, pediatra, cansada, ojeras, rebeca sobre ropa de hospital |
 | Lucas Mendoza (1, hermano) | `lucas_*.png` | tranquilo, nervioso, triste | 16 años, sudadera con capucha, cascos al cuello, mirada esquiva |
-| Rosario Gil (1, vecina) | `rosario_*.png` | tranquilo, nervioso, triste | 70 años, viuda, bata de casa, gafas colgadas, cotilla afable |
+| Amparo Gil (1, vecina) | `rosario_*.png` (la clave del archivo sigue siendo `rosario`) | tranquilo, nervioso, triste | 70 años, viuda, bata de casa, gafas colgadas, cotilla afable |
 | Marcos Rial (2, dueño del bar) | `marcos_*.png` | tranquilo, nervioso, triste | 42 años, corpulento, camisa remangada, trapo al hombro |
 | Andrés Souto (2, cartero) | `andres_*.png` | tranquilo, nervioso, triste | 52 años, uniforme de Correos amarillo apagado, delgado, retraído |
 | Inspector Ruiz (2, inspector) | `ruiz_*.png` | tranquilo, nervioso, enfadado | 55 años, gabardina, bigote canoso, gesto cínico |
@@ -31,7 +31,30 @@ Por ejemplo Javier: triste 48 %, nervioso 36 %, enfadado 9 %; Marcos: nervioso 5
 
 **Total: 36 imágenes.** Si hay que priorizar, empieza por los 12 `*_tranquilo.png`: con ellos, cada personaje ya tiene cara propia en todos los estados.
 
-Hasta que haya retratos nuevos se usan los antiguos (`Assets/Images/Suspects/*.gif.png`), que se comparten entre historias. Si no hay ninguno, se muestra un color plano.
+Hasta que haya retratos nuevos se usan los antiguos (`Assets/Images/Suspects/*.gif.png`) y, desde la Sesión A, seis
+**derivados** hechos por código a partir de ellos (`Assets/Art/Derived/`, con `Tools/make_derived_portraits.py`), para
+que ningún personaje comparta cara con otro: Javier, Lucía, Álex (de los de la historia 1), Amparo (envejecida),
+Maruxa y Encarna (de la vecina). Si no hay ninguno, se muestra un color plano.
+
+### Derivados que no llegan a la calidad de un original (Sesión A)
+Se distinguen de un vistazo y encajan con su ficha, pero **comparten cara y pose con su original**: Javier con Daniel;
+Amparo, Maruxa y Encarna entre sí (Lucía y Álex llevan más cambios: gafas, ropa, espejo). Dentro de una historia nunca
+coinciden dos con la misma cara; aun así, son los primeros que conviene sustituir. Prompts para generarlos fuera, en el
+**mismo estilo que los originales actuales** (para que casen hasta que llegue el arte noir de arriba):
+
+Estilo común (añadir a cada prompt): *16-bit pixel art character, full body, standing, front three-quarter view, clean
+dark outline, limited warm palette, transparent background, 3:4 tall canvas, same scale and style as a set of
+Spanish small-town characters (detective game).*
+
+| Personaje | Prompt |
+|---|---|
+| Javier Romero (44, olivarero, Jaén) | weathered olive farmer, tanned skin, short dark hair greying at the temples, stubble, khaki work shirt with rolled sleeves, brown corduroy trousers, work boots, holding a beer bottle, tired red eyes, defensive posture |
+| Lucía Navarro (41, profesora, depresión) | high-school teacher, slim, black hair in a low ponytail, thin glasses, muted blue blouse under a grey cardigan, plain navy skirt, flat shoes, holding a folder to her chest, guarded tired expression |
+| Álex Romero (17) | teenage boy, black messy hair, red-and-black cap worn backwards, burgundy track jacket, white t-shirt, black jeans, white sneakers with red details, earphones around the neck, jaw clenched, serious |
+| Amparo Gil (70, viuda, Santiago) | elderly widow, silver hair in a bun, reading glasses on a chain, floral house dress, purple cardigan, slippers, small binoculars in one hand, curious nosy expression |
+| Maruxa Pena (74, viuda, Galicia) | very old Galician widow, white hair in a bun with a dark headscarf, navy dress with small white flowers, brown wool cardigan, weathered hands, suspicious squint |
+| Encarna Molina (63, viuda, de luto, caballos) | widow in mourning, dark grey hair in a bun, black dress, charcoal cardigan, small Virgin medal necklace, riding boots, sweet but unsettling smile |
+
 
 ## 2. Fondos, cabeceras e intro de caso
 

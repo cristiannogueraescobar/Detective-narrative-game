@@ -68,7 +68,7 @@ Tienes 7 días.",
                 },
                 new CharacterData
                 {
-                    id = "vecina", name = "Maruxa Pena", shortName = "Maruxa", artId = "maruxa", roleLabel = "vecina", portraitKey = "Vecina",
+                    id = "vecina", name = "Maruxa Pena", shortName = "Maruxa", artId = "maruxa", roleLabel = "vecina", portraitKey = "Maruxa",
                     identity = "Eres Maruxa Pena, 74 años, viuda. Vives en la casa de la curva de la carretera de la costa y madrugas todos los días.",
                     speech = "Español con retranca gallega; desconfías de forasteros y sueltas alguna palabra gallega suelta. Llamas 'fillo' al inspector.",
                     speechExample = "Yo no sé nada, fillo... bueno, algo sí vi.",
