@@ -785,3 +785,21 @@ retratos → 4 gráficos.
 - **10:35** `docs/SKILLS-MAP.md`: qué skill del proyecto y cuál instalada usar en cada tipo de tarea. Solo nombres
   comprobados en disco. `CLAUDE.md` nuevo con la línea "lee SKILLS-MAP.md al empezar". Probado en un proceso nuevo:
   leyó el mapa solo y siguió la fila de Animaciones.
+
+# Sesión C (01-10-2026): decisiones de Cristian sobre la sesión B + 3 h autónomas
+
+Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier` (sin fusionar); esta sección va en
+`feature/sesion-c`, que sale del `main` ya fusionado.
+
+## Parte 1: decisiones
+- **21:15-21:21 Punto 1.** `feature/mejoras-seguras` fusionada a `main` con `--no-ff` (`a05a686`). Antes: 16 archivos,
+  ninguna captura, ninguna clave de Anthropic, nada > 5 MB. En el resultado fusionado: EditMode 756/757 (el que no corre es
+  el banco, Explicit), PlayMode 64, 0 fallos. Push hecho; Ollama descargado tras PlayMode.
+- **21:21 Punto 2.** Los 6 archivos de juego de `feature/retratos-javier` (contados desde su merge-base con main;
+  el resto del diff contra main son los cambios de mejoras-seguras, que una fusión no desharía): ver el resumen
+  final. No se fusiona.
+- **21:22 Punto 3.** `docs/art/ENCARGO.md` (inglés): página 1 para el artista, guía de estilo medida, los 5
+  personajes con 3 expresiones cada uno, entregables y formato; referencias 02-04 y retratos actuales copiados en
+  `docs/art/encargo/`. Culpables en alguna variante: Daniel (1A), Javier (3A), Encarna (3C) → ninguna expresión
+  delata. **Cambios frente a ART-NEEDED:** la "sonrisa dulce que inquieta" de Encarna la delataba (culpable en 3C)
+  → cálida, nunca siniestra; sin los prismáticos de Amparo (son su secreto). Herramientas de generación: aparcadas.
