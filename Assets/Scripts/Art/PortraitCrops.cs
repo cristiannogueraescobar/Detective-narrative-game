@@ -19,6 +19,18 @@ public static class PortraitCrops
         { "Vecina", (new Rect(0.175f, 0.525f, 0.519f, 0.461f), new Rect(0.290f, 0.759f, 0.272f, 0.181f)) },
     };
 
+    // Los retratos derivados (DerivedPortraits) tienen la misma pose que su original: su encuadre, reflejado si van en espejo
+    static PortraitCrops()
+    {
+        foreach (var pair in DerivedPortraits.All)
+        {
+            var (bust, face) = ByKey[pair.Value.baseKey];
+            ByKey[pair.Key] = pair.Value.mirrored ? (Mirror(bust), Mirror(face)) : (bust, face);
+        }
+    }
+
+    private static Rect Mirror(Rect r) => new Rect(1f - r.xMax, r.y, r.width, r.height);
+
     public static readonly Rect Full = new Rect(0f, 0f, 1f, 1f);
 
     public static Rect Bust(string portraitKey)

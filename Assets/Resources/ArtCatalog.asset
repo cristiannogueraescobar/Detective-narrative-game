@@ -13,6 +13,18 @@ MonoBehaviour:
   m_Name: ArtCatalog
   m_EditorClassIdentifier: Detective::ArtCatalog
   entries:
+  - path: Assets/Art/Derived/alex.png
+    texture: {fileID: 2800000, guid: 7ac94d340e7a4f21a4dbcb97b1bf5f27, type: 3}
+  - path: Assets/Art/Derived/amparo.png
+    texture: {fileID: 2800000, guid: 27421cff56944801901aca6d451d282f, type: 3}
+  - path: Assets/Art/Derived/encarna.png
+    texture: {fileID: 2800000, guid: e89c128045e446689d9460b57e36fe3d, type: 3}
+  - path: Assets/Art/Derived/javier.png
+    texture: {fileID: 2800000, guid: 817a80503b7f467590d8ac8df03d2f3f, type: 3}
+  - path: Assets/Art/Derived/lucia.png
+    texture: {fileID: 2800000, guid: fabd1fe7e0fc4d5487e77efa2f8592df, type: 3}
+  - path: Assets/Art/Derived/maruxa.png
+    texture: {fileID: 2800000, guid: 6a46adeceb60428fb212e8b4c497298c, type: 3}
   - path: Assets/Art/Icons/app_icon.png
     texture: {fileID: 2800000, guid: 51810ed7b89c96840a23f52bd90aa1c4, type: 3}
   - path: Assets/Art/Icons/contradiccion.png

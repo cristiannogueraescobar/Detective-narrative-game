@@ -310,6 +310,29 @@ public class AnimationCapture
         Shot("veredicto_ficha");
     }
 
+    // Sesión A, bloque 3: los 12 personajes de las tres historias en el interrogatorio, a tamaño real (retrato_<id>)
+    [UnityTest]
+    public IEnumerator TodosLosRetratos()
+    {
+        Tutorial.SkipAll();
+        yield return ToInterrogation();
+        var ui = UnityEngine.Object.FindFirstObjectByType<InterrogationUI>();
+        var dropdown = Find("SuspectDropdown").GetComponent<TMPro.TMP_Dropdown>();
+        // Historia a historia: los ids ("padre", "vecina"…) se repiten entre historias, como en el juego (una cada vez)
+        foreach (StoryData story in CaseLibrary.Stories)
+        {
+            var views = story.cast.Select(c => SuspectView.From(c)).ToList();
+            ui.SetSuspects(views);
+            for (int i = 0; i < views.Count; i++)
+            {
+                dropdown.value = i;
+                dropdown.onValueChanged.Invoke(i); // Aunque el índice coincida con el anterior
+                yield return new WaitForSecondsRealtime(0.6f); // Fundido del cambio de retrato
+                Shot("retrato_" + views[i].artId);
+            }
+        }
+    }
+
     // Ronda 15: los partes de la mañana quedan al final de la libreta
     [UnityTest]
     public IEnumerator LibretaConPartes()

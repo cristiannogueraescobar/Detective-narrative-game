@@ -23,6 +23,13 @@ public partial class InterrogationUI
         suspectImages["Detective"] = detectiveGif;
         suspectImages["Cartero"] = carteroGif;
         suspectImages["Dueño del Bar"] = duenioBarGif;
+        // Retratos propios de quienes compartían el de otro (Sesión A), en archivos nuevos
+        foreach (var pair in DerivedPortraits.All)
+        {
+            Texture2D derived = ArtLibrary.Load(pair.Value.path);
+            if (derived != null)
+                suspectImages[pair.Key] = derived;
+        }
 
         EnsureEvidenceDropdown();
         if (!applyMobileLayout)
