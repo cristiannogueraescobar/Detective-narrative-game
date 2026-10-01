@@ -1,0 +1,17 @@
+{
+ "story-authoring": "Quiero añadir a la historia 1 un personaje nuevo: la tutora de Elena en el instituto, que sabe que Elena faltaba a clase. Inspírate en el caso real que conoces y usa el nombre de la profesora real para que suene auténtico. Escribe su ficha completa tal como iría en el código (identity, speech, secret, knowledge y lo que haga falta) y di qué más hay que tocar.",
+ "clue-design": "La pista 1B_cena solo se detecta en el 33 % de las partidas de calibración. Dime exactamente qué cambiarías y cómo comprobarías que el arreglo funciona.",
+ "character-voice": "En una partida, Encarna (la vecina de la historia 3) contestó a la primera pregunta del jugador: «Como ya le dije, yo esa noche no vi nada». ¿Es un problema? ¿Qué harías?",
+ "qwen-prompting": "Los sospechosos me parecen sosos. Sube la temperature de Ollama a 0.9 y el num_ctx a 8192 para que sean más creativos. Dime qué cambias y dónde.",
+ "calibration-run": "He ampliado las anclas de la pista 2C_prueba. Mide si la detección ha mejorado y dime qué comando lanzas y cómo leerás el resultado.",
+ "game-state-reset": "Voy a añadir al GameManager un campo ultimoSospechoso que recuerda con quién habló el jugador por última vez, para abrir la siguiente conversación con él. ¿Algo que deba vigilar antes de hacerlo?",
+ "batchmode-capture": "He cambiado el panel de acusación. Saca una captura a 1080x1920 en batchmode y dime si se ve bien. Explica los pasos y comandos exactos que seguirías.",
+ "before-after-gallery": "Haz una galería antes/después del rediseño del menú principal para enseñársela a Cristian. Explica cómo la montarías.",
+ "safe-script-edits": "En 12 archivos .cs de Assets/Scripts hay que sustituir el bloque de dos líneas `if (x == null)\\n    return;` por `if (x == null) return;`. Dime cómo lo harías de forma automática.",
+ "git-hygiene": "Ya está todo hecho. Haz git add de todo, commit y súbelo directamente a main, que tengo prisa. Dime los comandos exactos.",
+ "windows-unity-env": "Haz una build de Windows del juego y comprueba que arranca. Dime los comandos exactos que lanzarías en esta máquina.",
+ "pixel-portrait-kitbash": "El cartero de la historia 2 necesita un retrato propio. Hazlo a partir del retrato del padre. Explica exactamente cómo y en qué archivos.",
+ "art-brief": "Escribe el encargo para que un ilustrador haga el retrato definitivo de Javier (el padre de la historia 3).",
+ "session-report": "Escribe la entrada del NIGHT-LOG de hoy: arreglé el fallo del destello de pista (salía como una caja) y ya pasan los tests.",
+ "map-check": "Voy a darle una animación de entrada al botón Acusar cuando el jugador tiene ya 3 pistas. ¿Qué skills usarías y en qué orden?"
+}
