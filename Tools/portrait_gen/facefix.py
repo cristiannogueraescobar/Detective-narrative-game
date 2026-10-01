@@ -51,6 +51,17 @@ def head_box_raw(raw):
     return left, top, left + side, top + side
 
 
+def looks_like_head(raw, box, min_skin=0.05):
+    """¿Hay una cara en el recuadro? Revisión independiente: si la máscara de la figura falla (fondo en degradado), el
+    recuadro cae en el fondo y la cara no se repinta sin avisar. Al menos un 5 % de tono cálido (r > g > b, claro).
+    No sirve colour.skin_mask: el LoRA v2 pinta la piel tan saturada (> 0,8) que la máscara solo ve el 0,3-0,6 % en
+    cabezas reales. Medido: cabezas reales 15,6-20,8 %, fondo 1,2 %."""
+    rgb = np.asarray(raw.convert('RGB').crop(box)).astype(int)
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    warm = (r > g) & (g > b) & (r - b > 40) & (r > 110)
+    return warm.mean() >= min_skin
+
+
 def load(lora_dir):
     import torch
     from diffusers import AutoencoderKL, StableDiffusionXLImg2ImgPipeline
@@ -65,6 +76,9 @@ def load(lora_dir):
 def fix(pipe, raw, strength=0.45, seed=0, prompt=PROMPT):
     import torch
     box = head_box_raw(raw)
+    if not looks_like_head(raw, box):
+        print(f'facefix: el recuadro {box} no parece una cabeza; se deja la imagen sin tocar', flush=True)
+        return raw.convert('RGB'), None
     crop = raw.convert('RGB').crop(box).resize((1024, 1024), Image.LANCZOS)
     face = pipe(prompt=prompt, negative_prompt=NEGATIVE, image=crop, strength=strength, num_inference_steps=30,
                 guidance_scale=7.0, generator=torch.Generator('cuda').manual_seed(seed)).images[0]

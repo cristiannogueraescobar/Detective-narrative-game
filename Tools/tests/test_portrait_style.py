@@ -161,6 +161,16 @@ class SkinTests(unittest.TestCase):
         r, g, b = (int(v) for v in out[150, 380, :3])
         self.assertGreater(r - g, 20, f'tira a melocotón, no a limón: {(r, g, b)}')
 
+    def test_con_unos_pocos_pixeles_de_piel_no_se_corrige_la_figura(self):
+        # Revisión independiente: 3 píxeles amarillos en la cabeza bastaban para mover el color de toda la figura
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'portrait_gen'))
+        import colour
+        a = np.zeros((1024, 768, 4), np.uint8)
+        a[100:960, 250:520] = (60, 110, 50, 255)
+        a[110, 300:303] = (243, 235, 141, 255)       # 3 píxeles "de piel"
+        target = {'L': 70.0, 'a': 15.0, 'b': 25.0, 'sa': 5.0, 'sb': 5.0}
+        self.assertTrue(np.array_equal(colour.correct(a, target=target), a))
+
     def test_sin_piel_visible_la_figura_no_se_vuelve_negra(self):
         # Caso real (sesión B, LoRA de estilo, 17:46): 13 de 26 candidatos salían como siluetas negras. Sin píxeles de
         # piel en la banda de la cabeza, la media de la piel era NaN y NaN pasado a uint8 da ~0 en toda la figura.
@@ -195,6 +205,21 @@ class HeadCropTests(unittest.TestCase):
 
 
 class FaceFixTests(unittest.TestCase):
+    def test_un_recuadro_sin_cara_se_rechaza(self):
+        # Revisión independiente: si la máscara de la figura falla, el recuadro cae en el fondo y la cara no se repinta
+        # sin avisar. Un recuadro sin piel no es una cabeza.
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'portrait_gen'))
+        import facefix
+        grey = Image.new('RGB', (864, 1152), (90, 90, 96))
+        self.assertFalse(facefix.looks_like_head(grey, (300, 0, 600, 300)))
+        face = Image.new('RGB', (864, 1152), (90, 90, 96))
+        face.paste((225, 160, 110), (380, 80, 520, 240))
+        self.assertTrue(facefix.looks_like_head(face, (300, 40, 600, 340)))
+        # Caso real (8700, 8702): el LoRA v2 pinta la piel muy saturada y la máscara de piel no la veía
+        vivid = Image.new('RGB', (864, 1152), (90, 90, 96))
+        vivid.paste((255, 150, 40), (380, 80, 520, 240))
+        self.assertTrue(facefix.looks_like_head(vivid, (300, 40, 600, 340)))
+
     def test_pegar_la_cara_no_toca_nada_fuera_del_recuadro(self):
         # facefix.py: la cara se repinta aparte a 1024 y se pega con borde suave. Fuera del recuadro, ni un píxel cambia.
         sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'portrait_gen'))

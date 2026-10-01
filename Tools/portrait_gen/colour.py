@@ -42,7 +42,7 @@ def lab_to_srgb(lab):
     return (np.clip(c, 0, 1) * 255).round()
 
 
-def skin_mask(rgb, opaque):
+def skin_mask(rgb, opaque, head_only=True):
     """Piel: tonos naranja-carne (r > g > b, matiz 8-60°, saturación media, clara), solo en la franja de la cabeza.
     Hasta 60° y no 40°: el LoRA de estilo pinta la cara amarillo limón (matiz 56°) y sin contarla como piel ni se
     corregía ni se libraba de saturar (prueba ciega 5: "piel amarillo limón", primer motivo en las tres respuestas)."""
@@ -55,7 +55,7 @@ def skin_mask(rgb, opaque):
     # Solo en la franja de la cabeza (22 % superior de la figura): la ropa oliva-ocre tiene el mismo matiz que la piel
     # y en Javier 6111 la corrección se calculaba sobre la camisa (71 350 "píxeles de piel")
     ys = np.where(opaque.any(axis=1))[0]
-    if len(ys):
+    if head_only and len(ys):
         head = np.zeros_like(tone)
         head[ys.min():ys.min() + int((ys.max() - ys.min()) * 0.22)] = True
         tone &= head
@@ -96,11 +96,15 @@ def reference_skin_full():
     return {k: float(np.mean([x[k] for x in v])) for k in ('L', 'a', 'b', 'sa', 'sb')}
 
 
+# Revisión independiente: con 3 píxeles amarillos en la cabeza se movía el color de toda la figura
+MIN_SKIN = 200
+
+
 def correct(rgba, strength=1.0, target=None):
     """Transferencia a*/b* calculada sobre la piel y aplicada a la figura (ver docstring del módulo)."""
     target = target or reference_skin_full()
     src = stats(rgba)['piel']
-    if src['n'] == 0:
+    if src['n'] < MIN_SKIN:
         # Sin piel en la banda de la cabeza no hay nada que medir. Antes la media era NaN y la figura salía negra
         # (sesión B: 13 de 26 candidatos del LoRA de estilo).
         return rgba.copy()
