@@ -237,12 +237,13 @@ Tienes 7 días.",
                     fact = "a las 5:20 viste un coche grande y oscuro, tipo ranchera, parado en la curva con las luces apagadas. Ahí nunca para nadie.",
                     anchors = new[]
                     {
-                        new[] { "coche", "ranchera" },
+                        new[] { "coche", "ranchera", "vi uno parado" },
                         new[] { "luces apagadas", "sin luces", "parado", "5:20" }
                     },
-                    calibrationQuestions = new[] { "¿Vio algo raro en la curva esa madrugada?", "¿Pasó algún coche por delante de su casa hacia las cinco?", "¿Qué vio desde su ventana esa madrugada?" },
+                    calibrationQuestions = new[] { "¿Vio algo raro en la curva esa madrugada?", "¿Vio algún coche en la curva hacia las cinco?", "¿Qué vio desde su ventana esa madrugada?" },
                     sampleHits = new[]
                     {
+                        "No pasó ningún coche, hijo. A las 5:20 vi uno parado en la curva.",
                         "A las 5:20 había un coche grande, oscuro, parado en la curva sin luces, fillo.",
                         "Vi una ranchera oscura parada con las luces apagadas."
                     },
@@ -621,12 +622,13 @@ Tienes 7 días.",
                     fact = "el móvil de la chica apareció en la cala, se registró como prueba y se extravió en el traslado a Vigo. Son cosas que pasan.",
                     anchors = new[]
                     {
-                        new[] { "movil", "telefono", "prueba" },
+                        new[] { "movil", "telefono", "prueba", "extravio en el traslado", "se perdio en el traslado" },
                         new[] { "extravi", "se perdio", "perdido", "traslado", "desaparecio", "cosas que pasan", "no llego a vigo" }
                     },
                     calibrationQuestions = new[] { "¿Dónde está el móvil de Sofía?", "¿Encontraron el teléfono de la chica?", "¿Por qué el móvil de Sofía no está entre las pruebas enviadas a Vigo?" },
                     sampleHits = new[]
                     {
+                        "Creo que se extravió en el traslado a Vigo.",
                         "El móvil se extravió en el traslado a Vigo, compañero. Pasa.",
                         "Encontramos el teléfono en la cala, pero se perdió por el camino.",
                         "El móvil de la chica apareció en la cala, se registró como prueba y... bueno, son cosas que pasan."
@@ -641,12 +643,14 @@ Tienes 7 días.",
                     fact = "«Nadie me vio, pero mírelo en el GPS de la furgoneta de Correos: a las 5:15 me sitúa en la nacional, camino de la oficina. Compruébelo.»",
                     anchors = new[]
                     {
-                        new[] { "gps", "localizador", "me situa", "me localiza", "lo registra" },
-                        new[] { "nacional", "oficina", "5:15", "comprobar" }
+                        new[] { "gps", "localizador", "me situa", "me localiza", "lo registra", "situarme" },
+                        new[] { "nacional", "oficina", "5:15", "comprobar", "confirm", "comprueb" }
                     },
                     calibrationQuestions = new[] { "¿Alguien puede confirmar dónde estaba usted?", "¿Cómo sé que dice la verdad sobre sus horarios?" },
                     sampleHits = new[]
                     {
+                        "Mi furgoneta debería situarme en la nacional.",
+                        "Hay GPS que puede confirmar mis movimientos.",
                         "La furgoneta lleva GPS: a las 5:15 estaba en la nacional, compruébelo.",
                         "Mire el localizador de Correos, me sitúa camino de la oficina.",
                         "A las 5:15 me sitúa en la nacional, camino de la oficina. Compruébelo.",
