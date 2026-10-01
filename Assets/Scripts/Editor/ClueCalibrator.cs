@@ -192,9 +192,10 @@ public static class ClueCalibrator
                 Debug.LogWarning($"[Calibración] Variante {id} no registrada");
                 continue;
             }
+            // Una entrada por portador: con dos, cada uno se calibra con sus preguntas y sale en su fila
             work.AddRange(variant.clues
                 .Where(c => options.clueIds.Count == 0 || options.clueIds.Contains(c.id))
-                .Select(c => (story, variant, c)));
+                .SelectMany(c => c.Holders.Select(h => (story, variant, c.ForHolder(h)))));
         }
 
         var holders = work.Select(w => (w.story, w.variant, w.clue.holder)).Distinct().ToList();
@@ -238,7 +239,7 @@ public static class ClueCalibrator
                 {
                     string systemPrompt = PromptBuilder.Build(story, variant, holder, CalibrationDay,
                         new ClueData[0], new ClueData[0]);
-                    List<ClueData> ownClues = variant.clues.Where(c => c.holder == holder).ToList();
+                    List<ClueData> ownClues = variant.clues.Where(c => c.HeldBy(holder)).Select(c => c.ForHolder(holder)).ToList();
 
                     foreach (string question in PrecisionQuestions)
                     {

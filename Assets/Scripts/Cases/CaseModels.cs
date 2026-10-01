@@ -33,6 +33,52 @@ public class ClueData
     public string[] calibrationQuestions; // Turnos separados por "||"
     public string[] sampleHits;       // Respuestas de ejemplo que DEBEN detectarse
     public string[] sampleMisses;     // Respuestas de ejemplo que NO deben detectarse
+    public ClueHolder[] alsoHeldBy;   // Otros portadores (sesión C): cada uno la cuenta desde su punto de vista
+
+    public bool HeldBy(string characterId) =>
+        holder == characterId || (alsoHeldBy != null && alsoHeldBy.Any(h => h.characterId == characterId));
+
+    public IEnumerable<string> Holders =>
+        new[] { holder }.Concat(alsoHeldBy?.Select(h => h.characterId) ?? Enumerable.Empty<string>());
+
+    /// <summary>
+    /// La pista vista por uno de sus portadores: misma id (se descubre una sola vez), con el tema, el hecho, el secreto,
+    /// las anclas y las preguntas de ese portador. El portador principal la ve tal cual.
+    /// </summary>
+    public ClueData ForHolder(string characterId)
+    {
+        if (characterId == holder || alsoHeldBy == null)
+            return this;
+        ClueHolder other = alsoHeldBy.FirstOrDefault(h => h.characterId == characterId);
+        if (other == null)
+            return this;
+        var view = (ClueData)MemberwiseClone();
+        view.holder = other.characterId;
+        view.topic = other.topic;
+        view.fact = other.fact;
+        view.isSecret = other.isSecret;
+        view.anchors = other.anchors ?? anchors;
+        view.calibrationQuestions = other.calibrationQuestions ?? new string[0];
+        view.sampleHits = other.sampleHits ?? new string[0];
+        view.sampleMisses = other.sampleMisses ?? new string[0];
+        view.alsoHeldBy = null;
+        return view;
+    }
+}
+
+/// <summary>
+/// Un portador más de una pista (ClueData.alsoHeldBy): quién, cómo la sabe y con qué palabras la contaría.
+/// </summary>
+public class ClueHolder
+{
+    public string characterId;
+    public string topic;
+    public string fact;
+    public bool isSecret;
+    public string[][] anchors;               // null = las de la pista
+    public string[] calibrationQuestions;
+    public string[] sampleHits;
+    public string[] sampleMisses;
 }
 
 /// <summary>

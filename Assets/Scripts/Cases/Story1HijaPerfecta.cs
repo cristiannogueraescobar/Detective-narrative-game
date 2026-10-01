@@ -533,7 +533,34 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         "Estuve con Marta, una compañera del bufete, de 21:00 a 23:00.",
                         "No era una cena de clientes. Estaba en casa de Marta; el portero me vio."
                     },
-                    sampleMisses = new[] { "Estuve en una cena con clientes hasta las once." }
+                    sampleMisses = new[] { "Estuve en una cena con clientes hasta las once." },
+                    // Sesión C: Daniel casi nunca confiesa la aventura (20-35 % con 10 intentos). Amparo, la cotilla de
+                    // enfrente, conoce a "la del bufete": le ha visto traerle a casa más de una noche
+                    alsoHeldBy = new[]
+                    {
+                        new ClueHolder
+                        {
+                            characterId = "vecina",
+                            topic = "Daniel o a qué hora volvió esa noche",
+                            fact = "Daniel tiene un lío con Marta, una compañera del bufete: la has visto traerle a casa en su coche más de una noche, y esa noche volvió con ella pasadas las once, no de ninguna cena.",
+                            anchors = new[]
+                            {
+                                new[] { "marta", "la del bufete", "una companera", "otra mujer", "un lio", "amante", "una amiga" },
+                                new[] { "coche", "le trae", "le trajo", "le traia", "volvio con ella", "esa noche", "las once" }
+                            },
+                            calibrationQuestions = new[]
+                            {
+                                "¿Vio volver a Daniel esa noche? ¿A qué hora?",
+                                "¿Qué sabe de Daniel? || ¿Y esa noche, de dónde venía?"
+                            },
+                            sampleHits = new[]
+                            {
+                                "Uy, hijo, esa noche volvió pasadas las once, y no de ninguna cena: le trajo Marta, la del bufete, en su coche.",
+                                "Mire, Daniel tiene un lío con una compañera del bufete; más de una noche le trae a casa en su coche."
+                            },
+                            sampleMisses = new[] { "Esa noche el coche del padre no estuvo en casa hasta las once y pico.", "No sé nada de ninguna amante, hijo." }
+                        }
+                    }
                 }
             }
         };
@@ -720,7 +747,34 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         "A las 21:52 Lucas me llamó llorando: Elena se había caído, pero estaba bien.",
                         "Está bien... mi hijo me llamó. Dijo que Elena se cayó por la escalera. Llegué a las 22:15."
                     },
-                    sampleMisses = new[] { "Nadie me llamó. Llegué a las 23:00 del despacho.", "No, Lucas no me llamó.", "La llamada al 112 la hice yo; mi hijo estaba arriba." }
+                    sampleMisses = new[] { "Nadie me llamó. Llegué a las 23:00 del despacho.", "No, Lucas no me llamó.", "La llamada al 112 la hice yo; mi hijo estaba arriba." },
+                    // Sesión C: Daniel lo niega casi siempre (37-53 % con 10 intentos). Amparo ya veía a Lucas en la
+                    // ventana de la escalera tras el golpe: unos minutos después le ve llamar por el móvil, llorando
+                    alsoHeldBy = new[]
+                    {
+                        new ClueHolder
+                        {
+                            characterId = "vecina",
+                            topic = "qué hizo Lucas después del golpe o quién llegó a la casa",
+                            fact = "unos minutos después del golpe, hacia las diez menos diez, viste a Lucas en la ventana de la escalera hablando por el móvil y llorando; a las diez y cuarto llegó el coche del padre.",
+                            anchors = new[]
+                            {
+                                new[] { "movil", "telefono", "llamando", "llamada", "llamo" },
+                                new[] { "llorando", "lloraba", "llorar", "diez y cuarto", "22:15", "coche del padre" }
+                            },
+                            calibrationQuestions = new[]
+                            {
+                                "¿Qué hizo Lucas después del golpe?",
+                                "¿Vio llegar a alguien a la casa esa noche? || ¿Y antes de eso, qué pasaba en la casa?"
+                            },
+                            sampleHits = new[]
+                            {
+                                "Después del golpe vi al chico en la ventana de la escalera, llorando y hablando por el móvil, hijo.",
+                                "Lucas estaba al teléfono, lloraba; y a las diez y cuarto llegó el coche del padre."
+                            },
+                            sampleMisses = new[] { "El coche del padre llegó sobre las diez y cuarto, no más tarde.", "No vi a nadie con ningún teléfono." }
+                        }
+                    }
                 },
                 new ClueData
                 {

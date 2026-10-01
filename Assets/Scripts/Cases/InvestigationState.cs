@@ -124,7 +124,7 @@ public class InvestigationState
     /// </summary>
     public static int MaxEvidenceWithoutCulprit(VariantData variant)
     {
-        var fromOthers = variant.clues.Where(c => c.holder != variant.culpritId).ToList();
+        var fromOthers = variant.clues.Where(c => c.Holders.Any(h => h != variant.culpritId)).ToList();
         return fromOthers.Count(c => c.kind == ClueKind.Incriminates)
              + ContradictionWeight * fromOthers.Count(c => c.exposesLie);
     }

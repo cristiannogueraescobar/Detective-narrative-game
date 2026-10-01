@@ -48,9 +48,10 @@ public static class TurnAnalyzer
         if (shownClue != null)
             state.RegisterShown(characterId, shownClue.id);
 
-        foreach (ClueData clue in variant.clues.Where(c => c.holder == characterId && !state.IsDiscovered(c.id)))
+        foreach (ClueData clue in variant.clues.Where(c => c.HeldBy(characterId) && !state.IsDiscovered(c.id)))
         {
-            AnchorTrace trace = ClueDetector.Evaluate(clue.anchors, normalized);
+            // Las anclas de este portador: cada uno lo cuenta con sus palabras
+            AnchorTrace trace = ClueDetector.Evaluate(clue.ForHolder(characterId).anchors, normalized);
             outcome.traces.Add((clue, trace));
 
             if (trace.Matched && state.Discover(clue.id))
@@ -85,7 +86,9 @@ public static class TurnAnalyzer
     {
         return state.DiscoveredClueIds
             .Select(state.Variant.Clue)
-            .Where(c => c.holder == characterId && c.isSecret);
+            .Where(c => c.HeldBy(characterId))
+            .Select(c => c.ForHolder(characterId))
+            .Where(c => c.isSecret);
     }
 }
 
