@@ -914,3 +914,7 @@ retratos → 4 gráficos.
   blando y roto". El contorno casi negro de la ronda 10 era mejor; lo que delata es la cara y el grano.
 - **20:37 Paro definitivamente el trabajo con Javier.** 12 rondas, 34 de 36. Mejor: rondas 9 y 10 (2 de 3).
   Recomendación sin cambios: encargo con el BRIEF.
+- **20:38 Cierre.** Todo con commit y push; ninguna rama fusionada; `main` sin tocar (67fb27c). Worktrees temporales
+  (`../dng-main`, `../dng-mejoras`) borrados. Sin procesos de generación ni modelo cargado en Ollama; GPU a 714 MiB
+  (los dos python.exe que quedan son del 29-09, no de esta sesión). Cierro antes de las 23:48: los tres bloques
+  están cerrados y más rondas de Javier no cambiaban la recomendación. Informe: `docs/REPORT-SESION-B.md`.
