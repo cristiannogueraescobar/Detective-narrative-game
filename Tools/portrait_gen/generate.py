@@ -67,6 +67,17 @@ JAVIER_JV_NEGATIVE = ('moustache, mustache, apron, vest, cigarette, beer mug, re
                       'suspenders, photorealistic, 3d render, blurry, cropped feet, scenery, text, watermark, multiple '
                       'characters, glasses, dark background, gradient background, vignette, glowing, two bottles, dithering, noise, '
                       'grainy texture')
+# Prueba ciega 4 (8405, 3 de 3 lo señalan, confianza media; y "es la misma persona que Marcos"): ojos pequeños y
+# entornados (el prompt pedía "scowl" y ojeras), textura granulada, piel saturada frente a ropa apagada; y la pose y la
+# pulsera de Marcos venían de partir de su paint-over. JAVIER_JV2: ojos grandes y claros como los originales, ceño en vez
+# de ojos entornados; se parte de un lienzo gris liso (--init init_gris.png) para no heredar a Marcos.
+JAVIER_JV2 = ('jvstyle pixel art character sprite, full body, 44 year old heavy-set man, frowning, big clear simple eyes, '
+              'short brown beard, short dark hair grey at the temples, olive green flannel shirt with rolled sleeves, '
+              'brown trousers, work boots, arms crossed, holding a green beer bottle, plain light grey background')
+JAVIER_JV2_NEGATIVE = ('moustache, mustache, apron, vest, bracelet, hand on hip, cigarette, beer mug, squinting, small eyes, '
+                       'realistic face, red plaid, young, handsome, smiling, slim, suspenders, photorealistic, 3d render, '
+                       'blurry, cropped feet, scenery, text, watermark, multiple characters, glasses, dark background, '
+                       'gradient background, dithering, noise, grainy texture, two bottles')
 CHARACTER = ('pixel art sprite, full body, plain light grey background, 44 year old heavy-set farmer, red plaid flannel '
              'shirt with rolled sleeves, dark stubble beard, short dark brown hair grey at the temples, tired face, '
              'holding a green beer bottle, brown work trousers, work boots, thick black outline')
@@ -239,6 +250,7 @@ def main():
     ap.add_argument('--style-lora', help='carpeta del LoRA de estilo (lora_dataset.py + train_lora_sdxl.py)')
     ap.add_argument('--style-lora-scale', type=float, default=1.0)
     ap.add_argument('--jv', action='store_true', help='con --javier: prompt JAVIER_JV (formato del LoRA de estilo)')
+    ap.add_argument('--jv2', action='store_true', help='con --javier: JAVIER_JV2 (tras la prueba ciega 4)')
     ap.add_argument('--cel', action='store_true', help='con --javier: variante JAVIER_CEL (tras la prueba ciega)')
     args = ap.parse_args()
 
@@ -250,9 +262,10 @@ def main():
     skeleton = pose.render(pose.POSES[args.pose_kind](W, H), W, H)
     skeleton.save(os.path.join(args.out, 'pose.png'))
     refs = [on_white_square(os.path.join(REPO, p)) for p in REFERENCES]
-    prompt = ((JAVIER_JV if args.jv else JAVIER_CEL if args.cel else JAVIER) if args.javier
+    prompt = ((JAVIER_JV2 if args.jv2 else JAVIER_JV if args.jv else JAVIER_CEL if args.cel else JAVIER) if args.javier
               else f'{CHARACTER}, {EXPRESSIONS[args.expression]}')
-    negative = ((JAVIER_JV_NEGATIVE if args.jv else JAVIER_CEL_NEGATIVE if args.cel else JAVIER_NEGATIVE) if args.javier
+    negative = ((JAVIER_JV2_NEGATIVE if args.jv2 else JAVIER_JV_NEGATIVE if args.jv else JAVIER_CEL_NEGATIVE if args.cel
+                 else JAVIER_NEGATIVE) if args.javier
                 else NEGATIVE)
 
     (prompt_embeds, negative_embeds, pooled, negative_pooled), ip_embeds = encode_once(pipe, prompt, negative, refs)

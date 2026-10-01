@@ -98,6 +98,10 @@ def correct(rgba, strength=1.0, target=None):
     """Transferencia a*/b* calculada sobre la piel y aplicada a la figura (ver docstring del módulo)."""
     target = target or reference_skin_full()
     src = stats(rgba)['piel']
+    if src['n'] == 0:
+        # Sin piel en la banda de la cabeza no hay nada que medir. Antes la media era NaN y la figura salía negra
+        # (sesión B: 13 de 26 candidatos del LoRA de estilo).
+        return rgba.copy()
     out = rgba.copy()
     opaque = rgba[..., 3] == 255
     lab = srgb_to_lab(rgba[..., :3].astype(float))

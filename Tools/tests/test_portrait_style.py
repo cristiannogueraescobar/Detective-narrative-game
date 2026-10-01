@@ -147,6 +147,17 @@ class SkinTests(unittest.TestCase):
         self.assertTrue(skin[150, 380], 'la cara es piel')
         self.assertFalse(skin[600, 380], 'la camisa ocre no')
 
+    def test_sin_piel_visible_la_figura_no_se_vuelve_negra(self):
+        # Caso real (sesión B, LoRA de estilo, 17:46): 13 de 26 candidatos salían como siluetas negras. Sin píxeles de
+        # piel en la banda de la cabeza, la media de la piel era NaN y NaN pasado a uint8 da ~0 en toda la figura.
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'portrait_gen'))
+        import colour
+        a = np.zeros((1024, 768, 4), np.uint8)
+        a[100:960, 250:520] = (60, 110, 50, 255)     # Solo ropa verde: ningún píxel de piel
+        target = {'L': 70.0, 'a': 15.0, 'b': 25.0, 'sa': 5.0, 'sb': 5.0}
+        out = colour.correct(a, target=target)
+        self.assertTrue(np.array_equal(out, a), 'sin piel que medir, no se corrige nada')
+
 
 if __name__ == '__main__':
     unittest.main()
