@@ -88,5 +88,41 @@ class OutlineTests(unittest.TestCase):
         self.assertTrue(0.008 <= m <= 0.024, m)
 
 
+def on_gradient(eaten_sleeve=False):
+    """Figura con contorno negro sobre un fondo en degradado suave (como el de imagen a imagen: de gris a azulado)."""
+    h, w = 1152, 864
+    x = np.linspace(0, 1, w)[None, :, None]
+    a = (np.array([172, 181, 188]) * (1 - x) + np.array([186, 205, 214]) * x).repeat(h, 0).astype(np.uint8)
+    a[100:1050, 330:530] = 0                       # Contorno
+    a[110:1040, 340:520] = (100, 95, 55)           # Ropa oliva
+    if eaten_sleeve:
+        # Manga clara sin contorno: dentro de la tolerancia del fondo (se la comería) pero con un borde (salto > 4)
+        a[300:600, 250:340] = (166, 175, 181)
+    return Image.fromarray(a)
+
+
+class LeakTests(unittest.TestCase):
+    def test_un_degradado_suave_no_cuenta_como_fuga(self):
+        # Caso real (Javier por imagen a imagen): fuga 0,07-0,16 en las 8 primeras, todas con el fondo en degradado
+        self.assertLess(style.background_leak(on_gradient()), 0.02)
+
+    def test_ropa_clara_sin_contorno_si_es_fuga(self):
+        self.assertGreater(style.background_leak(on_gradient(eaten_sleeve=True)), 0.05)
+
+
+class SkinTests(unittest.TestCase):
+    def test_la_ropa_ocre_no_cuenta_como_piel(self):
+        # Caso real (Javier 6111): la camisa oliva-ocre cae en el mismo matiz que la piel (8-40°) y la corrección de
+        # color se calculaba sobre la ropa (71 350 "píxeles de piel"). La piel se mide en la cabeza.
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'portrait_gen'))
+        import colour
+        a = np.zeros((1024, 768, 4), np.uint8)
+        a[100:300, 330:430] = (225, 160, 110, 255)   # Cara (piel) en la cabeza
+        a[300:960, 250:520] = (170, 130, 60, 255)    # Camisa ocre: mismo matiz que la piel
+        skin = colour.skin_mask(a[..., :3], a[..., 3] == 255)
+        self.assertTrue(skin[150, 380], 'la cara es piel')
+        self.assertFalse(skin[600, 380], 'la camisa ocre no')
+
+
 if __name__ == '__main__':
     unittest.main()

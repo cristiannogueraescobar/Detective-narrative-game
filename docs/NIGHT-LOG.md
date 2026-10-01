@@ -805,3 +805,23 @@ retratos → 4 gráficos.
   La prueba rápida de SKILLS-SETUP en PowerShell da LOADED.
 - Errores míos: un heredoc para un script de edición (inofensivo, con asserts; luego volví a Write) y la primera
   captura del filtro, que salió a 540×1920 deformada y con `CopyTexture` fallando en anchos que no son múltiplo de 4.
+
+# Sesión B (01-10-2026, 16:18 → 00:18, autónoma) — rama `feature/retratos-javier`
+
+## Comprobación inicial
+- **16:18** `main` = origin (`67fb27c`), nada fusionado. `ollama ps` vacío. Plugins: cargan en esta sesión (probado con
+  una skill `unity:`). GPU ocupada solo por la tanda de Javier lanzada antes de empezar. No existe aún la skill
+  `local-portrait-gen` (se crea en el bloque 2 si Javier aprueba).
+
+## Bloque 1: Javier con el nuevo enfoque
+- (Antes de la sesión, con tests) suelo entre los pies en `remove_white_bg.py`; `expressions.py` con la misma memoria
+  que `generate.py`; `from_pipe` forzado a fp16 (diffusers 0.40 lo pasa a float32: "Half and Float").
+- Imagen a imagen desde Marcos. Barrido sin retocar: a 0,55-0,75 sigue siendo Marcos (delantal, jarra en alto); a
+  0,85 es otro personaje pero pierde el estilo. **Paint-over por código** (`paintover.py`): sin jarra, humo, bigote ni
+  delantal; brazo colgando con botella; ropa oliva y marrón; canas. Barrido sobre él: **0,65** es el punto (0,55 deja
+  el boceto, 0,75 vuelve a perder el estilo). Postura nueva `defensive` (peso en una pierna, mano en la cadera).
+- **16:25** 20 candidatos a 0,65 (15 s/imagen). Contorno negro grueso en todos. Dos métricas mías fallaban y se
+  arreglaron con test en rojo: la fuga daba falsos positivos con fondo en degradado (0,07-0,16 → 0,0); la "piel" de la
+  corrección de color incluía la camisa ocre (71 350 px → solo la cabeza).
+- **16:45** Mejor candidato 6106: píxel 5, cabeza 0,21 (a mano), contorno 0,022, paleta 23, fuga 0,001. Prueba ciega
+  en marcha: 3 subagentes (orden aleatorio) y 1 de parecido con Marcos.

@@ -49,7 +49,15 @@ def skin_mask(rgb, opaque):
     d = np.maximum(mx - mn, 1e-6)
     hue = np.where(mx == r, ((g - b) / d) % 6, np.where(mx == g, (b - r) / d + 2, (r - g) / d + 4)) * 60
     sat = (mx - mn) / np.maximum(mx, 1e-6)
-    return opaque & (r > g) & (g > b) & (hue > 8) & (hue < 40) & (sat > 0.25) & (sat < 0.8) & (mx > 110)
+    tone = opaque & (r > g) & (g > b) & (hue > 8) & (hue < 40) & (sat > 0.25) & (sat < 0.8) & (mx > 110)
+    # Solo en la franja de la cabeza (22 % superior de la figura): la ropa oliva-ocre tiene el mismo matiz que la piel
+    # y en Javier 6111 la corrección se calculaba sobre la camisa (71 350 "píxeles de piel")
+    ys = np.where(opaque.any(axis=1))[0]
+    if len(ys):
+        head = np.zeros_like(tone)
+        head[ys.min():ys.min() + int((ys.max() - ys.min()) * 0.22)] = True
+        tone &= head
+    return tone
 
 
 def load(path):

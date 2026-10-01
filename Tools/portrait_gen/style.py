@@ -1,8 +1,13 @@
 """Medidas de estilo y posproceso de los retratos generados (docs/art/javier/BRIEF.md, sección 3).
 Funciona sobre la salida de Tools/remove_white_bg.py (RGBA 768x1024, figura al 90 %, pies a 40 px)."""
+import os
+import sys
+
 import numpy as np
 from PIL import Image
 from scipy import ndimage
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))  # Tools/: remove_white_bg
 
 # Paleta medida sobre las referencias 02-04 (BRIEF 3) + negro de contorno; el oliva de la camisa de Javier se añade
 PALETTE = ['#000000', '#D29F61', '#DD9D53', '#F3CE95', '#EFE0B2', '#FCEDA8', '#A44927', '#B93314', '#7A1A16',
@@ -64,12 +69,21 @@ def background_leak(raw):
     if bg.min() >= rwb.WHITE_LUM:
         loose = flood((sat <= rwb.BG_SAT) & (lum >= rwb.BG_LUM))
         strict = flood((sat <= 8) & (lum >= 250))
-    else:  # Fondo de color: la tolerancia de remove_white_bg frente a una muy estricta
+    else:  # Fondo de color: la tolerancia de remove_white_bg frente a "fondo seguro"
         dist = np.sqrt(((rgb.astype(float) - bg) ** 2).sum(-1))
         spread = np.sqrt(((edge - bg) ** 2).sum(-1))
         tol = max(18.0, float(np.percentile(spread, 95)) * 1.5)
         loose = flood(dist <= tol)
-        strict = flood(dist <= 6)
+        # Fondo seguro = zona lisa unida al borde: entre vecinos, saltos de 4 como mucho. Un degradado suave lo es
+        # entero; cualquier borde (ropa, contorno) lo corta. Antes era "a ±6 del color mediano" y un degradado daba
+        # fuga 0,07-0,16 (Javier por imagen a imagen) o 0,71 (test)
+        f = rgb.astype(float)
+        jump = np.zeros(lum.shape)
+        jump[:, 1:] = np.maximum(jump[:, 1:], np.abs(np.diff(f, axis=1)).max(-1))
+        jump[:, :-1] = np.maximum(jump[:, :-1], np.abs(np.diff(f, axis=1)).max(-1))
+        jump[1:] = np.maximum(jump[1:], np.abs(np.diff(f, axis=0)).max(-1))
+        jump[:-1] = np.maximum(jump[:-1], np.abs(np.diff(f, axis=0)).max(-1))
+        strict = flood(loose & (jump <= 4))
     figure = ~strict
     ys, _ = np.where(figure)
     if len(ys) == 0:
