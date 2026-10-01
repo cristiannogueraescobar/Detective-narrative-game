@@ -169,6 +169,16 @@ public static class SaveSystem
     /// <summary>Hilo que hizo la última escritura en disco: para los tests.</summary>
     public static int LastWriterThread { get; private set; }
 
+    // Ganchos de test: retraso al empezar cada escritura y número de escrituras hechas de verdad
+    public static int WriteDelayMsForTests;
+    public static int WritesForTests { get; private set; }
+
+    public static void ResetCountersForTests()
+    {
+        LastWriterThread = 0;
+        WritesForTests = 0;
+    }
+
     public static void Save(SaveData data)
     {
         string json;
@@ -191,6 +201,8 @@ public static class SaveSystem
 
     private static void Write(string path, string json, int mine)
     {
+        if (WriteDelayMsForTests > 0)
+            System.Threading.Thread.Sleep(WriteDelayMsForTests);
         lock (WriteLock)
         {
             if (mine != version)
@@ -207,6 +219,7 @@ public static class SaveSystem
                 File.Delete(path);
             File.Move(temp, path);
             LastWriterThread = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            WritesForTests++;
         }
         catch (Exception e)
         {

@@ -537,13 +537,18 @@ public class GameManager : MonoBehaviour
 
     private void OnApplicationPause(bool paused)
     {
-        if (paused)
-            GameSettings.Flush();
+        if (!paused)
+            return;
+        GameSettings.Flush();
+        // El guardado se escribe en otro hilo: en Android el sistema puede matar la app en segundo plano sin avisar
+        // (sin Application.quitting), así que al pausar se deja en disco lo que esté en cola
+        SaveSystem.Flush();
     }
 
     private void OnApplicationQuit()
     {
         GameSettings.Flush();
+        SaveSystem.Flush();
     }
 
     public void MakeAccusation(string accusedId, string keyClueId = null)

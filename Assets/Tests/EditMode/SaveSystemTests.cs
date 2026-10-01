@@ -17,6 +17,8 @@ public class SaveSystemTests
     [TearDown]
     public void TearDown()
     {
+        SaveSystem.WriteDelayMsForTests = 0;
+        SaveSystem.Flush(); // Una escritura pendiente podría volver a crear la carpeta después de borrarla
         SaveSystem.DirectoryOverride = null;
         if (Directory.Exists(directory))
             Directory.Delete(directory, true);
@@ -299,9 +301,51 @@ public class SaveSystemTests
     public void LaEscrituraNoSeHaceEnElHiloQueGuarda()
     {
         int caller = System.Threading.Thread.CurrentThread.ManagedThreadId;
+        SaveSystem.ResetCountersForTests(); // LastWriterThread es estático: sin esto valdría el de otro test
         SaveSystem.Save(Sample());
         SaveSystem.Flush();
+        Assert.IsTrue(File.Exists(SaveSystem.FilePath), "se escribió de verdad");
+        Assert.AreNotEqual(0, SaveSystem.LastWriterThread);
         Assert.AreNotEqual(caller, SaveSystem.LastWriterThread, "el disco se toca en otro hilo");
+    }
+
+    // Revisión independiente (sesión B): el test de borrado no probaba la guarda de versión, porque Delete ya espera
+    [Test]
+    public void UnGuardadoAtrasadoNoSeEscribeSiHayOtroMasNuevo()
+    {
+        SaveSystem.ResetCountersForTests();
+        SaveSystem.WriteDelayMsForTests = 200; // La primera escritura espera; mientras, llega la segunda
+        SaveData old = Sample();
+        old.day = 1;
+        SaveSystem.Save(old);
+        SaveData newer = Sample();
+        newer.day = 7;
+        SaveSystem.Save(newer);
+        SaveSystem.Flush();
+        Assert.AreEqual(1, SaveSystem.WritesForTests, "la atrasada se salta");
+        Assert.IsTrue(SaveSystem.TryLoad(out SaveData loaded));
+        Assert.AreEqual(7, loaded.day);
+    }
+
+    // Revisión independiente (sesión B, Importante): en Android el sistema mata la app en segundo plano sin
+    // Application.quitting. Al pausar hay que dejar en disco lo que esté en cola.
+    [Test]
+    public void AlPausarLaAppElUltimoGuardadoLlegaAlDisco()
+    {
+        SaveSystem.WriteDelayMsForTests = 300;
+        SaveSystem.Save(Sample());
+        var go = new UnityEngine.GameObject("gm-pausa");
+        try
+        {
+            GameManager gm = go.AddComponent<GameManager>();
+            typeof(GameManager).GetMethod("OnApplicationPause", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .Invoke(gm, new object[] { true });
+            Assert.IsTrue(File.Exists(SaveSystem.FilePath), "al volver de OnApplicationPause(true) ya está escrito");
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(go);
+        }
     }
 
     private static readonly string NewLine = System.Environment.NewLine.Substring(System.Environment.NewLine.Length - 1);

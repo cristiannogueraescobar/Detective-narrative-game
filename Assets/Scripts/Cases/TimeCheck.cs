@@ -21,6 +21,8 @@ public static class TimeCheck
     // PERFORMANCE-AUDIT, mejora 2: era lo más caro de cada respuesta (dos expresiones regulares sobre 6,6 KB de ficha e
     // historial, aunque la respuesta no tuviera horas). Ahora: sin horas en la respuesta no se mira nada; con horas, las
     // de la ficha (cambia por sospechoso y día) y las de cada mensaje salen de una caché por texto.
+    // Sin lock: solo se usa desde el hilo principal (AskSuspect vuelve al contexto de Unity; el bot y los tests llaman de uno
+    // en uno). Si algún día se llama desde otro hilo, hay que protegerla como las cachés de ClueDetector y EmotionParser.
     private static readonly Dictionary<string, HashSet<int>> KnownCache = new Dictionary<string, HashSet<int>>();
     private const int CacheLimit = 256;
 
