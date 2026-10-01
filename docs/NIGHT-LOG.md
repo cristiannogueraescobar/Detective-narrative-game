@@ -877,8 +877,8 @@ retratos → 4 gráficos.
 - **17:54 Prueba ciega 5** (8603): 3 de 3; parecido **pasa** ("personas distintas", alta). Primer motivo en las tres:
   piel amarillo limón → la máscara de piel no aceptaba matiz 56°; arreglado con test (`e7dfeb1`).
 - **17:58 Prueba ciega 6** (8611, piel corregida): 3 de 3, confianza media, dos dudan con otra figura; parecido pasa.
-- **18:03 Prueba ciega 7** (8611 con aplanado fuerte, solo en el scratchpad): 3 de 3; la cara empeora ("manchas").
-- **18:06 Bloque 1 cerrado, NO aprueba.** 7 rondas, 21 de 21. El LoRA acercó mucho (parecido resuelto, confianza baja
+- **17:59 Prueba ciega 7** (8611 con aplanado fuerte, solo en el scratchpad): 3 de 3; la cara empeora ("manchas").
+- **18:00 Bloque 1 cerrado, NO aprueba.** (Horas leídas del reloj: antes había escrito 18:03 y 18:06, estimadas otra vez.) 7 rondas, 21 de 21. El LoRA acercó mucho (parecido resuelto, confianza baja
   de alta a media) pero la cara delata: el LoRA vio 6 figuras enteras con la cara a ~60 px y no aprende los ojos de los
   originales. Siguiente paso propuesto (no hecho): LoRA con recortes de cara ampliados, o encargo con el BRIEF.
   Hoja: `docs/art/javier/evolucion_sesion_b.jpg`. Nada se integra en el juego.
