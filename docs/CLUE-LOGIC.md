@@ -279,6 +279,11 @@ fallos registrados que citar).
 ### Bot en las 9 variantes (semilla 1919, 2 partidas por variante)
 | | main (`a05a686`) | rama (`fd2b041`: dos portadores + bloque A) |
 |---|---|---|
-| Culpable acertado | 11/18 (repetición en marcha: ver NIGHT-LOG) | **17/18** |
+| Culpable acertado | 11/18 y, repetido con la misma semilla, 16/18 | **17/18** |
 | Primera pista (pregunta) | 7,1 | 6,1 |
 | Preguntas sin pista nueva | 88 % | 88 % |
+
+**Ruido del bot:** el mismo `main`, con la misma semilla, dio 11/18 y 16/18 en dos pasadas seguidas (el detective es
+qwen y no juega de forma determinista). La diferencia entre rama y main (17 frente a 11-16) no basta para decir que el
+bot mejora; lo que sí se ve con claridad son las pistas medidas con 10 intentos. Para comparar con el bot hacen falta
+más partidas por variante (4 o más).
