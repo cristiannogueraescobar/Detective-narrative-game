@@ -143,6 +143,7 @@ public class GameManager : MonoBehaviour
             currentSuspect = interrogationUI != null ? interrogationUI.CurrentSuspectId : null,
             unlocked = new List<string>(unlocked),
             discovered = new List<string>(State.DiscoveredClueIds),
+            discoveredBy = State.DiscoveredClueIds.Select(id => id + ":" + State.RevealedBy(id)).ToList(),
             culpritToldLie = State.CulpritToldLie
         };
 

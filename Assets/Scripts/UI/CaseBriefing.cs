@@ -52,7 +52,7 @@ public static class Notebook
         UnityEngine.Color contradictionColor = onPaper ? new UnityEngine.Color32(150, 62, 20, 255) : t.contradiction;
         UnityEngine.Color successColor = onPaper ? new UnityEngine.Color32(46, 100, 50, 255) : t.success;
         string heading(string text) => $"<color={Theme.Hex(headingColor)}><b>{text}</b></color>";
-        List<ClueData> clues = state.DiscoveredClueIds.Select(state.Variant.Clue).ToList();
+        List<ClueData> clues = state.DiscoveredClueIds.Select(state.ClueAsFound).ToList(); // Con el resumen de quien la contó
 
         var sb = new StringBuilder();
 

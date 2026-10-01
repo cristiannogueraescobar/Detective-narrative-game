@@ -36,6 +36,7 @@ public class SaveData
     public string currentSuspect;
     public List<string> unlocked = new List<string>();
     public List<string> discovered = new List<string>();
+    public List<string> discoveredBy = new List<string>(); // "pista:personaje"; vacío en guardados anteriores
     public List<Shown> shown = new List<Shown>();
     public bool culpritToldLie;
     public List<History> histories = new List<History>();
@@ -288,8 +289,15 @@ public static class SaveSystem
     {
         var state = new InvestigationState(variant);
 
+        var by = new Dictionary<string, string>();
+        foreach (string entry in data.discoveredBy ?? new List<string>())
+        {
+            int colon = entry != null ? entry.IndexOf(':') : -1;
+            if (colon > 0)
+                by[entry.Substring(0, colon)] = entry.Substring(colon + 1);
+        }
         foreach (string clueId in data.discovered)
-            state.Discover(clueId);
+            state.Discover(clueId, by.TryGetValue(clueId, out string who) && variant.Clue(clueId)?.HeldBy(who) == true ? who : null);
         foreach (SaveData.Shown shown in data.shown)
             state.RegisterShown(shown.characterId, shown.clueId);
         if (data.culpritToldLie)

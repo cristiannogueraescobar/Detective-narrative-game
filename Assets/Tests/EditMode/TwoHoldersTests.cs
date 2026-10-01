@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
@@ -90,5 +91,109 @@ public class TwoHoldersTests
         string normalized = ClueDetector.Normalize(string.Join(" ", own));
         foreach (ClueData c in v.clues.Where(c => c.HeldBy("vecina")))
             Assert.IsFalse(ClueDetector.Evaluate(c.ForHolder("vecina").anchors, normalized).Matched, c.id);
+    }
+
+    // ---- Revisión independiente (sesión C): arreglos ----
+
+    // Importante 1: si la cuenta Amparo, Daniel no puede "recordar" que la confesó él
+    [Test]
+    public void SiLaCuentaElSegundoPortadorElPrimeroNoLaRecuerdaComoSuya()
+    {
+        var (story, v) = Get("1B");
+        var state = new InvestigationState(v);
+        TurnAnalyzer.Analyze(story, state, "vecina", v.Clue("1B_cena").ForHolder("vecina").sampleHits[0], null);
+        Assert.IsTrue(state.IsDiscovered("1B_cena"));
+        Assert.AreEqual("vecina", state.RevealedBy("1B_cena"));
+        CollectionAssert.IsEmpty(TurnAnalyzer.RevealedSecrets(state, "padre").ToList(), "Daniel no la ha contado");
+    }
+
+    [Test]
+    public void SiLaConfiesaElPrimeroLaRecuerda()
+    {
+        var (story, v) = Get("1B");
+        var state = new InvestigationState(v);
+        TurnAnalyzer.Analyze(story, state, "padre", v.Clue("1B_cena").sampleHits[0], null);
+        Assert.AreEqual("padre", state.RevealedBy("1B_cena"));
+        CollectionAssert.AreEqual(new[] { "1B_cena" }, TurnAnalyzer.RevealedSecrets(state, "padre").Select(c => c.id).ToList());
+    }
+
+    // Menor 5: la libreta usa el resumen de quien la contó (Amparo no sabe a quién llamó Lucas)
+    [Test]
+    public void LaLibretaUsaElResumenDeQuienLaConto()
+    {
+        var (story, v) = Get("1C");
+        var state = new InvestigationState(v);
+        state.Discover("1C_llamada", "vecina");
+        ClueData found = state.ClueAsFound("1C_llamada");
+        Assert.AreEqual(v.Clue("1C_llamada").ForHolder("vecina").summary, found.summary);
+        Assert.AreNotEqual(v.Clue("1C_llamada").summary, found.summary);
+    }
+
+    // Importantes 2 y 3: su habla normal y su propia ficha no disparan la pista
+    [TestCase("1B", "1B_cena", "Se montó un lío esa noche en la calle, hijo.")]
+    [TestCase("1B", "1B_cena", "Yo era como una amiga para esa niña. El coche del padre no volvió hasta las once.")]
+    [TestCase("1C", "1C_llamada", "Lucas se quedó inmóvil en la ventana, hijo.")]
+    [TestCase("1C", "1C_llamada", "Luego llamó a la ambulancia, y el coche del padre llegó a las diez y cuarto.")]
+    public void ElHablaNormalDeAmparoNoLaDispara(string variantId, string clueId, string said)
+    {
+        var (_, v) = Get(variantId);
+        Assert.IsFalse(ClueDetector.Evaluate(v.Clue(clueId).ForHolder("vecina").anchors, ClueDetector.Normalize(said)).Matched, said);
+    }
+
+    [TestCase("1B", "1B_cena")]
+    [TestCase("1C", "1C_llamada")]
+    public void ElHechoDeAmparoSeDetecta(string variantId, string clueId)
+    {
+        var (_, v) = Get(variantId);
+        ClueData amparo = v.Clue(clueId).ForHolder("vecina");
+        Assert.IsTrue(ClueDetector.Evaluate(amparo.anchors, ClueDetector.Normalize(amparo.fact)).Matched, amparo.fact);
+    }
+
+    // Menor 6: con los dos disponibles, la ayuda sugiere la versión que no es secreta
+    [Test]
+    public void ConLosDosDisponiblesSeSugiereLaVersionAbierta()
+    {
+        var (story, v) = Get("1B");
+        var state = new InvestigationState(v);
+        foreach (ClueData c in v.clues.Where(c => c.id != "1B_cena"))
+            state.Discover(c.id);
+        Hint hint = HintAdvisor.Next(story, state, new[] { "padre", "vecina" }, new HintMemory());
+        Assert.AreEqual("vecina", hint.holderId);
+    }
+
+    // Revisión: el guardado recuerda quién la contó (y los guardados anteriores, sin ese dato, siguen cargando)
+    [Test]
+    public void ElGuardadoRecuerdaQuienLaConto()
+    {
+        var (story, v) = Get("1B");
+        var data = new SaveData { variantId = "1B", discovered = new List<string> { "1B_cena" },
+                                  discoveredBy = new List<string> { "1B_cena:vecina" } };
+        InvestigationState state = SaveSystem.RestoreState(v, data);
+        Assert.AreEqual("vecina", state.RevealedBy("1B_cena"));
+        var old = new SaveData { variantId = "1B", discovered = new List<string> { "1B_cena" } };
+        Assert.AreEqual("padre", SaveSystem.RestoreState(v, old).RevealedBy("1B_cena"), "sin el dato: el portador principal");
+    }
+
+    // Menor 7: las comprobaciones de datos valen para todos los portadores, no solo el principal
+    [Test]
+    public void CadaPortadorExtraCumpleLosMinimosDeUnaPista()
+    {
+        foreach (StoryData story in CaseLibrary.Stories)
+            foreach (VariantData v in story.variants)
+                foreach (ClueData clue in v.clues.Where(c => c.alsoHeldBy != null))
+                    foreach (ClueHolder h in clue.alsoHeldBy)
+                    {
+                        string where = $"{clue.id}@{h.characterId}";
+                        Assert.IsTrue(story.cast.Any(c => c.id == h.characterId), where + ": no está en el reparto");
+                        ClueData view = clue.ForHolder(h.characterId);
+                        Assert.GreaterOrEqual(view.anchors.Length, 2, where);
+                        Assert.GreaterOrEqual(view.calibrationQuestions.Length, 2, where);
+                        Assert.GreaterOrEqual(view.sampleHits.Length, 2, where);
+                        Assert.GreaterOrEqual(view.sampleMisses.Length, 1, where);
+                        foreach (string hit in view.sampleHits)
+                            Assert.IsTrue(ClueDetector.Evaluate(view.anchors, ClueDetector.Normalize(hit)).Matched, where + ": " + hit);
+                        foreach (string miss in view.sampleMisses)
+                            Assert.IsFalse(ClueDetector.Evaluate(view.anchors, ClueDetector.Normalize(miss)).Matched, where + ": " + miss);
+                    }
     }
 }

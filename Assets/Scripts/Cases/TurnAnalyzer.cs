@@ -54,7 +54,7 @@ public static class TurnAnalyzer
             AnchorTrace trace = ClueDetector.Evaluate(clue.ForHolder(characterId).anchors, normalized);
             outcome.traces.Add((clue, trace));
 
-            if (trace.Matched && state.Discover(clue.id))
+            if (trace.Matched && state.Discover(clue.id, characterId))
                 outcome.newClues.Add(clue);
         }
 
@@ -86,7 +86,7 @@ public static class TurnAnalyzer
     {
         return state.DiscoveredClueIds
             .Select(state.Variant.Clue)
-            .Where(c => c.HeldBy(characterId))
+            .Where(c => c.HeldBy(characterId) && state.RevealedBy(c.id) == characterId) // Solo lo que contó él
             .Select(c => c.ForHolder(characterId))
             .Where(c => c.isSecret);
     }

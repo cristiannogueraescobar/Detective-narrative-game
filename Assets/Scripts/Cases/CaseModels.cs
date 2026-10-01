@@ -56,6 +56,7 @@ public class ClueData
         view.holder = other.characterId;
         view.topic = other.topic;
         view.fact = other.fact;
+        view.summary = other.summary ?? summary;
         view.isSecret = other.isSecret;
         view.anchors = other.anchors ?? anchors;
         view.calibrationQuestions = other.calibrationQuestions ?? new string[0];
@@ -74,6 +75,7 @@ public class ClueHolder
     public string characterId;
     public string topic;
     public string fact;
+    public string summary;                   // Libreta si la cuenta él; null = el de la pista
     public bool isSecret;
     public string[][] anchors;               // null = las de la pista
     public string[] calibrationQuestions;

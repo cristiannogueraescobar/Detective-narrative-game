@@ -542,11 +542,12 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         {
                             characterId = "vecina",
                             topic = "Daniel o a qué hora volvió esa noche",
-                            fact = "Daniel tiene un lío con Marta, una compañera del bufete: la has visto traerle a casa en su coche más de una noche, y esa noche volvió con ella pasadas las once, no de ninguna cena.",
+                            fact = "Daniel tiene un lío con Marta, la del bufete: otras noches la has visto traerle a casa. Esa noche él volvió en su coche pasadas las once, con el de ella detrás, y se despidieron en la esquina.",
+                            summary = "Amparo sabe que Daniel tiene un lío con Marta, una compañera del bufete; esa noche volvió pasadas las once con ella detrás en su coche.",
                             anchors = new[]
                             {
-                                new[] { "marta", "la del bufete", "una companera", "otra mujer", "un lio", "amante", "una amiga" },
-                                new[] { "coche", "le trae", "le trajo", "le traia", "volvio con ella", "esa noche", "las once" }
+                                new[] { "marta", "la del bufete", "companera del bufete", "un lio con", "su amante" },
+                                new[] { "le trae", "le trajo", "le traia", "volvio con ella", "detras", "se despidieron", "en la esquina" }
                             },
                             calibrationQuestions = new[]
                             {
@@ -555,10 +556,10 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                             },
                             sampleHits = new[]
                             {
-                                "Uy, hijo, esa noche volvió pasadas las once, y no de ninguna cena: le trajo Marta, la del bufete, en su coche.",
-                                "Mire, Daniel tiene un lío con una compañera del bufete; más de una noche le trae a casa en su coche."
+                                "Uy, hijo, esa noche volvió pasadas las once con Marta, la del bufete, detrás en su coche; se despidieron en la esquina.",
+                                "Mire, Daniel tiene un lío con una compañera del bufete; más de una noche le trae a casa."
                             },
-                            sampleMisses = new[] { "Esa noche el coche del padre no estuvo en casa hasta las once y pico.", "No sé nada de ninguna amante, hijo." }
+                            sampleMisses = new[] { "Esa noche el coche del padre no estuvo en casa hasta las once y pico.", "No sé nada de ninguna amante, hijo.", "Se montó un lío esa noche en la calle." }
                         }
                     }
                 }
@@ -757,10 +758,12 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                             characterId = "vecina",
                             topic = "qué hizo Lucas después del golpe o quién llegó a la casa",
                             fact = "unos minutos después del golpe, hacia las diez menos diez, viste a Lucas en la ventana de la escalera hablando por el móvil y llorando; a las diez y cuarto llegó el coche del padre.",
+                            summary = "Amparo vio a Lucas en la ventana de la escalera, llorando y hablando por el móvil, unos minutos después del golpe; a las 22:15 llegó el coche de Daniel.",
                             anchors = new[]
                             {
-                                new[] { "movil", "telefono", "llamando", "llamada", "llamo" },
-                                new[] { "llorando", "lloraba", "llorar", "diez y cuarto", "22:15", "coche del padre" }
+                                new[] { "lucas", "chico", "nino" },
+                                new[] { "por el movil", "al telefono", "hablando por" },
+                                new[] { "llorando", "lloraba" }
                             },
                             calibrationQuestions = new[]
                             {
@@ -772,7 +775,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                                 "Después del golpe vi al chico en la ventana de la escalera, llorando y hablando por el móvil, hijo.",
                                 "Lucas estaba al teléfono, lloraba; y a las diez y cuarto llegó el coche del padre."
                             },
-                            sampleMisses = new[] { "El coche del padre llegó sobre las diez y cuarto, no más tarde.", "No vi a nadie con ningún teléfono." }
+                            sampleMisses = new[] { "El coche del padre llegó sobre las diez y cuarto, no más tarde.", "No vi a nadie con ningún teléfono.", "Lucas se quedó inmóvil en la ventana.", "Luego llamó a la ambulancia." }
                         }
                     }
                 },
