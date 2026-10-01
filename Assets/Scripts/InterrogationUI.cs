@@ -485,11 +485,11 @@ public partial class InterrogationUI : MonoBehaviour
         (Texture2D texture, bool legacyArt) = PortraitOf(view, emotion);
 
         suspectImage.texture = texture;
-        // El pixel art antiguo es de cuerpo entero: en el interrogatorio, plano medio; en el chat, la cara
-        string cropKey = legacyArt ? view.portraitKey : null;
-        suspectImage.uvRect = PortraitCrops.Bust(cropKey);
+        // Los retratos son de cuerpo entero: en el interrogatorio, plano medio; en el chat, la cara
+        PortraitCrops.Crops crops = PortraitCrops.For(view.portraitKey, view.artId, legacyArt, texture);
+        suspectImage.uvRect = crops.bust;
         bool placeholder = texture == null || texture.name.Contains("Placeholder");
-        chat?.SetAvatar(placeholder ? null : texture, PortraitCrops.Face(cropKey, texture), legacyArt);
+        chat?.SetAvatar(placeholder ? null : texture, crops.face, legacyArt);
 
         // El arte antiguo se gradúa para casar con el tema; el nuevo ya viene con la paleta del juego
         if (legacyArt)
