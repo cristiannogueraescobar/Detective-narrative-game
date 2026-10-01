@@ -44,5 +44,54 @@ class JavierTests(unittest.TestCase):
         self.assertLess(white.mean(), 0.02)
 
 
+
+VW = 1024  # vecina.gif.png
+
+
+def vregion(img, x0, y0, x1, y1, mirror=False):
+    a = np.asarray(img.convert('RGBA')).astype(float)
+    if mirror:
+        x0, x1 = VW - x1, VW - x0
+    return a[y0:y1, x0:x1]
+
+
+class VecinasTests(unittest.TestCase):
+    """Sesión C: Amparo, Maruxa y Encarna tenían la misma cara, la misma boca abierta y (Maruxa y Encarna) el mismo
+    cigarro que la vecina original. Encarna va en espejo."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.v = {k: mdp.vecina(k) for k in ('amparo', 'maruxa', 'encarna')}
+        cls.mirror = {'amparo': False, 'maruxa': False, 'encarna': True}
+
+    def face(self, k):
+        return vregion(self.v[k], 330, 250, 500, 420, self.mirror[k])
+
+    def test_las_tres_caras_son_distintas(self):
+        keys = list(self.v)
+        for i in range(3):
+            for j in range(i + 1, 3):
+                a, b = self.face(keys[i]), self.face(keys[j])
+                differ = (np.abs(a[..., :3] - b[..., :3]).max(-1) > 40).mean()
+                self.assertGreater(differ, 0.15, f'{keys[i]} y {keys[j]}: solo {differ:.2f} de la cara cambia')
+
+    def test_maruxa_y_encarna_no_fuman(self):
+        for k in ('maruxa', 'encarna'):
+            cig = vregion(self.v[k], 190, 335, 262, 392, self.mirror[k])
+            self.assertLess((cig[..., 3] > 128).mean(), 0.02, k)
+
+    def test_amparo_lleva_gafas(self):
+        # Puente de las gafas entre los ojos: oscuro donde el original tiene piel
+        bridge = vregion(self.v['amparo'], 395, 300, 425, 312)
+        self.assertGreater((bridge[..., :3].max(-1) < 90).mean(), 0.5)
+
+    def test_ninguna_conserva_la_boca_abierta(self):
+        # La "o" de sorpresa del original tiene el interior rojo
+        for k in self.v:
+            mouth = vregion(self.v[k], 390, 370, 435, 405, self.mirror[k])
+            red = (mouth[..., 0] > 150) & (mouth[..., 1] < 70) & (mouth[..., 3] > 128)
+            self.assertLess(red.mean(), 0.02, k)
+
+
 if __name__ == '__main__':
     unittest.main()

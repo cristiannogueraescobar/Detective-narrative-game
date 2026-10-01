@@ -197,30 +197,76 @@ def alex():
     return p.image(mirror=True)
 
 
+def _skin_of(p, x0, y0, x1, y1):
+    """Color medio de la piel en una zona (para tapar sin que se note el parche)."""
+    m = px(p, x0, y0, x1, y1) & p.color(h=WARM, s=(0.3, 1), v=(0.5, 1))
+    return tuple(int(c * 255) for c in np.median(hsv_to_rgb(p.hsv)[m], axis=0))
+
+
+def _mouth(p, kind, skin):
+    """La "o" de sorpresa del original fuera; una boca cerrada propia de cada una (sobre la rejilla de ~8 px)."""
+    p.paint(px(p, 380, 355, 440, 412) & p.opaque, skin)
+    line = (110, 45, 30)
+    if kind == 'amparo':      # sonrisa afable
+        p.paint(px(p, 396, 384, 428, 391), line)
+        p.paint(px(p, 389, 377, 397, 385) | px(p, 427, 377, 435, 385), line)
+    elif kind == 'maruxa':    # boca apretada, comisuras hacia abajo (desconfiada)
+        p.paint(px(p, 396, 386, 426, 393), line)
+        p.paint(px(p, 389, 392, 397, 400) | px(p, 425, 392, 433, 400), line)
+    else:                     # Encarna: sonrisa suave y cálida (nunca inquietante: es culpable en una variante)
+        p.paint(px(p, 398, 386, 424, 392), line)
+        p.paint(px(p, 392, 381, 399, 387) | px(p, 423, 381, 430, 387), line)
+
+
+def _wrinkles(p, skin, depth=0.72):
+    dark = tuple(int(c * depth) for c in skin)
+    p.paint(px(p, 336, 318, 346, 324) | px(p, 498, 318, 508, 324), dark)          # patas de gallo
+    p.paint(px(p, 374, 362, 380, 384) | px(p, 444, 362, 450, 384), dark)          # surcos junto a la boca
+
+
 def vecina(kind):
     """Las tres vecinas, de 63 a 74 años (en el original parece mucho más joven): pelo con canas y ropa propia.
     Amparo (70, mira por la ventana) conserva el vestido; Maruxa (74, Galicia) azul marino y blanco, rebeca marrón;
-    Encarna (63, perdió a su hija) de luto, de negro. Solo Amparo conserva el humo del cigarro."""
+    Encarna (63, perdió a su hija) de luto, de negro. Solo Amparo conserva el cigarro.
+    Sesión C: tenían la misma cara y la misma boca de sorpresa. Ahora, editando la cara: Amparo con gafas de leer,
+    arrugas y sonrisa afable; Maruxa con pañuelo oscuro, ojos entornados y boca apretada; Encarna con sonrisa suave y
+    la medalla de la Virgen. Sin el cigarro en Maruxa y Encarna."""
     p = Portrait('vecina')
     hair = p.zone((0.30, 0.03, 0.66, 0.30)) & p.color(h=(0.93, 0.11), s=(0.4, 1), v=(0.05, 0.85)) & ~p.zone((0.33, 0.165, 0.55, 0.30))
     dress = p.zone((0.30, 0.27, 0.80, 0.71)) & p.color(h=(0.20, 0.48), s=(0.3, 1))
     flowers = p.zone((0.30, 0.27, 0.80, 0.71)) & p.color(h=(0.15, 0.20), s=(0.5, 1), v=(0.6, 1))
     cardigan = p.color(h=(0.72, 0.92), s=(0.3, 1))
     smoke = p.zone((0.0, 0.0, 0.19, 0.215))
+    cigarette = px(p, 190, 330, 262, 395)
+    skin = _skin_of(p, 340, 340, 372, 362)
+    _mouth(p, kind, skin)
     if kind == 'amparo':
         p.recolor(hair, sat=0.10, val=1.55, val_add=0.05)                                         # gris plata
+        _wrinkles(p, skin)
+        frame = (70, 45, 30)                                                                       # gafas de leer
+        for x0, y0, x1, y1 in ((344, 290, 394, 338), (424, 290, 496, 338)):
+            ring = px(p, x0, y0, x1, y1) & ~px(p, x0 + 7, y0 + 7, x1 - 7, y1 - 7)
+            p.paint(ring, frame)
+        p.paint(px(p, 394, 302, 424, 310), frame)                                                  # puente
     elif kind == 'maruxa':
         p.recolor(hair, sat=0.05, val=2.2, val_add=0.12)                                          # blanco
+        scarf = hair & ~px(p, 330, 196, 490, 232)                                                  # pañuelo; asoma el flequillo
+        p.recolor(scarf, hue=0.62, sat_set=0.45, val=0.45)
         p.recolor(dress, hue=0.62, sat=0.85, val=0.55)                                             # azul marino
         p.recolor(flowers, sat_set=0.05, val=1.05)                                                 # flores blancas
         p.recolor(cardigan, hue=0.07, sat=0.6, val=0.85)                                           # rebeca marrón
-        p.erase(smoke)
+        _wrinkles(p, skin, depth=0.65)
+        shade = tuple(int(c * 0.75) for c in skin)                                                 # ojos entornados
+        p.paint(px(p, 346, 290, 392, 306) | px(p, 426, 290, 494, 306), shade)
+        p.erase(smoke | cigarette)
     elif kind == 'encarna':
         p.recolor(hair, sat=0.12, val=0.9)                                                         # gris oscuro
         p.recolor(dress | flowers, hue=0.0, sat_set=0.0, val=0.28)                                 # vestido negro (luto)
         p.recolor(flowers, val=1.6)                                                                # dibujo gris apagado
         p.recolor(cardigan, sat_set=0.05, val=0.55)                                                # rebeca gris marengo
-        p.erase(smoke)
+        p.paint(px(p, 436, 468, 462, 494), (40, 28, 10))                                           # medalla de la Virgen
+        p.paint(px(p, 441, 473, 457, 489), (214, 172, 64))
+        p.erase(smoke | cigarette)
     return p.image(mirror=(kind == 'encarna'))
 
 
