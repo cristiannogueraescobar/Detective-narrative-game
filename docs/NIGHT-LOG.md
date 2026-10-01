@@ -871,3 +871,14 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
 - **23:11 Pistas entre el 70 y el 80 %** (`241d8d1`, test primero): anclas que recuperan respuestas reales en
   2A_curva, 2C_prueba, 2C_gps y 3A_garrafas, y una pregunta de 2A_curva que no empuja a negar. 1A_partida, 2C_puerto,
   2C_comisaria y 3B_armario sin cambios (modelo o sin datos). Medición ×10 en cola tras el bot de main.
+- **23:30** Bot de main (`a05a686`): culpable **11/18**, primera pista en la pregunta 7,1 (rama: 17/18 y 6,1). En la
+  sesión B, la misma semilla dio 17/18 en el main anterior y 15/18 en mejoras. 6 puntos es más que el ±2 habitual:
+  no lo doy por ruido sin repetirlo. Repetición en marcha.
+- **23:36** Pistas 70-80 % ×10 en la rama (`241d8d1`): 2A_curva 77 → **100**, 2C_prueba 73 → **87**, 2C_gps 75 → **85**,
+  3A_garrafas 75 → **85**.
+- **23:37 Capturas de retratos** (`AnimationCapture.RetratosHistoria1-3`, 1080×1920): 39 capturas, interrogatorio con
+  cada expresión y rueda de acusación de las tres historias; galería `docs/art/CAPTURAS-RETRATOS.jpg` (`505f76a`).
+  **Error mío:** la suite de capturas cargó qwen en Ollama al abrir la escena (la rama de retratos no lleva el arreglo
+  del punto 5), así que Ollama y las capturas coincidieron, contra la regla. Las capturas salieron bien, pero conviene
+  fusionar primero `feature/tests-sin-precarga`.
+- **23:43** Suites de `feature/pistas-dos-portadores` (final): EditMode 776/777, PlayMode 64, 0 fallos.
