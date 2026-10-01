@@ -214,10 +214,12 @@ public static class SaveSystem
             string temp = path + ".tmp";
             File.WriteAllText(temp, json);
 
-            // Escritura atómica: nunca queda un guardado a medias
+            // Escritura atómica: nunca queda un guardado a medias. File.Replace cambia uno por otro de una vez; antes,
+            // entre el Delete y el Move solo quedaba el temporal (auditoría finecomb). TryLoad lo recupera igualmente.
             if (File.Exists(path))
-                File.Delete(path);
-            File.Move(temp, path);
+                File.Replace(temp, path, null);
+            else
+                File.Move(temp, path);
             LastWriterThread = System.Threading.Thread.CurrentThread.ManagedThreadId;
             WritesForTests++;
         }
@@ -255,13 +257,41 @@ public static class SaveSystem
         Flush();
         try
         {
-            return File.Exists(FilePath) && TryDeserialize(File.ReadAllText(FilePath), out data);
+            if (File.Exists(FilePath))
+                return TryDeserialize(File.ReadAllText(FilePath), out data);
+            // Solo el temporal: la app cayó a mitad de una escritura antigua (sin File.Replace)
+            return File.Exists(FilePath + ".tmp") && TryDeserialize(File.ReadAllText(FilePath + ".tmp"), out data);
         }
         catch (Exception e)
         {
             Debug.LogWarning($"[Guardado] No se pudo leer la partida: {e.Message}");
             data = null;
             return false;
+        }
+    }
+
+    public static string SetAsidePath => Path.Combine(DirectoryOverride ?? Application.persistentDataPath, "partida.rechazada.json");
+
+    /// <summary>
+    /// Aparta una partida que no se pudo restaurar (auditoría finecomb: "Continuar" la borraba ante cualquier
+    /// excepción). Deja de ofrecerse, pero el archivo se conserva para recuperarla o diagnosticar el fallo.
+    /// </summary>
+    public static void SetAside()
+    {
+        lock (WriteLock)
+            version++; // Lo que esté en cola ya no se escribe
+        Flush();
+        try
+        {
+            if (!File.Exists(FilePath))
+                return;
+            if (File.Exists(SetAsidePath))
+                File.Delete(SetAsidePath);
+            File.Move(FilePath, SetAsidePath);
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[Guardado] No se pudo apartar la partida: {e.Message}");
         }
     }
 

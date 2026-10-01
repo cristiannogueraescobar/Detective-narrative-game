@@ -363,6 +363,8 @@ public class GameManager : MonoBehaviour
 
     public void EndDay()
     {
+        if (requestInFlight)
+            return; // Con una pregunta en vuelo, su respuesta se cobraría mañana (auditoría finecomb)
         // Lo conseguido hoy, para la tarjeta de mañana
         dayRecap = GameTexts.DayRecap(DiscoveredClues().Count - cluesAtDayStart,
                                       State.ContradictionClueIds.Count - contradictionsAtDayStart);
@@ -503,7 +505,7 @@ public class GameManager : MonoBehaviour
     public Hint Think()
     {
         int cost = HintCost;
-        if (cost < 0 || State == null || accusationMade)
+        if (cost < 0 || State == null || accusationMade || requestInFlight)
             return null;
         if (questionsUsedToday + cost > questionsPerDay)
             return new Hint { text = "Hoy ya no te quedan preguntas para pararte a pensar. Mañana será otro día." };

@@ -349,4 +349,36 @@ public class SaveSystemTests
     }
 
     private static readonly string NewLine = System.Environment.NewLine.Substring(System.Environment.NewLine.Length - 1);
+
+    // Auditoría finecomb (sesión C, Importante): "Continuar" borraba la partida ante cualquier excepción al restaurarla
+    // (un fallo de código, no un guardado corrupto). Ahora se aparta: no vuelve a fallar al arrancar y no se pierde.
+    [Test]
+    public void UnaPartidaQueNoSePuedeRestaurarSeAparta()
+    {
+        SaveSystem.Save(Sample());
+        SaveSystem.Flush();
+        string before = File.ReadAllText(SaveSystem.FilePath);
+        SaveSystem.SetAside();
+        Assert.IsFalse(SaveSystem.Exists, "Continuar ya no la ofrece");
+        Assert.IsTrue(File.Exists(SaveSystem.SetAsidePath), "pero no se pierde");
+        Assert.AreEqual(before, File.ReadAllText(SaveSystem.SetAsidePath));
+    }
+
+    [Test]
+    public void ApartarSinPartidaNoFalla()
+    {
+        SaveSystem.SetAside();
+        Assert.IsFalse(File.Exists(SaveSystem.SetAsidePath));
+    }
+
+    // Auditoría finecomb (Menor): si la app caía entre borrar el guardado y mover el temporal, solo quedaba
+    // partida.json.tmp y la partida se perdía
+    [Test]
+    public void SiSoloQuedaElTemporalSeRecupera()
+    {
+        Directory.CreateDirectory(directory);
+        File.WriteAllText(SaveSystem.FilePath + ".tmp", SaveSystem.Serialize(Sample()));
+        Assert.IsTrue(SaveSystem.TryLoad(out SaveData data), "se lee el temporal");
+        Assert.AreEqual(3, data.day);
+    }
 }

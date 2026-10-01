@@ -40,6 +40,7 @@ public class NoirPostFxTests
     {
         ThemeManager.Override(null);
         GameSettings.UseStore(null);
+        SaveSystem.Flush(); // Una escritura pendiente podría volver a crear la carpeta o bloquear el archivo
         SaveSystem.DirectoryOverride = null;
         yield return null;
     }

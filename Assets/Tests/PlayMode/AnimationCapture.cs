@@ -82,6 +82,7 @@ public class AnimationCapture
     public IEnumerator TearDown()
     {
         GameSettings.UseStore(null);
+        SaveSystem.Flush(); // Una escritura pendiente podría volver a crear la carpeta o bloquear el archivo
         SaveSystem.DirectoryOverride = null;
         if (camera != null)
             camera.targetTexture = null;

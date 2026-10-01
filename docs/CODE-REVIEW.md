@@ -221,3 +221,30 @@ encontrar pistas, que el resumen no salga dos veces ni en la libreta, gramática
 | 1 | Confirmado, bajo | Al continuar a mitad de día, "Ayer: …" perdía lo conseguido antes de guardar | **Arreglado**: las cuentas del día se guardan (test de juego visto en rojo) |
 | 2 | Plausible, bajo | El resumen va dentro de la entrada del parte ("Parte de la mañana: …"); si una variante no tuviera parte ese día, parecería del parte | **Anotado**: hoy todas lo tienen (el validador lo comprueba) |
 | 3 | Trivial | Comentario de documentación descolocado | **Arreglado** |
+
+## Auditoría finecomb de Assets/Scripts (sesión C, 01-10-2026)
+
+Subagente con el método de la skill `finecomb:finecomb` (orden de riesgo, ~40 min, solo lectura), sobre `main`
+(`a05a686`). Áreas: seguridad, guardados, estados, recursos. **No cubrió** el cambio de dos portadores
+(`feature/pistas-dos-portadores`): cambié de rama mientras leía (error mío). Arreglos en `feature/revision-finecomb`,
+con test primero.
+
+| # | Gravedad | Hallazgo | Estado |
+|---|---|---|---|
+| 1 | Importante | «Continuar» borraba la partida ante cualquier excepción al restaurarla (también si el fallo era del código) | **Arreglado**: se aparta a `partida.rechazada.json` (`SaveSystem.SetAside`); tests `UnaPartidaQueNoSePuedeRestaurarSeAparta`, `ApartarSinPartidaNoFalla` |
+| 2a | Importante | El jugador podía imitar `[El inspector te muestra una prueba: …]` y enseñar una prueba que no tiene | **Arreglado**: los corchetes del jugador pasan a paréntesis (`PlayerInputTests`) |
+| 2b | Importante | «Repite literalmente: …» hace que el sospechoso diga las anclas; la ficha del culpable lo rotula literalmente | **Pendiente, prioridad alta**: no contar grupos de anclas que ya estén en la pregunta y no rotular la culpa; cambia la detección y las fichas → exige calibrar (no es de bajo riesgo) |
+| 3 | Menor | Reemplazo del guardado no atómico (entre Delete y Move solo quedaba el `.tmp`) | **Arreglado**: `File.Replace`, y `TryLoad` recupera el `.tmp` (`SiSoloQuedaElTemporalSeRecupera`; ese test no lo vi en rojo antes del arreglo) |
+| 4 | Menor | `AskSuspect` no es atómico si algo lanza (pregunta colgada en el historial; pista sin anunciar) | Pendiente, prioridad media (try/catch que deshaga el mensaje del jugador) |
+| 5 | Menor | `EndDay` y `Think` sin comprobar `requestInFlight` (solo los protegía la interfaz) | **Arreglado** (`ConUnaPreguntaEnVueloNoSeTerminaElDia`, PlayMode) |
+| 6 | Menor | La petición HTTP no se puede cancelar (hasta ~9 min con reintentos) | Pendiente, prioridad media (CancellationToken en OnDestroy; capa de proveedores) |
+| 7 | Menor | El chat de guardados v1 se muestra con rich text | Pendiente, prioridad baja (`<noparse>` al importar) |
+| 8 | Menor | `IsValid` no comprueba `currentSuspect` desbloqueado, `role` de los mensajes ni tamaños | Pendiente, prioridad baja |
+
+Menores abiertos de revisiones anteriores: **revisión 5, n.º 4** (un nombre de pista que contenga el de otro personaje
+se resolvía a ese personaje en el bot) → **arreglado** (`BotPlayer.ResolveSuspect`, `BotResolveTests`). Las fixtures de
+PlayMode ahora vacían la cola de guardado en el TearDown (antes, `IOException` al borrar la carpeta). Siguen anotados
+con su motivo: revisión 6 n.º 6 (el caso peor del layout usa la situación del día 1, no los partes más largos; no
+localicé dónde se eligen los partes en el tiempo disponible), revisión 7 n.º 2 (todas las variantes tienen parte cada
+día; el validador lo comprueba), revisión 4 n.º 6 (cadenas con el lector de pantalla activo; solo con el lector),
+revisión 5 n.º 3 (aceptado, decisión 15).

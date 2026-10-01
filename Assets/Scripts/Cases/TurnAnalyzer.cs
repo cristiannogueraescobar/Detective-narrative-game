@@ -23,7 +23,9 @@ public static class TurnAnalyzer
 
     public static string BuildUserMessage(string question, ClueData shownClue)
     {
-        string trimmed = question?.Trim() ?? "";
+        // Solo el juego escribe entre corchetes: el jugador no puede imitar "[El inspector te muestra una prueba: …]"
+        // para enseñar una prueba que no tiene (auditoría finecomb)
+        string trimmed = (question?.Trim() ?? "").Replace('[', '(').Replace(']', ')');
 
         if (shownClue == null)
             return trimmed;
