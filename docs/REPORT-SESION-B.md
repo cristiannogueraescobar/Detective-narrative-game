@@ -15,11 +15,11 @@
 |---|---|---|---|
 | 1. Retrato de Javier | Prueba ciega: los subagentes no lo distinguen de los originales, y no se parece a Marcos | **NO aprueba** (cerrado a las 18:00; trabajo extra 19:50-20:37, tampoco) | `feature/retratos-javier`: `b23bac2` … `2abb948` |
 | 2. (dependía de Javier) | — | **Saltado** por regla | — |
-| 3a. Mejoras de rendimiento 2-4 | Tests en verde, antes/después medido, calibración sin bajar | ✓ | `feature/mejoras-seguras`: `560e71e`, `2e6b103`, `99d79a4`, `a86f6e1`, `69470d7`, `5f3f9c4` |
+| 3a. Mejoras de rendimiento 2-4 | Tests en verde, antes/después medido, calibración sin bajar | ✓ (+ revisión independiente: 1 Importante arreglado) | `feature/mejoras-seguras`: `560e71e`, `2e6b103`, `99d79a4`, `a86f6e1`, `69470d7`, `5f3f9c4`, `2aa7841` |
 | 3b. Segundas vías 1B_cena / 1C_llamada | Que suban de forma medible | ✗ No suben; **revertido** | `b92d6c2` → revert `848a690` |
 | 3c. Calibración completa + bot | pistas ≥80 %, premisas ≤5 %, estados ≥95 %, bot ≥14/18 | ✓ en la rama (82 %, 4 %, 97 %, 15/18) | Logs en `../dng-*/Logs` (no versionados) |
 
-Tests al cerrar `feature/mejoras-seguras`: **EditMode 754/755 (el que no corre es `PerfBenchmark`, Explicit), 0 fallos; PlayMode 64 pasan, 0 fallos** (24 ignorados, como siempre). Tests de herramientas (`Tools/tests`): **31/31**.
+Tests al cerrar `feature/mejoras-seguras` (tras `2aa7841`): **EditMode 756/757 (el que no corre es `PerfBenchmark`, Explicit), 0 fallos; PlayMode 64 pasan, 0 fallos** (24 ignorados, como siempre). Tests de herramientas (`Tools/tests`): **31/31**.
 
 ## Bloque 1: Javier, por personaje
 
@@ -85,6 +85,16 @@ Las pistas que cambiaron de lado se midieron otra vez con **10 intentos**, en lo
 
 1A_papeles no tiene ningún dato cambiado. Para descartar mi código, `NegationEquivalenceTests` compara el detector nuevo con el antiguo (copiado en el test) para todas las anclas de todas las variantes sobre todos los textos de las historias: **deciden igual**. Es variación del modelo. Las segundas vías se revirtieron; la rama, tal como queda, no cambia ningún dato de las historias.
 
+### Revisión independiente de `feature/mejoras-seguras` (20:40, subagente sin contexto, solo lectura)
+Sin defectos críticos. **Importante, arreglado con test primero (`2aa7841`):** al pasar el guardado a otro hilo, si
+Android mata la app en segundo plano justo después de una respuesta podía perderse el último guardado (Android no suele
+lanzar `Application.quitting`). Ahora `OnApplicationPause(true)` y `OnApplicationQuit` vacían la cola
+(`AlPausarLaAppElUltimoGuardadoLlegaAlDisco`, en rojo antes del arreglo). Menores arreglados en el mismo commit: la
+guarda de versión no tenía test propio (`UnGuardadoAtrasadoNoSeEscribeSiHayOtroMasNuevo`), el test del hilo podía pasar
+con un valor de otro test, el TearDown no vaciaba la cola, y la caché de TimeCheck queda documentada como "solo hilo
+principal" (comprobado: hoy no se llama desde otro). Revisado y correcto: la cadena de escrituras no se rompe ni se
+bloquea, el orden y el borrado, la equivalencia de TimeCheck y de IsNegated, y la caché de EmotionParser.
+
 ## Lo que salió mal y corregí
 
 1. **Horas estimadas en vez de leídas, dos veces.** En el bloque 1 escribí 16:45-17:38 cuando el reloj decía 16:25-16:40 (y por eso creí que se acababa el tiempo del bloque); después, 18:03 y 18:06 a las 18:00. Corregido en el NIGHT-LOG las dos veces (`a9691b7`, `032922c`); desde entonces cada hora sale de `date`.
@@ -98,7 +108,7 @@ Las pistas que cambiaron de lado se midieron otra vez con **10 intentos**, en lo
 
 ## Decisiones para Cristian
 
-1. **Fusionar `feature/mejoras-seguras` a `main` primero.** 8 commits, 15 archivos (código: TimeCheck, ClueDetector, EmotionParser, SaveSystem, AIConversationManager; tests; docs). Ningún dato de historias cambia. Se deshace con `git revert -m 1 <merge>`.
+1. **Fusionar `feature/mejoras-seguras` a `main` primero.** 9 commits (revisado por un subagente independiente), 15 archivos (código: TimeCheck, ClueDetector, EmotionParser, SaveSystem, AIConversationManager; tests; docs). Ningún dato de historias cambia. Se deshace con `git revert -m 1 <merge>`.
 2. **Después, `feature/retratos-javier`**, si quieres las herramientas de arte (`Tools/portrait_gen`, tests), los informes, el NIGHT-LOG y este documento. Toca 6 archivos del juego, todos de esta mañana, antes de la sesión B (`8261f81` encuadre del arte nuevo `PortraitCrops`, `e01f67d` filtro de importación, y sus tests). Ningún retrato del juego cambia. Si prefieres no fusionar código de arte aún, basta con traer `docs/`.
 3. **Javier:** encargo a un artista con el BRIEF (recomendado), o una sesión más con contorno coloreado y LoRA de caras. No integrar nada generado hasta que pase la prueba ciega y tu revisión.
 4. **1B_cena y 1C_llamada siguen en 20-55 %.** Dos salidas, las dos tuyas: (a) que una pista admita dos portadores (cambio de código en TurnAnalyzer, PromptBuilder, HintAdvisor y el calibrador), o (b) permitir 7 pistas en 1B (cambia el diseño de 5-6). Mientras tanto, nada cambia.

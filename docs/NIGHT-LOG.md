@@ -918,3 +918,9 @@ retratos → 4 gráficos.
   (`../dng-main`, `../dng-mejoras`) borrados. Sin procesos de generación ni modelo cargado en Ollama; GPU a 714 MiB
   (los dos python.exe que quedan son del 29-09, no de esta sesión). Cierro antes de las 23:48: los tres bloques
   están cerrados y más rondas de Javier no cambiaban la recomendación. Informe: `docs/REPORT-SESION-B.md`.
+- **20:39 Reabro para revisión** (mi memoria de sesiones largas: usar todo el tiempo; cerré a las 20:38 por error).
+  Causa exacta de que PlayMode cargue Ollama: `OllamaProvider.preloadOnStart` + `WarmUpAsync()` al cargar la escena
+  (capa de proveedores, no la toco; al informe como decisión).
+- **20:47** Revisión independiente de `feature/mejoras-seguras`: 0 críticos, 1 importante (pérdida del último guardado
+  si Android mata la app en segundo plano) → arreglado con test primero en `2aa7841`, más 4 menores. EditMode 756/757,
+  0 fallos; PlayMode 64, 0 fallos. Ollama descargado; worktree `../dng-fix` borrado.
