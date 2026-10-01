@@ -45,6 +45,46 @@ def _checkerboard(rgb, lum):
     return len(top) == 2 and top[1][0] > 0.2 * corners.size and abs(top[0][1] - top[1][1]) >= 2
 
 
+def _background(rgb, lum, sat, notes):
+    """Máscara del fondo en coordenadas de la imagen (relleno desde el borde + huecos encerrados) y si es blanco."""
+    h, w = rgb.shape[:2]
+    edge = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]]).astype(float)
+    bg_colour = np.median(edge, axis=0)
+    white_bg = bg_colour.min() >= WHITE_LUM and np.ptp(bg_colour) <= BG_SAT
+    if white_bg:
+        # Fondo = zona clara y poco saturada conectada con el borde
+        candidate = (sat <= BG_SAT) & (lum >= BG_LUM)
+        hole_colour = (rgb >= PURE_WHITE).all(-1)
+    else:
+        # Fondo liso de otro color (con el LoRA de pixel art, SDXL lo pinta gris oscuro aunque se pida blanco): lo
+        # cercano al color del borde, con la tolerancia de su propia variación (viñeta suave). Un contorno negro lo para.
+        dist = np.sqrt(((rgb.astype(float) - bg_colour) ** 2).sum(-1))
+        spread = np.sqrt(((edge - bg_colour) ** 2).sum(-1))
+        tol = max(18.0, float(np.percentile(spread, 95)) * 1.5)
+        candidate = dist <= tol
+        hole_colour = dist <= tol / 2
+        notes.append('fondo de color #%02x%02x%02x: sin sombra recuperable; usa la sombra sintética' % tuple(
+            int(c) for c in bg_colour))
+    labels, _ = ndimage.label(candidate)
+    border = np.unique(np.concatenate([labels[0], labels[-1], labels[:, 0], labels[:, -1]]))
+    background = np.isin(labels, border[border > 0])
+    # Fondo encerrado por la figura (hueco entre el brazo y el cuerpo): del color del fondo, plano, sin sombreado
+    pure = hole_colour & ~background
+    holes, n = ndimage.label(pure)
+    if n:
+        sizes = ndimage.sum(pure, holes, range(1, n + 1))
+        big = [i + 1 for i, s in enumerate(sizes) if s >= HOLE_MIN * h * w]
+        background |= np.isin(holes, big)
+    return background, white_bg
+
+
+def figure_mask(image):
+    """Máscara de la figura en las coordenadas de la imagen original (sin escalar): para editar zonas concretas."""
+    rgb = np.asarray(image.convert('RGB'))
+    lum, sat = _lum_sat(rgb)
+    return ~_background(rgb, lum, sat, [])[0]
+
+
 def process(image, keep_shadow=True):
     """Devuelve (imagen RGBA 768x1024, informe). El informe lleva 'warnings', 'shadow_pixels' y 'scale'."""
     if image.mode in ('RGBA', 'LA', 'P'):
@@ -54,23 +94,12 @@ def process(image, keep_shadow=True):
     rgb = np.asarray(image.convert('RGB'))
     h, w = rgb.shape[:2]
     lum, sat = _lum_sat(rgb)
-    warnings = []
+    warnings, notes = [], []
 
     if _checkerboard(rgb, lum):
         warnings.append('fondo de cuadros pintado por el generador: pide "plain flat white background" y repite')
 
-    # Fondo = zona clara y poco saturada conectada con el borde
-    candidate = (sat <= BG_SAT) & (lum >= BG_LUM)
-    labels, _ = ndimage.label(candidate)
-    border = np.unique(np.concatenate([labels[0], labels[-1], labels[:, 0], labels[:, -1]]))
-    background = np.isin(labels, border[border > 0])
-    # Fondo encerrado por la figura (hueco entre el brazo y el cuerpo): blanco puro y plano, sin sombreado
-    pure = (rgb >= PURE_WHITE).all(-1) & ~background
-    holes, n = ndimage.label(pure)
-    if n:
-        sizes = ndimage.sum(pure, holes, range(1, n + 1))
-        big = [i + 1 for i, s in enumerate(sizes) if s >= HOLE_MIN * h * w]
-        background |= np.isin(holes, big)
+    background, white_bg = _background(rgb, lum, sat, notes)
     figure = ~background
     ys, xs = np.where(figure)
     if len(ys) == 0:
@@ -82,7 +111,8 @@ def process(image, keep_shadow=True):
     zone = np.zeros_like(background)
     zone[max(0, int(y1 - 0.08 * fh)):min(h, int(y1 + 0.05 * fh)),
          max(0, int(x0 - 0.4 * fw)):min(w, int(x1 + 0.4 * fw))] = True
-    grey = background & (lum < WHITE_LUM)
+    # Sombra y halo solo se leen sobre blanco; sobre un fondo de color, todo el fondo sería "gris"
+    grey = background & (lum < WHITE_LUM) if white_bg else np.zeros_like(background)
     shadow = grey & zone if keep_shadow else np.zeros_like(grey)
 
     # Halo: gris claro del fondo pegado a la figura fuera de la zona de la sombra
@@ -113,7 +143,8 @@ def process(image, keep_shadow=True):
     canvas.alpha_composite(_clip(scaled, left, top, CANVAS), (max(0, left), max(0, top)))
 
     a = np.asarray(canvas)[..., 3]
-    return canvas, {'warnings': warnings, 'shadow_pixels': int(((a > 0) & (a < 255)).sum()), 'scale': scale}
+    return canvas, {'warnings': warnings, 'notes': notes, 'shadow_pixels': int(((a > 0) & (a < 255)).sum()),
+                    'scale': scale}
 
 
 def _clip(img, left, top, size):

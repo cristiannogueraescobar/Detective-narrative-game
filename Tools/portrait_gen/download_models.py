@@ -13,7 +13,9 @@ MODELS = [
     ('stabilityai/stable-diffusion-xl-base-1.0',
      ['model_index.json', 'scheduler/*', 'tokenizer/*', 'tokenizer_2/*', 'text_encoder/config.json',
       'text_encoder/model.fp16.safetensors', 'text_encoder_2/config.json', 'text_encoder_2/model.fp16.safetensors',
-      'unet/config.json', 'unet/diffusion_pytorch_model.fp16.safetensors', 'vae/config.json'], 'openrail++'),
+      'unet/config.json', 'unet/diffusion_pytorch_model.fp16.safetensors', 'vae/config.json',
+      # diffusers exige este VAE al comprobar la caché aunque se le pase el fp16-fix
+      'vae_1_0/config.json', 'vae_1_0/diffusion_pytorch_model.fp16.safetensors'], 'openrail++'),
     ('madebyollin/sdxl-vae-fp16-fix', ['config.json', 'diffusion_pytorch_model.safetensors'], 'mit'),
     ('nerijs/pixel-art-xl', ['pixel-art-xl.safetensors'], 'creativeml-openrail-m'),
     ('h94/IP-Adapter', ['sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors', 'models/image_encoder/config.json',

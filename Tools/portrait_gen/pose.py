@@ -13,7 +13,7 @@ COLORS = [(255, 0, 0), (255, 85, 0), (255, 170, 0), (255, 255, 0), (170, 255, 0)
           (170, 0, 255), (255, 0, 255), (255, 0, 170), (255, 0, 85)]
 
 
-def standing_three_quarter(width=864, height=1152, head_ratio=0.19, fill=0.90, heavy=True):
+def standing_three_quarter(width=864, height=1152, head_ratio=0.20, fill=0.90, heavy=True):
     """Hombre adulto de pie, de frente girado tres cuartos, brazos caídos (la mano derecha del personaje, a la
     izquierda de la imagen, sujeta una botella). Devuelve 18 puntos (x, y) en píxeles."""
     top = height * (1 - fill) / 2
@@ -21,8 +21,9 @@ def standing_three_quarter(width=864, height=1152, head_ratio=0.19, fill=0.90, h
     cx = width / 2
     head = fh * head_ratio
     y = lambda f: top + f * fh                      # Fracción de la figura (0 = coronilla, 1 = suelas)
-    sw = fh * (0.145 if heavy else 0.125)            # Media anchura de hombros
-    hw = fh * (0.075 if heavy else 0.065)            # Media anchura de caderas
+    # Corpulento: con 0,145 / 0,075 la primera prueba salió delgado y espigado (cabeza ≈1/6,5)
+    sw = fh * (0.165 if heavy else 0.125)            # Media anchura de hombros
+    hw = fh * (0.090 if heavy else 0.065)            # Media anchura de caderas
     shoulders = y(head_ratio + 0.06)
     return [
         (cx + 6, top + head * 0.62),                 # 0 nariz

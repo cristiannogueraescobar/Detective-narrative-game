@@ -60,6 +60,48 @@ Todos con el Python del entorno, `C:\AI\portrait-gen\.venv\Scripts\python.exe`:
 | Expresiones editando el elegido | `Tools/portrait_gen/expressions.py --raw out\javier\raw\<semilla>.png --out out\javier\triste --expression triste` |
 | Comprobación de encuadre | `Tools/measure_portrait.py tranquilo.png triste.png nervioso.png` (≤1 % entre estados) |
 
+## Memoria (medido el 01-10-2026)
+
+Con `enable_model_cpu_offload` los modelos vivían en la RAM (~13-14 GB), y Claude Code paró la tanda de 40 por falta de
+memoria. `generate.py` carga ahora la UNet, el ControlNet y el VAE en la GPU. Los codificadores (dos de texto y el de
+imagen) se usan una sola vez en la CPU y se eliminan, porque el prompt y las referencias son los mismos en toda la
+tanda. El VAE decodifica por mosaicos (`pipe.vae.enable_tiling()`).
+
+| Variante | s/imagen | RAM al generar | VRAM reservada |
+|---|---|---|---|
+| Todo en la GPU, codificadores pasados a la CPU | 30,4 | 9,0 GB | 13,9 GB en una GPU de 12,2 (el controlador desborda a la RAM sin avisar) |
+| Codificadores eliminados + VAE por mosaicos | 22,2 | 3,4 GB | 10,8 GB (12,4 al cargar) |
+| **Codificadores siempre en la CPU (actual)** | **19,4-27** | **2,6 GB** | **10,8 GB, ~0,1-0,5 GB libres** |
+
+La VRAM va justa: si otras aplicaciones (navegadores) ocupan más memoria gráfica, el controlador desborda a la RAM.
+No falla, pero va más lento. Antes de una tanda conviene comprobar `ollama ps` (vacío) y `nvidia-smi`.
+Si hay un error de memoria CUDA, `generate.py` para y lo muestra; no vuelve a cargar en la RAM.
+
+## Color (`colour.py`)
+
+Medido en CIELAB, el tono "frío y verdoso" de los generados era sobre todo **falta de brillo** y de amarillo:
+
+| | Figura L\* / b\* / croma | Piel L\* / a\* / b\* |
+|---|---|---|
+| Marcos y Lucía | 48-64 / 26-44 / 34-52 | 71-73 / 23,5 / 55-56 |
+| 6 mejores de Javier | 31-34 / 13-20 / 20-26 | 52-67 / 14-25 / 33-44 |
+
+Corrección, calculada sobre la piel (lo único comparable entre personajes) y aplicada a la figura:
+
+- L\* se multiplica por (L\* de la piel de referencia / L\* de la piel del candidato). El negro del contorno sigue
+  negro.
+- a\* y b\* se desplazan lo que se aleja la media de la piel.
+- No se tocan el contorno (L\* < 15) ni la sombra semitransparente. Se trabaja píxel a píxel, así que la rejilla de
+  5 px se conserva.
+
+Descartado: escalar también la desviación (Reinhard completo), porque amplificaba el verde de la ropa (a\* de la figura
+-10). Resultado en los 6 mejores: figura b\* 29-36 y croma 32-39 (como Marcos); L\* 33-45.
+
+```
+python Tools/portrait_gen/colour.py medir <png> ...
+python Tools/portrait_gen/colour.py corregir <entrada.png> <salida.png>
+```
+
 ## Cómo funciona
 
 - **Pose y proporciones:** esqueleto OpenPose dibujado por código (`pose.py`): figura al 90 % del alto y cabeza ≈1/5.

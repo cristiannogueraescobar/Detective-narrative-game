@@ -46,6 +46,76 @@ def palette_distance(rgba):
     return float(np.sqrt(((px[:, None, :] - pal[None]) ** 2).sum(-1)).min(1).mean())
 
 
+def background_leak(raw):
+    """Fracción de la figura que el relleno del fondo se comería por ropa clara sin contorno (caso real: la manga de una
+    camisa blanca). Compara el fondo con la tolerancia de remove_white_bg contra el fondo de blanco puro; la diferencia
+    fuera de la franja de 3 px del borde (antialiasing) y de la zona de los pies (sombra) es ropa comida."""
+    import remove_white_bg as rwb
+    rgb = np.asarray(raw.convert('RGB')).astype(int)
+    lum, sat = rgb.mean(-1), rgb.max(-1) - rgb.min(-1)
+
+    def flood(candidate):
+        labels, _ = ndimage.label(candidate)
+        border = np.unique(np.concatenate([labels[0], labels[-1], labels[:, 0], labels[:, -1]]))
+        return np.isin(labels, border[border > 0])
+
+    edge = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]]).astype(float)
+    bg = np.median(edge, axis=0)
+    if bg.min() >= rwb.WHITE_LUM:
+        loose = flood((sat <= rwb.BG_SAT) & (lum >= rwb.BG_LUM))
+        strict = flood((sat <= 8) & (lum >= 250))
+    else:  # Fondo de color: la tolerancia de remove_white_bg frente a una muy estricta
+        dist = np.sqrt(((rgb.astype(float) - bg) ** 2).sum(-1))
+        spread = np.sqrt(((edge - bg) ** 2).sum(-1))
+        tol = max(18.0, float(np.percentile(spread, 95)) * 1.5)
+        loose = flood(dist <= tol)
+        strict = flood(dist <= 6)
+    figure = ~strict
+    ys, _ = np.where(figure)
+    if len(ys) == 0:
+        return 1.0
+    feet = int(ys.max() - 0.08 * (ys.max() - ys.min()))
+    eaten = loose & ~ndimage.binary_dilation(strict, iterations=3)
+    eaten[feet:] = False
+    return float(eaten.sum() / figure.sum())
+
+
+SHADOW_ALPHA = 47  # Opacidad media medida en las sombras de Marcos, Lucía y Álex (46-50/255, ≈18 %)
+
+
+def add_shadow(image):
+    """Sombra suave sintética, como la de los originales 02-04: negra al ≈18 %, a la derecha de cada zapato (la luz
+    viene de la izquierda) y a la altura de la suela. Para generados sobre fondo de color, donde la sombra pintada no
+    se puede recuperar. Solo pinta donde es transparente y no repite si ya hay sombra."""
+    rgba = np.asarray(image.convert('RGBA')).copy()
+    alpha = rgba[..., 3]
+    opaque = alpha >= 128
+    ys, _ = np.where(opaque)
+    y0, sole = ys.min(), ys.max() + 1
+    fh = sole - y0
+    band = slice(max(0, int(sole - 0.03 * fh)), sole)
+    if ((alpha[band.start:min(alpha.shape[0], sole + 20)] > 0) & (alpha[band.start:min(alpha.shape[0], sole + 20)] < 255)).sum() > 50:
+        return image.convert('RGBA')  # Ya tiene sombra
+    cols = np.where(opaque[band].any(axis=0))[0]
+    shoes, start = [], cols[0]
+    for a, b in zip(cols[:-1], cols[1:]):
+        if b - a > 3:
+            shoes.append((start, a + 1))
+            start = b
+    shoes.append((start, cols[-1] + 1))
+    shoes = [s for s in shoes if s[1] - s[0] >= 0.02 * rgba.shape[1]]
+    yy, xx = np.mgrid[0:rgba.shape[0], 0:rgba.shape[1]]
+    top, bottom = sole - 0.012 * fh, sole + 0.008 * fh
+    for left, right in shoes:
+        w = right - left
+        x0, x1 = left + 0.5 * w, right + 0.35 * w
+        cx, cy, rx, ry = (x0 + x1) / 2, (top + bottom) / 2, (x1 - x0) / 2, (bottom - top) / 2
+        inside = ((xx - cx) / rx) ** 2 + ((yy - cy) / ry) ** 2 <= 1
+        paint = inside & (alpha == 0)
+        rgba[paint] = (0, 0, 0, SHADOW_ALPHA)
+    return Image.fromarray(rgba, 'RGBA')
+
+
 def components(rgba):
     """Cuántas piezas opacas grandes hay (una figura = 1; más, figuras repetidas o recortes sueltos)."""
     labels, n = ndimage.label(rgba[..., 3] >= 128)

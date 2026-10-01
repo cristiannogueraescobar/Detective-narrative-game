@@ -12,11 +12,13 @@ import argparse
 import csv
 import os
 import sys
+import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 sys.path[:0] = [HERE, os.path.join(REPO, 'Tools')]
 os.environ.setdefault('HF_HOME', r'C:\AI\hf-cache')
+os.environ.setdefault('HF_HUB_OFFLINE', '1')  # Todo está en la caché; el SSL de este Python no ve el almacén de Windows
 
 import torch  # noqa: E402
 from PIL import Image  # noqa: E402
@@ -27,22 +29,28 @@ import style  # noqa: E402
 
 W, H = 864, 1152  # 3:4, múltiplos de 8, en el rango de SDXL
 
-# BRIEF sección 4, repartido entre los dos codificadores de SDXL (77 tokens cada uno): personaje y estilo
-CHARACTER = ('pixel art, full body, a 44-year-old Andalusian olive farmer, heavy build, weathered tanned face, square '
-             'jaw, short dark brown hair greying at the temples, short stubble beard, clean-shaven upper lip, '
-             'red-rimmed tired eyes, olive and brown plaid flannel work shirt with rolled-up sleeves, dusty brown '
-             'work trousers, worn leather work boots, green beer bottle hanging from his right hand')
-STYLE = ('Pixel art character sprite in the exact style of the reference image: retro 16-bit adventure game look, '
-         'medium-sized visible pixels, realistic adult proportions, normal head size, thick solid black outline, '
-         'flat cel shading, soft warm frontal light, warm ochre, rust, olive and brown palette, subtle soft shadow '
-         'under the feet, plain flat white background')
+# BRIEF sección 4, condensado y repartido entre los dos codificadores de SDXL, que leen 77 tokens cada uno (contados
+# con su tokenizador: personaje + expresión = 76, estilo = 58, negativo = 63). En la primera prueba, con el texto
+# completo, se cortaron la botella, las botas y la expresión, y salió con bigote y camisa blanca: lo crítico va primero.
+# Segunda prueba: sin bigote, pero joven, sin botella y con chaleco sobre camiseta blanca (las dos referencias
+# llevan camisa blanca bajo algo oscuro: el IP-Adapter filtraba ropa). Palabras más fuertes y lo crítico primero.
+# Cuarta prueba + A/B con las mismas semillas: el IP-Adapter, incluso solo en la capa de estilo, copiaba la ropa y la
+# juventud de Álex (camiseta blanca, vaqueros) en las 4; sin él, no. Y el personaje iba solo al codificador CLIP-L: el
+# que más pesa en SDXL (OpenCLIP bigG, prompt_2) recibía el estilo. Ahora el mismo texto va a los dos.
+# Quinta prueba: camisa de cuadros, corpulento y barba en las 8, pero canoso del todo (≈60 años) y fondo gris carbón
+# en las 8: el fondo se quita igual (remove_white_bg admite fondo liso de color) y la sombra se sintetiza.
+CHARACTER = ('pixel art sprite, full body, plain light grey background, 44 year old heavy-set farmer, red plaid flannel '
+             'shirt with rolled sleeves, dark stubble beard, short dark brown hair grey at the temples, tired face, '
+             'holding a green beer bottle, brown work trousers, work boots, thick black outline')
+STYLE = ('retro 16-bit adventure game sprite in the style of the reference, medium visible pixels, realistic adult '
+         'proportions, normal head size, thick black outline, flat cel shading, warm frontal light, ochre rust olive '
+         'brown palette, soft shadow under the feet, plain flat white background')
 EXPRESSIONS = {
-    'tranquilo': 'guarded and exhausted expression, neutral closed mouth, heavy eyelids, looking straight ahead',
+    'tranquilo': 'guarded exhausted expression, closed mouth, heavy eyelids',
 }
-NEGATIVE = ('photorealistic, 3d render, smooth gradients, anti-aliasing, blurry, painterly, anime, chibi, big head, '
-            'oversized head, cropped feet, cut-off head, close-up, background scenery, vignette, dramatic lighting, '
-            'text, watermark, frame, checkerboard pattern, transparency grid, multiple characters, extra fingers, '
-            'moustache, mustache, polo shirt, glasses, apron, cigarette, blood, weapon')
+NEGATIVE = ('black background, dark background, white hair, white beard, elderly, young, thick moustache, t-shirt, vest, '
+            'jacket, suspenders, apron, gradient background, scenery, photorealistic, 3d render, blurry, anime, '
+            'chibi, big head, cropped feet, text, watermark, checkerboard, multiple characters, glasses, weapon')
 REFERENCES = ['docs/art/javier/referencias/02-estilo-hombre-adulto-duenio-bar.png',
               'docs/art/javier/referencias/04-estilo-linea-hermano.png']
 
@@ -75,14 +83,79 @@ def load_pipeline(lora_scale, style_scale):
     pipe.set_ip_adapter_scale({'up': {'block_0': [0.0, style_scale, 0.0]}})
     pipe.load_lora_weights('nerijs/pixel-art-xl', weight_name='pixel-art-xl.safetensors', adapter_name='pixel')
     pipe.set_adapters(['pixel'], adapter_weights=[lora_scale])
-    pipe.enable_model_cpu_offload()
+    # Todo en la GPU (12 GB). Con enable_model_cpu_offload los modelos vivían en la RAM (~13-14 GB) y Claude Code paró
+    # la tanda de 40 por falta de memoria (01-10-2026, 13:45). Los codificadores salen de la GPU en main(), tras usarse.
+    # Los codificadores (texto e imagen) solo se usan una vez por tanda: se quedan en la CPU y nunca suben a la GPU.
+    # Con todo en la GPU, la carga reservaba 12,4 GB y desbordaba a la RAM unos segundos.
+    for name in ('unet', 'controlnet', 'vae'):
+        getattr(pipe, name).to('cuda')
     return pipe
 
 
-def score(m, warnings):
-    """Menos es mejor: píxel cerca de 5, paleta cercana, una sola figura, contorno de las referencias (1-2 %), sin avisos."""
+def flat_border(raw):
+    """Fracción del borde de la imagen del mismo color liso (el de su mediana, ±24). Un fondo con escenario o con
+    degradado fuerte no se puede quitar bien: se descarta. (Antes se exigía blanco, pero el generador pinta gris.)"""
+    import numpy as np
+    a = np.asarray(raw.convert('RGB')).astype(float)
+    edge = np.concatenate([a[:4].reshape(-1, 3), a[-4:].reshape(-1, 3), a[:, :4].reshape(-1, 3), a[:, -4:].reshape(-1, 3)])
+    return float((np.sqrt(((edge - np.median(edge, axis=0)) ** 2).sum(-1)) <= 24).mean())
+
+
+class Stats:
+    """Picos de RAM (proceso y mínimo libre del sistema) y de VRAM (de torch y libre en la GPU), muestreados cada 0,25 s,
+    y segundos por imagen. Se guardan en <out>/stats.txt."""
+
+    def __init__(self):
+        import threading
+
+        import psutil
+        self.proc, self.psutil = psutil.Process(), psutil
+        self.peak_rss = 0
+        self.min_free = psutil.virtual_memory().available
+        self.min_free_vram = None
+        self.times, self.marks = [], []
+        self.running = True
+        threading.Thread(target=self._sample, daemon=True).start()
+
+    def _sample(self):
+        while self.running:
+            self.peak_rss = max(self.peak_rss, self.proc.memory_info().rss)
+            self.min_free = min(self.min_free, self.psutil.virtual_memory().available)
+            if torch.cuda.is_initialized():
+                free = torch.cuda.mem_get_info()[0]
+                self.min_free_vram = free if self.min_free_vram is None else min(self.min_free_vram, free)
+            time.sleep(0.25)
+
+    def mark(self, label):
+        free = torch.cuda.mem_get_info()[0] if torch.cuda.is_initialized() else 0
+        self.marks.append((label, self.proc.memory_info().rss,
+                           torch.cuda.memory_reserved() if torch.cuda.is_initialized() else 0, free))
+
+    def image(self, seconds):
+        self.times.append(seconds)
+
+    def report(self, out):
+        gb = lambda b: f'{b / 1e9:.1f} GB'
+        lines = [f'RAM del proceso, pico: {gb(self.peak_rss)}',
+                 f'RAM libre del sistema, mínimo: {gb(self.min_free)}',
+                 f'VRAM reservada por torch, pico: {gb(torch.cuda.max_memory_reserved())}',
+                 f'VRAM libre en la GPU, mínimo: {gb(self.min_free_vram or 0)}',
+                 f'Imágenes: {len(self.times)}; segundos por imagen: '
+                 + (f'{sum(self.times) / len(self.times):.1f} (de {min(self.times):.1f} a {max(self.times):.1f})' if self.times else '-')]
+        lines += [f'  {label}: RAM {gb(rss)}, VRAM reservada {gb(vram)}, VRAM libre {gb(free)}'
+                  for label, rss, vram, free in self.marks]
+        text = chr(10).join(lines)
+        print(text, flush=True)
+        with open(os.path.join(out, 'stats.txt'), 'a', encoding='utf-8') as f:
+            f.write(text + chr(10) + chr(10))
+
+
+def score(m, warnings, leak):
+    """Menos es mejor: píxel cerca de 5, paleta cercana, una sola figura, contorno de las referencias (1-2 %), sin
+    avisos y sin ropa clara comida por el relleno del fondo."""
     s = abs(m['pixel'] - 5) * 4 + m['palette'] / 5 + (m['parts'] - 1) * 10
     s += 0 if 0.008 <= m['outline'] <= 0.024 else 5
+    s += 0 if leak <= 0.05 else 20 + leak * 100  # Originales sanos: 0,016-0,034; manga comida: 0,095
     return s + 10 * len(warnings)
 
 
@@ -92,49 +165,99 @@ def main():
     ap.add_argument('--count', type=int, default=40)
     ap.add_argument('--first-seed', type=int, default=1000)
     ap.add_argument('--expression', default='tranquilo')
-    ap.add_argument('--lora', type=float, default=1.0)
-    ap.add_argument('--style', type=float, default=0.6)
+    ap.add_argument('--lora', type=float, default=0.8)  # A 1,0 tiraba a fondos grises propios del LoRA
+    # A/B 3000-3003: con el personaje solo en CLIP-L, el IP-Adapter copiaba la ropa de Álex. A/B 4000-4003 con el prompt
+    # en los dos codificadores: a 0,3 da la piel cálida de los originales (paleta 21-23 frente a 23-28) casi sin filtrar
+    ap.add_argument('--style', type=float, default=0.3)
     ap.add_argument('--pose', type=float, default=0.8)
     ap.add_argument('--steps', type=int, default=30)
-    ap.add_argument('--cfg', type=float, default=6.0)
+    ap.add_argument('--cfg', type=float, default=7.0)  # Más peso al prompt: la camisa de cuadros no salía
     ap.add_argument('--cell', type=int, default=5)
     args = ap.parse_args()
 
     for sub in ('raw', 'final'):
         os.makedirs(os.path.join(args.out, sub), exist_ok=True)
+    stats = Stats()
     pipe = load_pipeline(args.lora, args.style)
+    stats.mark('cargado')
     skeleton = pose.render(pose.standing_three_quarter(W, H), W, H)
     skeleton.save(os.path.join(args.out, 'pose.png'))
     refs = [on_white_square(os.path.join(REPO, p)) for p in REFERENCES]
     prompt = f'{CHARACTER}, {EXPRESSIONS[args.expression]}'
 
-    rows = []
+    # El prompt y las referencias son los mismos en todas las imágenes: se codifican una vez y los tres codificadores
+    # se eliminan. Prueba con 2 imágenes (01-10-2026): pasándolos a la CPU, la RAM del proceso subía a 9,4 GB y la VRAM
+    # reservada a 13,9 GB en una GPU de 12,2 (el controlador desbordaba en silencio a la RAM). Eliminados y con el VAE
+    # por mosaicos, cabe.
+    with torch.no_grad():
+        embeds = pipe.encode_prompt(prompt=prompt, prompt_2=prompt, device='cpu', num_images_per_prompt=1,
+                                    do_classifier_free_guidance=True, negative_prompt=NEGATIVE,
+                                    negative_prompt_2=NEGATIVE)
+        ip_embeds = pipe.prepare_ip_adapter_image_embeds(ip_adapter_image=[refs], ip_adapter_image_embeds=None,
+                                                         device='cpu', num_images_per_prompt=1,
+                                                         do_classifier_free_guidance=True)
+    embeds = [e.to('cuda', torch.float16) for e in embeds]
+    ip_embeds = [e.to('cuda', torch.float16) for e in ip_embeds]
+    for name in ('text_encoder', 'text_encoder_2', 'image_encoder'):
+        setattr(pipe, name, None)
+    import gc
+    gc.collect()
+    torch.cuda.empty_cache()
+    pipe.vae.enable_tiling()  # Decodificar 864x1152 de una vez era el pico de VRAM (en diffusers 0.40 va en el VAE)
+    stats.mark('codificado')
+    prompt_embeds, negative_embeds, pooled, negative_pooled = embeds
+
+    # Se reanuda sin perder las puntuaciones ya hechas (otras semillas de la misma carpeta)
     path_csv = os.path.join(args.out, 'scores.csv')
+    rows = []
+    if os.path.exists(path_csv):
+        with open(path_csv, encoding='utf-8') as f:
+            rows = [r for r in csv.DictReader(f)
+                    if not (args.first_seed <= int(r['seed']) < args.first_seed + args.count)]
     for seed in range(args.first_seed, args.first_seed + args.count):
         raw_path = os.path.join(args.out, 'raw', f'{seed}.png')
         if not os.path.exists(raw_path):
-            image = pipe(prompt=prompt, prompt_2=STYLE, negative_prompt=NEGATIVE, negative_prompt_2=NEGATIVE,
-                         image=skeleton, controlnet_conditioning_scale=args.pose, ip_adapter_image=[refs],
-                         num_inference_steps=args.steps, guidance_scale=args.cfg, width=W, height=H,
-                         generator=torch.Generator('cpu').manual_seed(seed)).images[0]
+            t0 = time.perf_counter()
+            try:
+                image = pipe(prompt_embeds=prompt_embeds, negative_prompt_embeds=negative_embeds,
+                             pooled_prompt_embeds=pooled, negative_pooled_prompt_embeds=negative_pooled,
+                             image=skeleton, controlnet_conditioning_scale=args.pose, ip_adapter_image_embeds=ip_embeds,
+                             num_inference_steps=args.steps, guidance_scale=args.cfg, width=W, height=H,
+                             generator=torch.Generator('cpu').manual_seed(seed)).images[0]
+            except torch.cuda.OutOfMemoryError as e:
+                # Sin plan B silencioso: se para y se enseña el error (no se vuelve a la descarga a la RAM)
+                stats.report(args.out)
+                sys.exit(f'CUDA sin memoria en la semilla {seed}: {e}')
+            stats.image(time.perf_counter() - t0)
             image.save(raw_path)
         image = Image.open(raw_path)
+        flat = flat_border(image)
+        if flat < 0.9:  # Fondo que no es liso: descartado antes de puntuar
+            rows.append({'seed': seed, 'score': 999, 'flat': round(flat, 2), 'warnings': 'fondo no liso'})
+            print(rows[-1], flush=True)
+            continue
         try:
             clean, report = rwb.process(image)
         except ValueError as e:
             rows.append({'seed': seed, 'score': 999, 'error': str(e)})
             continue
+        if report['shadow_pixels'] == 0:
+            clean = style.add_shadow(clean)  # Fondo de color: sombra sintética medida sobre los originales
         final = style.pixelate(clean, cell=args.cell)
         final.save(os.path.join(args.out, 'final', f'{seed}.png'))
         m = style.measure(final)
-        rows.append({'seed': seed, 'score': round(score(m, report['warnings']), 2), **{k: round(v, 3) for k, v in m.items()},
+        leak = style.background_leak(image)
+        rows.append({'seed': seed, 'score': round(score(m, report['warnings'], leak), 2), 'leak': round(leak, 3),
+                     **{k: round(v, 3) for k, v in m.items()},
                      'shadow': report['shadow_pixels'], 'warnings': ' | '.join(report['warnings'])})
         print(rows[-1], flush=True)
+        stats.mark(f'semilla {seed}')
         with open(path_csv, 'w', newline='', encoding='utf-8') as f:
             keys = sorted({k for r in rows for k in r}, key=lambda k: (k != 'seed', k != 'score', k))
             writer = csv.DictWriter(f, fieldnames=keys)
             writer.writeheader()
-            writer.writerows(sorted(rows, key=lambda r: r['score']))
+            writer.writerows(sorted(rows, key=lambda r: float(r['score'])))  # Las leídas del CSV vienen como texto
+    stats.report(args.out)
 
 
 if __name__ == '__main__':

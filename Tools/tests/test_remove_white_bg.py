@@ -94,6 +94,20 @@ class RemoveWhiteBackgroundTests(unittest.TestCase):
         _, report = rwb.process(white.convert('RGB'))
         self.assertFalse(any('halo' in w for w in report['warnings']), report['warnings'])
 
+    def test_quita_tambien_un_fondo_liso_de_otro_color(self):
+        # Caso real: con el LoRA de pixel art, SDXL pinta fondo gris oscuro aunque se le pida blanco (8 de 8)
+        img = np.asarray(synthetic(shadow=False)).copy()
+        bg = (img == 255).all(-1)
+        img[bg] = (46, 44, 48)                       # Fondo gris carbón, liso
+        img[300:330, 20:50] = (50, 47, 52)           # Variación suave del fondo (viñeta): también es fondo
+        out, report = rwb.process(Image.fromarray(img))
+        a = np.asarray(out)
+        for y, x in [(0, 0), (1023, 767), (500, 10)]:
+            self.assertEqual(a[y, x, 3], 0, (y, x))
+        opaque = a[a[..., 3] == 255][:, :3]
+        self.assertTrue({tuple(c) for c in opaque} <= {BLACK, SHIRT, SKIN}, 'el contorno negro no es fondo')
+        self.assertIn('fondo de color', ' '.join(report['notes']))
+
     def test_avisa_si_el_generador_pinto_el_patron_de_cuadros(self):
         img = np.asarray(synthetic()).copy()
         yy, xx = np.mgrid[0:img.shape[0], 0:img.shape[1]]
