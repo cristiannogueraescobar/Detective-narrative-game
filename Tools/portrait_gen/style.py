@@ -160,14 +160,16 @@ def cel_flatten(image, cell=5, passes=2, tol=20, majority=6):
     return Image.fromarray(rgba, 'RGBA')
 
 
-def reinforce_outline(image, cell=5, cells=2):
+def reinforce_outline(image, cell=5, cells=2, selout=False, darken=0.35):
     """Contorno negro grueso como el de los originales (revisión de Cristian: a los generados les faltaba). Sobre la
     rejilla de `cell` px (aplicar después de pixelate):
     1. quita el halo claro del borde (celdas claras pegadas al fondo, de los bordes suavizados del generador);
     2. quita motas sueltas (piezas de menos de 6 celdas);
     3. pinta de negro las `cells` celdas más externas de la silueta: 2 celdas = 10 px ≈ 1,1 % de una figura de 920 px,
        dentro del 1-2,4 % medido (Lucía y Álex ~1 %, Marcos 2,4 %). Con 3, lo fino (botella, dedos) quedaba todo negro.
-    La sombra semitransparente no se toca."""
+    La sombra semitransparente no se toca.
+    selout: el contorno toma el color de la celda interior más cercana oscurecido (×`darken`) en vez de negro, como los
+    originales (prueba ciega 10: "contorno negro grueso y uniforme; los originales cambian de color con la zona")."""
     rgba = np.asarray(image.convert('RGBA')).copy()
     h, w = rgba.shape[:2]
     gh, gw = h // cell, w // cell
@@ -187,7 +189,13 @@ def reinforce_outline(image, cell=5, cells=2):
         opaque &= ~tiny
     inner = ndimage.binary_erosion(opaque, structure=eight, iterations=cells, border_value=0)
     ring = opaque & ~inner
-    small[ring, :3] = 0
+    if selout and inner.any():
+        # Para cada celda del borde, la celda interior más cercana
+        _, (iy, ix) = ndimage.distance_transform_edt(~inner, return_indices=True)
+        near = small[iy, ix, :3].astype(float)
+        small[ring, :3] = np.round(near[ring] * darken).astype(np.uint8)
+    else:
+        small[ring, :3] = 0
     big = np.repeat(np.repeat(small, cell, axis=0), cell, axis=1)
     rgba[:gh * cell, :gw * cell] = big
     return Image.fromarray(rgba, 'RGBA')

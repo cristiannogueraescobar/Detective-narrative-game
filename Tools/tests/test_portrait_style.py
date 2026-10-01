@@ -210,5 +210,23 @@ class FaceFixTests(unittest.TestCase):
         self.assertTrue(10 <= mid[0] <= 200, 'el borde mezcla')
 
 
+
+class SeloutTests(unittest.TestCase):
+    def test_el_contorno_toma_el_tono_oscuro_de_cada_zona(self):
+        # Prueba ciega 10 (2 de 3, motivo común): "contorno negro grueso y uniforme; los originales usan contornos más
+        # finos que cambian de color con la zona". Con selout, el borde junto a la camisa verde es verde oscuro y el
+        # borde junto a la cara, marrón oscuro; nunca negro puro.
+        a = np.zeros((400, 300, 4), np.uint8)
+        a[50:150, 100:200] = (230, 170, 120, 255)    # Cara
+        a[150:350, 75:225] = (70, 130, 60, 255)      # Camisa
+        out = np.asarray(style.reinforce_outline(Image.fromarray(a, 'RGBA'), cell=5, cells=1, selout=True)).astype(int)
+        shirt_edge = out[250, 77, :3]
+        face_edge = out[52, 150, :3]
+        self.assertGreater(shirt_edge[1], shirt_edge[0], f'verde oscuro, no negro: {shirt_edge}')
+        self.assertLess(shirt_edge.max(), 90, 'pero oscuro')
+        self.assertGreater(face_edge[0], face_edge[2], f'marrón oscuro: {face_edge}')
+        self.assertTrue((out[250, 150, :3] == (70, 130, 60)).all(), 'el interior no cambia')
+
+
 if __name__ == '__main__':
     unittest.main()
