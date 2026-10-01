@@ -143,6 +143,7 @@ public class GameManager : MonoBehaviour
             currentSuspect = interrogationUI != null ? interrogationUI.CurrentSuspectId : null,
             unlocked = new List<string>(unlocked),
             discovered = new List<string>(State.DiscoveredClueIds),
+            discoveredBy = State.DiscoveredClueIds.Select(id => id + ":" + State.RevealedBy(id)).ToList(),
             culpritToldLie = State.CulpritToldLie
         };
 
@@ -609,7 +610,7 @@ public class GameManager : MonoBehaviour
                                                                      .Where(id => !caseForced || id != variant.id)))
         };
         foreach (ClueData clue in variant.clues.Where(c => !State.IsDiscovered(c.id)))
-            summary.missed.Add($"{clue.playerName} (lo sabía {story.Character(clue.holder).shortName})");
+            summary.missed.Add($"{clue.playerName} (lo sabía {string.Join(" o ", clue.Holders.Select(h => story.Character(h).shortName))})");
         return summary;
     }
 

@@ -49,7 +49,7 @@ public static class NarrativeValidator
             Add(CastSize, $"el reparto tiene {story.cast.Count} personajes");
 
         // La mentira del culpable: al menos una pista que la expone, incriminatoria y en manos de otro
-        if (!v.clues.Any(c => c.exposesLie && c.kind == ClueKind.Incriminates && c.holder != v.culpritId))
+        if (!v.clues.Any(c => c.exposesLie && c.kind == ClueKind.Incriminates && c.Holders.Any(h => h != v.culpritId)))
             Add(LieUncontradicted, $"ninguna pista de un inocente contradice «{v.Role(v.culpritId).lieQuote}»");
 
         // Descartes

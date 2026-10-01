@@ -24,7 +24,8 @@ public static class PromptBuilder
         CharacterRole role = variant.Role(characterId);
         bool isCulprit = variant.culpritId == characterId;
 
-        List<ClueData> ownClues = variant.clues.Where(c => c.holder == characterId).ToList();
+        // Con dos portadores, cada uno ve la pista desde su punto de vista (su tema, su hecho, su secreto)
+        List<ClueData> ownClues = variant.clues.Where(c => c.HeldBy(characterId)).Select(c => c.ForHolder(characterId)).ToList();
         List<ClueData> openFacts = ownClues.Where(c => !c.isSecret).ToList();
         List<ClueData> secretFacts = ownClues.Where(c => c.isSecret).ToList();
         List<ClueData> shown = shownToCharacter?.ToList() ?? new List<ClueData>();

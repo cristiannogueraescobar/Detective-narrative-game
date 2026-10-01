@@ -55,7 +55,12 @@ public static class HintAdvisor
         List<ClueData> pending = v.clues.Where(c => !state.IsDiscovered(c.id)).ToList();
 
         // Orden: inocentes antes que el culpable, lo que no es decisivo antes que la ⚡, lo abierto antes que el secreto
-        List<ClueData> candidates = pending.Where(c => available.Contains(c.holder))
+        // Con dos portadores, se sugiere el que esté disponible (el que no es el culpable, si lo están los dos)
+        List<ClueData> candidates = pending.Where(c => c.Holders.Any(available.Contains))
+            .Select(c => c.ForHolder(c.Holders.Where(available.Contains)
+                .OrderBy(h => h == v.culpritId ? 1 : 0)
+                .ThenBy(h => c.ForHolder(h).isSecret ? 1 : 0) // La versión abierta antes que la secreta
+                .First()))
             .OrderBy(c => c.holder == v.culpritId ? 1 : 0)
             .ThenBy(c => c.exposesLie ? 1 : 0)
             .ThenBy(c => c.isSecret ? 1 : 0)

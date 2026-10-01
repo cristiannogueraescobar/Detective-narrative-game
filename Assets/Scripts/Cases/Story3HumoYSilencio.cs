@@ -220,12 +220,13 @@ Tienes 7 días para descubrir qué pasó.",
                     fact = "a las 21:30 la camioneta de Javier salió de la finca y volvió a las 21:50 cargada de garrafas.",
                     anchors = new[]
                     {
-                        new[] { "camioneta", "coche de javier" },
+                        new[] { "camioneta", "coche de javier", "con garrafas", "cargada de garrafas", "garrafas cargadas" },
                         new[] { "garrafa", "bidon", "21:30", "21:50", "volvio" }
                     },
                     calibrationQuestions = new[] { "¿Salió o entró alguien de la finca de Javier el sábado por la noche?", "¿Vio la camioneta de Javier esa noche?" },
                     sampleHits = new[]
                     {
+                        "Sé que a las 21:30 salió y volvió con garrafas.",
                         "A las 21:30 salió la camioneta de Javier y a las 21:50 volvió cargada de garrafas.",
                         "La camioneta volvió con bidones, hijo, ya de noche."
                     },
@@ -615,7 +616,7 @@ Tienes 7 días para descubrir qué pasó.",
                         new[] { "huella", "pisada" },
                         new[] { "ceniza", "quemadero", "bota", "mujer" }
                     },
-                    calibrationQuestions = new[] { "¿Encontró algo en el quemadero?", "¿Qué vio usted el domingo en la finca?" },
+                    calibrationQuestions = new[] { "¿Encontró algo en el quemadero?", "¿Vio algo raro el domingo en el quemadero?" },
                     sampleHits = new[]
                     {
                         "En la ceniza había huellas de bota pequeña, de mujer. Yo calzo un 44.",

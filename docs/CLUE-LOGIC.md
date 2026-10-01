@@ -230,3 +230,60 @@ sugiere literalmente las preguntas de calibración (se indica cuando importa).
 - Otras pistas que cambiaron de lado entre main y la rama con 3 intentos se midieron también con 10: 1A_papeles
   80 % / 60 %, 1C_pantalla 50 / 40 %, 2C_grabacion 50 / 45 %, 3C_bar 85 / 90 %. El detector decide exactamente igual
   que antes (`NegationEquivalenceTests`, todas las anclas sobre todos los textos), así que son variación del modelo.
+
+## Sesión C (01-10-2026): pistas con dos portadores y pistas bajo el 70 %
+
+Medido con qwen2.5:7b-instruct, temperatura 0,6, **10 intentos por pregunta**, worktrees de `main` (`a05a686`) y de la
+rama `feature/pistas-dos-portadores`. Una fila por portador: con dos, cada uno se calibra con sus preguntas.
+
+### Dos portadores (punto 4)
+Una pista puede tener portadores extra (`ClueData.alsoHeldBy`): cada uno la cuenta con su tema, su hecho, sus anclas,
+sus preguntas y su resumen en la libreta. Sale con cualquiera; el estado recuerda **quién** la contó (también en el
+guardado), así que la ficha de un portador nunca "recuerda" una confesión que hizo el otro.
+
+| Pista | Segundo portador | Por qué lo sabe |
+|---|---|---|
+| 1B_cena | Amparo (vecina) | La cotilla de enfrente conoce a Marta, «la del bufete»: otras noches la ha visto traer a Daniel a casa; esa noche él volvió pasadas las once con ella detrás en su coche |
+| 1C_llamada | Amparo (vecina) | Ya veía a Lucas en la ventana de la escalera tras el golpe (1C_gritos): unos minutos después le ve llorando al móvil; a las 22:15 llega el coche del padre |
+| 2B_imagenes | Marcos (bar) | La cámara es suya. Ruiz tiene motivos para callarlo (bebió en La Marea); Marcos prefiere una multa (la cámara también graba copas a menores) a una acusación de asesinato |
+
+### Las pistas bajo el 70 % (bloque A)
+48 pistas ×10 en main: 42/48 ≥ 2/3, media 84 %. Seis bajo el 70 %, clasificadas por su causa leyendo cada respuesta:
+
+| Pista | main | Causa | Arreglo | Rama (×10) |
+|---|---|---|---|---|
+| 1B_cena | 45 % | Modelo: Daniel mantiene la cena o inventa otra coartada | Segundo portador | Daniel 15 % · **Amparo 90 %** |
+| 1C_pantalla | 45 % | Pregunta: la 2.ª preguntaba por «esa noche» y el hecho es de la mañana siguiente | «¿Ha encontrado algo de Elena al recoger la casa estos días?» | **90 %** |
+| 1C_llamada | 43 % | Modelo (12 negaciones) y anclas (5 respuestas con «lloraba», «una llamada de mi hijo») | Anclas + segundo portador | **Daniel 60 %** · Amparo 50 % |
+| 2B_imagenes | 60 % | Diseño: el portador (Ruiz) tiene motivos para callarlo | Segundo portador | Ruiz 60 % · Marcos 45 % |
+| 2C_grabacion | 60 % | Anclas: «seis y media» en letra, «recogiendo», «todo el rato» | Anclas (las respuestas reales, como ejemplos) | **95 %** |
+| 3C_pisadas | 55 % | Pregunta: «¿Qué vio el domingo en la finca?» se entendía como su coartada | «¿Vio algo raro el domingo en el quemadero?» | **100 %** |
+
+Con un segundo portador, la pista se puede conseguir por las dos vías: para 1B_cena, por Amparo en 9 de cada 10
+intentos. Ninguna pista que pasara del 70 % se tocó. 2B_imagenes sigue floja por las dos vías (60 % y 45 %).
+### Pistas entre el 70 y el 80 % (bloque A, si sobraba tiempo)
+Se clasificaron con las respuestas fallidas de informes anteriores (esta pasada solo guarda respuestas de las que
+fallan). Arreglos solo donde había respuestas reales que daban el hecho con otras palabras, comprobados contra los
+ejemplos negativos y las negaciones:
+
+| Pista | main (×10) | Arreglo | Rama (×10) |
+|---|---|---|---|
+| 2A_curva | 77 % | Ancla «vi uno parado» y pregunta «¿Vio algún coche en la curva hacia las cinco?» (la de antes, «¿pasó algún coche?», empujaba a decir que no pasó ninguno: estaba parado) | **100 %** |
+| 2C_prueba | 73 % | Anclas «extravió / se perdió en el traslado» (el móvil queda implícito) | **87 %** |
+| 2C_gps | 75 % | Anclas «situarme», «confirm-», «comprueb-» | **85 %** |
+| 3A_garrafas | 75 % | Anclas «con garrafas», «cargada de garrafas», «garrafas cargadas» (la camioneta va en pronombre) | **85 %** |
+
+Sin cambios: 1A_partida (aflojarla sería cambiar el diseño), 2C_puerto y 2C_comisaria (el modelo), 3B_armario (sin
+fallos registrados que citar).
+
+### Bot en las 9 variantes (semilla 1919, 2 partidas por variante)
+| | main (`a05a686`) | rama (`fd2b041`: dos portadores + bloque A) |
+|---|---|---|
+| Culpable acertado | 11/18 y, repetido con la misma semilla, 16/18 | **17/18** |
+| Primera pista (pregunta) | 7,1 | 6,1 |
+| Preguntas sin pista nueva | 88 % | 88 % |
+
+**Ruido del bot:** el mismo `main`, con la misma semilla, dio 11/18 y 16/18 en dos pasadas seguidas (el detective es
+qwen y no juega de forma determinista). La diferencia entre rama y main (17 frente a 11-16) no basta para decir que el
+bot mejora; lo que sí se ve con claridad son las pistas medidas con 10 intentos. Para comparar con el bot hacen falta
+más partidas por variante (4 o más).

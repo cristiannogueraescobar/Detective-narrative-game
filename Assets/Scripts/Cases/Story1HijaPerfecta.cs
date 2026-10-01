@@ -533,7 +533,35 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         "Estuve con Marta, una compañera del bufete, de 21:00 a 23:00.",
                         "No era una cena de clientes. Estaba en casa de Marta; el portero me vio."
                     },
-                    sampleMisses = new[] { "Estuve en una cena con clientes hasta las once." }
+                    sampleMisses = new[] { "Estuve en una cena con clientes hasta las once." },
+                    // Sesión C: Daniel casi nunca confiesa la aventura (20-35 % con 10 intentos). Amparo, la cotilla de
+                    // enfrente, conoce a "la del bufete": le ha visto traerle a casa más de una noche
+                    alsoHeldBy = new[]
+                    {
+                        new ClueHolder
+                        {
+                            characterId = "vecina",
+                            topic = "Daniel o a qué hora volvió esa noche",
+                            fact = "Daniel tiene un lío con Marta, la del bufete: otras noches la has visto traerle a casa. Esa noche él volvió en su coche pasadas las once, con el de ella detrás, y se despidieron en la esquina.",
+                            summary = "Amparo sabe que Daniel tiene un lío con Marta, una compañera del bufete; esa noche volvió pasadas las once con ella detrás en su coche.",
+                            anchors = new[]
+                            {
+                                new[] { "marta", "la del bufete", "companera del bufete", "un lio con", "su amante" },
+                                new[] { "le trae", "le trajo", "le traia", "volvio con ella", "detras", "se despidieron", "en la esquina" }
+                            },
+                            calibrationQuestions = new[]
+                            {
+                                "¿Vio volver a Daniel esa noche? ¿A qué hora?",
+                                "¿Qué sabe de Daniel? || ¿Y esa noche, de dónde venía?"
+                            },
+                            sampleHits = new[]
+                            {
+                                "Uy, hijo, esa noche volvió pasadas las once con Marta, la del bufete, detrás en su coche; se despidieron en la esquina.",
+                                "Mire, Daniel tiene un lío con una compañera del bufete; más de una noche le trae a casa."
+                            },
+                            sampleMisses = new[] { "Esa noche el coche del padre no estuvo en casa hasta las once y pico.", "No sé nada de ninguna amante, hijo.", "Se montó un lío esa noche en la calle." }
+                        }
+                    }
                 }
             }
         };
@@ -690,7 +718,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         new[] { "movil", "telefono", "pantalla rota" },
                         new[] { "pantalla", "cuarto de lucas", "habitacion de lucas", "debajo de la cama", "cama de lucas" }
                     },
-                    calibrationQuestions = new[] { "¿Dónde estaba el móvil de Elena?", "¿Encontró algo fuera de su sitio esa noche?" },
+                    calibrationQuestions = new[] { "¿Dónde estaba el móvil de Elena?", "¿Ha encontrado algo de Elena al recoger la casa estos días?" },
                     sampleHits = new[]
                     {
                         "El móvil de Elena estaba en el cuarto de Lucas, con la pantalla rota.",
@@ -707,7 +735,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     fact = "Lucas te llamó a las 21:52 llorando: 'Elena se ha caído por la escalera, pero está bien'. Por eso llegaste a casa a las 22:15, no a las 23:00.",
                     anchors = new[]
                     {
-                        new[] { "21:52", "9:52", "me llamo", "llamo llorando" },
+                        new[] { "21:52", "9:52", "me llamo", "llamo llorando", "lloraba", "llamada de mi hijo", "lucas me dijo" },
                         new[] { "caido", "se cayo", "22:15", "escalera" }
                     },
                     calibrationQuestions = new[]
@@ -718,9 +746,39 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     sampleHits = new[]
                     {
                         "A las 21:52 Lucas me llamó llorando: Elena se había caído, pero estaba bien.",
-                        "Está bien... mi hijo me llamó. Dijo que Elena se cayó por la escalera. Llegué a las 22:15."
+                        "Está bien... mi hijo me llamó. Dijo que Elena se cayó por la escalera. Llegué a las 22:15.",
+                        "Lucas lloraba porque Elena se había caído por la escalera. Llegué a las 22:15."
                     },
-                    sampleMisses = new[] { "Nadie me llamó. Llegué a las 23:00 del despacho.", "No, Lucas no me llamó.", "La llamada al 112 la hice yo; mi hijo estaba arriba." }
+                    sampleMisses = new[] { "Nadie me llamó. Llegué a las 23:00 del despacho.", "No, Lucas no me llamó.", "La llamada al 112 la hice yo; mi hijo estaba arriba." },
+                    // Sesión C: Daniel lo niega casi siempre (37-53 % con 10 intentos). Amparo ya veía a Lucas en la
+                    // ventana de la escalera tras el golpe: unos minutos después le ve llamar por el móvil, llorando
+                    alsoHeldBy = new[]
+                    {
+                        new ClueHolder
+                        {
+                            characterId = "vecina",
+                            topic = "qué hizo Lucas después del golpe o quién llegó a la casa",
+                            fact = "unos minutos después del golpe, hacia las diez menos diez, viste a Lucas en la ventana de la escalera hablando por el móvil y llorando; a las diez y cuarto llegó el coche del padre.",
+                            summary = "Amparo vio a Lucas en la ventana de la escalera, llorando y hablando por el móvil, unos minutos después del golpe; a las 22:15 llegó el coche de Daniel.",
+                            anchors = new[]
+                            {
+                                new[] { "lucas", "chico", "nino" },
+                                new[] { "por el movil", "al telefono", "hablando por" },
+                                new[] { "llorando", "lloraba" }
+                            },
+                            calibrationQuestions = new[]
+                            {
+                                "¿Qué hizo Lucas después del golpe?",
+                                "¿Vio llegar a alguien a la casa esa noche? || ¿Y antes de eso, qué pasaba en la casa?"
+                            },
+                            sampleHits = new[]
+                            {
+                                "Después del golpe vi al chico en la ventana de la escalera, llorando y hablando por el móvil, hijo.",
+                                "Lucas estaba al teléfono, lloraba; y a las diez y cuarto llegó el coche del padre."
+                            },
+                            sampleMisses = new[] { "El coche del padre llegó sobre las diez y cuarto, no más tarde.", "No vi a nadie con ningún teléfono.", "Lucas se quedó inmóvil en la ventana.", "Luego llamó a la ambulancia." }
+                        }
+                    }
                 },
                 new ClueData
                 {

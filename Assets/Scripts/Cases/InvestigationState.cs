@@ -60,14 +60,27 @@ public class InvestigationState
         });
     }
 
-    public bool Discover(string clueId)
+    // Quién contó cada pista (con dos portadores no tiene por qué ser el principal). Sesión C: si la contaba Amparo,
+    // la ficha de Daniel le hacía "recordar" una confesión que no hizo
+    private readonly Dictionary<string, string> revealedBy = new Dictionary<string, string>();
+
+    public bool Discover(string clueId, string by = null)
     {
         if (discovered.Contains(clueId))
             return false;
 
         discovered.Add(clueId);
+        if (by != null)
+            revealedBy[clueId] = by;
         return true;
     }
+
+    /// <summary>Quién la contó; si no se sabe (guardados anteriores, pistas del día), su portador principal.</summary>
+    public string RevealedBy(string clueId) =>
+        revealedBy.TryGetValue(clueId, out string by) ? by : Variant.Clue(clueId)?.holder;
+
+    /// <summary>La pista tal como la contó quien la contó (su resumen, su versión).</summary>
+    public ClueData ClueAsFound(string clueId) => Variant.Clue(clueId)?.ForHolder(RevealedBy(clueId));
 
     public void RegisterShown(string characterId, string clueId)
     {
@@ -124,7 +137,7 @@ public class InvestigationState
     /// </summary>
     public static int MaxEvidenceWithoutCulprit(VariantData variant)
     {
-        var fromOthers = variant.clues.Where(c => c.holder != variant.culpritId).ToList();
+        var fromOthers = variant.clues.Where(c => c.Holders.Any(h => h != variant.culpritId)).ToList();
         return fromOthers.Count(c => c.kind == ClueKind.Incriminates)
              + ContradictionWeight * fromOthers.Count(c => c.exposesLie);
     }
