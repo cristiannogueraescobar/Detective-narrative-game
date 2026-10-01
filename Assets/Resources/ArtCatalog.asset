@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7de8459e2aabb1549a52dfeb2a081c92, type: 3}
+  m_Name: ArtCatalog
+  m_EditorClassIdentifier: Detective::ArtCatalog
+  entries:
+  - path: Assets/Art/Derived/alex.png
+    texture: {fileID: 2800000, guid: 7ac94d340e7a4f21a4dbcb97b1bf5f27, type: 3}
+  - path: Assets/Art/Derived/amparo.png
+    texture: {fileID: 2800000, guid: 27421cff56944801901aca6d451d282f, type: 3}
+  - path: Assets/Art/Derived/encarna.png
+    texture: {fileID: 2800000, guid: e89c128045e446689d9460b57e36fe3d, type: 3}
+  - path: Assets/Art/Derived/javier.png
+    texture: {fileID: 2800000, guid: 817a80503b7f467590d8ac8df03d2f3f, type: 3}
+  - path: Assets/Art/Derived/lucia.png
+    texture: {fileID: 2800000, guid: fabd1fe7e0fc4d5487e77efa2f8592df, type: 3}
+  - path: Assets/Art/Derived/maruxa.png
+    texture: {fileID: 2800000, guid: 6a46adeceb60428fb212e8b4c497298c, type: 3}
+  - path: Assets/Art/Icons/app_icon.png
+    texture: {fileID: 2800000, guid: 51810ed7b89c96840a23f52bd90aa1c4, type: 3}
+  - path: Assets/Art/Icons/contradiccion.png
+    texture: {fileID: 2800000, guid: d8c669a5da03c0242b4bd7223e9751ad, type: 3}
+  - path: Assets/Art/Icons/dia.png
+    texture: {fileID: 2800000, guid: b2e7c4ceba4c5904f9590618de3a99b0, type: 3}
+  - path: Assets/Art/Icons/libreta.png
+    texture: {fileID: 2800000, guid: 7dab7df32298e42428af2dc1686e6c6f, type: 3}
+  - path: Assets/Art/Icons/pista.png
+    texture: {fileID: 2800000, guid: ce758ae1954eaed4daf2e034144c88e5, type: 3}
+  - path: Assets/Art/Icons/preguntas.png
+    texture: {fileID: 2800000, guid: 138214a62d4f66349bbd99e6657f8684, type: 3}
+  - path: Assets/Art/Stories/historia1_intro.png
+    texture: {fileID: 2800000, guid: c25af15d3848be54d9947d1a6d4a23d3, type: 3}
+  - path: Assets/Art/Stories/historia2_intro.png
+    texture: {fileID: 2800000, guid: c306049f4d1da8c40bd79b9bef363257, type: 3}
+  - path: Assets/Art/Stories/historia3_intro.png
+    texture: {fileID: 2800000, guid: ba27259f4b03a3249bb88fd6324148d0, type: 3}
+  - path: Assets/Backgrounds/intro_fondo.png.png
+    texture: {fileID: 2800000, guid: 8dc076834991a524db89b7fe02193f97, type: 3}

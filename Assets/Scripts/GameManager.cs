@@ -1,258 +1,642 @@
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 /// <summary>
-/// GAME MANAGER MEJORADO - Con acusación anticipada y 4 finales
+/// Flujo de la partida: sorteo de variante, días y preguntas, elenco y desbloqueos, partes de la mañana y acusación.
 /// </summary>
 public class GameManager : MonoBehaviour
 {
+    public enum CaseSelection
+    {
+        Aleatoria,
+        Caso1A, Caso1B, Caso1C,
+        Caso2A, Caso2B, Caso2C,
+        Caso3A, Caso3B, Caso3C
+    }
+
+    public const int SafetyUnlockDay = NaturalUnlocks.DefaultDay; // Solo para personajes sin disparador en StoriesDatabase.json
+
     [Header("Referencias")]
     [SerializeField] private AIConversationManager conversationManager;
     [SerializeField] private InterrogationUI interrogationUI;
-    
+
     [Header("Configuración")]
     [SerializeField] private int maxDays = 7;
-    [SerializeField] private int questionsPerDay = 5;
-    
-    private AIConversationManager.CaseData currentCase;
+    private int questionsPerDay = 5; // Lo fija la dificultad (ApplyDifficulty)
+
+    [Header("Debug (solo editor)")]
+    [Tooltip("Fuerza historia y variante. Se ignora fuera del editor")]
+    [SerializeField] private CaseSelection debugCase = CaseSelection.Aleatoria;
+
+    private StoryData story;
+    private VariantData variant;
     private int currentDay = 1;
+    private DifficultyLevel difficulty = Difficulty.Default; // Se fija al empezar el caso y se guarda con él
+    private HintMemory hintMemory = new HintMemory();
+    private Dictionary<string, SuspectNote> notes = new Dictionary<string, SuspectNote>(); // Notas del jugador
+
+    /// <summary>
+    /// Notas del jugador sobre cada sospechoso (sospechoso / descartado): libreta y rueda.
+    /// </summary>
+    public IReadOnlyDictionary<string, SuspectNote> Notes => notes;
+
+    /// <summary>
+    /// ¿Lo descarta una pista que el jugador ya tiene? (la rueda lo marca como en la libreta)
+    /// </summary>
+    public bool IsClearedByClue(string characterId) => State != null && State.IsClearedByClue(characterId);
+
+    /// <summary>
+    /// Tocar la nota de un sospechoso en la libreta: sin nota → sospechoso → descartado → sin nota.
+    /// </summary>
+    public void CycleNote(string characterId)
+    {
+        if (State == null || string.IsNullOrEmpty(characterId))
+            return;
+        notes.TryGetValue(characterId, out SuspectNote current);
+        notes[characterId] = SuspectNotes.Next(current);
+        RefreshNotebook();
+        // Con una pregunta en marcha el historial lleva la pregunta sin respuesta: se guarda al terminar el turno
+        if (requestInFlight)
+            saveAfterRequest = true;
+        else
+            SaveGame();
+    }
     private int questionsUsedToday = 0;
-    
-    private List<string> allSuspects = new List<string> { "Padre", "Madre", "Hermano", "Vecina", "Detective", "Cartero", "Dueño del Bar" };
-    private HashSet<string> unlockedSuspects = new HashSet<string>();
-    
-    private HashSet<string> discoveredClues = new HashSet<string>();
-    private Dictionary<string, string> clueNames = new Dictionary<string, string>();
-    private List<string> contradictions = new List<string>();
-    
+    private bool accusationMade;
+
+    private readonly List<string> unlocked = new List<string>();
+
+    // Los avisos que provoca una respuesta se muestran después de la respuesta, no antes
+    private readonly NoticeQueue notices = new NoticeQueue();
+
+    private InvestigationState State => conversationManager.State;
+
     private void Start()
     {
         conversationManager.OnClueRevealed += OnClueRevealed;
         conversationManager.OnContradictionDetected += OnContradictionDetected;
-        conversationManager.OnResponseReceived += OnResponseReceived;
-        
+        conversationManager.OnCharacterMentioned += OnCharacterMentioned;
+
+        AudioListener.volume = GameSettings.Volume;
+
         if (interrogationUI != null)
         {
+            // El tema se aplica a toda la UI antes de que se creen controles por código (que lo heredan)
+            ThemeApplier.Apply(interrogationUI.transform.root);
             interrogationUI.Initialize(this);
         }
-        
-        SelectRandomCase();
-        
-        unlockedSuspects.Add("Padre");
-        unlockedSuspects.Add("Madre");
-        unlockedSuspects.Add("Hermano");
-        
+
+        SelectCase();
+
+        highContrastApplied = GameSettings.HighContrast;
+        GameSettings.Changed += OnSettingsChanged;
+
         Debug.Log("[GameManager] Inicializado. Esperando menú principal...");
     }
-    
-    private void SelectRandomCase()
+
+    private bool highContrastApplied;
+
+    // El alto contraste cambia los colores del tema: se vuelven a aplicar a toda la UI al momento
+    private void OnSettingsChanged()
     {
-        string[] caseIds = { "1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C" };
-        string randomId = caseIds[Random.Range(0, caseIds.Length)];
-        
-        var casesField = typeof(AIConversationManager).GetField("cases", 
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var cases = (Dictionary<string, AIConversationManager.CaseData>)casesField.GetValue(conversationManager);
-        
-        currentCase = cases[randomId];
-        
-        Debug.Log($"[GameManager] Caso: {currentCase.title} ({currentCase.id})");
-        Debug.Log($"[GameManager] Culpable: {currentCase.culprit}");
+        if (GameSettings.HighContrast == highContrastApplied || interrogationUI == null)
+            return;
+        highContrastApplied = GameSettings.HighContrast;
+        ThemeApplier.Apply(interrogationUI.transform.root);
+        interrogationUI.RestyleForTheme();
     }
-    
-    public void ShowCaseIntro()
+
+    private void OnDestroy()
     {
+        GameSettings.Changed -= OnSettingsChanged;
+
+        if (conversationManager == null)
+            return;
+
+        conversationManager.OnClueRevealed -= OnClueRevealed;
+        conversationManager.OnContradictionDetected -= OnContradictionDetected;
+        conversationManager.OnCharacterMentioned -= OnCharacterMentioned;
+    }
+
+    // ============================================
+    // GUARDADO
+    // ============================================
+
+    private void SaveGame()
+    {
+        if (accusationMade || State == null || currentDay > maxDays)
+            return;
+
+        var data = new SaveData
+        {
+            variantId = variant.id,
+            day = currentDay,
+            questionsUsedToday = questionsUsedToday,
+            difficulty = (int)difficulty,
+            hintsUsed = hintMemory.count,
+            hintsGiven = hintMemory.ToSave(),
+            suspectNotes = SuspectNotes.ToSave(notes),
+            dayStartClues = cluesAtDayStart,
+            dayStartContradictions = contradictionsAtDayStart,
+            currentSuspect = interrogationUI != null ? interrogationUI.CurrentSuspectId : null,
+            unlocked = new List<string>(unlocked),
+            discovered = new List<string>(State.DiscoveredClueIds),
+            culpritToldLie = State.CulpritToldLie
+        };
+
+        foreach (CharacterData character in story.cast)
+        {
+            foreach (string clueId in State.ShownTo(character.id))
+                data.shown.Add(new SaveData.Shown { characterId = character.id, clueId = clueId });
+        }
+
+        foreach (var pair in conversationManager.Histories)
+            data.histories.Add(new SaveData.History { characterId = pair.Key, messages = new List<ChatMessage>(pair.Value) });
+        foreach (var pair in conversationManager.Emotions)
+            data.emotions.Add(new SaveData.EmotionEntry { characterId = pair.Key, emotion = pair.Value.ToString() });
+
         if (interrogationUI != null)
-        {
-            interrogationUI.ShowCaseIntro(currentCase.title, currentCase.description);
-        }
+            SaveSystem.StoreConversations(interrogationUI.Conversations, data);
+
+        SaveSystem.Save(data);
     }
-    
-    public async void AskQuestion(string suspectName, string question)
+
+    /// <summary>
+    /// Continúa la partida guardada. Devuelve false si no hay guardado válido (se empieza de cero).
+    /// </summary>
+    public bool ContinueSavedGame()
     {
-        if (questionsUsedToday >= questionsPerDay)
+        if (!SaveSystem.TryLoad(out SaveData data) || !CaseLibrary.TryFind(data.variantId, out story, out variant))
+            return false;
+
+        currentDay = data.day;
+        questionsUsedToday = data.questionsUsedToday;
+        ApplyDifficulty(Difficulty.FromSave(data.difficulty));
+        hintMemory = HintMemory.FromSave(data.hintsUsed, data.hintsGiven);
+        notes = SuspectNotes.FromSave(data.suspectNotes);
+        caseForced = false; // Una partida guardada es un caso de verdad (aunque el inspector fuerce otro)
+        accusationMade = false;
+        unlocked.Clear();
+        unlocked.AddRange(data.unlocked);
+
+        conversationManager.RestoreCase(story, SaveSystem.RestoreState(variant, data),
+            data.histories.ToDictionary(h => h.characterId, h => h.messages),
+            data.emotions.ToDictionary(e => e.characterId, e => (Emotion)Enum.Parse(typeof(Emotion), e.emotion)));
+
+        interrogationUI?.SetVictim(story.victim);
+        // Lo que llevaba el día al guardar (en guardados anteriores, desde aquí)
+        cluesAtDayStart = data.dayStartClues >= 0 ? data.dayStartClues : DiscoveredClues().Count;
+        contradictionsAtDayStart = data.dayStartContradictions >= 0 ? data.dayStartContradictions : State.ContradictionClueIds.Count;
+        dayRecap = null;
+        interrogationUI?.ContinueInterrogation(data, data.currentSuspect, conversationManager.Emotions);
+
+        Debug.Log($"[GameManager] Partida continuada: {variant.id}, día {currentDay}");
+        return true;
+    }
+
+    private void SelectCase(string storyId = null)
+    {
+        string forcedId = Application.isEditor ? CaseIdFor(debugCase) : null;
+        caseForced = false;
+
+        if (forcedId != null && CaseLibrary.TryFind(forcedId, out story, out variant))
+            caseForced = true;
+        else
         {
-            interrogationUI?.ShowError("No te quedan preguntas hoy.");
-            return;
-        }
-        
-        interrogationUI?.ShowWaiting(true);
+            if (forcedId != null)
+                Debug.LogWarning($"[GameManager] La variante {forcedId} aún no existe; se sortea entre las registradas.");
 
-        LLMResult result = await conversationManager.AskSuspect(suspectName, question, currentCase.id, currentDay);
-
-        interrogationUI?.ShowWaiting(false);
-
-        // Una petición fallida no gasta pregunta del día
-        if (!result.Success)
-        {
-            interrogationUI?.ShowRequestFailed(result.ErrorMessage, question);
-            return;
+            // La historia la elige el jugador; la variante (quién lo hizo) siempre es sorpresa
+            var all = CaseLibrary.AllVariants().Where(p => storyId == null || p.story.id == storyId).ToList();
+            if (all.Count == 0)
+                all = CaseLibrary.AllVariants().ToList();
+            // Primero las variantes que aún no has resuelto; si ya las has jugado todas, nunca la misma dos veces seguidas
+            int pick = CaseRecords.PickVariant(all.Select(p => p.variant.id).ToList(),
+                id => all.First(p => p.variant.id == id).story.id, UnityEngine.Random.Range(0, 1 << 20));
+            (story, variant) = all[pick];
         }
 
-        questionsUsedToday++;
-        interrogationUI?.AddToConversation(suspectName, question, result.Text);
+        conversationManager.StartCase(story, variant);
+
+        unlocked.Clear();
+        unlocked.AddRange(story.cast.Where(c => c.startsUnlocked).Select(c => c.id));
+
+        Debug.Log($"[GameManager] Caso: {story.title} ({variant.id}) · culpable: {variant.culpritId}");
+    }
+
+    private static string CaseIdFor(CaseSelection selection)
+    {
+        return selection == CaseSelection.Aleatoria ? null : selection.ToString().Substring("Caso".Length);
+    }
+
+    // ============================================
+    // FLUJO
+    // ============================================
+
+    /// <summary>
+    /// El jugador eligió historia en la selección de caso (null = cualquiera). Prepara una partida nueva.
+    /// </summary>
+    public void ChooseStory(string storyId)
+    {
+        currentDay = 1;
+        questionsUsedToday = 0;
+        ApplyDifficulty(GameSettings.Difficulty);
+        hintMemory = new HintMemory();
+        notes = new Dictionary<string, SuspectNote>();
+        cluesAtDayStart = contradictionsAtDayStart = 0;
+        dayRecap = null;
+        accusationMade = false;
+        interrogationUI?.ResetForNewCase();
+        SelectCase(storyId);
+        SelectCaseUI();
+    }
+
+    private void SelectCaseUI()
+    {
+        interrogationUI?.SetVictim(story.victim);
+        interrogationUI?.SetEvidenceOptions(DiscoveredClues());
+        RefreshNotebook();
         UpdateGameState();
     }
-    
+
+    public void ShowCaseIntro()
+    {
+        interrogationUI?.ShowCaseIntro(story.id, story.title, CaseBriefing.Format(story, questionsPerDay, maxDays));
+    }
+
+    /// <summary>
+    /// Llamado por la UI al pulsar "Empezar".
+    /// </summary>
+    public void BeginInterrogation()
+    {
+        interrogationUI?.BeginCase(story.situation);
+        interrogationUI?.SetStoryAmbience(story.id);
+        SoundManager.PlayMusic(SoundCatalog.ForStory(story.id));
+        RefreshSuspects();
+        interrogationUI?.SetEvidenceOptions(DiscoveredClues());
+        RefreshNotebook();
+        UpdateGameState();
+    }
+
+    private bool requestInFlight;
+    private bool caseForced; // Caso elegido en el inspector (depuración): no se apunta como jugado
+    private bool saveAfterRequest; // Algo cambió durante la pregunta (una nota): guardar al terminar
+    private int cluesAtDayStart, contradictionsAtDayStart; // Para "Ayer: …" en la tarjeta del día
+    private string dayRecap;
+
+    public async void AskQuestion(string characterId, string question, string shownClueId)
+    {
+        // Un doble clic o un segundo listener no deben lanzar dos peticiones a la vez
+        if (requestInFlight)
+            return;
+
+        if (questionsUsedToday >= questionsPerDay)
+        {
+            interrogationUI?.ShowRequestFailed(GameTexts.NoQuestionsLeft, question, refunded: false);
+            return;
+        }
+
+        requestInFlight = true;
+        notices.BeginDefer();
+        bool answered = false;
+
+        try
+        {
+            interrogationUI?.ShowWaiting(true);
+
+            LLMResult result;
+
+            try
+            {
+                ClueData shownClue = string.IsNullOrEmpty(shownClueId) ? null : variant.Clue(shownClueId);
+                result = await conversationManager.AskSuspect(characterId, question, currentDay, shownClue);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                result = LLMResult.Fail(GameTexts.AskFailed);
+            }
+
+            interrogationUI?.ShowWaiting(false);
+
+            // Una petición fallida no gasta pregunta del día
+            if (!result.Success)
+            {
+                interrogationUI?.ShowRequestFailed(result.ErrorMessage, question);
+                return;
+            }
+
+            questionsUsedToday++;
+            answered = true;
+            // Preguntar por un tema lleva a quien lo conoce ("¿alguna vecina vio algo?" → la vecina); solo si la
+            // pregunta llegó, y el aviso sale después de la respuesta (cola diferida)
+            foreach (string id in NaturalUnlocks.TriggeredBy(story, unlocked, question).ToList())
+                Unlock(id, $"Tu pregunta te pone sobre la pista de {story.Character(id).name}.");
+            // El estado va antes que la respuesta: marca la velocidad de escritura y el retrato
+            interrogationUI?.SetEmotion(characterId, conversationManager.CurrentEmotion(characterId));
+            RefreshNotebook();
+            interrogationUI?.AddAnswer(characterId, story.Character(characterId).shortName, result.Text);
+        }
+        catch (Exception e)
+        {
+            // Cualquier fallo al mostrar la respuesta: nunca dejar la entrada bloqueada
+            Debug.LogException(e);
+            interrogationUI?.ShowRequestFailed(GameTexts.ShowAnswerFailed, answered ? "" : question, refunded: !answered);
+        }
+        finally
+        {
+            requestInFlight = false;
+
+            if (answered)
+                notices.Flush();
+            else
+                notices.Discard();
+
+            UpdateGameState();
+            if (answered || saveAfterRequest)
+                SaveGame();
+            saveAfterRequest = false;
+        }
+    }
+
     public void EndDay()
     {
+        // Lo conseguido hoy, para la tarjeta de mañana
+        dayRecap = GameTexts.DayRecap(DiscoveredClues().Count - cluesAtDayStart,
+                                      State.ContradictionClueIds.Count - contradictionsAtDayStart);
+        cluesAtDayStart = DiscoveredClues().Count;
+        contradictionsAtDayStart = State.ContradictionClueIds.Count;
         currentDay++;
         questionsUsedToday = 0;
-        
+
         if (currentDay > maxDays)
         {
             ShowAccusationPanel();
+            return;
         }
-        else
-        {
-            interrogationUI?.ShowDayTransition(currentDay);
-            UpdateGameState();
-            CheckSuspectUnlocks();
-        }
+
+        interrogationUI?.ShowDayTransition(currentDay, MorningReport(currentDay));
+
+        // Quien nadie ha traído aparece con un hecho de la historia (un agente lo lleva a comisaría), no por magia
+        foreach (var (id, text) in NaturalUnlocks.DueOn(story, unlocked, currentDay).ToList())
+            Unlock(id, text);
+
+        RefreshNotebook(); // El parte nuevo queda en la libreta
+        UpdateGameState();
+        SaveGame();
     }
-    
-    // NUEVO: Forzar panel de acusación antes del día 7
+
+    private string MorningReport(int day)
+    {
+        string report = day - 1 < variant.morningReports.Length ? variant.morningReports[day - 1] : "";
+        return GameTexts.MorningReport(report, GameTexts.StuckHint(day, DiscoveredClues().Count, HintCost >= 0), day, maxDays,
+                                       recap: dayRecap);
+    }
+
     public void ForceAccusationPanel()
     {
         Debug.Log("[GameManager] Acusación anticipada activada");
         ShowAccusationPanel();
     }
-    
-    private void CheckSuspectUnlocks()
+
+    // ============================================
+    // SOSPECHOSOS
+    // ============================================
+
+    private void OnCharacterMentioned(string characterId)
     {
-        if (!unlockedSuspects.Contains("Vecina") && discoveredClues.Count >= 1)
-        {
-            UnlockSuspect("Vecina");
-        }
-        
-        if (!unlockedSuspects.Contains("Cartero") && discoveredClues.Count >= 2)
-        {
-            UnlockSuspect("Cartero");
-        }
-        
-        if (!unlockedSuspects.Contains("Detective") && discoveredClues.Count >= 3)
-        {
-            UnlockSuspect("Detective");
-        }
-        
-        if (currentCase.id.StartsWith("2") && !unlockedSuspects.Contains("Dueño del Bar") && discoveredClues.Count >= 2)
-        {
-            UnlockSuspect("Dueño del Bar");
-        }
+        Unlock(characterId, null);
     }
-    
-    private void UnlockSuspect(string suspectName)
+
+    private void Unlock(string characterId, string notice)
     {
-        if (unlockedSuspects.Add(suspectName))
+        if (unlocked.Contains(characterId))
+            return;
+
+        unlocked.Add(characterId);
+        CharacterData character = story.Character(characterId);
+        Debug.Log($"[GameManager] Desbloqueado: {character.name}");
+
+        notices.Post(() =>
         {
-            Debug.Log($"[GameManager] Desbloqueado: {suspectName}");
-            interrogationUI?.ShowSuspectUnlocked(suspectName);
-            interrogationUI?.UpdateSuspectList(allSuspects, unlockedSuspects);
-        }
+            if (!string.IsNullOrEmpty(notice))
+                interrogationUI?.ShowNotice(notice);
+
+            interrogationUI?.ShowSuspectUnlocked(character.DisplayName);
+            RefreshSuspects();
+            RefreshNotebook();
+        });
     }
-    
-    private void OnClueRevealed(string clueId, string clueName, string description)
+
+    private List<SuspectView> UnlockedSuspects()
     {
-        if (discoveredClues.Add(clueId))
+        // En el orden del elenco
+        return story.cast.Where(c => unlocked.Contains(c.id)).Select(SuspectView.From).ToList();
+    }
+
+    private void RefreshSuspects()
+    {
+        interrogationUI?.SetSuspects(UnlockedSuspects());
+    }
+
+    // ============================================
+    // PISTAS Y CONTRADICCIONES
+    // ============================================
+
+    private List<ClueData> DiscoveredClues()
+    {
+        return State.DiscoveredClueIds.Select(variant.Clue).ToList();
+    }
+
+    /// <summary>
+    /// Libreta: pistas, contradicciones y sospechosos desbloqueados con su estado.
+    /// </summary>
+    private void RefreshNotebook()
+    {
+        interrogationUI?.UpdateNotebook(Notebook.Format(story, State, unlocked,
+            conversationManager.Emotions, conversationManager.DescribeContradiction, onPaper: true,
+            interviewed: conversationManager.Histories.Where(h => h.Value.Any(m => m.role == "assistant")).Select(h => h.Key),
+            notes: notes, reports: Notebook.ReportsUpTo(variant, Mathf.Min(currentDay, maxDays))));
+    }
+
+    private void OnClueRevealed(ClueData clue)
+    {
+        Debug.Log($"[GameManager] Pista: {clue.playerName}");
+        notices.Post(() =>
         {
-            clueNames[clueId] = clueName;
-            Debug.Log($"[GameManager] Pista: {clueName}");
-            interrogationUI?.ShowClueNotification(clueName);
-            interrogationUI?.UpdateCluesList(GetDiscoveredCluesNames());
-            CheckSuspectUnlocks();
-        }
+            interrogationUI?.ShowClueNotification(clue.playerName);
+            interrogationUI?.SetEvidenceOptions(DiscoveredClues(), announce: true);
+            RefreshNotebook();
+        });
     }
-    
-    private void OnContradictionDetected(string contradiction)
+
+    private void OnContradictionDetected(string text)
     {
-        contradictions.Add(contradiction);
-        Debug.Log($"[GameManager] Contradicción: {contradiction}");
-        interrogationUI?.ShowContradictionNotification(contradiction);
-        interrogationUI?.UpdateContradictionsList(contradictions);
+        Debug.Log($"[GameManager] Contradicción: {text}");
+        notices.Post(() =>
+        {
+            interrogationUI?.ShowContradictionNotification(text);
+            RefreshNotebook();
+        });
     }
-    
-    private void OnResponseReceived(string suspect, string question, string response)
+
+    // ============================================
+    // ACUSACIÓN
+    // ============================================
+
+    private void ApplyDifficulty(DifficultyLevel level)
     {
-        Debug.Log($"[GameManager] {suspect} respondió");
+        difficulty = level;
+        questionsPerDay = Difficulty.QuestionsPerDay(level);
     }
-    
+
+    public DifficultyLevel CurrentDifficulty => difficulty;
+    public int HintCost => Difficulty.HintCost(difficulty);
+    public int HintsUsed => hintMemory.count;
+
+    /// <summary>
+    /// "Pensar": una ayuda de la libreta (HintAdvisor). Cuesta preguntas del día según la dificultad; null si en
+    /// esta dificultad no hay ayudas.
+    /// </summary>
+    public Hint Think()
+    {
+        int cost = HintCost;
+        if (cost < 0 || State == null || accusationMade)
+            return null;
+        if (questionsUsedToday + cost > questionsPerDay)
+            return new Hint { text = "Hoy ya no te quedan preguntas para pararte a pensar. Mañana será otro día." };
+
+        Hint hint = HintAdvisor.Next(story, State, unlocked, hintMemory);
+        if (hint.clueId != null) // "Ya lo tienes todo" o "alguien que no conoces" son avisos: no se cobran
+            questionsUsedToday += cost;
+        UpdateGameState();
+        SaveGame();
+        return hint;
+    }
+
+    /// <summary>
+    /// Se puede volver a interrogar desde la acusación mientras queden días y no se haya acusado.
+    /// </summary>
+    public bool CanCancelAccusation => !accusationMade && currentDay <= maxDays;
+
     private void ShowAccusationPanel()
     {
-        interrogationUI?.ShowAccusationPanel(allSuspects, unlockedSuspects);
+        interrogationUI?.ShowAccusationPanel(UnlockedSuspects(), CanCancelAccusation,
+            conversationManager.State?.ContradictionClueIds.Count ?? 0);
     }
-    
-    // MEJORADO: Sistema de 4 finales
-    public void MakeAccusation(string accused)
+
+    public void CancelAccusation()
     {
-        bool correct = accused == currentCase.culprit;
-        int cluesFound = discoveredClues.Count;
-        int totalClues = currentCase.requiredClues.Count;
-        float cluePercentage = (float)cluesFound / totalClues;
-        
-        string ending;
-        
-        // 4 FINALES POSIBLES:
-        if (correct && cluePercentage >= 0.75f)
-        {
-            // FINAL 1: GOOD - Acertaste + 75%+ pruebas
-            ending = "GOOD";
-            Debug.Log("[GameManager] FINAL BUENO - Culpable condenado con pruebas");
-        }
-        else if (correct && cluePercentage >= 0.5f && cluePercentage < 0.75f)
-        {
-            // FINAL 2: BITTERSWEET - Acertaste + 50-74% pruebas
-            ending = "BITTERSWEET";
-            Debug.Log("[GameManager] FINAL AGRIDULCE - Acertaste pero pocas pruebas");
-        }
-        else if (correct && cluePercentage < 0.5f)
-        {
-            // FINAL 3: INSUFFICIENT - Acertaste pero <50% pruebas (QUEDA LIBRE)
-            ending = "INSUFFICIENT";
-            Debug.Log("[GameManager] FINAL INSUFICIENTE - Culpable libre por falta de pruebas");
-        }
-        else
-        {
-            // FINAL 4: BAD - Acusación incorrecta
-            ending = "BAD";
-            Debug.Log("[GameManager] FINAL MALO - Acusación incorrecta");
-        }
-        
-        interrogationUI?.ShowAccusationResult(
-            correct, 
-            accused, 
-            currentCase.culprit, 
-            ending, 
-            cluesFound, 
-            totalClues, 
-            contradictions.Count
-        );
+        if (!CanCancelAccusation)
+            return;
+        interrogationUI?.ShowInterrogation();
+        SoundManager.PlayMusic(SoundCatalog.ForStory(story.id)); // Vuelve la música del caso, no la de tensión
     }
-    
+
+    private void OnApplicationPause(bool paused)
+    {
+        if (paused)
+            GameSettings.Flush();
+    }
+
+    private void OnApplicationQuit()
+    {
+        GameSettings.Flush();
+    }
+
+    public void MakeAccusation(string accusedId, string keyClueId = null)
+    {
+        if (accusationMade)
+            return;
+
+        accusationMade = true;
+        SaveSystem.Delete(); // La partida ha terminado
+        AccusationResult result = State.Accuse(accusedId);
+        CaseRecords.Record(story.id, result.ending);
+        if (!caseForced) // Un caso forzado en el editor no cuenta (no desordena los ajustes de quien depura)
+            CaseRecords.RecordPlayed(story.id, variant.id); // Al rejugar la historia, otro culpable
+
+        Debug.Log($"[GameManager] Acusación: {accusedId} → {result.ending} (evidencia {result.evidence})");
+
+        CaseSummary summary = BuildSummary(result, keyClueId);
+        CaseRecords.RecordRank(story.id, summary.rank);
+
+        interrogationUI?.ShowAccusationResult(
+            result,
+            story.Character(accusedId).name,
+            story.Character(variant.culpritId).name,
+            InvestigationState.MaxEvidenceWithoutCulprit(variant),
+            variant.epilogue,
+            GameTexts.CaseStats(Mathf.Min(currentDay, maxDays), State.DiscoveredClueIds.Count, variant.clues.Count),
+            summary);
+    }
+
+    /// <summary>
+    /// Resumen del caso para el final: rango, veredicto sobre la prueba clave y pistas que se escaparon (con quién
+    /// las sabía), para aprender a preguntar y dar ganas de rejugar la historia con otro culpable.
+    /// </summary>
+    private CaseSummary BuildSummary(AccusationResult result, string keyClueId)
+    {
+        ClueData key = keyClueId != null ? variant.clues.FirstOrDefault(c => c.id == keyClueId) : null;
+        bool keyRight = result.correct && key != null && key.kind == ClueKind.Incriminates;
+        string keyLine = null;
+        if (key != null)
+        {
+            keyLine = !result.correct ? $"Tu prueba clave, «{key.playerName}», no bastaba: señalabas a la persona equivocada."
+                    : key.exposesLie ? $"Tu prueba clave, «{key.playerName}», rompía su coartada. Así se cierra un caso."
+                    : key.kind == ClueKind.Incriminates ? $"Tu prueba clave, «{key.playerName}», le señalaba."
+                    : $"«{key.playerName}» no acusaba a nadie: no era la prueba que lo demostraba.";
+        }
+
+        var summary = new CaseSummary
+        {
+            rank = DetectiveRank.For(result.ending, keyRight, hintMemory.count, Mathf.Max(0, maxDays - currentDay)),
+            keyClueLine = keyLine,
+            notesLine = SuspectNotes.EndingLine(notes.TryGetValue(variant.culpritId, out SuspectNote culpritNote) ? culpritNote : SuspectNote.Ninguna,
+                                                story.Character(variant.culpritId).shortName, result.correct),
+            culprit = SuspectView.From(story.Character(variant.culpritId)),
+            // Se llama después de RecordPlayed: esta ya cuenta como vista
+            replayLine = GameTexts.ReplayLine(CaseRecords.Unplayed(story.variants.Select(v => v.id)
+                                                                     .Where(id => !caseForced || id != variant.id)))
+        };
+        foreach (ClueData clue in variant.clues.Where(c => !State.IsDiscovered(c.id)))
+            summary.missed.Add($"{clue.playerName} (lo sabía {story.Character(clue.holder).shortName})");
+        return summary;
+    }
+
     public bool CanAskMoreQuestions()
     {
         return questionsUsedToday < questionsPerDay;
     }
-    
+
     private void UpdateGameState()
     {
-        interrogationUI?.UpdateGameState(currentDay, questionsUsedToday, questionsPerDay);
+        interrogationUI?.UpdateGameState(currentDay, maxDays, questionsUsedToday, questionsPerDay);
     }
-    
-    private List<string> GetDiscoveredCluesNames()
-    {
-        return discoveredClues.Select(id => clueNames.ContainsKey(id) ? clueNames[id] : id).ToList();
-    }
-    
+
+    /// <summary>
+    /// Tras recargar la escena, el menú empieza directamente una partida nueva (Reiniciar).
+    /// </summary>
+    public static bool StartNewGameOnLoad;
+
     public void RestartGame()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
-        );
+        StartNewGameOnLoad = true;
+        SaveSystem.Delete();
+        ReloadScene();
     }
-    
+
     public void BackToMenu()
     {
-        Debug.Log("[GameManager] Menú principal");
+        StartNewGameOnLoad = false;
+        ReloadScene();
+    }
+
+    private static void ReloadScene()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
 }

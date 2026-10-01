@@ -1,335 +1,94 @@
-# Detective Narrative Game
+# Detectives
 
 ![Unity](https://img.shields.io/badge/Unity-6000.3-000000?style=for-the-badge&logo=unity&logoColor=white)
 ![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)
-![Claude AI](https://img.shields.io/badge/Claude_AI-Powered-7B68EE?style=for-the-badge)
+![LLM](https://img.shields.io/badge/LLM-Ollama%20%7C%20Claude-7B68EE?style=for-the-badge)
 
-> An AI-powered detective game featuring dynamic interrogations with Claude API integration
-
-**⚠️ Work in Progress** - This game is currently under active development. See [Roadmap](#-roadmap) for planned features.
+> A noir detective game for phones (portrait) where you interrogate suspects in free text. The suspects are
+> played by a language model; the rules — clues, lies, contradictions and endings — are decided by the game.
+> The game is in Spanish.
 
 ---
 
 ## 📖 About
 
-A narrative-driven detective game where players investigate criminal cases by interrogating AI-powered characters. Each character has unique personality traits, knowledge bases, and behavior patterns that respond dynamically to player questions.
+Three stories, each with **three variants**: the cast and the crime are the same, but the culprit changes, so
+you never know who did it until you work it out. You have **7 days and 5 questions per day** (7 or 4 depending
+on the difficulty). Ask anything, in your own words; compare each suspect's version in your notebook with your
+clues; show a clue to the suspect you think is lying; accuse once, naming your key piece of evidence.
 
-**Key Features:**
-- 🎭 **9 Criminal Cases** - Diverse scenarios from theft to murder
-- 🤖 **AI-Powered NPCs** - 7 unique character personalities powered by Claude API
-- 💬 **Dynamic Interrogation System** - Natural language conversations with suspects
-- 🔍 **Clue Discovery** - Keyword-based evidence revelation mechanic
-- ⚖️ **Accusation System** - Make your case and accuse the guilty party
+| Story | Setting | Victim |
+|---|---|---|
+| *La hija perfecta* | A family house in Santiago de Compostela | Elena, 12 |
+| *Noche de verano* | A Galician coastal village during the summer fair | Sofía, 19 |
+| *Humo y silencio* | An olive farm in Jaén | Paula, 15 (missing) |
 
----
-
-## 🎮 Gameplay
-
-### Core Mechanics
-
-1. **Case Selection**: Choose from 9 different criminal cases
-2. **Character Selection**: Interrogate up to 7 different characters per case
-3. **Investigation**: Ask questions in natural language to gather clues
-4. **Clue Discovery**: Find specific keywords that unlock evidence
-5. **Accusation**: Make your case and identify the perpetrator
-
-### Character System
-
-Each NPC has:
-- **Unique Personality**: From nervous to aggressive behavior patterns
-- **Dynamic Responses**: AI-generated answers based on character traits
-- **Knowledge Base**: Case-specific information and clues
-- **Emotional States**: Reactions change based on interrogation approach
+**How a question works**
+1. You type a question (or tap one of the suggested openers) and, optionally, attach a clue as evidence.
+2. The suspect answers in character, with a hidden emotional state (calm, nervous, scared, angry, sad) that
+   drives their portrait.
+3. The game — not the model — checks the answer against deterministic **anchors** for each clue. A matching
+   answer puts the clue in your notebook; a clue that contradicts the culprit's lie gets a **CONTRADICTION** stamp.
+4. When you accuse, the ending depends on who you accused and how much evidence you gathered: *Caso cerrado*,
+   *Cerrado con dudas*, *Sobreseído* or *Caso fallido*, followed by the true timeline, the clues you missed, your
+   detective rank and the culprit's police file.
+5. Stuck? **Think** (in the notebook) gives a tiered hint: first who to talk to, then a concrete question.
 
 ---
 
-## 🛠️ Technical Implementation
+## ✨ Features
 
-### Architecture
+- **Mobile-first UI** (uGUI + TextMeshPro): chat bubbles, typewriter answers, notebook with tappable clues and
+  suspects, lineup accusation, stamps and day-card transitions, safe-area aware, 48 dp touch targets.
+- **Noir look**: 2.5D lit portraits (relief + interrogation lamp, computed in a UI shader from the original art),
+  URP post-processing (grading, split toning, highlight-only bloom) with WCAG contrast measured *after* the effect,
+  procedurally generated pixel-art backdrops per story. Every big visual change can be switched off in the theme.
+- **Accessibility**: screen reader support (TalkBack / VoiceOver through Unity 6's accessibility module), three
+  text sizes (seeded from the system font scale), high contrast (AAA), visible focus, text speed, reduce motion,
+  noir filter toggle — all applied live and saved; WCAG 2.2 AA audited.
+- **Game design**: difficulty levels, tiered hints, key-evidence accusation and detective ranks, natural
+  character unlocks by topic, the notebook keeps each suspect's version to compare with the clues, your own
+  notes per suspect (suspicion / ruled out) and every morning report; the lineup strikes through whoever you or a
+  found clue ruled out; replaying a story brings a culprit you haven't seen yet.
+- **Two LLM providers** behind one interface: Ollama (default, local, `qwen2.5:7b-instruct`) or Anthropic Claude.
+- **Robust to the model's quirks**: repeated answers and answers with invented times are asked once more
+  (invented times −74 %); suspects reject false premises in leading questions (23 % → 2-5 %); character sheets are
+  kept under a measured word budget; a narrative validator checks timelines, lies, alibis and reports.
+- **Save / continue**, case records with your best ending, Android back button, Windows build that opens as a
+  phone-shaped window.
+- **Tooling** (Unity editor, batch mode): a bot that plays full games with the real game logic, clue and emotion
+  calibrators, probes for leading questions and opener questions, screenshot and animation capture.
+- **Tests**: 700+ EditMode and PlayMode tests (layout validation at several screen sizes, text sizes and
+  high contrast, save compatibility, state machine and game flows, screen reader).
+
+---
+
+## 🚀 Running it
+
+1. Open the project in **Unity 6000.3.2f1** and open `Assets/Scenes/Game.unity`.
+2. LLM: install [Ollama](https://ollama.com/) and run `ollama pull qwen2.5:7b-instruct`, or select the
+   Anthropic provider on `AIConversationManager` and put your key in `ANTHROPIC_API_KEY` or in
+   `anthropic_api_key.txt` at the project root (git-ignored). See `QUICK-START.md`.
+3. Press Play with the Game view set to a portrait resolution (1080x1920).
+
+Builds: `Detective → Build de Windows` (see `docs/BUILD.md`); Android steps in `docs/BUILD.md`.
+
+---
+
+## 🗂️ Project structure
 
 ```
-Game Architecture:
-├── GameManager.cs (2,048 lines total)
-│   └── Manages game state, case logic, and flow
-├── AIConversationManager.cs
-│   └── Case data, prompts, clue detection; talks to the LLM via ILLMProvider
-├── InterrogationUI.cs
-│   └── Manages UI, chat interface, and clue system
-└── MenuManager.cs
-    └── Main menu and navigation
+Assets/Scripts/
+├── GameManager.cs, MenuManager.cs          game flow, menu, case selection, save/continue
+├── AIConversationManager.cs                one question → LLM → analysis (clues, lies, emotion)
+├── InterrogationUI*.cs                     interrogation, notebook, accusation and endings
+├── Cases/                                  the 3 stories × 3 variants, prompt builder, clue detector
+├── LLM/                                    Ollama and Anthropic providers
+├── UI/, UI/Chat/, UI/Fx/, Emotions/, Audio/, Save/
+└── Editor/                                 bot player, calibrators, probes, capture and build tools
+Assets/Tests/EditMode, Assets/Tests/PlayMode
+docs/                                       design notes, reports, research, build instructions
 ```
-
-### Key Technologies
-
-- **Unity 6 (6000.3)** - Game engine
-- **C#** - Programming language
-- **Ollama / Claude API** - AI conversation system (swappable providers)
-- **Async/Await** - HTTP communication
-- **TextMeshPro** - UI text rendering
-- **UnityWebRequest** - API calls
-
-### API Integration
-
-The game integrates with Anthropic's Claude API to generate dynamic NPC responses:
-
-```csharp
-// AI-powered character responses
-await MakeAPICall(userInput, currentCase, selectedCharacter);
-```
-
-**Features:**
-- Asynchronous API calls
-- Character-specific prompts
-- Context-aware responses
-- Error handling and retry logic
-
----
-
-## 🎯 Current Status
-
-### ✅ Implemented Features
-
-- [x] Full interrogation system with AI integration
-- [x] 9 complete criminal case scenarios
-- [x] 7 unique character personalities
-- [x] Keyword-based clue discovery system
-- [x] Dynamic accusation dropdown system
-- [x] Main menu and case selection UI
-- [x] Chat interface with message history
-- [x] Google Fonts integration (TextMeshPro)
-- [x] Event-driven architecture
-
-### 📊 Code Statistics
-
-- **~2,048 lines of C# code**
-- **4 core scripts**
-- **9 criminal cases**
-- **7 character archetypes**
-- **Deterministic clue system**
-
----
-
-## 🚧 Roadmap
-
-### High Priority (In Development)
-
-- [ ] **Audio System**
-  - Background music
-  - Sound effects for UI interactions
-  - Ambient sounds for atmosphere
-
-- [ ] **Voice Input**
-  - Speech-to-text integration
-  - Microphone input for questions
-  - Voice recording UI
-
-- [ ] **Settings Menu**
-  - Volume controls
-  - Graphics options
-  - Language preferences
-
-### Medium Priority (Planned)
-
-- [ ] **Enhanced Storytelling**
-  - More complex case narratives
-  - Multiple interrogation paths
-  - Consequence system for accusations
-
-- [ ] **Visual Improvements**
-  - Character portraits
-  - Evidence photos
-  - Crime scene backgrounds
-
-- [ ] **Save System**
-  - Progress persistence
-  - Case history
-  - Achievement tracking
-
-### Low Priority (Future)
-
-- [ ] **Multiplayer Mode**
-  - Cooperative investigations
-  - Competitive detective challenges
-
-- [ ] **Mobile Version**
-  - iOS build optimization
-  - Touch controls
-  - Responsive UI
-
----
-
-## 🎨 Game Design
-
-### Case Structure
-
-Each case includes:
-- **Scenario**: Crime description and context
-- **Characters**: List of suspects and witnesses
-- **Evidence**: Clues hidden in conversations
-- **Solution**: The guilty party and motive
-
-### Character Personalities
-
-1. **Nervous** - Fidgety, hesitant, reveals information under pressure
-2. **Aggressive** - Confrontational, defensive, hides guilt
-3. **Calm** - Composed, logical, provides measured responses
-4. **Evasive** - Vague, changes subjects, avoids direct answers
-5. **Cooperative** - Helpful, detailed, possibly too helpful
-6. **Arrogant** - Condescending, believes they're untouchable
-7. **Scared** - Frightened, confused, potentially innocent
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Unity 6000.3.2f1
-- An LLM backend, either:
-  - [Ollama](https://ollama.com/) running locally (default), or
-  - A Claude API key from Anthropic
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/cristiannogueraescobar/detective-narrative-game.git
-```
-
-2. Open the project in Unity and open `Assets/Scenes/Game.unity`
-
-3. Choose a provider on the `AIConversationManager` component (Inspector → **Provider**)
-
-4. Press Play
-
-### LLM Providers
-
-The game talks to the LLM through `ILLMProvider` (`Assets/Scripts/LLM/`). Switching provider only requires changing the **Provider** field in the Inspector.
-
-**Ollama (default)**
-
-```bash
-ollama pull qwen2.5:7b-instruct
-ollama serve
-```
-
-URL, model, timeout (180 s) and `keep_alive` (60m) are configurable under **Ollama Settings**. The model is preloaded in the background when the scene starts, so it is usually ready by the time the player asks the first question. Use `"-1m"` for `keep_alive` to keep it loaded indefinitely.
-
-**Anthropic**
-
-The API key is never stored in the scene. It is read from, in order:
-1. The `ANTHROPIC_API_KEY` environment variable
-2. An `anthropic_api_key.txt` file in the project root (next to the `.exe` in a build). This file is in `.gitignore`.
-
-Get a key from the [Anthropic Console](https://console.anthropic.com/). Model and timeout are configurable under **Anthropic Settings**.
-
-If a request fails (backend not running, timeout, invalid key...), a warning is shown in the chat and the question is not counted against the day's limit.
-
----
-
-## 🎓 Code Examples
-
-### Making an AI Call
-
-```csharp
-private async Task MakeAPICall(string userInput, int caseIndex, int characterIndex)
-{
-    var requestBody = new
-    {
-        model = "claude-sonnet-4-20250514",
-        max_tokens = 1000,
-        messages = new[]
-        {
-            new { role = "user", content = BuildPrompt(userInput, caseIndex, characterIndex) }
-        }
-    };
-    
-    // Send request and process response
-    await SendAPIRequest(requestBody);
-}
-```
-
-### Clue Discovery System
-
-```csharp
-private void CheckForClues(string aiResponse)
-{
-    foreach (var clue in currentCase.clues)
-    {
-        if (!discoveredClues.Contains(clue.keyword) && 
-            aiResponse.Contains(clue.keyword))
-        {
-            discoveredClues.Add(clue.keyword);
-            DisplayClue(clue);
-        }
-    }
-}
-```
-
----
-
-## 📝 Development Notes
-
-### Language
-
-- **Game Content**: Spanish (UI, cases, characters)
-- **Code**: English (comments, variable names)
-- **Documentation**: English
-
-This approach makes the codebase accessible to international developers while maintaining the original Spanish narrative content.
-
-### Project Structure
-
-```
-Assets/
-├── Scenes/              # Unity scenes
-├── Scripts/             # C# game logic
-├── Backgrounds/         # Visual assets
-├── Fonts/              # TextMeshPro fonts
-├── Images/             # Sprites and icons
-├── UI_Images/          # UI elements
-├── Prefabs/            # Reusable game objects
-└── Settings/           # Render pipeline settings
-```
-
----
-
-## 🐛 Known Issues
-
-- [ ] iOS deployment requires additional configuration
-- [ ] Some special characters may not render correctly in TextMeshPro
-- [ ] API rate limiting not yet implemented
-- [ ] No offline mode (requires internet for AI responses)
-
----
-
-## 🤝 Contributing
-
-This is a personal project for educational purposes, but suggestions and feedback are welcome!
-
-If you'd like to contribute:
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
----
-
-## 📚 Learning Resources
-
-This project demonstrates:
-- Async/await patterns in Unity
-- REST API integration
-- Event-driven architecture
-- Dynamic UI generation
-- AI prompt engineering
-
-Useful for students learning:
-- Unity game development
-- C# programming
-- API integration
-- Game design
-- AI implementation
 
 ---
 
