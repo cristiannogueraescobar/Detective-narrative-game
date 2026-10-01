@@ -897,3 +897,15 @@ retratos → 4 gráficos.
 - **19:47** Suites de la rama en su estado final: EditMode 754/755 (el que falta es el banco, Explicit), 0 fallos;
   PlayMode 64 pasan, 0 fallos. **La suite PlayMode carga qwen en Ollama** (confirmado: estaba cargado al acabar):
   esa fue la causa de mi error de las 16:50. Descargado con `ollama stop`.
+- **19:50-20:34 Trabajo extra tras el bloque 3 (Javier; no reabre el bloque 1, que sigue cerrado sin aprobar).**
+  LoRA v2 (`C:\AI\lora\jvstyle2`): las 6 figuras + recortes de cabeza ampliados de los originales, 1 200 pasos
+  (`lora_dataset.py --caras`, test). `facefix.py` (pegado con test): repinta solo la cabeza a 1024 con el LoRA v2.
+  `--head-ratio` en generate.py. Pruebas ciegas:
+  · 8: 8611 + cara → 3/3, confianzas media/baja/baja-media; nuevo motivo común: "cabeza pequeña, ~1/7".
+  · 9: 8702 (v2, cabeza 0,24, cara) → **2/3** (la 604 elige a Álex). Parecido: "personas distintas", alta.
+  · 10: 8700 (v2, cara, ropa aplanada fuera de la cabeza) → **2/3** (la 701 elige a Álex y agrupa a Javier con
+    Marcos y Lucía). Motivo común nuevo: "contorno negro grueso y uniforme" frente al contorno coloreado.
+  · 11: el mismo sin el contorno reforzado → 3/3 ("borde blando, borroso"): el contorno ayuda; lo que falta es
+    colorearlo como los originales (selout).
+- **20:34 Paro el trabajo extra.** Total: 11 rondas, 31 de 33 señalan al generado. Mejor: rondas 9 y 10 (2 de 3).
+  No aprueba; nada se integra. Hoja actualizada: `docs/art/javier/evolucion_sesion_b.jpg`.
