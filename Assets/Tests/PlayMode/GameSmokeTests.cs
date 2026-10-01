@@ -64,6 +64,7 @@ public class GameSmokeTests
     [UnityTearDown]
     public IEnumerator TearDown()
     {
+        SaveSystem.Flush(); // Una escritura pendiente podría volver a crear la carpeta o bloquear el archivo
         SaveSystem.DirectoryOverride = null;
         GameSettings.UseStore(null);
         if (Directory.Exists(saveDirectory))

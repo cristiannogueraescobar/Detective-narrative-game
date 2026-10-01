@@ -62,6 +62,7 @@ public class StateMachineTests
     [UnityTearDown]
     public IEnumerator TearDown()
     {
+        SaveSystem.Flush(); // Una escritura pendiente podría volver a crear la carpeta o bloquear el archivo
         SaveSystem.DirectoryOverride = null;
         GameSettings.UseStore(null);
         if (Directory.Exists(saveDirectory))
@@ -131,6 +132,24 @@ public class StateMachineTests
     {
         GameObject content = Find("ConversationScroll").GetComponent<ScrollRect>().content.gameObject;
         return content.GetComponentsInChildren<Transform>(false).Where(t => t.name == name).Select(t => t.gameObject).ToList();
+    }
+
+    // Auditoría finecomb (sesión C): EndDay y Think solo los protegía la interfaz. Con una pregunta en vuelo, terminar
+    // el día guardaría un historial con la pregunta sin responder y la respuesta se cobraría al día siguiente.
+    [UnityTest]
+    public IEnumerator ConUnaPreguntaEnVueloNoSeTerminaElDia()
+    {
+        yield return StartNewGame();
+        provider.delayMs = 1500;
+        int before = provider.calls;
+        Find("QuestionInput").GetComponent<TMP_InputField>().text = "¿Dónde estaba esa noche?";
+        yield return Tap("AskButton");
+        GameManager gm = Object.FindFirstObjectByType<GameManager>();
+        gm.EndDay();
+        Assert.IsNull(gm.Think(), "pensar tampoco, con la pregunta en vuelo");
+        StringAssert.Contains("DÍA 1", Hud.ToUpperInvariant(), "el día no avanza");
+        yield return WaitUntil(() => provider.calls > before && CanAsk, 8f, "respuesta");
+        StringAssert.Contains("DÍA 1", Hud.ToUpperInvariant());
     }
 
     [UnityTest]

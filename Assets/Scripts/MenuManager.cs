@@ -330,8 +330,9 @@ public class MenuManager : MonoBehaviour
 
         if (!continued)
         {
-            // El guardado ya no es válido: se empieza una partida nueva
-            SaveSystem.Delete();
+            // No se pudo restaurar: se aparta (no se borra) y se empieza un caso nuevo. Antes se borraba también cuando
+            // el fallo era del código y no del archivo (auditoría finecomb)
+            SaveSystem.SetAside();
             OnPlayClicked();
         }
     }

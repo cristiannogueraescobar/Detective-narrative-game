@@ -442,11 +442,7 @@ public static class BotPlayer
             Decision d = ParseDecision(raw);
             if (d != null)
             {
-                d.suspect = Resolve(story, d.suspect);
-                // A veces pone el id de una pista ("2A_curva") en vez de un sospechoso: va a quien la sabe
-                if (d.suspect != null && story.cast.All(c => c.id != d.suspect)
-                    && manager.State.Variant.clues.FirstOrDefault(c => c.id == ResolveClue(manager.State.Variant, d.suspect)) is ClueData namedClue)
-                    d.suspect = namedClue.holder;
+                d.suspect = ResolveSuspect(story, manager.State.Variant, d.suspect);
                 d.accuse = Resolve(story, d.accuse);
                 d.evidence = ResolveClue(manager.State.Variant, d.evidence);
             }
@@ -531,6 +527,23 @@ public static class BotPlayer
     }
 
     // El modelo a veces responde con el nombre en vez del id
+    /// <summary>
+    /// Sospechoso de una decisión del bot. A veces pone una pista ("2A_curva" o su nombre) en vez de un sospechoso: va a
+    /// quien la sabe. La pista se mira antes que los nombres, porque el nombre de una pista puede contener el de otro
+    /// personaje ("El coche de Ana", que sabe Luis): revisión 5, hallazgo 4.
+    /// </summary>
+    public static string ResolveSuspect(StoryData story, VariantData variant, string value)
+    {
+        if (value == null)
+            return null;
+        string v = PlaythroughChecks.Fold(value);
+        bool isCharacter = story.cast.Any(c => PlaythroughChecks.Fold(c.id) == v || PlaythroughChecks.Fold(c.shortName) == v
+                                               || PlaythroughChecks.Fold(c.name) == v);
+        if (!isCharacter && variant.clues.FirstOrDefault(c => c.id == ResolveClue(variant, value)) is ClueData named)
+            return named.holder;
+        return Resolve(story, value);
+    }
+
     private static string Resolve(StoryData story, string value)
     {
         if (value == null)

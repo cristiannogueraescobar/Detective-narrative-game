@@ -40,6 +40,7 @@ public class ScreenReaderTests
     {
         AssistiveSupport.screenReaderStatusOverride = AssistiveSupport.ScreenReaderStatusOverride.OSDriven;
         GameSettings.UseStore(null);
+        SaveSystem.Flush(); // Una escritura pendiente podría volver a crear la carpeta o bloquear el archivo
         SaveSystem.DirectoryOverride = null;
         yield return null;
     }

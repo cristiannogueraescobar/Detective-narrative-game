@@ -39,6 +39,7 @@ public class PerformanceTests
     public IEnumerator TearDown()
     {
         GameSettings.UseStore(null);
+        SaveSystem.Flush(); // Una escritura pendiente podría volver a crear la carpeta o bloquear el archivo
         SaveSystem.DirectoryOverride = null;
         yield return null;
     }
