@@ -757,3 +757,5 @@ retratos → 4 gráficos.
   `lineupSingleRow`), lo que comprueba además que todo se puede desactivar. Diferencia con el día 3 de verdad: la pared
   marca 110-200 en vez de 130-190. Una hoja de revisión me engañó (miniatura vieja con el mismo nombre): comprobado a
   tamaño real y midiendo. EditMode 740/740, PlayMode 64/64 (+24 capturas/mediciones ignoradas como siempre).
+- **02:25** Informe final `docs/REPORT-SESION-A.md` (los cuatro bloques, HECHO CUANDO de cada uno, galería antes/después
+  y lo pendiente). Sesión A cerrada; todo en `feature/sesion-a`, `main` sin tocar.
