@@ -2,6 +2,8 @@
 - retratos_12.jpg: los 12 personajes de las tres historias en el interrogatorio, a tamaño real del juego (zona del
   retrato de cada captura retrato_<artId>.png, ampliada x2 sin suavizar).
 - retratos_antes_despues.jpg: los cinco que compartían retrato (y Amparo, envejecida), antes y ahora.
+- graficos_antes_despues.jpg (bloque 4): la MISMA pantalla y la MISMA historia (Caso 1) en las dos columnas, de las
+  capturas ad_antes_* / ad_despues_* (AnimationCapture.AntesDespues; "antes" = ajustes del tema de la Sesión A apagados).
 Uso: python Tools/make_gallery_sesion_a.py
 """
 import os
@@ -65,7 +67,31 @@ def main():
         d.text((gap + 4, y + h + 4), text, fill=(232, 226, 214), font=font(20))
         y += h + label
     rows.save(os.path.join(OUT, 'retratos_antes_despues.jpg'), quality=88)
+    graphics()
     print('ok')
+
+
+SCREENS = [('interrogatorio', 'Interrogatorio: el hueco central ahora es la escena'),
+           ('enfado', 'Enfadado: viñeta roja en los bordes (tensión)'),
+           ('pista', 'Pista nueva: destello ámbar sobre la figura'),
+           ('rueda', 'Acusación: una fila, alturas reales contra la pared')]
+
+
+def graphics():
+    w, h = 540, 960
+    gap, head, label = 16, 56, 40
+    sheet = Image.new('RGB', (2 * w + 3 * gap, head + len(SCREENS) * (h + label + gap)), (24, 24, 30))
+    d = ImageDraw.Draw(sheet)
+    d.text((gap, 14), 'ANTES (Sesión A apagada en el tema)', fill=(232, 200, 120), font=font(24))
+    d.text((2 * gap + w, 14), 'AHORA', fill=(232, 200, 120), font=font(24))
+    y = head
+    for key, text in SCREENS:
+        for col, tag in enumerate(('antes', 'despues')):
+            im = Image.open(os.path.join(ANIM, f'ad_{tag}_{key}.png')).convert('RGB')
+            sheet.paste(im, (gap + col * (w + gap), y))
+        d.text((gap, y + h + 6), text, fill=(232, 226, 214), font=font(24))
+        y += h + label + gap
+    sheet.save(os.path.join(OUT, 'graficos_antes_despues.jpg'), quality=86)
 
 
 if __name__ == '__main__':

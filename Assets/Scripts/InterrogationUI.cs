@@ -87,6 +87,8 @@ public partial class InterrogationUI : MonoBehaviour
     private List<ClueData> evidenceOptions = new List<ClueData>();
     private readonly ConversationStore conversations = new ConversationStore(); // Una conversación por sospechoso
     private Dictionary<string, Texture2D> suspectImages = new Dictionary<string, Texture2D>();
+    private InterrogationScene scene;      // Escena del centro (Sesión A, bloque 4)
+    private string sceneSuspectId;         // Para saber si cambia el sospechoso (entrada) o solo su estado
     private readonly List<string> visibleClueNames = new List<string>(); // Pistas del aviso en pantalla
     private readonly Dictionary<string, Emotion> emotionBySuspect = new Dictionary<string, Emotion>();
     private EmotionPresenter emotionPresenter;
@@ -496,6 +498,11 @@ public partial class InterrogationUI : MonoBehaviour
             ArtGrading.Clear(suspectImage);
         suspectImage.gameObject.SetActive(true);
         emotionPresenter?.Apply(emotion, instant);
+        if (scene != null)
+        {
+            scene.Show(placeholder ? null : texture, legacyArt, emotion, changed: sceneSuspectId != suspectId, instant: false); // "instant" es de la postura, no de la entrada
+            sceneSuspectId = suspectId;
+        }
 
         if (emotionLabel != null)
         {
@@ -831,6 +838,7 @@ public partial class InterrogationUI : MonoBehaviour
 
     public void ShowClueNotification(string clueName)
     {
+        scene?.ClueFlash();
         ScreenReader.Announce($"Pista nueva: {clueName}");
         SetClueBadge(unseenClues + 1);
         SoundManager.Play(Sfx.Clue);
@@ -865,6 +873,7 @@ public partial class InterrogationUI : MonoBehaviour
 
     public void ShowContradictionNotification(string text)
     {
+        scene?.ContradictionShake();
         ScreenReader.Announce("Contradicción. " + text);
         AppendNotice(ChatEntry.System(ChatEntryKind.Contradiction, text));
 

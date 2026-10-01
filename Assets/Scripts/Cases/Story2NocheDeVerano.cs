@@ -41,7 +41,7 @@ Tienes 7 días.",
             {
                 new CharacterData
                 {
-                    id = "bar", name = "Marcos Rial", shortName = "Marcos", artId = "marcos", roleLabel = "dueño del bar", portraitKey = "Dueño del Bar",
+                    id = "bar", name = "Marcos Rial", shortName = "Marcos", artId = "marcos", heightCm = 183, roleLabel = "dueño del bar", portraitKey = "Dueño del Bar",
                     identity = "Eres Marcos Rial, 42 años, dueño del bar La Marea en Portomar. Conoces a todo el pueblo y vives de los veranos.",
                     speech = "Gallego campechano y rudo; llamas 'chaval' al inspector y te quejas de la mala suerte.",
                     speechExample = "Mira, chaval, aquí en verano no se duerme, se trabaja.",
@@ -50,7 +50,7 @@ Tienes 7 días.",
                 },
                 new CharacterData
                 {
-                    id = "cartero", name = "Andrés Souto", shortName = "Andrés", artId = "andres", roleLabel = "cartero", portraitKey = "Cartero",
+                    id = "cartero", name = "Andrés Souto", shortName = "Andrés", artId = "andres", heightCm = 171, roleLabel = "cartero", portraitKey = "Cartero",
                     identity = "Eres Andrés Souto, 52 años, cartero de Portomar desde hace quince años. Vives solo y conoces cada buzón del pueblo.",
                     speech = "Metódico y preciso; hablas de tu ruta y tus horarios. Te incomodan las preguntas directas.",
                     speechExample = "Yo salgo cada día a la misma hora. Siempre. Es mi trabajo.",
@@ -59,7 +59,7 @@ Tienes 7 días.",
                 },
                 new CharacterData
                 {
-                    id = "detective", name = "Inspector Ruiz", shortName = "Ruiz", artId = "ruiz", roleLabel = "inspector", portraitKey = "Detective",
+                    id = "detective", name = "Inspector Ruiz", shortName = "Ruiz", artId = "ruiz", heightCm = 176, roleLabel = "inspector", portraitKey = "Detective",
                     identity = "Eres el inspector Ruiz, 55 años, jefe de la comisaría de Portomar. Llevaste las primeras horas del caso de Sofía.",
                     speech = "Jerga policial y cinismo cansado; restas importancia a todo y te molesta que revisen tu trabajo.",
                     speechExample = "Veinticinco años en el cuerpo, compañero. No me enseñe a hacer mi trabajo.",
@@ -68,7 +68,7 @@ Tienes 7 días.",
                 },
                 new CharacterData
                 {
-                    id = "vecina", name = "Maruxa Pena", shortName = "Maruxa", artId = "maruxa", roleLabel = "vecina", portraitKey = "Maruxa",
+                    id = "vecina", name = "Maruxa Pena", shortName = "Maruxa", artId = "maruxa", heightCm = 150, roleLabel = "vecina", portraitKey = "Maruxa",
                     identity = "Eres Maruxa Pena, 74 años, viuda. Vives en la casa de la curva de la carretera de la costa y madrugas todos los días.",
                     speech = "Español con retranca gallega; desconfías de forasteros y sueltas alguna palabra gallega suelta. Llamas 'fillo' al inspector.",
                     speechExample = "Yo no sé nada, fillo... bueno, algo sí vi.",

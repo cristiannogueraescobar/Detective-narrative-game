@@ -736,3 +736,24 @@ retratos → 4 gráficos.
   mezclaba historias (los ids se repiten entre ellas) y la rehice historia a historia. Honesto: Javier y las tres
   vecinas comparten cara y pose con su original (se distinguen por ropa, pelo y orientación) → prompts en
   ART-NEEDED.md. EditMode 733/733, PlayMode 61/61.
+
+## Bloque 4: gráficos
+- **01:55** El hueco central del interrogatorio pasa a ser la **escena** (`UI/Fx/InterrogationScene.cs`): la figura
+  del sospechoso grande, de la cabeza a los muslos, detrás del chat (no se desplaza con él, alfa 0,24 para no restar
+  lectura); **viñeta de tensión** según el estado (nervioso, asustado, enfadado en rojo oscuro, solo bordes); **entrada**
+  al cambiar de sospechoso (fundido y deslizamiento de figura y busto, medido en capturas: llega a los 0,6 s);
+  **destello ámbar** al encontrar pista; **sacudida** del busto en contradicción (junto a la del sello). Con "Reducir
+  animaciones": sin deslizamiento, sin temblor ni latido, fundidos cortos (tests). Primeras capturas: la viñeta roja
+  teñía toda la pantalla y el destello salía como una caja (usaba el sprite de viñeta en vez del radial) → corregido
+  y vuelto a capturar.
+- **02:08** **Rueda en una sola fila con alturas reales** (`UI/HeightLineup.cs`): cada personaje con su altura
+  (`heightCm`, 150-183 cm), de cuerpo entero (encuadre medido sobre la parte opaca de cada imagen, sin el humo del
+  cigarro de la vecina), todos sobre el mismo suelo y a la misma escala que las rayas de la pared (que se recolocan).
+  Huecos a la medida de cada figura (los estrechos no gastan sitio). Es un LayoutGroup: se recoloca solo al cambiar de
+  tamaño (dos intentos con eventos fallaron en el test de maquetación a 19,5:9; leído cómo cambia el tamaño la vista
+  previa antes del tercero). Un error mío en la captura (SetActive dentro del cálculo de layout) → escala 0.
+- **02:13** **Galería antes/después** (`galeria/graficos_antes_despues.jpg`): MISMA pantalla, MISMA historia (Caso 1),
+  mismos instantes; "antes" = los tres ajustes nuevos del tema apagados (`interrogationStage`, `tensionVignette`,
+  `lineupSingleRow`), lo que comprueba además que todo se puede desactivar. Diferencia con el día 3 de verdad: la pared
+  marca 110-200 en vez de 130-190. Una hoja de revisión me engañó (miniatura vieja con el mismo nombre): comprobado a
+  tamaño real y midiendo. EditMode 740/740, PlayMode 64/64 (+24 capturas/mediciones ignoradas como siempre).

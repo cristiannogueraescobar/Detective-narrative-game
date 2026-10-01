@@ -310,6 +310,60 @@ public class AnimationCapture
         Shot("veredicto_ficha");
     }
 
+    // Sesión A, bloque 4: entrada del sospechoso nuevo (fundido y deslizamiento de la figura y del busto)
+    [UnityTest]
+    public IEnumerator CambioDeSospechoso()
+    {
+        Tutorial.SkipAll();
+        yield return ToInterrogation();
+        var dropdown = Find("SuspectDropdown").GetComponent<TMPro.TMP_Dropdown>();
+        int next = (dropdown.value + 1) % dropdown.options.Count;
+        dropdown.value = next;
+        dropdown.onValueChanged.Invoke(next);
+        yield return Frames("cambio", 0.02f, 0.12f, 0.25f, 0.6f);
+    }
+
+    // Sesión A, bloque 4: galería antes/después con la MISMA pantalla, la MISMA historia (Caso 1) y los mismos
+    // instantes. "Antes" = los ajustes del tema de la Sesión A apagados (escena, viñeta, rueda en una fila): así se
+    // comprueba también que cada cambio se puede desactivar. ad_antes_* / ad_despues_*
+    [UnityTest]
+    public IEnumerator AntesDespues()
+    {
+        foreach (bool after in new[] { false, true })
+        {
+            Theme theme = UnityEngine.Object.Instantiate(ThemeManager.Current);
+            theme.interrogationStage = after;
+            theme.tensionVignette = after;
+            theme.lineupSingleRow = after;
+            ThemeManager.Override(theme);
+            yield return SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
+            yield return null;
+            RedirectCanvases();
+            Tutorial.SkipAll();
+            yield return Click("PlayButton");
+            yield return Click("Caso 1");
+            yield return Click("StartButton");
+            yield return new WaitForSecondsRealtime(1f);
+
+            string tag = after ? "despues" : "antes";
+            var ui = UnityEngine.Object.FindFirstObjectByType<InterrogationUI>();
+            Shot($"ad_{tag}_interrogatorio");
+            ui.SetEmotion(ui.CurrentSuspectId, Emotion.Enfadado);
+            yield return new WaitForSecondsRealtime(1.5f);
+            Shot($"ad_{tag}_enfado");
+            ui.SetEmotion(ui.CurrentSuspectId, Emotion.Tranquilo);
+            yield return new WaitForSecondsRealtime(1f);
+            ui.ShowClueNotification("La taza de la mesilla");
+            yield return new WaitForSecondsRealtime(0.3f);
+            Shot($"ad_{tag}_pista");
+            yield return new WaitForSecondsRealtime(3.5f);
+            UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+            yield return new WaitForSecondsRealtime(1.5f);
+            Shot($"ad_{tag}_rueda");
+        }
+        ThemeManager.Override(null);
+    }
+
     // Sesión A, bloque 3: los 12 personajes de las tres historias en el interrogatorio, a tamaño real (retrato_<id>)
     [UnityTest]
     public IEnumerator TodosLosRetratos()

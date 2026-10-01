@@ -46,6 +46,7 @@ public class CharacterData
     public string roleLabel;      // "padre"
     public string portraitKey;    // Clave del retrato en InterrogationUI ("Padre", "Vecina"...)
     public string artId;          // Nombre de los retratos por estado: Assets/Art/Portraits/<artId>_<estado>.png
+    public int heightCm = 170;    // Altura real: la rueda de reconocimiento los mide contra la pared (Sesión A)
     public string identity;       // "Eres Daniel Mendoza, 48 años, abogado. ..."
     public string speech;         // Cómo habla
     public string speechExample;  // Una frase de ejemplo
@@ -159,6 +160,7 @@ public struct SuspectView
     public string shortName;
     public string portraitKey;
     public string artId;
+    public int heightCm;
 
     public static SuspectView From(CharacterData character) => new SuspectView
     {
@@ -166,6 +168,7 @@ public struct SuspectView
         displayName = character.DisplayName,
         shortName = character.shortName,
         portraitKey = character.portraitKey,
-        artId = character.artId
+        artId = character.artId,
+        heightCm = character.heightCm
     };
 }

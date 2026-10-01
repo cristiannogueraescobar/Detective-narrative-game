@@ -37,7 +37,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
             {
                 new CharacterData
                 {
-                    id = "padre", name = "Daniel Mendoza", shortName = "Daniel", artId = "daniel", roleLabel = "padre", portraitKey = "Padre",
+                    id = "padre", name = "Daniel Mendoza", shortName = "Daniel", artId = "daniel", heightCm = 178, roleLabel = "padre", portraitKey = "Padre",
                     identity = "Eres Daniel Mendoza, 48 años, abogado con bufete propio en Santiago. Padre de Lucas y padre adoptivo de Elena. Te importan las apariencias y tener todo bajo control.",
                     speech = "Frases cortas, medidas y precisas. Corriges los detalles del inspector y usas algún término legal. Nunca hablas de sentimientos.",
                     speechExample = "Le ruego que sea preciso, inspector. Yo lo soy.",
@@ -46,7 +46,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 },
                 new CharacterData
                 {
-                    id = "madre", name = "Carmen Vidal", shortName = "Carmen", artId = "carmen", roleLabel = "madre", portraitKey = "Madre",
+                    id = "madre", name = "Carmen Vidal", shortName = "Carmen", artId = "carmen", heightCm = 166, roleLabel = "madre", portraitKey = "Madre",
                     identity = "Eres Carmen Vidal, 45 años, pediatra en el hospital de Santiago. Madre de Lucas y madre adoptiva de Elena. Duermes mal desde hace años.",
                     speech = "Emotiva pero contenida. Cuando te pones nerviosa usas términos médicos. Se te quiebra la voz al hablar de Elena.",
                     speechExample = "Era una niña... perdone. Era una niña muy sensible.",
@@ -55,7 +55,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 },
                 new CharacterData
                 {
-                    id = "hermano", name = "Lucas Mendoza", shortName = "Lucas", artId = "lucas", roleLabel = "hermano", portraitKey = "Hermano",
+                    id = "hermano", name = "Lucas Mendoza", shortName = "Lucas", artId = "lucas", heightCm = 174, roleLabel = "hermano", portraitKey = "Hermano",
                     identity = "Eres Lucas Mendoza, 16 años, estudiante de bachillerato. Hijo biológico de Daniel y Carmen. Siempre sentiste que Elena era la favorita.",
                     speech = "Hablas como un adolescente: 'tío', 'o sea', 'no sé'. Respuestas cortas y a la defensiva.",
                     speechExample = "No sé, tío. O sea, yo estaba a lo mío.",
@@ -64,7 +64,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 },
                 new CharacterData
                 {
-                    id = "vecina", name = "Amparo Gil", shortName = "Amparo", artId = "rosario", roleLabel = "vecina", portraitKey = "Amparo",
+                    id = "vecina", name = "Amparo Gil", shortName = "Amparo", artId = "rosario", heightCm = 155, roleLabel = "vecina", portraitKey = "Amparo",
                     identity = "Eres Amparo Gil, 70 años, viuda y jubilada. Vives justo enfrente de los Mendoza; desde tu salón ves la ventana del cuarto de Elena. Duermes poco.",
                     speech = "Cotilla, detallista y cariñosa. Das horas exactas porque tienes el reloj de cuco delante. Llamas 'hijo' al inspector.",
                     speechExample = "Mire, hijo, yo no es que espíe, pero una tiene ojos.",
