@@ -534,7 +534,7 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
         bool hasEvidence = !string.IsNullOrEmpty(entry.evidence);
         row.evidence.gameObject.SetActive(hasEvidence);
         if (hasEvidence)
-            row.evidence.text = "Muestra: " + entry.evidence;
+            row.evidence.text = "Prueba: " + entry.evidence;
 
         bool silent = player && string.IsNullOrEmpty(entry.text);
         row.body.gameObject.SetActive(!silent || !hasEvidence);
@@ -595,7 +595,7 @@ public class ChatView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, 
         {
             case ChatEntryKind.Unlock:
                 color = T.success;
-                text = "NUEVO SOSPECHOSO: " + entry.text;
+                text = "PUEDES INTERROGAR A: " + entry.text;
                 break;
             case ChatEntryKind.Contradiction:
                 color = T.contradiction;

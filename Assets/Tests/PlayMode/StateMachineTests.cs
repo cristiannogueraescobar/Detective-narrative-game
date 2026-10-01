@@ -358,13 +358,13 @@ public class StateMachineTests
         yield return null;
         string wrongId = ui.CurrentSuspectId;
 
-        ui.OnThinkClick(); // Nivel 2: "Prueba a preguntarle a X: «…»", cambia de sospechoso
+        ui.OnThinkClick(); // Nivel 2: "Pregúntale a X: «…»", cambia de sospechoso
         yield return null;
 
         Assert.AreNotEqual(wrongId, ui.CurrentSuspectId, "la ayuda concreta lleva a quien sabe algo");
-        Assert.IsTrue(ui.Conversations.CurrentEntries.Any(e => e.text != null && e.text.Contains("Prueba a preguntarle")),
+        Assert.IsTrue(ui.Conversations.CurrentEntries.Any(e => e.text != null && e.text.Contains("Pregúntale a")),
                       "el aviso está en el chat que se ve");
-        Assert.IsFalse(ui.Conversations.EntriesOf(wrongId).Any(e => e.text != null && e.text.Contains("Prueba a preguntarle")),
+        Assert.IsFalse(ui.Conversations.EntriesOf(wrongId).Any(e => e.text != null && e.text.Contains("Pregúntale a")),
                        "y no en el que se deja atrás");
     }
 

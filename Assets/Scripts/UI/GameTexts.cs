@@ -18,7 +18,7 @@ public static class GameTexts
     /// </summary>
     public static string NoEvidenceWith(int available)
     {
-        return available > 0 ? $"{NoEvidence} · {available} en la libreta" : NoEvidence;
+        return available > 0 ? $"Mostrar prueba ({NumberWord(available)} en la libreta)" : NoEvidence;
     }
 
     /// <summary>
@@ -27,8 +27,8 @@ public static class GameTexts
     public static string EndDayConfirm(int remaining)
     {
         return remaining == 1
-            ? "¿Terminar el día? Te queda 1 pregunta y se perderá."
-            : $"¿Terminar el día? Te quedan {remaining} preguntas y se perderán.";
+            ? "¿Terminar el día? Te queda una pregunta y se perderá."
+            : $"¿Terminar el día? Te quedan {NumberWord(remaining)} preguntas y se perderán.";
     }
 
     /// <summary>
@@ -132,7 +132,7 @@ public static class GameTexts
     /// </summary>
     public static string ThinkLabel(int cost)
     {
-        return cost <= 0 ? "Pensar" : cost == 1 ? "Pensar (1 pregunta)" : $"Pensar ({cost} preguntas)";
+        return cost <= 0 ? "Pensar" : cost == 1 ? "Pensar (una pregunta)" : $"Pensar ({NumberWord(cost)} preguntas)";
     }
 
     public const string EndDayYes = "Terminar el día";
@@ -174,10 +174,10 @@ public static class GameTexts
             "Las pistas, las contradicciones, lo que dice cada uno y cómo está se apuntan solos en la libreta: si una pista no cuadra con lo que alguien dice, enséñasela. Junto a cada uno puedes apuntar tu nota (sospecha o descarte): en la rueda de la acusación, a quien descartes se le ve tachado. Algunas pistas descartan a alguien: léelas bien. " +
             "Toca una pista para enseñarla en tu próxima pregunta, o el nombre de un sospechoso para ir a interrogarle.\n\n" +
             h("ACUSAR Y FINALES") + "\n" +
-            "Puedes acusar cuando quieras; el séptimo día es obligatorio. Solo hay una oportunidad:\n" +
+            "Puedes acusar cuando quieras; el séptimo día tendrás que hacerlo. Solo hay una oportunidad:\n" +
             "•  Culpable y pruebas sólidas: caso cerrado.\n" +
             "•  Culpable con pocas pruebas: cerrado con dudas.\n" +
-            "•  Culpable sin pruebas: sale libre.\n" +
+            "•  Culpable sin pruebas: sobreseído, sale libre.\n" +
             "•  Persona equivocada: caso fallido.";
     }
 
@@ -251,9 +251,9 @@ public static class GameTexts
     {
         if (clues <= 0 && contradictions <= 0)
             return "Tu libreta está vacía: acusar ahora es una apuesta.";
-        string c = clues == 1 ? "1 pista" : $"{clues} pistas";
+        string c = clues == 1 ? "una pista" : $"{NumberWord(clues)} pistas";
         string x = contradictions == 0 ? "ninguna contradicción"
-                 : contradictions == 1 ? "1 contradicción" : $"{contradictions} contradicciones";
+                 : contradictions == 1 ? "una contradicción" : $"{NumberWord(contradictions)} contradicciones";
         // El selector de la prueba clave solo aparece con pistas: se explica justo entonces
         return $"En tu libreta: {c} y {x}." + (clues > 0 ? " Elige también la prueba clave: si lo demuestra, tu rango sube." : "");
     }

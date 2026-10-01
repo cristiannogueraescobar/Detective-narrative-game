@@ -190,7 +190,7 @@ public static class EndingReport
         // Cuánto faltó, solo si acertaste sin pruebas suficientes (ganando o acusando a otro no aporta nada)
         int missing = InvestigationState.GoodThreshold - result.evidence;
         if ((result.ending == Ending.Bittersweet || result.ending == Ending.Insufficient) && missing > 0)
-            sb.AppendLine($"<size=80%>{label($"Con {missing} {(missing == 1 ? "punto" : "puntos")} más de solidez habría sido una condena segura.")}</size>");
+            sb.AppendLine($"<size=80%>{label($"Con {(missing == 1 ? "un punto" : GameTexts.NumberWord(missing) + " puntos")} más de solidez habría sido una condena segura.")}</size>");
         if (!string.IsNullOrEmpty(stats))
             sb.AppendLine(label(stats));
         sb.AppendLine();
