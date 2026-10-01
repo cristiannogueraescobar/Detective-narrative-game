@@ -847,3 +847,16 @@ retratos → 4 gráficos.
 - **16:45 Reabro el bloque 1** con la palanca que falta: un LoRA de estilo entrenado con los originales del juego
   (Marcos, Lucía, Álex, cartero, vecina, detective; sin Daniel, que es el otro estilo). Las anteriores corregían el
   resultado o empujaban desde fuera; un LoRA enseña al generador a dibujar como ellos. Límite: 18:48.
+- **16:46** LoRA de estilo: script oficial de diffusers 0.40 (`train_text_to_image_lora_sdxl.py`, Apache-2.0) en
+  `C:\AI\lora`, con dos parches locales para trabajar sin conexión (tokenizador CLIP directo; el VAE fp16-fix sin
+  variante). 6 originales rellenados a 1024² (`Tools/portrait_gen/lora_dataset.py`), rango 16, 800 pasos, 9,7 GB de
+  VRAM, ~2 s por paso (~27 min). Mientras entrena, bloque 3 en `feature/mejoras-seguras` (sin GPU):
+- **16:44** Mejoras 2 y 3 (TimeCheck con caché; anclas normalizadas una vez; Parse recordado) → commit `560e71e`.
+- **16:54** Mejora 4 (guardado compacto, fuera del hilo principal, cola única) → `2e6b103`. Suites: EditMode 753/753,
+  PlayMode 64 pasan y 0 fallan.
+- **16:58** Segundas vías → `b92d6c2`. **Decisión:** 1B ya tenía 6 pistas y el diseño aprobado es 5-6, así que la
+  segunda vía de 1B_cena no es una pista nueva (lo intenté primero; el test de 4-6 lo paró) sino un testigo: Amparo
+  vio a Daniel volver con una mujer y Daniel confiesa si se lo echan en cara. 1C_llamada: el parte del día 4 dice que
+  Daniel recibió una llamada corta antes de las diez. Falta medirlas con Ollama (GPU ocupada).
+- **17:01** Banco de pruebas antes/después en la misma ejecución → `Logs/perf-mejoras.md` (TimeCheck 403 → 15 µs;
+  Parse ×4 126 → 0,4 µs; Evaluate ×6 200 → 17 µs; guardado 41,8 → 24,0 KB y 2,9 → 0,7 ms en el hilo principal).

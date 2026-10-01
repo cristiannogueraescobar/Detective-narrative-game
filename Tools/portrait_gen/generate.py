@@ -56,6 +56,14 @@ JAVIER_CEL = ('pixel art sprite, anime style, clean flat cel shading, vibrant sa
 JAVIER_CEL_NEGATIVE = ('muted colors, desaturated, dithering, noise, painterly, blurry face, realistic face, moustache, '
                        'apron, vest, mug, young, handsome, slim, suspenders, photorealistic, 3d render, anime chibi, '
                        'cropped feet, scenery, text, watermark, multiple characters')
+# Sesión B (16:45): LoRA de estilo entrenado con 6 originales del juego (lora_dataset.py). El prompt sigue el formato de
+# sus descripciones: palabra de activación + quién es + ropa + objeto.
+JAVIER_JV = ('jvstyle pixel art character sprite, full body, 44 year old weathered heavy-set man, bitter defensive scowl, '
+             'dark circles under eyes, stubble beard, short dark hair grey at the temples, olive and brown flannel shirt '
+             'with rolled sleeves, brown trousers, work boots, holding a green beer bottle')
+JAVIER_JV_NEGATIVE = ('moustache, mustache, apron, vest, cigarette, beer mug, red plaid, young, handsome, smiling, slim, '
+                      'suspenders, photorealistic, 3d render, blurry, cropped feet, scenery, text, watermark, multiple '
+                      'characters, glasses')
 CHARACTER = ('pixel art sprite, full body, plain light grey background, 44 year old heavy-set farmer, red plaid flannel '
              'shirt with rolled sleeves, dark stubble beard, short dark brown hair grey at the temples, tired face, '
              'holding a green beer bottle, brown work trousers, work boots, thick black outline')
@@ -81,7 +89,7 @@ def on_white_square(path, size=768):
     return canvas.convert('RGB').resize((size, size), Image.LANCZOS)
 
 
-def load_pipeline(lora_scale, style_scale):
+def load_pipeline(lora_scale, style_scale, style_lora=None, style_lora_scale=1.0):
     from diffusers import (AutoencoderKL, ControlNetModel, DPMSolverMultistepScheduler,
                            StableDiffusionXLControlNetPipeline)
     from transformers import CLIPVisionModelWithProjection
@@ -99,7 +107,11 @@ def load_pipeline(lora_scale, style_scale):
     # InstantStyle: la referencia solo entra en el bloque de estilo (up.block_0, capa 1), no en el de contenido
     pipe.set_ip_adapter_scale({'up': {'block_0': [0.0, style_scale, 0.0]}})
     pipe.load_lora_weights('nerijs/pixel-art-xl', weight_name='pixel-art-xl.safetensors', adapter_name='pixel')
-    pipe.set_adapters(['pixel'], adapter_weights=[lora_scale])
+    if style_lora:
+        pipe.load_lora_weights(style_lora, weight_name='pytorch_lora_weights.safetensors', adapter_name='jv')
+        pipe.set_adapters(['pixel', 'jv'], adapter_weights=[lora_scale, style_lora_scale])
+    else:
+        pipe.set_adapters(['pixel'], adapter_weights=[lora_scale])
     # Todo en la GPU (12 GB). Con enable_model_cpu_offload los modelos vivían en la RAM (~13-14 GB) y Claude Code paró
     # la tanda de 40 por falta de memoria (01-10-2026, 13:45). Los codificadores salen de la GPU en main(), tras usarse.
     # Los codificadores (texto e imagen) solo se usan una vez por tanda: se quedan en la CPU y nunca suben a la GPU.
@@ -221,19 +233,24 @@ def main():
     ap.add_argument('--strength', type=float, default=0.65, help='cuánto se aleja de --init (0 = igual, 1 = nada)')
     ap.add_argument('--pose-kind', default='standing', choices=sorted(pose.POSES))
     ap.add_argument('--javier', action='store_true', help='prompt de la revisión de Cristian (JAVIER, JAVIER_NEGATIVE)')
+    ap.add_argument('--style-lora', help='carpeta del LoRA de estilo (lora_dataset.py + train_lora_sdxl.py)')
+    ap.add_argument('--style-lora-scale', type=float, default=1.0)
+    ap.add_argument('--jv', action='store_true', help='con --javier: prompt JAVIER_JV (formato del LoRA de estilo)')
     ap.add_argument('--cel', action='store_true', help='con --javier: variante JAVIER_CEL (tras la prueba ciega)')
     args = ap.parse_args()
 
     for sub in ('raw', 'final'):
         os.makedirs(os.path.join(args.out, sub), exist_ok=True)
     stats = Stats()
-    pipe = load_pipeline(args.lora, args.style)
+    pipe = load_pipeline(args.lora, args.style, args.style_lora, args.style_lora_scale)
     stats.mark('cargado')
     skeleton = pose.render(pose.POSES[args.pose_kind](W, H), W, H)
     skeleton.save(os.path.join(args.out, 'pose.png'))
     refs = [on_white_square(os.path.join(REPO, p)) for p in REFERENCES]
-    prompt = (JAVIER_CEL if args.cel else JAVIER) if args.javier else f'{CHARACTER}, {EXPRESSIONS[args.expression]}'
-    negative = (JAVIER_CEL_NEGATIVE if args.cel else JAVIER_NEGATIVE) if args.javier else NEGATIVE
+    prompt = ((JAVIER_JV if args.jv else JAVIER_CEL if args.cel else JAVIER) if args.javier
+              else f'{CHARACTER}, {EXPRESSIONS[args.expression]}')
+    negative = ((JAVIER_JV_NEGATIVE if args.jv else JAVIER_CEL_NEGATIVE if args.cel else JAVIER_NEGATIVE) if args.javier
+                else NEGATIVE)
 
     (prompt_embeds, negative_embeds, pooled, negative_pooled), ip_embeds = encode_once(pipe, prompt, negative, refs)
     init = None
