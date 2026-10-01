@@ -161,6 +161,16 @@ class SkinTests(unittest.TestCase):
         r, g, b = (int(v) for v in out[150, 380, :3])
         self.assertGreater(r - g, 20, f'tira a melocotón, no a limón: {(r, g, b)}')
 
+    def test_la_piel_muy_saturada_del_lora_v2_cuenta_como_piel(self):
+        # Revisión de herramientas (20:52): en los brutos del LoRA v2 la piel tiene saturación > 0,8 y la máscara solo
+        # veía el 0,3-0,6 % de la cabeza; sin máscara no se corregía y saturate la encendía ("piel naranja", rondas 9-12)
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'portrait_gen'))
+        import colour
+        a = np.zeros((1024, 768, 4), np.uint8)
+        a[100:300, 330:430] = (255, 150, 40, 255)    # Piel saturada (s = 0,84)
+        a[300:960, 250:520] = (60, 110, 50, 255)
+        self.assertTrue(colour.skin_mask(a[..., :3], a[..., 3] == 255)[150, 380])
+
     def test_con_unos_pocos_pixeles_de_piel_no_se_corrige_la_figura(self):
         # Revisión independiente: 3 píxeles amarillos en la cabeza bastaban para mover el color de toda la figura
         sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'portrait_gen'))

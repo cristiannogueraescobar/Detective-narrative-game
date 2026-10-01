@@ -45,13 +45,14 @@ def lab_to_srgb(lab):
 def skin_mask(rgb, opaque, head_only=True):
     """Piel: tonos naranja-carne (r > g > b, matiz 8-60°, saturación media, clara), solo en la franja de la cabeza.
     Hasta 60° y no 40°: el LoRA de estilo pinta la cara amarillo limón (matiz 56°) y sin contarla como piel ni se
-    corregía ni se libraba de saturar (prueba ciega 5: "piel amarillo limón", primer motivo en las tres respuestas)."""
+    corregía ni se libraba de saturar (prueba ciega 5: "piel amarillo limón", primer motivo en las tres respuestas).
+    Saturación hasta 0,95 y no 0,8: la piel del LoRA v2 pasa de 0,8 (revisión de herramientas; "piel naranja", rondas 9-12)."""
     r, g, b = (rgb[..., i].astype(float) for i in range(3))
     mx, mn = np.maximum(np.maximum(r, g), b), np.minimum(np.minimum(r, g), b)
     d = np.maximum(mx - mn, 1e-6)
     hue = np.where(mx == r, ((g - b) / d) % 6, np.where(mx == g, (b - r) / d + 2, (r - g) / d + 4)) * 60
     sat = (mx - mn) / np.maximum(mx, 1e-6)
-    tone = opaque & (r > g) & (g > b) & (hue > 8) & (hue < 60) & (sat > 0.25) & (sat < 0.8) & (mx > 110)
+    tone = opaque & (r > g) & (g > b) & (hue > 8) & (hue < 60) & (sat > 0.25) & (sat < 0.95) & (mx > 110)
     # Solo en la franja de la cabeza (22 % superior de la figura): la ropa oliva-ocre tiene el mismo matiz que la piel
     # y en Javier 6111 la corrección se calculaba sobre la camisa (71 350 "píxeles de piel")
     ys = np.where(opaque.any(axis=1))[0]
