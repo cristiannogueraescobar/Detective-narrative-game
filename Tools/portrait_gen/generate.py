@@ -246,6 +246,8 @@ def main():
     ap.add_argument('--init', help='imagen de partida 864x1152 (p. ej. Marcos normalizado sobre gris claro)')
     ap.add_argument('--strength', type=float, default=0.65, help='cuánto se aleja de --init (0 = igual, 1 = nada)')
     ap.add_argument('--pose-kind', default='standing', choices=sorted(pose.POSES))
+    ap.add_argument('--head-ratio', type=float, default=0.20,
+                    help='cabeza/figura del esqueleto (prueba ciega 8: "cabeza pequeña, ~1/7"; Lucía mide 0,24)')
     ap.add_argument('--javier', action='store_true', help='prompt de la revisión de Cristian (JAVIER, JAVIER_NEGATIVE)')
     ap.add_argument('--style-lora', help='carpeta del LoRA de estilo (lora_dataset.py + train_lora_sdxl.py)')
     ap.add_argument('--style-lora-scale', type=float, default=1.0)
@@ -259,7 +261,7 @@ def main():
     stats = Stats()
     pipe = load_pipeline(args.lora, args.style, args.style_lora, args.style_lora_scale)
     stats.mark('cargado')
-    skeleton = pose.render(pose.POSES[args.pose_kind](W, H), W, H)
+    skeleton = pose.render(pose.POSES[args.pose_kind](W, H, head_ratio=args.head_ratio), W, H)
     skeleton.save(os.path.join(args.out, 'pose.png'))
     refs = [on_white_square(os.path.join(REPO, p)) for p in REFERENCES]
     prompt = ((JAVIER_JV2 if args.jv2 else JAVIER_JV if args.jv else JAVIER_CEL if args.cel else JAVIER) if args.javier
