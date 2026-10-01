@@ -19,7 +19,7 @@
 | 3b. Segundas vías 1B_cena / 1C_llamada | Que suban de forma medible | ✗ No suben; **revertido** | `b92d6c2` → revert `848a690` |
 | 3c. Calibración completa + bot | pistas ≥80 %, premisas ≤5 %, estados ≥95 %, bot ≥14/18 | ✓ en la rama (82 %, 4 %, 97 %, 15/18) | Logs en `../dng-*/Logs` (no versionados) |
 
-Tests al cerrar `feature/mejoras-seguras` (tras `2aa7841`): **EditMode 756/757 (el que no corre es `PerfBenchmark`, Explicit), 0 fallos; PlayMode 64 pasan, 0 fallos** (24 ignorados, como siempre). Tests de herramientas (`Tools/tests`): **31/31**.
+Tests al cerrar `feature/mejoras-seguras` (tras `2aa7841`): **EditMode 756/757 (el que no corre es `PerfBenchmark`, Explicit), 0 fallos; PlayMode 64 pasan, 0 fallos** (24 ignorados, como siempre). Tests de herramientas (`Tools/tests`): **33/33**.
 
 ## Bloque 1: Javier, por personaje
 
@@ -43,6 +43,8 @@ Tests al cerrar `feature/mejoras-seguras` (tras `2aa7841`): **EditMode 756/757 (
 | 12 | 8700 selout | Contorno coloreado (oscuro de cada zona) | 3/3 | "contorno blando y roto": el casi negro era mejor |
 
 **Por qué no llega, en una frase:** lo que aún lo delata es de dibujo, no de color: los originales tienen la cara **dibujada con líneas** (ojos con blanco y pupila) y la ropa en dos o tres tonos limpios, y el generador pinta la cara con manchas y la ropa con grano. (El contorno coloreado se probó en la ronda 12 y salió peor.)
+
+**Hallazgo de la revisión de herramientas (20:55):** en los brutos del LoRA v2 la máscara de piel apenas ve la piel (0,3-0,6 % de la cabeza: saturación > 0,8, por encima de su límite). Así `colour.correct` no la corrige y `saturate` la satura como si fuera ropa: es muy probablemente el "naranja encendido" que citan las rondas 9-12. Primer arreglo para una próxima sesión: subir el límite de saturación de `skin_mask` (con test) y repetir la ronda 10.
 
 **Siguiente paso, si se quiere seguir por aquí:** un LoRA con más recortes de cara y más pasos, y limpiar la ropa a mano o con una paleta fija por zona. **Mi recomendación honesta: encargarlo a un artista con `docs/art/javier/BRIEF.md`**: el generador ha pasado de "otro juego" a "casi", pero 12 rondas sin aprobar dicen que el último tramo es de oficio.
 
@@ -94,6 +96,13 @@ guarda de versión no tenía test propio (`UnGuardadoAtrasadoNoSeEscribeSiHayOtr
 con un valor de otro test, el TearDown no vaciaba la cola, y la caché de TimeCheck queda documentada como "solo hilo
 principal" (comprobado: hoy no se llama desde otro). Revisado y correcto: la cadena de escrituras no se rompe ni se
 bloquea, el orden y el borrado, la equivalencia de TimeCheck y de IsNegated, y la caché de EmotionParser.
+
+### Revisión independiente de las herramientas de retratos (20:52)
+Sin defectos importantes. Arreglados con test primero: `colour.correct` exige al menos 200 píxeles de piel (con 3 movía
+toda la figura) y `facefix` ya no repinta el fondo en silencio si el recuadro no tiene tono de piel (umbral medido:
+cabezas reales 15,6-20,8 %, fondo 1,2 %; mi primer umbral rechazaba cabezas reales y lo corregí antes de subirlo).
+**Menores aplazados:** la franja de la cabeza es un 22 % fijo aunque `--head-ratio` cambie; `finish()` no expone
+`selout`; `lora_dataset.head_box` no se recorta al borde; `--jv`/`--jv2` sin `--javier` se ignoran sin avisar.
 
 ## Lo que salió mal y corregí
 

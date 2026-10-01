@@ -924,3 +924,10 @@ retratos → 4 gráficos.
 - **20:47** Revisión independiente de `feature/mejoras-seguras`: 0 críticos, 1 importante (pérdida del último guardado
   si Android mata la app en segundo plano) → arreglado con test primero en `2aa7841`, más 4 menores. EditMode 756/757,
   0 fallos; PlayMode 64, 0 fallos. Ollama descargado; worktree `../dng-fix` borrado.
+- **20:50** Comprobación independiente del informe: 5 discrepancias (11 → 12 rondas, commits de la ronda 12, 16
+  archivos con GameManager, decisión 3 sugería el contorno ya probado, origen del 0,20) → corregidas.
+- **20:52** Revisión independiente de las herramientas: 0 importantes; 2 menores arreglados con test primero
+  (mínimo de piel en `colour.correct`; `facefix` rechaza un recuadro sin cara). Mi primer umbral de "es una cabeza"
+  rechazaba cabezas reales del LoRA v2 (la máscara de piel no ve su piel, demasiado saturada): medido y cambiado a
+  tono cálido antes de subirlo. Ese mismo hecho explica muy probablemente la "piel naranja" de las rondas 9-12.
+  Tools/tests 33/33.
