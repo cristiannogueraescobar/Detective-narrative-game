@@ -205,6 +205,17 @@ public static class BotPlayer
         }
     }
 
+    /// <summary>
+    /// Respuestas de la partida anterior que llegan al modelo en esta, sin contar las que esta partida volvió a dar
+    /// ella misma (misma variante y pregunta: el modelo repite su ficha palabra por palabra; no es memoria).
+    /// </summary>
+    public static int CountLeaks(IEnumerable<string> previousAnswers, IEnumerable<string> sentThisGame, IEnumerable<string> answersThisGame)
+    {
+        var sent = sentThisGame.ToList();
+        var own = answersThisGame.Where(a => a != null).ToList();
+        return previousAnswers.Count(a => sent.Any(p => p.Contains(a)) && !own.Any(o => o.Contains(a)));
+    }
+
     private static GameObject sharedHost;
     private static AIConversationManager sharedManager;
     private static SyncProvider sharedProvider;
@@ -343,7 +354,7 @@ public static class BotPlayer
                 // Nada de lo que contestaron en la partida anterior puede llegar al modelo en esta
                 List<string> thisGame = sharedProvider.sent.Skip(sentBefore).ToList();
                 game.memoryChecked = previousAnswers.Count > 0;
-                game.memoryLeaks = previousAnswers.Count(a => thisGame.Any(p => p.Contains(a)));
+                game.memoryLeaks = CountLeaks(previousAnswers, thisGame, game.turns.Select(t => t.answer));
                 previousAnswers = game.turns.Select(t => t.answer).Where(a => !string.IsNullOrEmpty(a) && a.Length >= 40).ToList();
             }
             return game;

@@ -710,3 +710,17 @@ retratos → 4 gráficos.
   primera conversación con ese sospechoso y la respuesta finge memoria, se pide otra vez con una nota ("es la
   primera vez que hablas con este inspector"); el bot marca `FalseMemory` si aun así pasa.
   EditMode 723/723, PlayMode 61/61.
+
+## Bloque 2: lógica de las pistas
+- **01:00** Análisis de las 48 pistas por historia (tres agentes en paralelo sobre datos, partes, fichas y 250+
+  partidas del bot; quién lo sabe y por qué, qué pregunta lo saca, cuándo es lógico, si la libreta lo explica).
+  Aplicado a mano con los tests de guarda (que pillaron tres propuestas que copiaban la pista en la ficha o hacían que
+  un parte la regalase). Lo más grave: la ⚡ de 3C se perdía por el ancla "despedir" (test en rojo con los datos
+  viejos); Ruiz no sabía que tenía los registros de fichaje (2B); Andrés no veía raro el bar a oscuras (2A) ni la
+  comisaría cerrada (2C); las fichas de Álex contradecían sus pistas; 1C_pantalla no se sostenía. **Rosario →
+  Amparo** (decisión 4; la clave interna del arte `rosario` se queda: moverla sería tocar el arte original).
+- **01:27** Medido: pistas 41/48 (83 %), premisas 1 %, estados 95 %, bot 14/18 → **HECHO CUANDO cumplido**. Revisadas
+  las pistas que bajaron: tres eran el detector (anclas ampliadas + muestras reales), una era su pregunta de
+  calibración; quedan 1B_cena y 1C_llamada (comportamiento del modelo). Un aviso de "memoria" del bot era un falso
+  positivo (respuesta idéntica por ser la ficha): chequeo corregido con test. Tabla completa en `docs/CLUE-LOGIC.md`.
+  EditMode 730/730, PlayMode 61/61.
