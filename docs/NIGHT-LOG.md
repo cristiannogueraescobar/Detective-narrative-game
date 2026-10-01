@@ -931,3 +931,10 @@ retratos → 4 gráficos.
   rechazaba cabezas reales del LoRA v2 (la máscara de piel no ve su piel, demasiado saturada): medido y cambiado a
   tono cálido antes de subirlo. Ese mismo hecho explica muy probablemente la "piel naranja" de las rondas 9-12.
   Tools/tests 33/33.
+- **20:54 Ronda 13** (8700 con la máscara de piel hasta saturación 0,95, test primero): 3/3. La piel se detecta
+  (9 175 px) y pasa a tono melocotón, pero siguen el grano y los ojos pequeños.
+- **20:54 Cierre definitivo.** 13 rondas, 37 de 39. Dos revisiones independientes hechas (rama de mejoras: 1
+  importante arreglado; herramientas: 0 importantes, 3 menores arreglados) y el informe comprobado por otro
+  subagente (5 discrepancias corregidas). Todo con commit y push, `main` sin tocar, sin worktrees temporales, sin
+  modelo en Ollama. Paro unas 3 h antes de lo previsto: lo que queda (más rondas de Javier) no cambia la
+  recomendación de encargarlo.

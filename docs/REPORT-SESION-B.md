@@ -3,7 +3,7 @@
 # Informe — Sesión B: sesión autónoma de 8 horas (01-10-2026, 16:18 → 00:18)
 
 ## Resumen en 5 líneas
-1. **Javier no aprueba.** 12 pruebas ciegas, 34 de 36 subagentes señalan al generado; lo mejor, 2 de 3 en las rondas 9 y 10 (los dos primeros fallos de la sesión). No se integra nada: Javier sigue con el derivado de Daniel.
+1. **Javier no aprueba.** 13 pruebas ciegas, 37 de 39 subagentes señalan al generado; lo mejor, 2 de 3 en las rondas 9 y 10 (los dos primeros fallos de la sesión). No se integra nada: Javier sigue con el derivado de Daniel.
 2. **El bloque 2 se saltó**, como mandaban las reglas si Javier no pasaba.
 3. **Bloque 3, rendimiento: hecho** (mejoras 2, 3 y 4 con test primero). En la misma ejecución: TimeCheck 437 → 3,6 µs (respuesta sin hora), Parse ×4 126 → 0,4 µs, Evaluate ×6 200 → 17 µs, guardado 41,8 → 24,0 KB y 2,9 → 0,7 ms en el hilo principal. Sin regresiones atribuibles.
 4. **Bloque 3, segundas vías de 1B_cena y 1C_llamada: probadas y revertidas.** Con 3 intentos parecían subir (33 → 56 %); con 10 no (20 % y 37 % frente a 35 % y 53 % en main). Daniel niega la aventura aunque le pongan delante al testigo.
@@ -13,19 +13,19 @@
 
 | Bloque | HECHO CUANDO | Resultado | Rama y commits |
 |---|---|---|---|
-| 1. Retrato de Javier | Prueba ciega: los subagentes no lo distinguen de los originales, y no se parece a Marcos | **NO aprueba** (cerrado a las 18:00; trabajo extra 19:50-20:37, tampoco) | `feature/retratos-javier`: `b23bac2` … `e05015d` (ronda 12: `cfd95b9`) |
+| 1. Retrato de Javier | Prueba ciega: los subagentes no lo distinguen de los originales, y no se parece a Marcos | **NO aprueba** (cerrado a las 18:00; trabajo extra 19:50-20:56, tampoco) | `feature/retratos-javier`: `b23bac2` … `e05015d` (ronda 12: `cfd95b9`) |
 | 2. (dependía de Javier) | — | **Saltado** por regla | — |
 | 3a. Mejoras de rendimiento 2-4 | Tests en verde, antes/después medido, calibración sin bajar | ✓ (+ revisión independiente: 1 Importante arreglado) | `feature/mejoras-seguras`: `560e71e`, `2e6b103`, `99d79a4`, `a86f6e1`, `69470d7`, `5f3f9c4`, `2aa7841` |
 | 3b. Segundas vías 1B_cena / 1C_llamada | Que suban de forma medible | ✗ No suben; **revertido** | `b92d6c2` → revert `848a690` |
 | 3c. Calibración completa + bot | pistas ≥80 %, premisas ≤5 %, estados ≥95 %, bot ≥14/18 | ✓ en la rama (82 %, 4 %, 97 %, 15/18) | Logs en `../dng-*/Logs` (no versionados) |
 
-Tests al cerrar `feature/mejoras-seguras` (tras `2aa7841`): **EditMode 756/757 (el que no corre es `PerfBenchmark`, Explicit), 0 fallos; PlayMode 64 pasan, 0 fallos** (24 ignorados, como siempre). Tests de herramientas (`Tools/tests`): **33/33**.
+Tests al cerrar `feature/mejoras-seguras` (tras `2aa7841`): **EditMode 756/757 (el que no corre es `PerfBenchmark`, Explicit), 0 fallos; PlayMode 64 pasan, 0 fallos** (24 ignorados, como siempre). Tests de herramientas (`Tools/tests`): **34/34**.
 
 ## Bloque 1: Javier, por personaje
 
 | Personaje | ¿Aprueba? | Hoja de comparación | Prueba ciega | Rama |
 |---|---|---|---|---|
-| Javier | **No** | `docs/art/javier/evolucion_sesion_b.jpg` | 12 rondas × 3 subagentes: 34/36 lo señalan. Parecido con Marcos: falla en la ronda 4 ("la misma persona"), pasa desde la 5 ("personas distintas", confianza alta) | `feature/retratos-javier` |
+| Javier | **No** | `docs/art/javier/evolucion_sesion_b.jpg` | 13 rondas × 3 subagentes: 37/39 lo señalan. Parecido con Marcos: falla en la ronda 4 ("la misma persona"), pasa desde la 5 ("personas distintas", confianza alta) | `feature/retratos-javier` |
 
 **Qué se probó, en orden (cada fila con su motivo de la prueba ciega anterior):**
 
@@ -41,12 +41,13 @@ Tests al cerrar `feature/mejoras-seguras` (tras `2aa7841`): **EditMode 756/757 (
 | **10** | **8700** | Ropa aplanada fuera de la cabeza | **2/3** (agrupa a Javier con Marcos y Lucía) | "contorno negro grueso y uniforme" |
 | 11 | 8700 sin contorno | Sin el contorno reforzado | 3/3 | "borde blando": el contorno ayuda |
 | 12 | 8700 selout | Contorno coloreado (oscuro de cada zona) | 3/3 | "contorno blando y roto": el casi negro era mejor |
+| 13 | 8700 piel | Máscara de piel hasta saturación 0,95 (tras la revisión de herramientas) | 3/3 | grano, ojos pequeños; dos aún ven la piel naranja |
 
 **Por qué no llega, en una frase:** lo que aún lo delata es de dibujo, no de color: los originales tienen la cara **dibujada con líneas** (ojos con blanco y pupila) y la ropa en dos o tres tonos limpios, y el generador pinta la cara con manchas y la ropa con grano. (El contorno coloreado se probó en la ronda 12 y salió peor.)
 
-**Hallazgo de la revisión de herramientas (20:55):** en los brutos del LoRA v2 la máscara de piel apenas ve la piel (0,3-0,6 % de la cabeza: saturación > 0,8, por encima de su límite). Así `colour.correct` no la corrige y `saturate` la satura como si fuera ropa: es muy probablemente el "naranja encendido" que citan las rondas 9-12. Primer arreglo para una próxima sesión: subir el límite de saturación de `skin_mask` (con test) y repetir la ronda 10.
+**Hallazgo de la revisión de herramientas (20:55):** en los brutos del LoRA v2 la máscara de piel apenas ve la piel (0,3-0,6 % de la cabeza: saturación > 0,8, por encima de su límite). Así `colour.correct` no la corrige y `saturate` la satura como si fuera ropa: es muy probablemente el "naranja encendido" que citan las rondas 9-12. Se arregló (saturación hasta 0,95, con test) y se repitió en la ronda 13: la piel se detecta, pero el resultado sigue en 3/3.
 
-**Siguiente paso, si se quiere seguir por aquí:** un LoRA con más recortes de cara y más pasos, y limpiar la ropa a mano o con una paleta fija por zona. **Mi recomendación honesta: encargarlo a un artista con `docs/art/javier/BRIEF.md`**: el generador ha pasado de "otro juego" a "casi", pero 12 rondas sin aprobar dicen que el último tramo es de oficio.
+**Siguiente paso, si se quiere seguir por aquí:** un LoRA con más recortes de cara y más pasos, y limpiar la ropa a mano o con una paleta fija por zona. **Mi recomendación honesta: encargarlo a un artista con `docs/art/javier/BRIEF.md`**: el generador ha pasado de "otro juego" a "casi", pero 13 rondas sin aprobar dicen que el último tramo es de oficio.
 
 Todo lo pesado está fuera del repositorio: modelos en `C:\AI\hf-cache`, LoRA en `C:\AI\lora\jvstyle` y `jvstyle2` (entrenados con arte del propio juego; script oficial de diffusers, Apache-2.0), salidas en `C:\AI\portrait-gen\out`.
 
