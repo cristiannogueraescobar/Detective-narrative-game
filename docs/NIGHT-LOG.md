@@ -841,3 +841,25 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
 - **22:13** Arreglos con test primero (`c68b2ab`): quién contó cada pista (guardado), resumen por portador, anclas
   precisas, versión coherente, ayuda a la versión abierta, comprobación de datos de todos los portadores.
   EditMode 776/777, PlayMode 64, 0 fallos. Medición relanzada en cola.
+- **22:15** 48 pistas ×10 en main: 42/48 ≥ 2/3, media 84 %. Bajo el 70 %: 1B_cena 45, 1C_pantalla 45, 1C_llamada 43,
+  2B_imagenes 60, 2C_grabacion 60, 3C_pisadas 55. Clasificación por causa (subagente sobre las respuestas reales):
+  modelo (1B, 1C_llamada), anclas (2C, parte de 1C_llamada), pregunta (1C_pantalla, 3C_pisadas), diseño (2B).
+- **22:21** Punto 4 aislado (`c68b2ab`, ×10): 1B_cena Daniel 30 % / **Amparo 90 %**; 1C_llamada Daniel 57 % / Amparo 40 %.
+- **22:24 Bloque A** (`fd2b041`, test primero: las respuestas reales que no se detectaban pasan a ejemplos): anclas de
+  2C_grabacion y de Daniel en 1C_llamada, segunda pregunta de 1C_pantalla y 3C_pisadas, Marcos como segundo
+  portador de 2B_imagenes. ×10 en la rama final: 1B 15/**90** %, 1C_pantalla **90**, 1C_llamada **60**/50, 2B 60/45,
+  2C **95**, 3C_pisadas **100** (main: 45, 45, 43, 60, 60, 55). Bots de rama y main en marcha.
+
+## Retratos (mensaje nuevo de Cristian, rama `feature/retratos-completos`)
+- **22:05** Inventario (`docs/art/INVENTARIO-RETRATOS.md`).
+- **22:15 Javier** (test primero): sin bigote, barba de días, cejas bajas, párpados caídos, pelo casi negro con canas,
+  cuadros. Parecido con Daniel: **2 de 3 "personas distintas" → pasa**. Integrado (`a43f4d3`).
+- **22:22 Vecinas**: gafas/arrugas/sonrisa (Amparo), pañuelo/ceño (Maruxa), sonrisa/medalla (Encarna), sin cigarro.
+  Parecido con la vecina original: **9 de 9 "la misma persona"** (misma pose y cuerpo píxel a píxel) → **no pasan,
+  no se integran** (receta y tests en la rama, PNG sin regenerar).
+- **22:33 Expresiones** (`bc334bd`): 24 imágenes (las dos más frecuentes de cada uno además de tranquilo), editando
+  solo la cara: cejas, lágrimas, gota de sudor, rubor, boca si se ve. Mismo encuadre (≤ 1 %, test). Prueba de
+  emoción: 3 subagentes, **24 de 24 identificadas** (23 a 3/3, Amparo nervioso 2/3). De paso: el tranquilo de hoy de
+  Marcos, Maruxa y Encarna se lee como "enfadado" (0/3). Integradas como arte antiguo (mismo encuadre). Fallo de TDD:
+  `make_expressions.py` lo escribí antes que sus tests.
+- **22:39** `docs/art/RETRATOS-FINAL.jpg` y `docs/art/ANTES-DESPUES.jpg`.
