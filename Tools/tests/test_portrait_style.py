@@ -49,5 +49,44 @@ class SyntheticShadowTests(unittest.TestCase):
         self.assertTrue(np.array_equal(np.asarray(once), twice))
 
 
+def figure_with_fringe():
+    """Figura sobre la rejilla de 5 px: cuerpo verde oliva sin contorno, un halo claro de 1 celda alrededor (bordes
+    antialiasados del generador), una mota suelta y sombra semitransparente a los pies."""
+    a = np.zeros((1024, 768, 4), np.uint8)
+    a[100:985, 300:470] = (90, 100, 50, 255)        # Cuerpo (múltiplos de 5: alineado con la rejilla)
+    a[95:100, 295:475] = (230, 225, 210, 255)       # Halo claro arriba
+    a[100:985, 295:300] = (230, 225, 210, 255)      # Halo claro a la izquierda
+    a[500:510, 100:110] = (120, 80, 40, 255)        # Mota suelta lejos de la figura
+    a[985:995, 470:540] = (0, 0, 0, 47)             # Sombra
+    return Image.fromarray(a, 'RGBA')
+
+
+class OutlineTests(unittest.TestCase):
+    def setUp(self):
+        self.out = np.asarray(style.reinforce_outline(figure_with_fringe(), cell=5))
+
+    def test_el_contorno_es_negro_y_de_dos_celdas(self):
+        row = self.out[500]
+        xs = np.where(row[:, 3] == 255)[0]
+        xs = xs[xs > 200]
+        left = xs.min()
+        self.assertTrue((row[left:left + 10, :3] == 0).all(), 'dos celdas (10 px) de negro en el borde')
+        self.assertFalse((row[left + 10, :3] == 0).all(), 'y no más: el interior conserva su color')
+
+    def test_quita_el_halo_claro_y_las_motas(self):
+        opaque = self.out[..., 3] == 255
+        self.assertFalse(opaque[500:510, 100:110].any(), 'mota suelta')
+        light = opaque & (self.out[..., :3].min(-1) > 200)
+        self.assertFalse(light.any(), 'nada claro en el borde')
+
+    def test_no_toca_el_interior_ni_la_sombra(self):
+        self.assertTrue((self.out[500, 380, :3] == (90, 100, 50)).all())
+        self.assertTrue((self.out[990, 500] == (0, 0, 0, 47)).all())
+
+    def test_el_grosor_queda_en_el_rango_de_los_originales(self):
+        m = style.outline_thickness(self.out) / (985 - 100)
+        self.assertTrue(0.008 <= m <= 0.024, m)
+
+
 if __name__ == '__main__':
     unittest.main()

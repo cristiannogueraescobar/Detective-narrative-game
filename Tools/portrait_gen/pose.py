@@ -47,6 +47,42 @@ def standing_three_quarter(width=864, height=1152, head_ratio=0.20, fill=0.90, h
     ]
 
 
+def defensive_stance(width=864, height=1152, head_ratio=0.20, fill=0.90):
+    """Postura con actitud, no simétrica (revisión de Cristian: la primera era un maniquí con los brazos caídos).
+    Peso en la pierna derecha del personaje (cadera derecha más baja, rodilla izquierda flexionada hacia fuera), hombros
+    inclinados al revés que las caderas (contrapposto), brazo derecho colgando con la botella algo separado del cuerpo,
+    mano izquierda en la cadera con el codo hacia fuera (como Marcos), cabeza girada tres cuartos."""
+    top = height * (1 - fill) / 2
+    fh = height * fill
+    cx = width / 2
+    head = fh * head_ratio
+    y = lambda f: top + f * fh
+    sh = y(head_ratio + 0.06)
+    return [
+        (cx + 10, top + head * 0.62),                # 0 nariz (girada hacia su izquierda)
+        (cx + 4, sh - fh * 0.01),                    # 1 cuello
+        (cx - fh * 0.165, sh + fh * 0.012),          # 2 hombro derecho, algo más bajo
+        (cx - fh * 0.18, y(0.40)),                   # 3 codo derecho
+        (cx - fh * 0.17, y(0.53)),                   # 4 muñeca derecha: botella colgando
+        (cx + fh * 0.15, sh - fh * 0.006),           # 5 hombro izquierdo, algo más alto
+        (cx + fh * 0.26, y(0.40)),                   # 6 codo izquierdo hacia fuera
+        (cx + fh * 0.10, y(0.50)),                   # 7 muñeca izquierda en la cadera
+        (cx - fh * 0.085, y(0.52) + fh * 0.008),     # 8 cadera derecha (carga el peso: más baja)
+        (cx - fh * 0.09, y(0.75)),                   # 9 rodilla derecha recta
+        (cx - fh * 0.085, y(0.97)),                  # 10 tobillo derecho
+        (cx + fh * 0.085, y(0.52) - fh * 0.006),     # 11 cadera izquierda
+        (cx + fh * 0.11, y(0.745)),                  # 12 rodilla izquierda flexionada hacia fuera
+        (cx + fh * 0.15, y(0.965)),                  # 13 tobillo izquierdo
+        (cx - head * 0.10, top + head * 0.45),       # 14 ojo derecho
+        (cx + head * 0.18, top + head * 0.45),       # 15 ojo izquierdo
+        (cx - head * 0.29, top + head * 0.50),       # 16 oreja derecha
+        (cx + head * 0.30, top + head * 0.50),       # 17 oreja izquierda
+    ]
+
+
+POSES = {'standing': standing_three_quarter, 'defensive': defensive_stance}
+
+
 def render(points, width=864, height=1152, stick=8, radius=6):
     """Render estándar: fondo negro, segmentos como elipses al 60 % y puntos encima."""
     canvas = Image.new('RGB', (width, height), (0, 0, 0))

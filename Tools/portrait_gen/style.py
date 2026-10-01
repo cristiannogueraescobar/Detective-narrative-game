@@ -116,6 +116,39 @@ def add_shadow(image):
     return Image.fromarray(rgba, 'RGBA')
 
 
+def reinforce_outline(image, cell=5, cells=2):
+    """Contorno negro grueso como el de los originales (revisión de Cristian: a los generados les faltaba). Sobre la
+    rejilla de `cell` px (aplicar después de pixelate):
+    1. quita el halo claro del borde (celdas claras pegadas al fondo, de los bordes suavizados del generador);
+    2. quita motas sueltas (piezas de menos de 6 celdas);
+    3. pinta de negro las `cells` celdas más externas de la silueta: 2 celdas = 10 px ≈ 1,1 % de una figura de 920 px,
+       dentro del 1-2,4 % medido (Lucía y Álex ~1 %, Marcos 2,4 %). Con 3, lo fino (botella, dedos) quedaba todo negro.
+    La sombra semitransparente no se toca."""
+    rgba = np.asarray(image.convert('RGBA')).copy()
+    h, w = rgba.shape[:2]
+    gh, gw = h // cell, w // cell
+    small = rgba[:gh * cell:cell, :gw * cell:cell].copy()
+    opaque = small[..., 3] == 255
+    eight = np.ones((3, 3), bool)
+    for _ in range(2):  # Halo de hasta 2 celdas
+        edge = opaque & ndimage.binary_dilation(~opaque, structure=eight)
+        light = edge & (small[..., :3].min(-1) > 190)
+        small[light] = 0
+        opaque &= ~light
+    parts, n = ndimage.label(opaque, structure=eight)
+    if n:
+        sizes = ndimage.sum(opaque, parts, range(1, n + 1))
+        tiny = np.isin(parts, [i + 1 for i, s in enumerate(sizes) if s < 6])
+        small[tiny] = 0
+        opaque &= ~tiny
+    inner = ndimage.binary_erosion(opaque, structure=eight, iterations=cells, border_value=0)
+    ring = opaque & ~inner
+    small[ring, :3] = 0
+    big = np.repeat(np.repeat(small, cell, axis=0), cell, axis=1)
+    rgba[:gh * cell, :gw * cell] = big
+    return Image.fromarray(rgba, 'RGBA')
+
+
 def components(rgba):
     """Cuántas piezas opacas grandes hay (una figura = 1; más, figuras repetidas o recortes sueltos)."""
     labels, n = ndimage.label(rgba[..., 3] >= 128)

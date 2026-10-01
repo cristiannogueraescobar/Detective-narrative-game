@@ -23,6 +23,7 @@ os.environ.setdefault('HF_HUB_OFFLINE', '1')  # Todo está en la caché; el SSL 
 import torch  # noqa: E402
 from PIL import Image  # noqa: E402
 
+import colour  # noqa: E402
 import pose  # noqa: E402
 import remove_white_bg as rwb  # noqa: E402
 import style  # noqa: E402
@@ -39,6 +40,14 @@ W, H = 864, 1152  # 3:4, múltiplos de 8, en el rango de SDXL
 # que más pesa en SDXL (OpenCLIP bigG, prompt_2) recibía el estilo. Ahora el mismo texto va a los dos.
 # Quinta prueba: camisa de cuadros, corpulento y barba en las 8, pero canoso del todo (≈60 años) y fondo gris carbón
 # en las 8: el fondo se quita igual (remove_white_bg admite fondo liso de color) y la sombra se sintetiza.
+# Revisión de Cristian (01-10-2026): los 40 parecían "un leñador de 30 años, guapo y tranquilo" con la franela roja del
+# tópico. Javier: 44, curtido, canas en las sienes, ojeras, amargado y a la defensiva, corpulento, franela oliva y marrón.
+JAVIER = ('pixel art sprite, full body, 44 year old weathered heavy-set man, tired bitter defensive scowl, dark circles '
+          'under eyes, dark hair grey at the temples, stubble beard, no moustache, olive and brown flannel shirt, rolled '
+          'sleeves, brown trousers, work boots, green beer bottle in right hand, thick black outline')
+JAVIER_NEGATIVE = ('moustache, mustache, apron, vest, cigarette, beer mug, red plaid, lumberjack, young, handsome, smiling, '
+                   'slim, athletic, braces, suspenders, photorealistic, 3d render, blurry, anime, chibi, cropped feet, '
+                   'scenery, text, watermark, multiple characters, glasses')
 CHARACTER = ('pixel art sprite, full body, plain light grey background, 44 year old heavy-set farmer, red plaid flannel '
              'shirt with rolled sleeves, dark stubble beard, short dark brown hair grey at the temples, tired face, '
              'holding a green beer bottle, brown work trousers, work boots, thick black outline')
@@ -92,13 +101,39 @@ def load_pipeline(lora_scale, style_scale):
     return pipe
 
 
+def encode_once(pipe, prompt, negative, refs):
+    """Codifica el prompt y las referencias UNA vez en la CPU y elimina los tres codificadores: en una tanda no cambian.
+    Prueba con 2 imágenes (01-10-2026): con los codificadores pasados a la CPU después de usarlos, la RAM del proceso
+    subía a 9,4 GB y la VRAM reservada a 13,9 GB en una GPU de 12,2 (el controlador desbordaba en silencio a la RAM).
+    Así, y con el VAE por mosaicos, cabe: 2,6 GB de RAM y 10,8 GB de VRAM al generar.
+    Devuelve ([prompt, negativo, pooled, pooled negativo], embeds de imagen), ya en la GPU."""
+    import gc
+    with torch.no_grad():
+        embeds = pipe.encode_prompt(prompt=prompt, prompt_2=prompt, device='cpu', num_images_per_prompt=1,
+                                    do_classifier_free_guidance=True, negative_prompt=negative,
+                                    negative_prompt_2=negative)
+        ip_embeds = pipe.prepare_ip_adapter_image_embeds(ip_adapter_image=[refs], ip_adapter_image_embeds=None,
+                                                         device='cpu', num_images_per_prompt=1,
+                                                         do_classifier_free_guidance=True)
+    embeds = [e.to('cuda', torch.float16) for e in embeds]
+    ip_embeds = [e.to('cuda', torch.float16) for e in ip_embeds]
+    for name in ('text_encoder', 'text_encoder_2', 'image_encoder'):
+        setattr(pipe, name, None)
+    gc.collect()
+    torch.cuda.empty_cache()
+    pipe.vae.enable_tiling()  # Decodificar 864x1152 de una vez era el pico de VRAM (en diffusers 0.40 va en el VAE)
+    return embeds, ip_embeds
+
+
 def flat_border(raw):
-    """Fracción del borde de la imagen del mismo color liso (el de su mediana, ±24). Un fondo con escenario o con
-    degradado fuerte no se puede quitar bien: se descarta. (Antes se exigía blanco, pero el generador pinta gris.)"""
+    """Fracción del borde sin saltos bruscos entre píxeles vecinos (< 10 de diferencia RGB). Un fondo con escenario o
+    textura no se puede quitar bien y se descarta; un degradado suave sí (imagen a imagen desde Marcos: el borde derecho
+    sale azulado, de 172,181,188 a 183,201,210, y el criterio anterior, ±24 del color mediano, lo rechazaba)."""
     import numpy as np
     a = np.asarray(raw.convert('RGB')).astype(float)
-    edge = np.concatenate([a[:4].reshape(-1, 3), a[-4:].reshape(-1, 3), a[:, :4].reshape(-1, 3), a[:, -4:].reshape(-1, 3)])
-    return float((np.sqrt(((edge - np.median(edge, axis=0)) ** 2).sum(-1)) <= 24).mean())
+    ring = np.concatenate([a[0], a[1:, -1], a[-1, ::-1], a[::-1, 0]])  # El borde en orden, como un anillo
+    jumps = np.abs(np.diff(ring, axis=0)).max(-1)
+    return float((jumps < 10).mean())
 
 
 class Stats:
@@ -173,6 +208,11 @@ def main():
     ap.add_argument('--steps', type=int, default=30)
     ap.add_argument('--cfg', type=float, default=7.0)  # Más peso al prompt: la camisa de cuadros no salía
     ap.add_argument('--cell', type=int, default=5)
+    # Imagen a imagen desde un original (revisión de Cristian): mismo estilo, contorno y tipo de cara que Marcos
+    ap.add_argument('--init', help='imagen de partida 864x1152 (p. ej. Marcos normalizado sobre gris claro)')
+    ap.add_argument('--strength', type=float, default=0.65, help='cuánto se aleja de --init (0 = igual, 1 = nada)')
+    ap.add_argument('--pose-kind', default='standing', choices=sorted(pose.POSES))
+    ap.add_argument('--javier', action='store_true', help='prompt de la revisión de Cristian (JAVIER, JAVIER_NEGATIVE)')
     args = ap.parse_args()
 
     for sub in ('raw', 'final'):
@@ -180,32 +220,20 @@ def main():
     stats = Stats()
     pipe = load_pipeline(args.lora, args.style)
     stats.mark('cargado')
-    skeleton = pose.render(pose.standing_three_quarter(W, H), W, H)
+    skeleton = pose.render(pose.POSES[args.pose_kind](W, H), W, H)
     skeleton.save(os.path.join(args.out, 'pose.png'))
     refs = [on_white_square(os.path.join(REPO, p)) for p in REFERENCES]
-    prompt = f'{CHARACTER}, {EXPRESSIONS[args.expression]}'
+    prompt = JAVIER if args.javier else f'{CHARACTER}, {EXPRESSIONS[args.expression]}'
+    negative = JAVIER_NEGATIVE if args.javier else NEGATIVE
 
-    # El prompt y las referencias son los mismos en todas las imágenes: se codifican una vez y los tres codificadores
-    # se eliminan. Prueba con 2 imágenes (01-10-2026): pasándolos a la CPU, la RAM del proceso subía a 9,4 GB y la VRAM
-    # reservada a 13,9 GB en una GPU de 12,2 (el controlador desbordaba en silencio a la RAM). Eliminados y con el VAE
-    # por mosaicos, cabe.
-    with torch.no_grad():
-        embeds = pipe.encode_prompt(prompt=prompt, prompt_2=prompt, device='cpu', num_images_per_prompt=1,
-                                    do_classifier_free_guidance=True, negative_prompt=NEGATIVE,
-                                    negative_prompt_2=NEGATIVE)
-        ip_embeds = pipe.prepare_ip_adapter_image_embeds(ip_adapter_image=[refs], ip_adapter_image_embeds=None,
-                                                         device='cpu', num_images_per_prompt=1,
-                                                         do_classifier_free_guidance=True)
-    embeds = [e.to('cuda', torch.float16) for e in embeds]
-    ip_embeds = [e.to('cuda', torch.float16) for e in ip_embeds]
-    for name in ('text_encoder', 'text_encoder_2', 'image_encoder'):
-        setattr(pipe, name, None)
-    import gc
-    gc.collect()
-    torch.cuda.empty_cache()
-    pipe.vae.enable_tiling()  # Decodificar 864x1152 de una vez era el pico de VRAM (en diffusers 0.40 va en el VAE)
+    (prompt_embeds, negative_embeds, pooled, negative_pooled), ip_embeds = encode_once(pipe, prompt, negative, refs)
+    init = None
+    if args.init:
+        from diffusers import StableDiffusionXLControlNetImg2ImgPipeline
+        # torch_dtype explícito: en diffusers 0.40 from_pipe pasa todo a float32 si no se le dice ("Half and Float")
+        pipe = StableDiffusionXLControlNetImg2ImgPipeline.from_pipe(pipe, torch_dtype=torch.float16)
+        init = Image.open(args.init).convert('RGB').resize((W, H))
     stats.mark('codificado')
-    prompt_embeds, negative_embeds, pooled, negative_pooled = embeds
 
     # Se reanuda sin perder las puntuaciones ya hechas (otras semillas de la misma carpeta)
     path_csv = os.path.join(args.out, 'scores.csv')
@@ -219,11 +247,15 @@ def main():
         if not os.path.exists(raw_path):
             t0 = time.perf_counter()
             try:
-                image = pipe(prompt_embeds=prompt_embeds, negative_prompt_embeds=negative_embeds,
-                             pooled_prompt_embeds=pooled, negative_pooled_prompt_embeds=negative_pooled,
-                             image=skeleton, controlnet_conditioning_scale=args.pose, ip_adapter_image_embeds=ip_embeds,
-                             num_inference_steps=args.steps, guidance_scale=args.cfg, width=W, height=H,
-                             generator=torch.Generator('cpu').manual_seed(seed)).images[0]
+                common = dict(prompt_embeds=prompt_embeds, negative_prompt_embeds=negative_embeds,
+                              pooled_prompt_embeds=pooled, negative_pooled_prompt_embeds=negative_pooled,
+                              controlnet_conditioning_scale=args.pose, ip_adapter_image_embeds=ip_embeds,
+                              num_inference_steps=args.steps, guidance_scale=args.cfg, width=W, height=H,
+                              generator=torch.Generator('cpu').manual_seed(seed))
+                if init is None:
+                    image = pipe(image=skeleton, **common).images[0]
+                else:
+                    image = pipe(image=init, control_image=skeleton, strength=args.strength, **common).images[0]
             except torch.cuda.OutOfMemoryError as e:
                 # Sin plan B silencioso: se para y se enseña el error (no se vuelve a la descarga a la RAM)
                 stats.report(args.out)
@@ -244,6 +276,10 @@ def main():
         if report['shadow_pixels'] == 0:
             clean = style.add_shadow(clean)  # Fondo de color: sombra sintética medida sobre los originales
         final = style.pixelate(clean, cell=args.cell)
+        if args.javier:  # Revisión de Cristian: contorno negro grueso y color medido sobre Marcos y Lucía
+            import numpy as np
+            final = style.reinforce_outline(final, cell=args.cell)
+            final = Image.fromarray(colour.correct(np.asarray(final)), 'RGBA')
         final.save(os.path.join(args.out, 'final', f'{seed}.png'))
         m = style.measure(final)
         leak = style.background_leak(image)

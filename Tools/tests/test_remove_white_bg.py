@@ -108,6 +108,26 @@ class RemoveWhiteBackgroundTests(unittest.TestCase):
         self.assertTrue({tuple(c) for c in opaque} <= {BLACK, SHIRT, SKIN}, 'el contorno negro no es fondo')
         self.assertIn('fondo de color', ' '.join(report['notes']))
 
+    def test_quita_el_suelo_encerrado_entre_los_pies(self):
+        # Caso real (Javier 5004, 5013): el generador pinta un parche de suelo algo distinto del fondo entre los pies,
+        # que quedaba pegado a la figura como un "puente" beige
+        img = np.full((900, 600, 3), (178, 178, 182), np.uint8)       # Fondo gris claro liso
+        img[80:760, 230:370] = BLACK                                   # Cuerpo con contorno
+        img[92:748, 242:358] = SHIRT
+        img[700:800, 200:270] = (90, 55, 30)                           # Pie derecho (bota marrón)
+        img[700:800, 330:400] = (90, 55, 30)                           # Pie izquierdo
+        img[770:800, 270:330] = (150, 140, 118)                        # Parche de suelo beige entre los pies
+        img[600:690, 250:350] = (150, 150, 140)                        # Pantalón gris parecido: NO es suelo
+        out, _ = rwb.process(Image.fromarray(img))
+        a = np.asarray(out)
+        ys, xs = np.where(a[..., 3] == 255)
+        sole = ys.max()
+        left_foot_right_edge = np.where(a[sole - 5, :, 3] == 255)[0]
+        gaps = np.diff(left_foot_right_edge)
+        self.assertTrue((gaps > 5).any(), 'entre los pies tiene que quedar un hueco transparente')
+        trousers = a[int(ys.min() + (sole - ys.min()) * 0.72), :, 3]
+        self.assertGreater((trousers == 255).sum(), 50, 'el pantalón gris de más arriba sigue opaco')
+
     def test_avisa_si_el_generador_pinto_el_patron_de_cuadros(self):
         img = np.asarray(synthetic()).copy()
         yy, xx = np.mgrid[0:img.shape[0], 0:img.shape[1]]

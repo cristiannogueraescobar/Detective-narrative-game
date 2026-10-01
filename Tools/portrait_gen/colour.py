@@ -77,6 +77,10 @@ def stats(rgba):
     return {'figura': s(figure), 'piel': s(skin)}
 
 
+import functools
+
+
+@functools.lru_cache(maxsize=1)
 def reference_skin_full():
     v = [stats(load(os.path.join(REPO, p)))['piel'] for p in REFERENCES]
     return {k: float(np.mean([x[k] for x in v])) for k in ('L', 'a', 'b', 'sa', 'sb')}

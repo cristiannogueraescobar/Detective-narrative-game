@@ -75,6 +75,19 @@ def _background(rgb, lum, sat, notes):
         sizes = ndimage.sum(pure, holes, range(1, n + 1))
         big = [i + 1 for i, s in enumerate(sizes) if s >= HOLE_MIN * h * w]
         background |= np.isin(holes, big)
+    # Suelo entre los pies (Javier 5004 y 5013): el generador pinta un parche algo distinto del fondo que quedaba pegado
+    # como un "puente". En el 8 % inferior de la figura, lo claro (no contorno) que toca el fondo es suelo: el interior
+    # de los pies no lo toca, porque el contorno negro lo separa. Sirve con cualquier color de fondo y de zapato.
+    ys = np.where(~background)[0]
+    if len(ys):
+        y0, y1 = ys.min(), ys.max() + 1
+        zone = np.zeros_like(background)
+        zone[max(0, int(y1 - 0.08 * (y1 - y0))):y1] = True
+        light = ~background & zone & (lum > 60)
+        parts, n = ndimage.label(light)
+        if n:
+            touching = np.unique(parts[ndimage.binary_dilation(background) & light])
+            background |= np.isin(parts, touching[touching > 0])
     return background, white_bg
 
 

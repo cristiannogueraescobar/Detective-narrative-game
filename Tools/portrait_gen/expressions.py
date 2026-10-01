@@ -74,22 +74,27 @@ def main():
     args = ap.parse_args()
 
     from diffusers import StableDiffusionXLControlNetInpaintPipeline
+    # Misma gestión de memoria que generate.py: modelos en la GPU, codificadores una vez en la CPU y eliminados (antes,
+    # enable_model_cpu_offload: ~13-14 GB de RAM)
     base = generate.load_pipeline(lora_scale=0.8, style_scale=0.3)
-    pipe = StableDiffusionXLControlNetInpaintPipeline.from_pipe(base)
-    pipe.enable_model_cpu_offload()
+    refs = [generate.on_white_square(os.path.join(REPO, p)) for p in generate.REFERENCES]
+    prompt, zone = EDITS[args.edit]
+    (prompt_embeds, negative_embeds, pooled, negative_pooled), ip_embeds = generate.encode_once(
+        base, prompt, generate.NEGATIVE, refs)
+    # torch_dtype explícito: en diffusers 0.40 from_pipe pasa todo a float32 si no se le dice
+    pipe = StableDiffusionXLControlNetInpaintPipeline.from_pipe(base, torch_dtype=torch.float16)
 
     raw = Image.open(args.raw).convert('RGB')
-    prompt, zone = EDITS[args.edit]
     mask = edit_mask(raw, zone)
     skeleton = pose.render(pose.standing_three_quarter(raw.width, raw.height), raw.width, raw.height)
-    refs = [generate.on_white_square(os.path.join(REPO, p)) for p in generate.REFERENCES]
     for sub in ('raw', 'final'):
         os.makedirs(os.path.join(args.out, sub), exist_ok=True)
     mask.save(os.path.join(args.out, 'mask.png'))
     for seed in range(args.first_seed, args.first_seed + args.count):
-        edited = pipe(prompt=prompt, prompt_2=prompt, negative_prompt=generate.NEGATIVE,
-                      negative_prompt_2=generate.NEGATIVE, image=raw, mask_image=mask, control_image=skeleton,
-                      controlnet_conditioning_scale=0.8, ip_adapter_image=[refs], strength=args.strength,
+        edited = pipe(prompt_embeds=prompt_embeds, negative_prompt_embeds=negative_embeds,
+                      pooled_prompt_embeds=pooled, negative_pooled_prompt_embeds=negative_pooled,
+                      image=raw, mask_image=mask, control_image=skeleton,
+                      controlnet_conditioning_scale=0.8, ip_adapter_image_embeds=ip_embeds, strength=args.strength,
                       num_inference_steps=30, guidance_scale=7.0, width=raw.width, height=raw.height,
                       generator=torch.Generator('cpu').manual_seed(seed)).images[0]
         # Fuera de la máscara, el original exacto (el VAE retoca todos los píxeles al codificar y decodificar)
