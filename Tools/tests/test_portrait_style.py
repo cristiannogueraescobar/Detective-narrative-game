@@ -147,6 +147,20 @@ class SkinTests(unittest.TestCase):
         self.assertTrue(skin[150, 380], 'la cara es piel')
         self.assertFalse(skin[600, 380], 'la camisa ocre no')
 
+    def test_la_piel_amarilla_del_lora_cuenta_como_piel_y_se_corrige(self):
+        # Prueba ciega 5 (3 de 3, primer motivo en las tres): "piel amarillo limón". El LoRA de estilo pinta la cara
+        # a (243, 235, 141), matiz 56°, fuera del 8-40° de la máscara: ni se corregía ni se libraba de saturar.
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'portrait_gen'))
+        import colour
+        a = np.zeros((1024, 768, 4), np.uint8)
+        a[100:300, 330:430] = (243, 235, 141, 255)   # Cara amarilla en la cabeza
+        a[300:960, 250:520] = (60, 110, 50, 255)     # Camisa verde
+        self.assertTrue(colour.skin_mask(a[..., :3], a[..., 3] == 255)[150, 380], 'la cara amarilla es piel')
+        target = {'L': 70.0, 'a': 15.0, 'b': 25.0, 'sa': 5.0, 'sb': 5.0}
+        out = colour.correct(a, target=target)
+        r, g, b = (int(v) for v in out[150, 380, :3])
+        self.assertGreater(r - g, 20, f'tira a melocotón, no a limón: {(r, g, b)}')
+
     def test_sin_piel_visible_la_figura_no_se_vuelve_negra(self):
         # Caso real (sesión B, LoRA de estilo, 17:46): 13 de 26 candidatos salían como siluetas negras. Sin píxeles de
         # piel en la banda de la cabeza, la media de la piel era NaN y NaN pasado a uint8 da ~0 en toda la figura.
