@@ -109,20 +109,48 @@ class Portrait:
 WARM = (0.02, 0.16)  # Piel y amarillos (separados por zona)
 
 
+def px(p, x0, y0, x1, y1):
+    """Zona en píxeles del original (no relativa)."""
+    return p.zone((x0 / p.w, y0 / p.h, x1 / p.w, y1 / p.h))
+
+
 def javier():
-    """Javier Romero, 44, olivarero: camisa de trabajo caqui/oliva, pantalón de pana marrón, sienes con canas, más
-    curtido por el sol. Sobre el padre, en espejo (Daniel conserva el original)."""
+    """Javier Romero, 44, olivarero: camisa de trabajo de cuadros oliva y caqui, pantalón de pana marrón, piel curtida.
+    Sobre el padre, en espejo (Daniel conserva el original).
+    Sesión C: tenía la cara y el bigote de Daniel. Ahora, editando píxeles de la cara sobre la rejilla del original:
+    sin bigote, barba de días que sigue la mandíbula, cejas bajas y pobladas, párpados caídos, ojeras rojizas, pelo casi
+    negro con las sienes canosas y franjas verticales que convierten las rayas en cuadros."""
     p = Portrait('padre')
     torso = p.zone((0.30, 0.335, 0.90, 0.565)) & ~p.zone((0.555, 0.49, 0.95, 0.65)) & ~p.zone((0.53, 0.44, 0.735, 0.56))
     p.recolor(torso & p.color(s=(0, 0.22), v=(0.75, 1)), hue=0.13, sat_set=0.30, val=0.86)        # rayas blancas → caqui claro
     p.recolor(torso & p.color(h=WARM, s=(0.45, 1), v=(0.55, 1)), hue=0.17, sat=0.75, val=0.62)    # rayas amarillas → oliva
     p.recolor(p.zone((0.30, 0.30, 0.90, 0.56)) & p.color(h=(0.30, 0.50), s=(0.4, 1)), hue=0.08, sat=0.6, val=0.7)  # cuello verde → marrón
     p.recolor(p.zone((0, 0.55, 1, 0.92)) & p.color(h=(0.50, 0.70), s=(0.15, 1)), hue=0.07, sat=0.65, val=0.75)  # vaqueros → pana marrón
-    hair = p.zone((0.28, 0.0, 0.75, 0.125), (0.29, 0.125, 0.37, 0.24), (0.615, 0.125, 0.72, 0.24))
-    p.recolor(hair & p.zone((0.29, 0.10, 0.37, 0.24), (0.615, 0.10, 0.72, 0.24)) & p.color(h=(0.0, 0.10), s=(0.3, 1), v=(0.08, 0.9)),
-              sat=0.30, val=1.0)                                                                   # sienes con alguna cana
     skin = p.color(h=WARM, s=(0.35, 1), v=(0.5, 1)) & ~torso & ~p.zone((0, 0.88, 1, 1))
     p.recolor(skin, hue_shift=-0.012, sat=1.05, val=0.90)                                          # más curtido
+
+    face = px(p, 270, 140, 470, 380)
+    # Sin bigote: todo el labio superior (el bigote tenía un borde claro), con el color de su mejilla
+    cheek = px(p, 300, 230, 330, 260) & p.color(h=WARM, s=(0.3, 1), v=(0.5, 1))
+    cheek_rgb = np.median(hsv_to_rgb(p.hsv)[cheek], axis=0)
+    p.paint(px(p, 280, 278, 420, 330) & p.opaque, tuple(int(c * 255) for c in cheek_rgb))
+    # Barba de días: tono plano (como el sombreado de los originales) que sigue la mandíbula, más oscura abajo
+    jaw = (px(p, 300, 318, 440, 385) | px(p, 265, 335, 475, 385)) & p.color(h=WARM, s=(0.3, 1), v=(0.45, 1))
+    p.recolor(jaw, hue_shift=-0.02, sat=0.80, val=0.62)
+    p.recolor(jaw & ~px(p, 265, 300, 475, 368), val=0.85)
+    p.paint(px(p, 310, 333, 400, 343), (70, 30, 20))                                             # boca recta, cansada
+    for x0, x1 in ((285, 330), (395, 450)):                                                       # cejas bajas y pobladas
+        p.paint(px(p, x0, 205, x1, 222) & face, (40, 22, 14))
+    for x0, x1 in ((280, 330), (385, 430)):                                                       # ojeras rojizas
+        p.recolor(px(p, x0, 262, x1, 272) & p.color(h=WARM, v=(0.4, 1)), hue=0.02, sat=0.7, val=0.75)
+    temples = (px(p, 250, 150, 290, 240) | px(p, 455, 150, 500, 240)) & p.color(h=(0.0, 0.12), s=(0.25, 1), v=(0.15, 0.75))
+    p.recolor(temples, sat_set=0.10, val=1.30)                                                    # sienes canosas
+    hair = px(p, 230, 60, 520, 200) & p.color(h=(0.0, 0.12), s=(0.25, 1), v=(0.12, 0.85)) & ~px(p, 285, 140, 455, 200)
+    p.recolor(hair & ~temples, sat=0.45, val=0.55)                                                # pelo casi negro
+    for x0, x1 in ((285, 345), (370, 432)):                                                       # párpados caídos
+        p.paint(px(p, x0, 222, x1, 240) & face, (150, 82, 45))
+    yy, xx = np.mgrid[0:p.h, 0:p.w]
+    p.recolor(torso & ((xx // 28) % 3 == 0) & p.color(v=(0.25, 1)), val=0.72, sat=1.1)          # rayas → cuadros
     return p.image(mirror=True)
 
 
