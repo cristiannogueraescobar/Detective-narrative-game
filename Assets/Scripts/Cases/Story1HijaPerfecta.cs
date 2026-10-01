@@ -372,7 +372,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     },
                     version = "A las 21:00 salí a cenar con clientes y volví a las 23:05. Poco después Carmen gritó desde arriba.",
                     secret = "Dices que fue una cena con clientes, pero es mentira: tienes una aventura.",
-                    admitsWhen = "el inspector insiste, menciona el restaurante o dice que lo va a comprobar",
+                    admitsWhen = "el inspector insiste, menciona el restaurante, dice que lo va a comprobar o te dice que alguien te vio volver a casa con una mujer",
                     nervousAbout = "dónde estuviste entre las 21:00 y las 23:05.",
                     ifAccused = "Te enfrías y hablas de pruebas y de presunción de inocencia.",
                     doesNotKnow = "Qué medicación le dio Carmen a Elena esa noche."
@@ -398,6 +398,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     knowledge = new[]
                     {
                         "Esa noche el coche del padre no estuvo en casa hasta las once y pico.",
+                        "Cuando volvió, Daniel no venía solo: traía a una mujer morena de copiloto. Se besaron dentro del coche y ella se fue andando hacia la parada de taxis.",
                         "A la niña la acostaba siempre su madre."
                     },
                     version = "Estaba en mi salón, como cada noche, sin poder dormir.",
@@ -526,7 +527,8 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     calibrationQuestions = new[]
                     {
                         "¿Dónde estuvo exactamente entre las 21:00 y las 23:00? || No me mienta: he llamado al restaurante y nadie le vio. ¿Dónde estaba de verdad?",
-                        "¿Con quién cenó esa noche? || Voy a comprobarlo con el restaurante. ¿Seguro que no quiere cambiar su versión?"
+                        "¿Con quién cenó esa noche? || Voy a comprobarlo con el restaurante. ¿Seguro que no quiere cambiar su versión?",
+                        "La vecina le vio volver pasadas las once con una mujer en su coche. ¿Quién era y dónde estuvieron?"
                     },
                     sampleHits = new[]
                     {
@@ -557,7 +559,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 "",
                 "El forense: Elena murió hacia las 23:00 por un golpe en la cabeza. Pudo estar consciente un rato después del golpe.",
                 "No hay signos de que nadie entrara desde fuera. Lo que pasó, pasó dentro de la casa.",
-                "La compañía telefónica tardará en enviar el registro de llamadas de la familia. Habrá que saber quién llamó a quién antes de las 23:15.",
+                "La compañía telefónica adelanta un dato: Daniel recibió una llamada corta en su móvil antes de las diez, desde un móvil de la familia. Habrá que preguntarle quién le llamó.",
                 "Nadie encuentra el móvil de Elena en su cuarto. Elena nunca se separaba de él.",
                 "Un compañero de Lucas en el instituto habla de 'pastillas' y luego se calla.",
                 "La familia pide que se entregue el cuerpo. Mañana hay que cerrar la investigación."
@@ -603,7 +605,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     },
                     version = "Estuve en el despacho hasta tarde. Llegué a casa a las 23:00, subí a ver a Elena y no respiraba. A las 23:15 llamé al 112.",
                     secret = "En realidad llegaste a casa a las 22:15. Viste a Elena acostada con un chichón y decidiste no llevarla al hospital para no montar un drama. Te sientes culpable y proteges a tu hijo.",
-                    admitsWhen = "el inspector insiste, te dice que alguien vio tu coche llegar antes de las 23:00 o que va a pedir el registro de llamadas",
+                    admitsWhen = "el inspector insiste, te dice que alguien vio tu coche llegar antes de las 23:00, que sabe que recibiste una llamada antes de las diez o que va a pedir el registro de llamadas",
                     nervousAbout = "la hora a la que llegaste y tu móvil.",
                     ifAccused = "Te indignas, hablas de presunción de inocencia y exiges un abogado.",
                     doesNotKnow = "Qué hacía Lucas en el instituto."
