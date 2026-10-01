@@ -172,12 +172,40 @@ public partial class InterrogationUI
         // Con alguien descartado, el pie lleva dos líneas (nombre tachado y motivo) a tamaño legible
         bool anyCleared = options.Exists(v => IsCleared(v.id, out _));
         float labelHeight = anyCleared ? 96f : 64f;
-        GridFit fit = UIComponents.GetOrAdd<GridFit>(lineup.gameObject);
-        fit.count = options.Count;
-        fit.labelHeight = labelHeight;
-        Canvas.ForceUpdateCanvases();
-        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)lineup.parent);
-        fit.Fit();
+        bool singleRow = T.lineupSingleRow;
+        // Una fila con alturas reales (sin cuadrícula) o la cuadrícula de bustos de antes, según el tema
+        // Un solo LayoutGroup por objeto: se cambia uno por otro
+        HeightLineup heights = null;
+        if (singleRow)
+        {
+            var gridFit = lineup.GetComponent<GridFit>(); // Primero: depende de la cuadrícula
+            if (gridFit != null)
+                DestroyImmediate(gridFit);
+            var grid = lineup.GetComponent<GridLayoutGroup>();
+            if (grid != null)
+                DestroyImmediate(grid);
+            heights = UIComponents.GetOrAdd<HeightLineup>(lineup.gameObject);
+            heights.labelBand = labelHeight;
+            heights.marks = lineup.parent != null ? lineup.parent.Find("Alturas") as RectTransform : null;
+        }
+        else
+        {
+            var row = lineup.GetComponent<HeightLineup>();
+            if (row != null)
+                DestroyImmediate(row);
+            if (lineup.GetComponent<GridLayoutGroup>() == null)
+            {
+                var grid = lineup.gameObject.AddComponent<GridLayoutGroup>();
+                grid.spacing = new Vector2(T.spacing, T.spacing);
+                grid.childAlignment = TextAnchor.MiddleCenter;
+            }
+            GridFit fit = UIComponents.GetOrAdd<GridFit>(lineup.gameObject);
+            fit.count = options.Count;
+            fit.labelHeight = labelHeight;
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)lineup.parent);
+            fit.Fit();
+        }
 
         for (int i = 0; i < options.Count; i++)
         {
@@ -203,15 +231,30 @@ public partial class InterrogationUI
             RectTransform frame = UIFactory.Container(cell, "Marco", new Vector2(0f, 0f), new Vector2(1f, 1f));
             frame.offsetMin = new Vector2(8f, labelHeight);
             frame.offsetMax = new Vector2(-8f, -8f);
-            RectTransform face = UIFactory.Container(frame, "Busto", Vector2.zero, Vector2.one);
+            RectTransform face = UIFactory.Container(frame, singleRow ? "Figura" : "Busto", Vector2.zero, Vector2.one);
             var raw = face.gameObject.AddComponent<RawImage>();
             raw.texture = texture;
-            raw.uvRect = PortraitCrops.Bust(legacy ? view.portraitKey : null);
             raw.raycastTarget = false;
             if (legacy)
                 ArtGrading.Apply(raw, ArtGrading.Kind.LegacyPortrait);
-            face.gameObject.AddComponent<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.FitInParent;
-            face.GetComponent<AspectRatioFitter>().aspectRatio = 0.75f;
+            if (singleRow)
+            {
+                // De cuerpo entero, de los pies a la cabeza: HeightLineup le da su altura real contra la pared
+                Rect figure = legacy ? PortraitCrops.Figure(view.portraitKey) : PortraitCrops.Full;
+                raw.uvRect = figure;
+                frame.offsetMin = frame.offsetMax = Vector2.zero;
+                var item = cell.gameObject.AddComponent<HeightLineupItem>();
+                item.heightCm = view.heightCm > 0 ? view.heightCm : 170;
+                item.aspect = texture != null ? texture.width * figure.width / (texture.height * figure.height) : 0.5f;
+                item.figure = face;
+                card.color = new Color(T.panelBorder.r, T.panelBorder.g, T.panelBorder.b, 0.35f); // La pared se ve detrás
+            }
+            else
+            {
+                raw.uvRect = PortraitCrops.Bust(legacy ? view.portraitKey : null);
+                face.gameObject.AddComponent<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+                face.GetComponent<AspectRatioFitter>().aspectRatio = 0.75f;
+            }
 
             // Quien el jugador ha descartado en su libreta: atenuado (se puede elegir igual: es su nota, no una regla)
             // Y quien descarta una pista ya encontrada, con las mismas palabras que la libreta
@@ -246,6 +289,13 @@ public partial class InterrogationUI
             lineupSelection.Add(ring.gameObject);
         }
 
+        if (heights != null)
+        {
+            // Con el tamaño definitivo de la rueda (en el editor no hay LateUpdate que lo corrija después)
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)lineup.parent);
+            heights.Relayout();
+        }
         MarkLineup(accusationDropdown != null ? accusationDropdown.value : 0);
     }
 

@@ -100,6 +100,7 @@ public class Theme : ScriptableObject
     [Header("Retratos 2.5D: relieve + lámpara (desactivar = plano 2D)")]
     public bool portraitLit = true;
     public bool endingMugshot = true;
+    public bool lineupSingleRow = true;                                // Rueda en una fila con alturas reales (Sesión A); no = cuadrícula de bustos
     public bool lineupWall = true;                                     // Pared de alturas detrás de la rueda de reconocimiento                                  // Ficha policial del culpable al final del informe
     public Vector3 portraitLightDir = new Vector3(-0.5f, 0.6f, 0.6f);   // Lámpara arriba a la izquierda
     public Color portraitLightColor = new Color(1f, 0.9f, 0.75f);       // Bombilla cálida
@@ -151,6 +152,9 @@ public class Theme : ScriptableObject
     public Color postHighlightTone = new Color(0.58f, 0.54f, 0.47f); // Luces cálidas (lámpara)
     public float deliberationSeconds = 2.2f;                    // Pausa antes del veredicto
     [Range(0f, 1f)] public float roomBrightness = 0.38f;        // Sala de interrogatorios detrás del chat
+    public bool interrogationStage = true;                      // Sospechoso de cuerpo entero, tenue, en el hueco del centro (Sesión A)
+    [Range(0f, 0.6f)] public float stageAlpha = 0.24f;
+    public bool tensionVignette = true;                         // Viñeta de tensión según el estado del sospechoso
     [Range(0f, 1f)] public float introArtBrightness = 0.8f;     // Arte de cada historia detrás del expediente
     public Color story1Tint = new Color(0.85f, 0.92f, 1.05f);  // Casa en Santiago: fría
     public Color story2Tint = new Color(1.05f, 0.9f, 0.8f);    // Noche de verano en la costa: cálida

@@ -33,6 +33,30 @@ public static class PortraitCrops
 
     public static readonly Rect Full = new Rect(0f, 0f, 1f, 1f);
 
+    // Figura entera (de los pies a la cabeza, sin márgenes ni el humo del cigarro) para la rueda con alturas reales.
+    // Medido sobre la parte opaca de cada imagen (la región conectada más grande y lo que la toca: botella, manos)
+    private static readonly Dictionary<string, Rect> FigureByKey = new Dictionary<string, Rect>
+    {
+        { "Padre", new Rect(0.079f, 0.036f, 0.845f, 0.920f) },
+        { "Madre", new Rect(0.108f, 0.056f, 0.794f, 0.916f) },
+        { "Hermano", new Rect(0.131f, 0.038f, 0.750f, 0.910f) },
+        { "Vecina", new Rect(0.194f, 0.146f, 0.614f, 0.781f) },
+        { "Cartero", new Rect(0.033f, 0.043f, 0.938f, 0.903f) },
+        { "Dueño del Bar", new Rect(0.083f, 0.035f, 0.842f, 0.886f) },
+        { "Detective", new Rect(0.233f, 0.038f, 0.595f, 0.897f) },
+    };
+
+    public static Rect Figure(string portraitKey)
+    {
+        if (portraitKey == null)
+            return Full;
+        if (FigureByKey.TryGetValue(portraitKey, out Rect r))
+            return r;
+        if (DerivedPortraits.All.TryGetValue(portraitKey, out var d) && FigureByKey.TryGetValue(d.baseKey, out Rect b))
+            return d.mirrored ? Mirror(b) : b;
+        return Full;
+    }
+
     public static Rect Bust(string portraitKey)
     {
         return portraitKey != null && ByKey.TryGetValue(portraitKey, out var c) ? c.bust : Full;

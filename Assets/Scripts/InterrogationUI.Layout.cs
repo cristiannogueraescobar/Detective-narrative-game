@@ -171,6 +171,10 @@ public partial class InterrogationUI
             LayoutKit.Put(conversationScroll, column, height: 300f, flexibleHeight: 1f);
             ConfigureChatScroll();
             BuildSuggestions(column);
+            // El hueco del centro: el sospechoso de cuerpo entero detrás del chat, viñeta de tensión, entradas
+            Transform portraitBoxForScene = suspectImage != null ? suspectImage.rectTransform.parent : null;
+            scene = InterrogationScene.Build((RectTransform)interrogationPanel.transform, (RectTransform)conversationScroll.transform,
+                                             portraitBoxForScene as RectTransform);
         }
 
         // "Esperando respuesta" ahora es la burbuja de "escribiendo…" del chat
@@ -567,7 +571,8 @@ public partial class InterrogationUI
         marks.gameObject.SetActive(T.lineupWall);
         marks.gameObject.AddComponent<Decorative>(); // El lector de pantalla no lee las cifras
         UIComponents.GetOrAdd<LayoutElement>(marks.gameObject).ignoreLayout = true;
-        const int top = 190, bottom = 130, step = 10;
+        // Con alturas reales la rueda recoloca las rayas a su escala (HeightLineup); hasta 2 m
+        const int top = HeightLineup.WallTopCm, bottom = 110, step = 10;
         int count = (top - bottom) / step;
         for (int k = 0; k <= count; k++)
         {

@@ -651,4 +651,69 @@ public class StateMachineTests
         yield return AskAndWait("¿Y después?");
         Assert.IsTrue(provider.sent.Skip(before).Any(p => p.Contains(Marker)), "y se lo manda al modelo");
     }
+
+    // ---- Sesión A, bloque 4: la escena del interrogatorio ----
+
+    [UnityTest]
+    public IEnumerator LaEscenaMuestraAlSospechosoYLaViñetaSubeConLaTension()
+    {
+        yield return StartNewGame();
+        var scene = Object.FindFirstObjectByType<InterrogationScene>();
+        Assert.IsNotNull(scene, "la escena existe");
+        yield return new WaitForSecondsRealtime(0.6f);
+        Assert.IsNotNull(scene.Stage.texture, "el sospechoso de cuerpo entero en el hueco del centro");
+        Assert.Greater(scene.Stage.color.a, 0.05f);
+        Assert.Less(scene.Stage.color.a, 0.6f, "tenue: no compite con el chat");
+        Assert.AreEqual(0f, scene.VignetteAlpha, 0.01f, "tranquilo: sin viñeta");
+
+        var ui = Object.FindFirstObjectByType<InterrogationUI>();
+        string id = Object.FindFirstObjectByType<AIConversationManager>().Story.cast.First(c => c.startsUnlocked).id;
+        Find("SuspectDropdown").GetComponent<TMP_Dropdown>().value = 0;
+        ui.SetEmotion(id, Emotion.Nervioso);
+        ui.SetEmotion(Object.FindFirstObjectByType<AIConversationManager>().Story.cast.Where(c => c.startsUnlocked).Select(c => c.id).First(), Emotion.Nervioso);
+        yield return new WaitForSecondsRealtime(0.9f);
+        Assert.Greater(scene.VignetteAlpha, 0.2f, "nervioso: los bordes se oscurecen");
+    }
+
+    [UnityTest]
+    public IEnumerator ConReducirAnimacionesElCambioDeSospechosoNoMueveNada()
+    {
+        GameSettings.ReduceMotion = true;
+        try
+        {
+            yield return StartNewGame();
+            var scene = Object.FindFirstObjectByType<InterrogationScene>();
+            var dropdown = Find("SuspectDropdown").GetComponent<TMP_Dropdown>();
+            dropdown.value = (dropdown.value + 1) % dropdown.options.Count;
+            yield return null;
+            Assert.AreEqual(0f, scene.Stage.rectTransform.anchoredPosition.x, 0.01f, "sin deslizamiento");
+            Assert.Less(scene.Entry, 1f, "pero sí un fundido");
+        }
+        finally
+        {
+            GameSettings.ReduceMotion = false;
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator LaEscenaSeApagaDesdeElTema()
+    {
+        yield return StartNewGame();
+        var scene = Object.FindFirstObjectByType<InterrogationScene>();
+        bool stage = ThemeManager.Current.interrogationStage, vignette = ThemeManager.Current.tensionVignette;
+        try
+        {
+            ThemeManager.Current.interrogationStage = false;
+            ThemeManager.Current.tensionVignette = false;
+            scene.ApplyTheme();
+            Assert.IsFalse(scene.Stage.transform.parent.gameObject.activeSelf);
+            Assert.IsFalse(scene.Vignette.gameObject.activeSelf);
+        }
+        finally
+        {
+            ThemeManager.Current.interrogationStage = stage;
+            ThemeManager.Current.tensionVignette = vignette;
+            scene.ApplyTheme();
+        }
+    }
 }
