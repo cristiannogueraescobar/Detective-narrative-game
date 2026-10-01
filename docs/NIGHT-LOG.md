@@ -882,3 +882,8 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
   del punto 5), así que Ollama y las capturas coincidieron, contra la regla. Las capturas salieron bien, pero conviene
   fusionar primero `feature/tests-sin-precarga`.
 - **23:43** Suites de `feature/pistas-dos-portadores` (final): EditMode 776/777, PlayMode 64, 0 fallos.
+- **00:04** Repetición del bot de main con la misma semilla: **16/18** (antes 11/18). Era la variación del bot, no la
+  fusión: con este bot el ruido es de unos ±5 sobre 18, no ±2. Main cumple (≥ 14). Rama de pistas: 17/18.
+  Una espera mía se paró por poca memoria del sistema (no el bot, que terminó bien).
+- **00:05 Cierre.** Todo con commit y push. Solo `feature/mejoras-seguras` fusionada (`a05a686`). Worktrees temporales
+  borrados; Ollama descargado; sin procesos de Unity.
