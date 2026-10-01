@@ -261,4 +261,24 @@ guardado), así que la ficha de un portador nunca "recuerda" una confesión que 
 
 Con un segundo portador, la pista se puede conseguir por las dos vías: para 1B_cena, por Amparo en 9 de cada 10
 intentos. Ninguna pista que pasara del 70 % se tocó. 2B_imagenes sigue floja por las dos vías (60 % y 45 %).
-Bot en las 9 variantes: ver abajo.
+### Pistas entre el 70 y el 80 % (bloque A, si sobraba tiempo)
+Se clasificaron con las respuestas fallidas de informes anteriores (esta pasada solo guarda respuestas de las que
+fallan). Arreglos solo donde había respuestas reales que daban el hecho con otras palabras, comprobados contra los
+ejemplos negativos y las negaciones:
+
+| Pista | main (×10) | Arreglo | Rama (×10) |
+|---|---|---|---|
+| 2A_curva | 77 % | Ancla «vi uno parado» y pregunta «¿Vio algún coche en la curva hacia las cinco?» (la de antes, «¿pasó algún coche?», empujaba a decir que no pasó ninguno: estaba parado) | **100 %** |
+| 2C_prueba | 73 % | Anclas «extravió / se perdió en el traslado» (el móvil queda implícito) | **87 %** |
+| 2C_gps | 75 % | Anclas «situarme», «confirm-», «comprueb-» | **85 %** |
+| 3A_garrafas | 75 % | Anclas «con garrafas», «cargada de garrafas», «garrafas cargadas» (la camioneta va en pronombre) | **85 %** |
+
+Sin cambios: 1A_partida (aflojarla sería cambiar el diseño), 2C_puerto y 2C_comisaria (el modelo), 3B_armario (sin
+fallos registrados que citar).
+
+### Bot en las 9 variantes (semilla 1919, 2 partidas por variante)
+| | main (`a05a686`) | rama (`fd2b041`: dos portadores + bloque A) |
+|---|---|---|
+| Culpable acertado | 11/18 (repetición en marcha: ver NIGHT-LOG) | **17/18** |
+| Primera pista (pregunta) | 7,1 | 6,1 |
+| Preguntas sin pista nueva | 88 % | 88 % |
