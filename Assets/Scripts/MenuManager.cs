@@ -233,7 +233,7 @@ public class MenuManager : MonoBehaviour
         }
 
         PutMenuButton(playButton, column, continueButton != null ? GameTexts.NewCaseButton : "Jugar");
-        PutMenuButton(instructionsButton, column, "Instrucciones");
+        PutMenuButton(instructionsButton, column, "Cómo se juega");
         PutMenuButton(settingsButton, column, "Ajustes");
         PutMenuButton(aboutButton, column, "Acerca de");
         PutMenuButton(quitButton, column, "Salir");

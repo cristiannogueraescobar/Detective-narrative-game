@@ -161,8 +161,8 @@ public class EndingReportTests
     public void SoloSeDiceCuantoFaltoSiAcertasteSinPruebasSuficientes()
     {
         // La base de estos casos tiene evidencia 3 (el umbral de condena segura es 5)
-        StringAssert.Contains("Con 2 puntos más de solidez habría sido una condena segura.", Build(Ending.Bittersweet));
-        StringAssert.Contains("Con 2 puntos más de solidez", Build(Ending.Insufficient));
+        StringAssert.Contains("Con dos puntos más de solidez habría sido una condena segura.", Build(Ending.Bittersweet));
+        StringAssert.Contains("Con dos puntos más de solidez", Build(Ending.Insufficient));
         StringAssert.DoesNotContain("condena segura", Build(Ending.Good), "ganaste: no hay nada que te faltase");
         StringAssert.DoesNotContain("condena segura", Build(Ending.Bad), "acusaste a otra persona: la cuenta no aplica");
     }

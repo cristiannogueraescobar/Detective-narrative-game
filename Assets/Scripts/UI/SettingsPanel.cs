@@ -59,7 +59,7 @@ public class SettingsPanel : MonoBehaviour
         UIFactory.Toggle(list, "Alto contraste", GameSettings.HighContrast, v => GameSettings.HighContrast = v);
         UIFactory.Toggle(list, "Vibración", GameSettings.Vibration, v => GameSettings.Vibration = v);
 
-        Section(list, "PARTIDA");
+        Section(list, "JUEGO");
         UIFactory.Label(list, "Dificultad (para los casos nuevos)", theme.bodySize, theme.textPrimary);
         DifficultySelector(list);
         Button tutorial = null;

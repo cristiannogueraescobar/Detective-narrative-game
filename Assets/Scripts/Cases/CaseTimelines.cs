@@ -33,12 +33,12 @@ public static class CaseTimelines
             case "1B":
                 return new List<TimelineEvent>
                 {
-                    E("21:00", "padre", "casa de Marta", "sale de casa ('cena con clientes')"),
+                    E("21:00", "padre", "casa de Marta", "sale de casa («cena con clientes»)"),
                     E("21:30", "victima", "su cuarto", "se acuesta"),
                     E("21:40", "madre", "cuarto de Elena", "le da el triple de su medicación del corazón"),
                     E("22:00", "madre", "junto a la cama", "sentada, quieta, sin llamar a nadie; luz encendida"),
                     E("22:00", "vecina", "su salón, enfrente", "empieza a verla junto a la cama"),
-                    E("22:10", "hermano", "su cuarto", "se quita los cascos y oye 'mamá, no quiero más'"),
+                    E("22:10", "hermano", "su cuarto", "se quita los cascos y oye «mamá, no quiero más»"),
                     E("~22:40", "victima", "su cama", "muere"),
                     E("23:00", "padre", "casa de Marta", "se va (Marta y el portero)"),
                     E("23:05", "padre", "casa", "vuelve"),
@@ -71,13 +71,13 @@ public static class CaseTimelines
                     E("05:00", "victima", "La Marea", "sale sola"),
                     E("05:00", "vecina", "cocina, casa de la curva", "se levanta a encender la cocina de leña"),
                     E("05:05", "bar", "La Marea", "sale en su Volvo ranchera"),
-                    E("05:08", "victima", "carretera de la costa", "escribe 'Estoy cerca'"),
+                    E("05:08", "victima", "carretera de la costa", "escribe «Estoy cerca»"),
                     E("~05:10", "bar", "la curva", "la alcanza"),
                     E("05:10", "cartero", "delante de La Marea", "bar a oscuras, sin el Volvo"),
                     E("05:15", "cartero", "oficina de Correos", "entra; GPS hasta las 07:00"),
                     E("05:20", "vecina", "casa de la curva", "ve una ranchera oscura parada sin luces"),
-                    E("~06:00", "bar", "La Marea", "vuelve al bar a 'limpiar'"),
-                    E("06:30", "bar", "La Marea", "termina de 'limpiar'"),
+                    E("~06:00", "bar", "La Marea", "vuelve al bar a «limpiar»"),
+                    E("06:30", "bar", "La Marea", "termina de «limpiar»"),
                     E("07:00", "cartero", "oficina de Correos", "sale (GPS)"),
                     E("08:30", "detective", "comisaría", "denuncia de la tía; empieza a buscar"),
                 };
@@ -89,7 +89,7 @@ public static class CaseTimelines
                     E("05:00", "victima", "La Marea", "sale sola"),
                     E("05:00", "bar", "La Marea", "cierra; la cámara le graba recogiendo hasta las 06:30"),
                     E("05:00", "vecina", "cocina, casa de la curva", "se levanta"),
-                    E("05:08", "victima", "carretera de la costa", "escribe 'Estoy cerca'"),
+                    E("05:08", "victima", "carretera de la costa", "escribe «Estoy cerca»"),
                     E("05:12", "cartero", "la curva", "para su furgoneta blanca; Sofía sube"),
                     E("05:12", "vecina", "casa de la curva", "lo ve por la ventana"),
                     E("~05:15", "cartero", "(su mentira)", "hora a la que dice que ya estaba clasificando"),
@@ -103,11 +103,11 @@ public static class CaseTimelines
                 return new List<TimelineEvent>
                 {
                     E("04:20", "detective", "muelle", "coge un sobre; Sofía le graba con el móvil"),
-                    E("04:40", "victima", "La Marea", "vuelve pálida: 'algo gordo en el puerto'"),
+                    E("04:40", "victima", "La Marea", "vuelve pálida: «algo gordo en el puerto»"),
                     E("05:00", "victima", "La Marea", "sale sola"),
                     E("05:00", "bar", "La Marea", "cierra; la cámara graba toda la noche"),
                     E("05:05", "cartero", "comisaría", "va a dejar un certificado: cerrada y a oscuras"),
-                    E("05:08", "victima", "carretera de la costa", "escribe 'Estoy cerca'"),
+                    E("05:08", "victima", "carretera de la costa", "escribe «Estoy cerca»"),
                     E("05:10", "detective", "la curva", "la recoge en su Opel gris"),
                     E("05:10", "vecina", "casa de la curva", "lo ve; ella sube"),
                     E("05:15", "cartero", "carretera nacional", "el GPS le sitúa camino de la oficina"),
@@ -118,7 +118,7 @@ public static class CaseTimelines
                 return new List<TimelineEvent>
                 {
                     E("20:30", "padre", "casa de la finca", "discute con Paula"),
-                    E("20:40", "victima", "casa de la finca", "escribe a Álex: 'Papá está fatal, ha bebido'"),
+                    E("20:40", "victima", "casa de la finca", "escribe a Álex: «Papá está fatal, ha bebido»"),
                     E("20:50", "padre", "casa de la finca", "la golpea; no vuelve a levantarse"),
                     E("21:00", "padre", "quemadero", "quema sus cosas con neumáticos: humo negro"),
                     E("21:00", "vecina", "su finca", "ve el humo"),
@@ -143,7 +143,7 @@ public static class CaseTimelines
                 return new List<TimelineEvent>
                 {
                     E("19:30", "padre", "bar Casino", "llega"),
-                    E("19:50", "victima", "finca", "escribe a Álex: 'Voy a despedirme de Encarna y de los caballos'"),
+                    E("19:50", "victima", "finca", "escribe a Álex: «Voy a despedirme de Encarna y de los caballos»"),
                     E("20:00", "victima", "finca de Encarna", "llega a despedirse"),
                     E("~20:15", "vecina", "junto al pozo", "discuten; la empuja"),
                     E("~21:00", "vecina", "quemadero de Javier", "entra por la cancela con su llave y quema las cosas de Paula"),

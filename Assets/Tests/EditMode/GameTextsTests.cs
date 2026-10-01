@@ -12,24 +12,24 @@ public class GameTextsTests
     }
 
     [TestCase(0, "Mostrar prueba: ninguna")]
-    [TestCase(1, "Mostrar prueba: ninguna · 1 en la libreta")]
-    [TestCase(4, "Mostrar prueba: ninguna · 4 en la libreta")]
+    [TestCase(1, "Mostrar prueba (una en la libreta)")]
+    [TestCase(4, "Mostrar prueba (cuatro en la libreta)")]
     public void SinPruebaElegidaDiceCuantasHay(int available, string expected)
     {
         Assert.AreEqual(expected, GameTexts.NoEvidenceWith(available));
     }
 
     [TestCase(0, 0, "Tu libreta está vacía: acusar ahora es una apuesta.")]
-    [TestCase(1, 0, "En tu libreta: 1 pista y ninguna contradicción. Elige también la prueba clave: si lo demuestra, tu rango sube.")]
-    [TestCase(3, 1, "En tu libreta: 3 pistas y 1 contradicción. Elige también la prueba clave: si lo demuestra, tu rango sube.")]
-    [TestCase(5, 2, "En tu libreta: 5 pistas y 2 contradicciones. Elige también la prueba clave: si lo demuestra, tu rango sube.")]
+    [TestCase(1, 0, "En tu libreta: una pista y ninguna contradicción. Elige también la prueba clave: si lo demuestra, tu rango sube.")]
+    [TestCase(3, 1, "En tu libreta: tres pistas y una contradicción. Elige también la prueba clave: si lo demuestra, tu rango sube.")]
+    [TestCase(5, 2, "En tu libreta: cinco pistas y dos contradicciones. Elige también la prueba clave: si lo demuestra, tu rango sube.")]
     public void LaAcusacionRecuerdaLoQueTienes(int clues, int contradictions, string expected)
     {
         Assert.AreEqual(expected, GameTexts.AccusationSummary(clues, contradictions));
     }
 
-    [TestCase(1, "¿Terminar el día? Te queda 1 pregunta y se perderá.")]
-    [TestCase(3, "¿Terminar el día? Te quedan 3 preguntas y se perderán.")]
+    [TestCase(1, "¿Terminar el día? Te queda una pregunta y se perderá.")]
+    [TestCase(3, "¿Terminar el día? Te quedan tres preguntas y se perderán.")]
     public void TerminarElDiaAvisaDeLasQueQuedan(int remaining, string expected)
     {
         Assert.AreEqual(expected, GameTexts.EndDayConfirm(remaining));

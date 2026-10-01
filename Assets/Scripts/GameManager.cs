@@ -333,7 +333,7 @@ public class GameManager : MonoBehaviour
             // Preguntar por un tema lleva a quien lo conoce ("¿alguna vecina vio algo?" → la vecina); solo si la
             // pregunta llegó, y el aviso sale después de la respuesta (cola diferida)
             foreach (string id in NaturalUnlocks.TriggeredBy(story, unlocked, question).ToList())
-                Unlock(id, $"Tu pregunta te pone sobre la pista de {story.Character(id).name}.");
+                Unlock(id, $"Tu pregunta te lleva hasta {story.Character(id).name}.");
             // El estado va antes que la respuesta: marca la velocidad de escritura y el retrato
             interrogationUI?.SetEmotion(characterId, conversationManager.CurrentEmotion(characterId));
             RefreshNotebook();
@@ -591,7 +591,7 @@ public class GameManager : MonoBehaviour
         {
             keyLine = !result.correct ? $"Tu prueba clave, «{key.playerName}», no bastaba: señalabas a la persona equivocada."
                     : key.exposesLie ? $"Tu prueba clave, «{key.playerName}», rompía su coartada. Así se cierra un caso."
-                    : key.kind == ClueKind.Incriminates ? $"Tu prueba clave, «{key.playerName}», le señalaba."
+                    : key.kind == ClueKind.Incriminates ? $"Tu prueba clave, «{key.playerName}», señalaba a quien lo hizo."
                     : $"«{key.playerName}» no acusaba a nadie: no era la prueba que lo demostraba.";
         }
 

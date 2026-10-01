@@ -326,7 +326,7 @@ public class GameSmokeTests
         GameObject dialog = Find("ConfirmarFinDelDia");
         Assert.IsTrue(dialog != null && dialog.activeInHierarchy, "un toque por error no gasta el día");
         StringAssert.Contains("DÍA 1", Find("HudText").GetComponent<TMP_Text>().GetParsedText());
-        StringAssert.Contains("5 preguntas", dialog.GetComponentInChildren<TMP_Text>().text);
+        StringAssert.Contains("cinco preguntas", dialog.GetComponentInChildren<TMP_Text>().text);
 
         // Atrás cierra el aviso y seguimos en el día 1
         Assert.IsTrue(Object.FindFirstObjectByType<InterrogationUI>().HandleBack());

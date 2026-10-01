@@ -61,11 +61,11 @@ public static class Tutorial
             case Days:
                 return $"Tienes {GameTexts.NumberWord(questionsPerDay)} preguntas al día. Cuando se acaben, pulsa «Fin del día» y a la mañana siguiente llegará un parte.";
             case Versions:
-                return "Aquí se apunta lo que dice cada uno; toca «añadir nota» para marcarlo. Si una pista no cuadra, enséñasela: así se pilla una mentira.";
+                return "Se apunta lo que dice cada uno; con «añadir nota» marcas sospecha o descarte. Si una pista no cuadra, enséñasela: pillarás la mentira.";
             case Evidence:
                 return "Las pistas se guardan en tu libreta. Con «Mostrar prueba» puedes enseñárselas a un sospechoso junto a tu pregunta.";
             default:
-                return "¡Lo has pillado en una mentira! Las contradicciones cuentan como pruebas cuando acuses.";
+                return "¡Has pillado una mentira! Las contradicciones cuentan como pruebas cuando acuses.";
         }
     }
 }

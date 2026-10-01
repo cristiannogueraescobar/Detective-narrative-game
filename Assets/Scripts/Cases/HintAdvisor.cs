@@ -90,7 +90,7 @@ public static class HintAdvisor
             holderId = clue.holder,
             level = 2,
             question = question,
-            text = question != null ? $"Prueba a preguntarle a {who}: «{question}»" : $"Insiste con {who}: hay algo que no te ha contado."
+            text = question != null ? $"Pregúntale a {who}: «{question}»" : $"Insiste con {who}: hay algo que no te ha contado."
         };
     }
 
