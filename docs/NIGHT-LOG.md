@@ -869,3 +869,16 @@ retratos → 4 gráficos.
   a 0,8 / 0,4 / 0: **sin él (solo el LoRA propio) la ropa sale más plana y la cara más limpia**. (4) 12 a 0: limpias
   8400, 8402, 8405; defecto que queda: a veces pinta la jarra de Marcos en el hombro. Candidato: **8405**.
 - **17:40** Prueba ciega 4 (8405, hojas 101/103/108 con el candidato en B, D y A) + parecido: en marcha.
+- **17:41 Prueba ciega 4** (8405): 3 de 3, confianza media. Parecido: **"la misma persona" que Marcos** (falla): la
+  pose y la pulsera venían de partir del paint-over de Marcos y de un LoRA entrenado con él.
+- **17:46** Las siluetas negras **no eran el fondo** (mi diagnóstico de las 17:20 estaba mal): `colour.correct` con la
+  máscara de piel vacía daba NaN → negro. Arreglado con test primero (`0f03a3e`). Nuevo prompt JAVIER_JV2 y lienzo gris
+  liso en vez de Marcos.
+- **17:54 Prueba ciega 5** (8603): 3 de 3; parecido **pasa** ("personas distintas", alta). Primer motivo en las tres:
+  piel amarillo limón → la máscara de piel no aceptaba matiz 56°; arreglado con test (`e7dfeb1`).
+- **17:58 Prueba ciega 6** (8611, piel corregida): 3 de 3, confianza media, dos dudan con otra figura; parecido pasa.
+- **18:03 Prueba ciega 7** (8611 con aplanado fuerte, solo en el scratchpad): 3 de 3; la cara empeora ("manchas").
+- **18:06 Bloque 1 cerrado, NO aprueba.** 7 rondas, 21 de 21. El LoRA acercó mucho (parecido resuelto, confianza baja
+  de alta a media) pero la cara delata: el LoRA vio 6 figuras enteras con la cara a ~60 px y no aprende los ojos de los
+  originales. Siguiente paso propuesto (no hecho): LoRA con recortes de cara ampliados, o encargo con el BRIEF.
+  Hoja: `docs/art/javier/evolucion_sesion_b.jpg`. Nada se integra en el juego.
