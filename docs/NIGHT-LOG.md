@@ -823,22 +823,27 @@ retratos → 4 gráficos.
 - **16:25** 20 candidatos a 0,65 (15 s/imagen). Contorno negro grueso en todos. Dos métricas mías fallaban y se
   arreglaron con test en rojo: la fuga daba falsos positivos con fondo en degradado (0,07-0,16 → 0,0); la "piel" de la
   corrección de color incluía la camisa ocre (71 350 px → solo la cabeza).
-- **16:45** Mejor candidato 6106: píxel 5, cabeza 0,21 (a mano), contorno 0,022, paleta 23, fuga 0,001. Prueba ciega
+- **~16:28** Mejor candidato 6106: píxel 5, cabeza 0,21 (a mano), contorno 0,022, paleta 23, fuga 0,001. Prueba ciega
   en marcha: 3 subagentes (orden aleatorio) y 1 de parecido con Marcos.
-- **16:50 Prueba ciega 1** (6106): 3 de 3 señalaron al candidato (confianza 4-5): paleta turbia y estrecha, sombreado
+- **~16:30 Prueba ciega 1** (6106): 3 de 3 señalaron al candidato (confianza 4-5): paleta turbia y estrecha, sombreado
   ruidoso, cara borrosa sin ojos claros, contorno uniforme. Parecido con Marcos: "personas distintas" (4).
 - Medido: los candidatos tenían **35-38 colores** frente a 2600-3200 de los originales (mi `pixelate` cuantizaba a 40)
   y contraste L* 19-21 frente a 22,5-27. `finish.py` (posproceso sin GPU, compartido con generate.py): 160 colores,
   contraste a ~24, aplanado de motas por celdas (test) y saturación solo de la ropa. La "piel" de la corrección de color
   se medía sobre la camisa ocre (71 350 px) → solo la cabeza (test).
-- **17:10 Prueba ciega 2** (6101, prompt de cel shading + IP-Adapter 0,4 + posproceso nuevo): 3 de 3 otra vez.
+- **~16:34 Prueba ciega 2** (6101, prompt de cel shading + IP-Adapter 0,4 + posproceso nuevo): 3 de 3 otra vez.
   Parecido: distintos, pero "2 parece más atlético" (Javier debe ser corpulento).
 - Retoque de la cara (inpainting con estilo de Lucía y Álex): a fuerza 0,7 gana estilo pero **deja de ser Javier**
   (veinteañero, sin barba, mechones rojizos de Lucía); a 0,5 sigue siendo Javier y apenas cambia.
-- **17:38 Prueba ciega 3** (7002): 3 de 3. **Total 9 de 9.** Razones constantes: textura ruidosa del generador, cara
+- **~16:39 Prueba ciega 3** (7002): 3 de 3. **Total 9 de 9.** Razones constantes: textura ruidosa del generador, cara
   realista de ojos pequeños, paleta apagada, contorno que no encaja en la rejilla.
-- **Bloque 1 NO aprueba. Paro antes de las 2,5 h** porque las tres rondas señalan lo mismo: la diferencia está en cómo
+- **Corrección de horas (16:45):** las horas de arriba eran estimaciones mías y estaban mal (escribí 16:45-17:38); el
+  reloj dice que todo eso pasó entre 16:25 y 16:40. Creí que quedaban 70 min del bloque y quedaban ~2 h.
+- **(Decisión revocada a las 16:45)** ~~Bloque 1 NO aprueba. Paro antes de las 2,5 h~~ porque las tres rondas señalan lo mismo: la diferencia está en cómo
   dibuja el generador (SDXL + LoRA de pixel art), no en lo que el posproceso puede corregir. No integro a Javier, me
   salto el bloque 2 y paso al 3. Hoja: `docs/art/javier/evolucion_sesion_b.jpg` (40 txt2img → img2img → final).
   Propuestas en el informe: entrenar un LoRA de estilo con los 7 originales, saber con qué herramienta se hicieron los
   originales, o encargo a un artista con el BRIEF.
+- **16:45 Reabro el bloque 1** con la palanca que falta: un LoRA de estilo entrenado con los originales del juego
+  (Marcos, Lucía, Álex, cartero, vecina, detective; sin Daniel, que es el otro estilo). Las anteriores corregían el
+  resultado o empujaban desde fuera; un LoRA enseña al generador a dibujar como ellos. Límite: 18:48.
