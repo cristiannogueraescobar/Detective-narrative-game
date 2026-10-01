@@ -1,0 +1,109 @@
+**Mira primero:** `docs/art/retratos_sesion_b.jpg` (los 12 retratos del juego al cierre; Javier sigue con el derivado de Daniel) y después `docs/art/javier/evolucion_sesion_b.jpg` (todo lo que se probó para Javier, de izquierda a derecha).
+
+# Informe — Sesión B: sesión autónoma de 8 horas (01-10-2026, 16:18 → 00:18)
+
+## Resumen en 5 líneas
+1. **Javier no aprueba.** 11 pruebas ciegas, 31 de 33 subagentes señalan al generado; lo mejor, 2 de 3 en las rondas 9 y 10 (los dos primeros fallos de la sesión). No se integra nada: Javier sigue con el derivado de Daniel.
+2. **El bloque 2 se saltó**, como mandaban las reglas si Javier no pasaba.
+3. **Bloque 3, rendimiento: hecho** (mejoras 2, 3 y 4 con test primero). En la misma ejecución: TimeCheck 437 → 3,6 µs (respuesta sin hora), Parse ×4 126 → 0,4 µs, Evaluate ×6 200 → 17 µs, guardado 41,8 → 24,0 KB y 2,9 → 0,7 ms en el hilo principal. Sin regresiones atribuibles.
+4. **Bloque 3, segundas vías de 1B_cena y 1C_llamada: probadas y revertidas.** Con 3 intentos parecían subir (33 → 56 %); con 10 no (20 % y 37 % frente a 35 % y 53 % en main). Daniel niega la aventura aunque le pongan delante al testigo.
+5. Ramas sin fusionar: **`feature/mejoras-seguras`** (lista para fusionar) y **`feature/retratos-javier`** (herramientas de arte, informes y este documento). `main` sin tocar.
+
+## Tabla por bloque
+
+| Bloque | HECHO CUANDO | Resultado | Rama y commits |
+|---|---|---|---|
+| 1. Retrato de Javier | Prueba ciega: los subagentes no lo distinguen de los originales, y no se parece a Marcos | **NO aprueba** (cerrado a las 18:00; trabajo extra 19:50-20:34, tampoco) | `feature/retratos-javier`: `b23bac2` … `2abb948` |
+| 2. (dependía de Javier) | — | **Saltado** por regla | — |
+| 3a. Mejoras de rendimiento 2-4 | Tests en verde, antes/después medido, calibración sin bajar | ✓ | `feature/mejoras-seguras`: `560e71e`, `2e6b103`, `99d79a4`, `a86f6e1`, `69470d7`, `5f3f9c4` |
+| 3b. Segundas vías 1B_cena / 1C_llamada | Que suban de forma medible | ✗ No suben; **revertido** | `b92d6c2` → revert `848a690` |
+| 3c. Calibración completa + bot | pistas ≥80 %, premisas ≤5 %, estados ≥95 %, bot ≥14/18 | ✓ en la rama (82 %, 4 %, 97 %, 15/18) | Logs en `../dng-*/Logs` (no versionados) |
+
+Tests al cerrar `feature/mejoras-seguras`: **EditMode 754/755 (el que no corre es `PerfBenchmark`, Explicit), 0 fallos; PlayMode 64 pasan, 0 fallos** (24 ignorados, como siempre). Tests de herramientas (`Tools/tests`): **30/30**.
+
+## Bloque 1: Javier, por personaje
+
+| Personaje | ¿Aprueba? | Hoja de comparación | Prueba ciega | Rama |
+|---|---|---|---|---|
+| Javier | **No** | `docs/art/javier/evolucion_sesion_b.jpg` | 11 rondas × 3 subagentes: 31/33 lo señalan. Parecido con Marcos: falla en la ronda 4 ("la misma persona"), pasa desde la 5 ("personas distintas", confianza alta) | `feature/retratos-javier` |
+
+**Qué se probó, en orden (cada fila con su motivo de la prueba ciega anterior):**
+
+| Ronda | Candidato | Cambio | Resultado | Motivo común de los que acertaron |
+|---|---|---|---|---|
+| 1-3 | 6106, 6101, 7002 | img2img desde paint-over de Marcos, cel, IP-Adapter | 3/3 cada una | textura ruidosa, cara realista, paleta apagada |
+| 4 | 8405 | **LoRA de estilo propio** (6 originales, 800 pasos) | 3/3, confianza media; "misma persona que Marcos" | ojos pequeños, grano, piel saturada |
+| 5 | 8603 | Prompt de ojos grandes, lienzo gris en vez de Marcos | 3/3; parecido **pasa** | **piel amarillo limón** (fallo mío, ver abajo) |
+| 6 | 8611 | Máscara de piel arreglada | 3/3, dos dudan | cara, grano |
+| 7 | 8611 aplanado | Aplanado fuerte en toda la figura | 3/3 | la cara empeora ("manchas") |
+| 8 | 8611 + cara | **LoRA v2** (con recortes de cara) + **facefix** (repinta la cabeza a 1024) | 3/3, confianzas media/baja | "cabeza pequeña, ~1/7" |
+| **9** | **8702** | Cabeza del esqueleto 0,20 → 0,24 | **2/3** | grano, piel naranja |
+| **10** | **8700** | Ropa aplanada fuera de la cabeza | **2/3** (agrupa a Javier con Marcos y Lucía) | "contorno negro grueso y uniforme" |
+| 11 | 8700 sin contorno | Sin el contorno reforzado | 3/3 | "borde blando": el contorno ayuda |
+
+**Por qué no llega, en una frase:** lo que aún lo delata es de dibujo, no de color: los originales tienen el contorno **coloreado** (oscuro del color de cada zona, no negro) y la cara **dibujada con líneas** (ojos con blanco y pupila), y el generador pinta la cara con manchas y la ropa con grano.
+
+**Siguiente paso, si se quiere seguir por aquí:** contorno coloreado (selout) en `finish.py` y un LoRA con más recortes de cara. **Mi recomendación honesta: encargarlo a un artista con `docs/art/javier/BRIEF.md`**: el generador ha pasado de "otro juego" a "casi", pero 11 rondas sin aprobar dicen que el último tramo es de oficio.
+
+Todo lo pesado está fuera del repositorio: modelos en `C:\AI\hf-cache`, LoRA en `C:\AI\lora\jvstyle` y `jvstyle2` (entrenados con arte del propio juego; script oficial de diffusers, Apache-2.0), salidas en `C:\AI\portrait-gen\out`.
+
+## Bloque 3: antes y después
+
+**Rendimiento** (`PerfBenchmark`, Explicit, la misma ejecución; "antes" fuerza el camino antiguo). Escrito también en `docs/PERFORMANCE-AUDIT.md` §5:
+
+| Operación | Antes | Después |
+|---|---|---|
+| `TimeCheck.Unknown`, respuesta con hora (4 507 caracteres de contexto) | 402,9 µs | 15,0 µs |
+| `TimeCheck.Unknown`, respuesta sin hora (la mayoría) | 436,8 µs | 3,6 µs |
+| `EmotionParser.Parse` × 4 sobre la misma respuesta | 125,6 µs | 0,4 µs |
+| `ClueDetector.Evaluate` × 6 pistas | 200,0 µs | 17,2 µs |
+| Guardado: JSON | 41,8 KB | 24,0 KB |
+| Guardado: tiempo en el hilo principal | 2 923 µs | 721 µs |
+
+CPU por pregunta estimada: de ~1,6-2,2 ms a ~0,4-1,0 ms (sin medir en un móvil). El guardado antiguo con sangría se sigue leyendo (test). La escritura va en otro hilo, en una cola de uno: nunca se cruzan, una antigua no pisa a una nueva y un borrado no lo resucita una escritura atrasada (tests).
+
+**Calidad** (qwen2.5:7b-instruct, worktrees de main y de la rama, en serie, mismo umbral; bot con semilla 1919, 2 partidas × 9 variantes):
+
+| Medida | main | rama | Umbral |
+|---|---|---|---|
+| Pistas ≥ 2/3 (3 intentos) | 43/48, media 86 % | 41/48, media 82 % | ≥ 80 % ✓ |
+| Premisas falsas aceptadas | 2/72 (2 %) | 3/72 (4 %) | ≤ 5 % ✓ |
+| Estados bien formados | 140/144 (97 %) | 140/144 (97 %) | ≥ 95 % ✓ |
+| Bot: culpable acertado | 17/18 | 15/18 | ≥ 14/18 ✓ (±2 es ruido) |
+
+Las pistas que cambiaron de lado se midieron otra vez con **10 intentos**, en los dos:
+
+| Pista | main | rama |
+|---|---|---|
+| 1B_cena (con la segunda vía en la rama) | 7/20 = 35 % | 6/30 = 20 % |
+| 1C_llamada (ídem) | 16/30 = 53 % | 11/30 = 37 % |
+| 1A_papeles | 24/30 = 80 % | 18/30 = 60 % |
+| 1C_pantalla | 10/20 = 50 % | 8/20 = 40 % |
+| 2C_grabacion | 10/20 = 50 % | 9/20 = 45 % |
+| 3C_bar | 17/20 = 85 % | 18/20 = 90 % |
+
+1A_papeles no tiene ningún dato cambiado. Para descartar mi código, `NegationEquivalenceTests` compara el detector nuevo con el antiguo (copiado en el test) para todas las anclas de todas las variantes sobre todos los textos de las historias: **deciden igual**. Es variación del modelo. Las segundas vías se revirtieron; la rama, tal como queda, no cambia ningún dato de las historias.
+
+## Lo que salió mal y corregí
+
+1. **Horas estimadas en vez de leídas, dos veces.** En el bloque 1 escribí 16:45-17:38 cuando el reloj decía 16:25-16:40 (y por eso creí que se acababa el tiempo del bloque); después, 18:03 y 18:06 a las 18:00. Corregido en el NIGHT-LOG las dos veces (`a9691b7`, `032922c`); desde entonces cada hora sale de `date`.
+2. **Regla de la GPU incumplida sin verlo.** La suite PlayMode carga qwen en Ollama (5,6 GB) y la lancé a las 16:50 mientras entrenaba el LoRA. Lo vi a las 17:16 con `ollama ps`; confirmado a las 19:47 (al acabar la suite estaba cargado otra vez). Desde entonces, `ollama ps` y `ollama stop` antes de cada tarea pesada.
+3. **Diagnóstico equivocado de las siluetas negras.** Lo atribuí a un fondo oscuro (17:20) y cambié el prompt; la causa real era `colour.correct` con la máscara de piel vacía: media NaN → negro. Arreglado con test primero (`0f03a3e`). Le siguió el mismo patrón con la piel amarilla (máscara de 8-40°, la cara estaba a 56°; `e7dfeb1`).
+4. **Segunda vía como séptima pista.** Mi primer intento añadía una pista a 1B, que ya tenía 6, contra el diseño aprobado de 5-6. El test `4-6 pistas` lo paró; lo convertí en testigo.
+5. **Casi doy por buena una mejora que era ruido** (33 → 56 % con 3 intentos). La confirmación con 10 intentos la desmintió y lo revertí (`848a690`).
+6. **Estimación de CPU mal hecha** en PERFORMANCE-AUDIT (0,5-0,8 ms): rehecha con la derivación escrita, 0,4-1,0 ms (`5f3f9c4`).
+7. Antes de la compactación del contexto: un heredoc convirtió `\n` en saltos de línea reales dentro de código (TimeCheckTests) y mezcló CRLF; lo arreglé reescribiendo con Write. Incumplí mi propia regla de no editar código con heredocs.
+8. La hoja de evolución salió primero sin el candidato 7002 (ruta equivocada); rehecha.
+
+## Decisiones para Cristian
+
+1. **Fusionar `feature/mejoras-seguras` a `main` primero.** 8 commits, 15 archivos (código: TimeCheck, ClueDetector, EmotionParser, SaveSystem, AIConversationManager; tests; docs). Ningún dato de historias cambia. Se deshace con `git revert -m 1 <merge>`.
+2. **Después, `feature/retratos-javier`**, si quieres las herramientas de arte (`Tools/portrait_gen`, tests), los informes, el NIGHT-LOG y este documento. Toca 6 archivos del juego, todos de esta mañana, antes de la sesión B (`8261f81` encuadre del arte nuevo `PortraitCrops`, `e01f67d` filtro de importación, y sus tests). Ningún retrato del juego cambia. Si prefieres no fusionar código de arte aún, basta con traer `docs/`.
+3. **Javier:** encargo a un artista con el BRIEF (recomendado), o una sesión más con contorno coloreado y LoRA de caras. No integrar nada generado hasta que pase la prueba ciega y tu revisión.
+4. **1B_cena y 1C_llamada siguen en 20-55 %.** Dos salidas, las dos tuyas: (a) que una pista admita dos portadores (cambio de código en TurnAnalyzer, PromptBuilder, HintAdvisor y el calibrador), o (b) permitir 7 pistas en 1B (cambia el diseño de 5-6). Mientras tanto, nada cambia.
+5. **La suite PlayMode usa Ollama.** ¿Marcamos esos tests para que no carguen el modelo o se acepta? Con GPU compartida conviene saberlo.
+
+## Pendiente y riesgos
+- Los worktrees de calibración (`../dng-main`, `../dng-mejoras`) se borran al cerrar; los informes de calibración vivían en sus `Logs/` (no versionados). Las cifras quedan en este informe, en CLUE-LOGIC.md y en PERFORMANCE-AUDIT.md.
+- `feature/dia3` y las etiquetas `backup/*` siguen (hasta ~08-10-2026), sin tocar.
+- Detalle hora a hora: `docs/NIGHT-LOG.md`, sección "# Sesión B".
