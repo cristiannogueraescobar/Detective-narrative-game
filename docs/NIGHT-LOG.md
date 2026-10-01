@@ -860,3 +860,12 @@ retratos → 4 gráficos.
   Daniel recibió una llamada corta antes de las diez. Falta medirlas con Ollama (GPU ocupada).
 - **17:01** Banco de pruebas antes/después en la misma ejecución → `Logs/perf-mejoras.md` (TimeCheck 403 → 15 µs;
   Parse ×4 126 → 0,4 µs; Evaluate ×6 200 → 17 µs; guardado 41,8 → 24,0 KB y 2,9 → 0,7 ms en el hilo principal).
+- **17:16** LoRA entrenado (800 pasos, `C:\AI\lora\jvstyle`). **Error mío:** Ollama tenía qwen cargado (5,6 GB) desde la
+  suite PlayMode de las 16:50, mientras entrenaba: incumplí la regla de la GPU sin verlo. Descargado con `ollama stop`
+  antes de generar; desde ahora miro `ollama ps` antes de cada tarea pesada, no solo la VRAM.
+- **17:20-17:37** Pruebas: (1) 8 imágenes: las figuras en bruto, mucho más cerca del juego (contorno, cara con ojos
+  claros); 4 se rompían en el posproceso por un fondo gris oscuro → se pide el gris claro del entrenamiento. (2) texto
+  a imagen sigue con fondo oscuro (7 de 8 rotas); de imagen a imagen 8 de 8 limpias. (3) barrido del LoRA pixel-art-xl
+  a 0,8 / 0,4 / 0: **sin él (solo el LoRA propio) la ropa sale más plana y la cara más limpia**. (4) 12 a 0: limpias
+  8400, 8402, 8405; defecto que queda: a veces pinta la jarra de Marcos en el hombro. Candidato: **8405**.
+- **17:40** Prueba ciega 4 (8405, hojas 101/103/108 con el candidato en B, D y A) + parecido: en marcha.

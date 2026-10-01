@@ -57,13 +57,16 @@ JAVIER_CEL_NEGATIVE = ('muted colors, desaturated, dithering, noise, painterly, 
                        'apron, vest, mug, young, handsome, slim, suspenders, photorealistic, 3d render, anime chibi, '
                        'cropped feet, scenery, text, watermark, multiple characters')
 # Sesión B (16:45): LoRA de estilo entrenado con 6 originales del juego (lora_dataset.py). El prompt sigue el formato de
-# sus descripciones: palabra de activación + quién es + ropa + objeto.
+# sus descripciones: palabra de activación + quién es + ropa + objeto. Primera prueba (8 imágenes): figuras buenas,
+# pero 4 con fondo gris oscuro en degradado que remove_white_bg confundía con la figura: se pide el gris claro del
+# entrenamiento.
 JAVIER_JV = ('jvstyle pixel art character sprite, full body, 44 year old weathered heavy-set man, bitter defensive scowl, '
              'dark circles under eyes, stubble beard, short dark hair grey at the temples, olive and brown flannel shirt '
-             'with rolled sleeves, brown trousers, work boots, holding a green beer bottle')
+             'with rolled sleeves, brown trousers, work boots, holding a green beer bottle, plain light grey background')
 JAVIER_JV_NEGATIVE = ('moustache, mustache, apron, vest, cigarette, beer mug, red plaid, young, handsome, smiling, slim, '
                       'suspenders, photorealistic, 3d render, blurry, cropped feet, scenery, text, watermark, multiple '
-                      'characters, glasses')
+                      'characters, glasses, dark background, gradient background, vignette, glowing, two bottles, dithering, noise, '
+                      'grainy texture')
 CHARACTER = ('pixel art sprite, full body, plain light grey background, 44 year old heavy-set farmer, red plaid flannel '
              'shirt with rolled sleeves, dark stubble beard, short dark brown hair grey at the temples, tired face, '
              'holding a green beer bottle, brown work trousers, work boots, thick black outline')
