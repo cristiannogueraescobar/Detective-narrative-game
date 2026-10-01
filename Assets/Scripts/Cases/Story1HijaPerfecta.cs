@@ -718,7 +718,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         new[] { "movil", "telefono", "pantalla rota" },
                         new[] { "pantalla", "cuarto de lucas", "habitacion de lucas", "debajo de la cama", "cama de lucas" }
                     },
-                    calibrationQuestions = new[] { "¿Dónde estaba el móvil de Elena?", "¿Encontró algo fuera de su sitio esa noche?" },
+                    calibrationQuestions = new[] { "¿Dónde estaba el móvil de Elena?", "¿Ha encontrado algo de Elena al recoger la casa estos días?" },
                     sampleHits = new[]
                     {
                         "El móvil de Elena estaba en el cuarto de Lucas, con la pantalla rota.",
@@ -735,7 +735,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     fact = "Lucas te llamó a las 21:52 llorando: 'Elena se ha caído por la escalera, pero está bien'. Por eso llegaste a casa a las 22:15, no a las 23:00.",
                     anchors = new[]
                     {
-                        new[] { "21:52", "9:52", "me llamo", "llamo llorando" },
+                        new[] { "21:52", "9:52", "me llamo", "llamo llorando", "lloraba", "llamada de mi hijo", "lucas me dijo" },
                         new[] { "caido", "se cayo", "22:15", "escalera" }
                     },
                     calibrationQuestions = new[]
@@ -746,7 +746,8 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     sampleHits = new[]
                     {
                         "A las 21:52 Lucas me llamó llorando: Elena se había caído, pero estaba bien.",
-                        "Está bien... mi hijo me llamó. Dijo que Elena se cayó por la escalera. Llegué a las 22:15."
+                        "Está bien... mi hijo me llamó. Dijo que Elena se cayó por la escalera. Llegué a las 22:15.",
+                        "Lucas lloraba porque Elena se había caído por la escalera. Llegué a las 22:15."
                     },
                     sampleMisses = new[] { "Nadie me llamó. Llegué a las 23:00 del despacho.", "No, Lucas no me llamó.", "La llamada al 112 la hice yo; mi hijo estaba arriba." },
                     // Sesión C: Daniel lo niega casi siempre (37-53 % con 10 intentos). Amparo ya veía a Lucas en la

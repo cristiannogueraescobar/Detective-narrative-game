@@ -615,7 +615,7 @@ Tienes 7 días para descubrir qué pasó.",
                         new[] { "huella", "pisada" },
                         new[] { "ceniza", "quemadero", "bota", "mujer" }
                     },
-                    calibrationQuestions = new[] { "¿Encontró algo en el quemadero?", "¿Qué vio usted el domingo en la finca?" },
+                    calibrationQuestions = new[] { "¿Encontró algo en el quemadero?", "¿Vio algo raro el domingo en el quemadero?" },
                     sampleHits = new[]
                     {
                         "En la ceniza había huellas de bota pequeña, de mujer. Yo calzo un 44.",

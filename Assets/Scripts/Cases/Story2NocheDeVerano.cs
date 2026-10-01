@@ -441,7 +441,33 @@ Tienes 7 días.",
                         "La cámara del bar grabó a Marcos recogiendo de 5:00 a 6:30, compañero.",
                         "En la grabación se ve al dueño dentro del bar toda la madrugada."
                     },
-                    sampleMisses = new[] { "No hay cámaras en esa carretera, compañero." }
+                    sampleMisses = new[] { "No hay cámaras en esa carretera, compañero." },
+                    alsoHeldBy = new[]
+                    {
+                        new ClueHolder
+                        {
+                            characterId = "bar",
+                            topic = "quién confirma dónde estabas o si tienes cámaras",
+                            fact = "la cámara de tu bar grabó toda la noche: se te ve dentro, recogiendo, de las cinco a las seis y media.",
+                            summary = "Marcos dice que la cámara de La Marea le grabó dentro del bar, recogiendo, de 5:00 a 6:30.",
+                            anchors = new[]
+                            {
+                                new[] { "camara", "grabacion", "grabo", "grabado", "grabada" },
+                                new[] { "se me ve", "me ve", "me veis", "sale todo", "esta todo", "toda la noche", "todo el rato" }
+                            },
+                            calibrationQuestions = new[]
+                            {
+                                "¿Alguien puede confirmar dónde estaba usted?",
+                                "¿Tiene cámaras en el bar? || ¿Y qué se ve en ellas?"
+                            },
+                            sampleHits = new[]
+                            {
+                                "La cámara del bar lo grabó todo, chaval: se me ve dentro recogiendo hasta las seis y media.",
+                                "Mire la grabación, que ahí me ve usted toda la noche dentro del bar."
+                            },
+                            sampleMisses = new[] { "Cerré a las cinco y me quedé recogiendo dentro hasta las seis y media.", "Cámaras no tengo, ¿para qué?" }
+                        }
+                    }
                 }
             }
         };
@@ -637,13 +663,14 @@ Tienes 7 días.",
                     anchors = new[]
                     {
                         new[] { "camara", "grabacion" },
-                        new[] { "guardia civil", "entregue", "toda la noche", "6:30" }
+                        new[] { "guardia civil", "entregue", "toda la noche", "6:30", "seis y media", "recogiendo", "todo el rato", "todo el tiempo" }
                     },
                     calibrationQuestions = new[] { "¿Alguien puede confirmar dónde estaba usted?", "¿Tiene cámaras en el bar?" },
                     sampleHits = new[]
                     {
                         "La cámara grabó toda la noche, chaval; le di la grabación a la Guardia Civil.",
-                        "Está todo en la grabación: se me ve dentro hasta las 6:30."
+                        "Está todo en la grabación: se me ve dentro hasta las 6:30.",
+                        "La cámara lo grabó todo: me veis a las cinco cerrando y a las seis y media recogiendo."
                     },
                     sampleMisses = new[] { "Estuve en el bar, pregunte a quien quiera." }
                 }
