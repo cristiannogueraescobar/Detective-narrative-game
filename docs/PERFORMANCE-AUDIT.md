@@ -97,3 +97,22 @@ fotogramas perdidos al llegar la respuesta. La 1 es la única que cambia lo que 
 3. Mejora 4.
 4. Mejora 1 (y 5) cuando se decida el proveedor de Android (ANDROID-OPTIONS.md): el streaming vale el doble si las
    respuestas vienen por red.
+
+## 5. Después (sesión B, 01-10-2026, rama `feature/mejoras-seguras`)
+Mejoras 2, 3 y 4 hechas con test primero. Antes y después medidos **en la misma ejecución** (`PerfBenchmark`,
+Explicit; "antes" fuerza el camino antiguo: sin cachés, contexto concatenado, escritura síncrona con sangría), en este
+PC y en el editor:
+
+| Operación | Antes | Después |
+|---|---|---|
+| `TimeCheck.Unknown`, respuesta con hora (4 507 caracteres de contexto) | 402,9 µs | 15,0 µs |
+| `TimeCheck.Unknown`, respuesta sin hora (la mayoría) | 436,8 µs | 3,6 µs |
+| `EmotionParser.Parse` × 4 sobre la misma respuesta | 125,6 µs | 0,4 µs |
+| `ClueDetector.Evaluate` × 6 pistas | 200,0 µs | 17,2 µs |
+| Guardado: JSON | 41,8 KB | 24,0 KB |
+| Guardado: tiempo en el hilo principal | 2 923 µs | 721 µs |
+
+La CPU del juego por pregunta baja de ~1,6-2,2 ms a ~0,4-1,0 ms (estimación: la línea de base de la sección 1 menos los ahorros de esta tabla y la escritura que pasa a otro hilo; sin medir en un móvil).
+Calibración completa sin regresiones atribuibles: pistas 43/48 (main) y 41/48 (rama) con 3 intentos, premisas 2 % y
+4 %, estados bien formados 97 % y 97 %, bot 17/18 y 15/18 (umbral 14; ±2 es ruido). El detector decide igual que
+antes (`NegationEquivalenceTests`). Mejoras 1 y 5 (streaming) siguen fuera: tocan la capa de proveedores.

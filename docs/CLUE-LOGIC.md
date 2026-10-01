@@ -213,3 +213,20 @@ sugiere literalmente las preguntas de calibración (se indica cuando importa).
 - Memoria entre partidas en esa ronda del bot: 1 aviso, y era un **falso positivo** (misma variante y pregunta, y
   Lucía respondió palabra por palabra lo mismo que en la partida anterior porque es su ficha). El chequeo ya
   descuenta lo que la propia partida vuelve a decir (test): 0 fugas reales en 17 partidas.
+
+### Sesión B (01-10-2026): segunda vía para 1B_cena y 1C_llamada, probada y revertida
+- **Intento:** 1B_cena: Amparo vio a Daniel volver pasadas las once con una mujer de copiloto (en su conocimiento, no
+  como pista nueva: 1B ya tiene 6 y el diseño es 5-6) y Daniel admite la aventura si se lo echan en cara; tercera
+  pregunta de calibración con esa palanca. 1C_llamada: el parte del día 4 dice que Daniel recibió una llamada corta
+  antes de las diez, y Daniel lo admite si el inspector se lo dice.
+- **Medida (qwen2.5:7b, temperatura 0,6, mismos worktrees de main y de la rama):** con 3 intentos parecía subir (33 →
+  56 % las dos), pero con `-tries 10` no: **1B_cena 7/20 = 35 % en main, 6/30 = 20 % en la rama; 1C_llamada 16/30 =
+  53 % en main, 11/30 = 37 % en la rama.** La pregunta con la palanca de Amparo acertó 1 de 10: Daniel niega la
+  aventura aunque le pongan delante al testigo. Es el modelo, no la falta de vía.
+- **Revertido** (`848a690`). Las dos siguen siendo las más débiles; la siguiente idea es que la pista la *dé* otro
+  personaje (otro portador), lo que exige que una pista admita dos portadores (cambio de código en TurnAnalyzer,
+  PromptBuilder, HintAdvisor y el calibrador), o subir 1B a 7 pistas cambiando el diseño de 5-6. Las dos son
+  decisiones de Cristian.
+- Otras pistas que cambiaron de lado entre main y la rama con 3 intentos se midieron también con 10: 1A_papeles
+  80 % / 60 %, 1C_pantalla 50 / 40 %, 2C_grabacion 50 / 45 %, 3C_bar 85 / 90 %. El detector decide exactamente igual
+  que antes (`NegationEquivalenceTests`, todas las anclas sobre todos los textos), así que son variación del modelo.

@@ -61,4 +61,38 @@ public class TimeCheckTests
     {
         CollectionAssert.AreEqual(new[] { "21:45" }, TimeCheck.Unknown("La vi a las 21:45.", "Fichó a las 17:30."));
     }
+
+    // PERFORMANCE-AUDIT, mejora 2: comprobar horas era lo más caro de cada respuesta (dos expresiones regulares sobre
+    // 6,6 KB de ficha e historial aunque la respuesta no tuviera ninguna hora)
+    [Test]
+    public void SinHorasEnLaRespuestaNoSeAnalizaLoConocido()
+    {
+        TimeCheck.ResetCache();
+        string huge = string.Concat(System.Linq.Enumerable.Repeat(Sheet + "\n", 50));
+        CollectionAssert.IsEmpty(TimeCheck.Unknown("No vi nada esa noche, inspector.", huge, new[] { "¿Qué viste?" }));
+        Assert.AreEqual(0, TimeCheck.KnownScans, "sin horas en la respuesta, nada que analizar");
+    }
+
+    [Test]
+    public void LaFichaSeAnalizaUnaVezPorSospechosoYDia()
+    {
+        TimeCheck.ResetCache();
+        string[] history = { "¿Dónde estabas a las 21:00?", "En casa." };
+        TimeCheck.Unknown("A las 22:30 subí.", Sheet, history);
+        int afterFirst = TimeCheck.KnownScans;
+        TimeCheck.Unknown("Y a las 23:15 llamé.", Sheet, history);
+        Assert.AreEqual(afterFirst, TimeCheck.KnownScans, "misma ficha y mismos mensajes: de la caché");
+        TimeCheck.Unknown("A las 23:15.", Sheet + " Día 2.", history);
+        Assert.AreEqual(afterFirst + 1, TimeCheck.KnownScans, "ficha distinta (otro día): se analiza una vez más");
+    }
+
+    [Test]
+    public void ConFichaEHistorialDaLoMismoQueConTodoJunto()
+    {
+        string[] history = { "¿Qué hiciste desde las 17:00?", "Estuve en la finca hasta las nueve y media." };
+        foreach (string answer in new[] { "Desde las 17:00 en la finca.", "A las 21:30 volví.", "A las 21:45 la vi.",
+                                          "Llamé a las 23:15 y a las 0:05 bajé.", "Nada." })
+            CollectionAssert.AreEqual(TimeCheck.Unknown(answer, Sheet + "\n" + string.Join("\n", history)),
+                                      TimeCheck.Unknown(answer, Sheet, history), answer);
+    }
 }

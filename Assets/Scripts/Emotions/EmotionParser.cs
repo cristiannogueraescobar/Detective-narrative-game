@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 public enum Emotion
@@ -45,7 +46,51 @@ public static class EmotionParser
         return parse.emotion.HasValue ? $"{parse.text}\n[ESTADO: {parse.emotion.Value.ToString().ToLowerInvariant()}]" : raw.Trim();
     }
 
+    // PERFORMANCE-AUDIT, mejora 3: el gestor analizaba la misma respuesta hasta 7 veces (idioma, primer contacto,
+    // horas, final, repetición). Los últimos textos analizados se recuerdan; EmotionParse es un struct de strings
+    // inmutables, así que devolver la copia guardada es seguro.
+    private const int RecentLimit = 16;
+    private static readonly Dictionary<string, EmotionParse> Recent = new Dictionary<string, EmotionParse>();
+    private static readonly Queue<string> RecentOrder = new Queue<string>();
+    private static readonly object RecentLock = new object();
+
+    /// <summary>Análisis hechos de verdad (no servidos por la memoria): para los tests.</summary>
+    public static int ParseWork { get; private set; }
+
+    public static void ResetCache()
+    {
+        lock (RecentLock)
+        {
+            Recent.Clear();
+            RecentOrder.Clear();
+            ParseWork = 0;
+        }
+    }
+
     public static EmotionParse Parse(string raw)
+    {
+        string key = raw ?? "";
+        lock (RecentLock)
+        {
+            if (Recent.TryGetValue(key, out EmotionParse hit))
+                return hit;
+        }
+        EmotionParse parse = ParseUncached(raw);
+        lock (RecentLock)
+        {
+            ParseWork++;
+            if (!Recent.ContainsKey(key))
+            {
+                Recent[key] = parse;
+                RecentOrder.Enqueue(key);
+                if (RecentOrder.Count > RecentLimit)
+                    Recent.Remove(RecentOrder.Dequeue());
+            }
+        }
+        return parse;
+    }
+
+    private static EmotionParse ParseUncached(string raw)
     {
         if (string.IsNullOrEmpty(raw))
             return new EmotionParse { text = "" };

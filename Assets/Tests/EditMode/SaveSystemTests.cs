@@ -17,6 +17,8 @@ public class SaveSystemTests
     [TearDown]
     public void TearDown()
     {
+        SaveSystem.WriteDelayMsForTests = 0;
+        SaveSystem.Flush(); // Una escritura pendiente podría volver a crear la carpeta después de borrarla
         SaveSystem.DirectoryOverride = null;
         if (Directory.Exists(directory))
             Directory.Delete(directory, true);
@@ -248,4 +250,103 @@ public class SaveSystemTests
 
         CollectionAssert.AreEqual(new[] { "1A_puerta:2" }, loaded.hintsGiven);
     }
+
+    // PERFORMANCE-AUDIT, mejora 4: guardado compacto y escritura fuera del hilo principal, sin cruzarse
+
+    [Test]
+    public void ElGuardadoEsCompacto()
+    {
+        SaveData data = Sample();
+        string json = SaveSystem.Serialize(data);
+        StringAssert.DoesNotContain(NewLine, json);
+        Assert.Less(json.Length, UnityEngine.JsonUtility.ToJson(data, true).Length * 0.8, "al menos un 20 % menos");
+        Assert.IsTrue(SaveSystem.TryDeserialize(json, out SaveData back));
+        Assert.AreEqual(data.variantId, back.variantId);
+    }
+
+    [Test]
+    public void UnGuardadoAntiguoConSangriaSigueCargando()
+    {
+        Directory.CreateDirectory(directory);
+        File.WriteAllText(SaveSystem.FilePath, UnityEngine.JsonUtility.ToJson(Sample(), true));
+        Assert.IsTrue(SaveSystem.TryLoad(out SaveData data));
+        Assert.AreEqual(3, data.day);
+    }
+
+    [Test]
+    public void VariosGuardadosSeguidosDejanElUltimo()
+    {
+        // 30 guardados; solo el último es del día 7 (la partida valida días 1-7): si uno antiguo pisara al último, no saldría 7
+        for (int i = 1; i <= 30; i++)
+        {
+            SaveData data = Sample();
+            data.day = i < 30 ? 1 + i % 6 : 7;
+            SaveSystem.Save(data);
+        }
+        Assert.IsTrue(SaveSystem.TryLoad(out SaveData loaded), "leer espera a lo pendiente");
+        Assert.AreEqual(7, loaded.day, "ninguno escrito fuera de orden");
+        Assert.IsFalse(File.Exists(SaveSystem.FilePath + ".tmp"), "sin temporales a medias");
+    }
+
+    [Test]
+    public void BorrarDespuesDeGuardarNoResucitaLaPartida()
+    {
+        SaveSystem.Save(Sample());
+        SaveSystem.Delete();
+        SaveSystem.Flush();
+        Assert.IsFalse(SaveSystem.Exists, "una escritura pendiente no puede volver a crear el archivo borrado");
+    }
+
+    [Test]
+    public void LaEscrituraNoSeHaceEnElHiloQueGuarda()
+    {
+        int caller = System.Threading.Thread.CurrentThread.ManagedThreadId;
+        SaveSystem.ResetCountersForTests(); // LastWriterThread es estático: sin esto valdría el de otro test
+        SaveSystem.Save(Sample());
+        SaveSystem.Flush();
+        Assert.IsTrue(File.Exists(SaveSystem.FilePath), "se escribió de verdad");
+        Assert.AreNotEqual(0, SaveSystem.LastWriterThread);
+        Assert.AreNotEqual(caller, SaveSystem.LastWriterThread, "el disco se toca en otro hilo");
+    }
+
+    // Revisión independiente (sesión B): el test de borrado no probaba la guarda de versión, porque Delete ya espera
+    [Test]
+    public void UnGuardadoAtrasadoNoSeEscribeSiHayOtroMasNuevo()
+    {
+        SaveSystem.ResetCountersForTests();
+        SaveSystem.WriteDelayMsForTests = 200; // La primera escritura espera; mientras, llega la segunda
+        SaveData old = Sample();
+        old.day = 1;
+        SaveSystem.Save(old);
+        SaveData newer = Sample();
+        newer.day = 7;
+        SaveSystem.Save(newer);
+        SaveSystem.Flush();
+        Assert.AreEqual(1, SaveSystem.WritesForTests, "la atrasada se salta");
+        Assert.IsTrue(SaveSystem.TryLoad(out SaveData loaded));
+        Assert.AreEqual(7, loaded.day);
+    }
+
+    // Revisión independiente (sesión B, Importante): en Android el sistema mata la app en segundo plano sin
+    // Application.quitting. Al pausar hay que dejar en disco lo que esté en cola.
+    [Test]
+    public void AlPausarLaAppElUltimoGuardadoLlegaAlDisco()
+    {
+        SaveSystem.WriteDelayMsForTests = 300;
+        SaveSystem.Save(Sample());
+        var go = new UnityEngine.GameObject("gm-pausa");
+        try
+        {
+            GameManager gm = go.AddComponent<GameManager>();
+            typeof(GameManager).GetMethod("OnApplicationPause", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .Invoke(gm, new object[] { true });
+            Assert.IsTrue(File.Exists(SaveSystem.FilePath), "al volver de OnApplicationPause(true) ya está escrito");
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(go);
+        }
+    }
+
+    private static readonly string NewLine = System.Environment.NewLine.Substring(System.Environment.NewLine.Length - 1);
 }
