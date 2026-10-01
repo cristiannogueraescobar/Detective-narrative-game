@@ -909,3 +909,8 @@ retratos → 4 gráficos.
     colorearlo como los originales (selout).
 - **20:34 Paro el trabajo extra.** Total: 11 rondas, 31 de 33 señalan al generado. Mejor: rondas 9 y 10 (2 de 3).
   No aprueba; nada se integra. Hoja actualizada: `docs/art/javier/evolucion_sesion_b.jpg`.
+- **20:35** Informe `docs/REPORT-SESION-B.md` escrito y subido.
+- **20:36** Ronda 12: contorno coloreado (selout, opción nueva de `reinforce_outline` con test) → 3/3: "contorno
+  blando y roto". El contorno casi negro de la ronda 10 era mejor; lo que delata es la cara y el grano.
+- **20:37 Paro definitivamente el trabajo con Javier.** 12 rondas, 34 de 36. Mejor: rondas 9 y 10 (2 de 3).
+  Recomendación sin cambios: encargo con el BRIEF.
