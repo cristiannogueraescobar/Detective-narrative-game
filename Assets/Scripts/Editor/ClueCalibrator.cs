@@ -23,7 +23,7 @@ using UnityEngine;
 public static class ClueCalibrator
 {
     public const string ReportPath = "Logs/clue-calibration.md";
-    private const int CalibrationDay = 2;
+    public const int CalibrationDay = 2;
 
     public static readonly string[] PrecisionQuestions =
     {
