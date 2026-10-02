@@ -289,8 +289,9 @@ public class GameSmokeTests
         game.ForceAccusationPanel();
         yield return null;
         Assert.AreEqual(Music.Tension, SoundManager.CurrentMusic);
-        string prompt = Find("AccusatonPanel").GetComponentsInChildren<TMP_Text>().First(t => t.name == "Text (TMP)").GetParsedText();
-        StringAssert.Contains("libreta está vacía", prompt, "sin pistas, la acusación avisa de que es una apuesta");
+        // Sesión C: el aviso va en la tarjeta "TUS PRUEBAS" (la frase gris de la pregunta lo repetía)
+        var card = Find(EvidenceCard.ObjectName).GetComponent<EvidenceCard>();
+        StringAssert.Contains("Libreta vacía", card.VisibleText, "sin pistas, la acusación avisa de que es una apuesta");
 
         game.CancelAccusation();
         yield return null;

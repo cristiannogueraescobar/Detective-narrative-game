@@ -225,7 +225,7 @@ public class ArreglosInterfazTests
     public void LasFigurasDeLaRuedaSalenSinContraluz()
     {
         List<SuspectView> three = CaseLibrary.Stories[1].cast.Take(3).Select(SuspectView.From).ToList();
-        session.ui.ShowAccusationPanel(three, canGoBack: true, contradictions: 0);
+        session.ui.ShowAccusationPanel(three, canGoBack: true, new List<string>());
         LayoutPreview.ShowOnly(session, "AccusatonPanel");
         var figures = LayoutPreview.Find(session, "Rueda (auto)").GetComponentsInChildren<HeightLineupItem>()
             .Select(i => i.figure.GetComponent<RawImage>()).Where(r => r != null && r.material != null && r.material.HasProperty("_RimStrength")).ToList();
@@ -298,7 +298,7 @@ public class ArreglosInterfazTests
         LayoutPreview.SetSize(session, LayoutPreview.CanvasSize(w, h));
         // Historia 2 el primer día: tres sospechosos (el caso de la captura)
         List<SuspectView> three = CaseLibrary.Stories[1].cast.Take(3).Select(SuspectView.From).ToList();
-        session.ui.ShowAccusationPanel(three, canGoBack: true, contradictions: 0);
+        session.ui.ShowAccusationPanel(three, canGoBack: true, new List<string>());
         LayoutPreview.ShowOnly(session, "AccusatonPanel");
 
         var lineup = LayoutPreview.Find(session, "Rueda (auto)").GetComponent<HeightLineup>();
@@ -309,6 +309,166 @@ public class ArreglosInterfazTests
         float pxPerCm = lineup.GetComponentsInChildren<HeightLineupItem>().Max(i => i.figure.rect.height / i.heightCm);
         float wall = HeightLineup.WallTopCm * pxPerCm;
         Assert.GreaterOrEqual(wall, 0.65f * available, $"la pared de 2 m mide {wall:F0} de {available:F0} disponibles");
+    }
+
+    // ---------- Tarjeta "TUS PRUEBAS" en la acusación (adoptada por Cristian, sesión C) ----------
+
+    [Test]
+    public void LaTarjetaEligeSuFormaSegunElSitio()
+    {
+        Assert.AreEqual(EvidenceCardMode.Empty, EvidenceCard.Choose(spare: 900f, fullHeight: 300f, empty: true));
+        Assert.AreEqual(EvidenceCardMode.Empty, EvidenceCard.Choose(spare: 0f, fullHeight: 300f, empty: true));
+        Assert.AreEqual(EvidenceCardMode.Full, EvidenceCard.Choose(spare: 400f, fullHeight: 300f, empty: false));
+        Assert.AreEqual(EvidenceCardMode.Collapsed, EvidenceCard.Choose(spare: 200f, fullHeight: 300f, empty: false));
+    }
+
+    [TestCase(4, 1, "4 pistas · 1 contradicción")]
+    [TestCase(1, 0, "1 pista · 0 contradicciones")]
+    [TestCase(0, 2, "0 pistas · 2 contradicciones")]
+    public void LaLineaResumenDeLaTarjeta(int clues, int contradictions, string expected)
+    {
+        Assert.AreEqual(expected, GameTexts.EvidenceLine(clues, contradictions));
+    }
+
+    [Test]
+    public void ConLaTarjetaNoSeRepiteLaFraseGris()
+    {
+        ShowCard(new Vector2(1080f, 1920f), 0, 0);
+        string prompt = PromptText();
+        StringAssert.Contains(GameTexts.AccusationPrompt, prompt);
+        StringAssert.DoesNotContain("Tu libreta", prompt);
+        ShowCard(new Vector2(1080f, 1920f), 3, 1);
+        prompt = PromptText();
+        StringAssert.DoesNotContain("En tu libreta", prompt);
+        StringAssert.Contains("prueba clave", prompt, "la explicación del desplegable de la prueba clave se queda: no está en la tarjeta");
+    }
+
+    [TestCase(1080f, 1920f)]
+    [TestCase(1080f, 2400f)]
+    public void ConLaLibretaVaciaLaTarjetaSonDosLineas(float w, float h)
+    {
+        EvidenceCard card = ShowCard(LayoutPreview.CanvasSize(w, h), 0, 0);
+        Assert.AreEqual(EvidenceCardMode.Empty, card.Mode);
+        StringAssert.Contains(GameTexts.EvidenceCardEmpty, card.VisibleText);
+        float line = card.Body.fontSize * 1.35f;
+        Assert.LessOrEqual(((RectTransform)card.transform).rect.height, 2f * line + 2f * EvidenceCard.Padding + Tolerance, "dos líneas");
+        card.Body.ForceMeshUpdate(true, true);
+        Assert.LessOrEqual(card.Body.textInfo.lineCount, 2, "título + una línea");
+        CheckAccusation(false);
+    }
+
+    [Test]
+    public void En16a9ConPistasUnaLineaQueSeDespliega()
+    {
+        EvidenceCard card = ShowCard(new Vector2(1080f, 1920f), 4, 1);
+        Assert.AreEqual(EvidenceCardMode.Collapsed, card.Mode, "en 16:9 la lista entera no cabe sin encoger la rueda");
+        StringAssert.Contains("4 pistas · 1 contradicción", card.VisibleText);
+        Assert.LessOrEqual(((RectTransform)card.transform).rect.height, Theme.MinTouchSize + Tolerance, "una sola línea");
+        Assert.IsNotNull(card.GetComponentInChildren<Button>(), "se toca para desplegar");
+        CheckAccusation(true);
+
+        card.Toggle();
+        LayoutPreview.Rebuild((RectTransform)session.canvas.transform);
+        Assert.AreEqual(EvidenceCardMode.Expanded, card.Mode);
+        foreach (string name in Clues.Take(4).Select(c => c.playerName))
+            StringAssert.Contains(name, card.VisibleText);
+        StringAssert.Contains(Contradiction(0), card.VisibleText);
+        CheckAccusation(true);
+
+        card.Toggle();
+        LayoutPreview.Rebuild((RectTransform)session.canvas.transform);
+        Assert.AreEqual(EvidenceCardMode.Collapsed, card.Mode, "se vuelve a plegar");
+    }
+
+    [TestCase(1080f, 2400f)]
+    [TestCase(1440f, 3200f)]
+    public void En20a9ConPistasLaTarjetaEntera(float w, float h)
+    {
+        EvidenceCard card = ShowCard(LayoutPreview.CanvasSize(w, h), 4, 1);
+        Assert.AreEqual(EvidenceCardMode.Full, card.Mode, $"en 20:9 cabe en la pared que la rueda no usa (sobra {card.LastSpare:F0}, necesita {card.LastFull:F0}, total {card.LastTotal:F0})");
+        foreach (string name in Clues.Take(4).Select(c => c.playerName))
+            StringAssert.Contains(name, card.VisibleText);
+        StringAssert.Contains(Contradiction(0), card.VisibleText);
+        card.Body.ForceMeshUpdate(true, true);
+        Assert.IsFalse(card.Body.isTextTruncated, "la lista entera, sin cortar");
+        CheckAccusation(true);
+    }
+
+    // La rueda no encoge por la tarjeta entera: solo ocupa el sitio que sobraba
+    [Test]
+    public void LaTarjetaEnteraNoEncogeLaRueda()
+    {
+        ShowCard(LayoutPreview.CanvasSize(1080f, 2400f), 0, 0);
+        float empty = TallestFigure();
+        ShowCard(LayoutPreview.CanvasSize(1080f, 2400f), 4, 1);
+        Assert.AreEqual(empty, TallestFigure(), 1f);
+    }
+
+    // Con muchas pruebas (6 pistas y 12 contradicciones, el peor caso de la vista previa) también se pliega y no tapa nada
+    [TestCase(1080f, 1920f)]
+    [TestCase(1080f, 2400f)]
+    public void ConMuchasPruebasSePliegaYNoTapaNada(float w, float h)
+    {
+        EvidenceCard card = ShowCard(LayoutPreview.CanvasSize(w, h), 6, 12);
+        Assert.AreEqual(EvidenceCardMode.Collapsed, card.Mode);
+        CheckAccusation(true);
+        card.Toggle();
+        LayoutPreview.Rebuild((RectTransform)session.canvas.transform);
+        CheckAccusation(true);
+    }
+
+    // La tarjeta dice las contradicciones con el texto que le da el juego (el de la libreta), ni más ni menos
+    [Test]
+    public void LaTarjetaUsaElTextoDeLasContradiccionesTalCual()
+    {
+        EvidenceCard card = ShowCard(LayoutPreview.CanvasSize(1080f, 2400f), 2, 2);
+        Assert.AreEqual(EvidenceCardMode.Full, card.Mode);
+        StringAssert.Contains(Contradiction(0), card.VisibleText);
+        StringAssert.Contains(Contradiction(1), card.VisibleText);
+    }
+
+    private static List<ClueData> Clues => CaseLibrary.Stories[1].variants[0].clues;
+
+    private static string Contradiction(int i) => $"La versión de Marcos («cita {i + 1}») choca con: {Clues[i % Clues.Count].playerName}";
+
+    private EvidenceCard ShowCard(Vector2 canvasSize, int clues, int contradictions)
+    {
+        LayoutPreview.SetSize(session, canvasSize);
+        session.ui.SetEvidenceOptions(Clues.Take(clues).ToList());
+        List<SuspectView> three = CaseLibrary.Stories[1].cast.Take(3).Select(SuspectView.From).ToList();
+        var texts = Enumerable.Range(0, contradictions).Select(Contradiction).ToList();
+        session.ui.ShowAccusationPanel(three, true, texts);
+        LayoutPreview.ShowOnly(session, "AccusatonPanel");
+        LayoutPreview.Rebuild((RectTransform)session.canvas.transform);
+        return LayoutPreview.Find(session, EvidenceCard.ObjectName).GetComponent<EvidenceCard>();
+    }
+
+    private string PromptText()
+    {
+        return LayoutPreview.Find(session, "AccusatonPanel").GetComponentsInChildren<TMP_Text>().First(t => t.name == "Text (TMP)").text;
+    }
+
+    private float TallestFigure()
+    {
+        var lineup = LayoutPreview.Find(session, "Rueda (auto)").GetComponent<HeightLineup>();
+        lineup.Relayout();
+        return lineup.GetComponentsInChildren<HeightLineupItem>().Max(i => i.figure.rect.height);
+    }
+
+    // Controles libres, y la tarjeta sin pisar la pared de la rueda (ni la rueda la tarjeta)
+    private void CheckAccusation(bool withCard)
+    {
+        RectTransform panel = LayoutPreview.Find(session, "AccusatonPanel");
+        var errors = new List<string>();
+        CheckControls((RectTransform)session.canvas.transform, panel, errors);
+        Rect card = WorldRect(LayoutPreview.Find(session, EvidenceCard.ObjectName));
+        Rect wall = WorldRect(LayoutPreview.Find(session, InterrogationUI.LineupWallName));
+        if (card.yMin < wall.yMax - Tolerance && card.height > Tolerance)
+            errors.Add($"la tarjeta pisa la rueda: tarjeta {card.yMin:F0}..{card.yMax:F0}, pared {wall.yMin:F0}..{wall.yMax:F0}");
+        Rect prompt = WorldRect((RectTransform)panel.GetComponentsInChildren<TMP_Text>().First(t => t.name == "Text (TMP)").transform);
+        if (card.yMax > prompt.yMin + Tolerance && card.height > Tolerance)
+            errors.Add($"la tarjeta pisa el texto de arriba: tarjeta hasta {card.yMax:F0}, texto desde {prompt.yMin:F0}");
+        Assert.IsEmpty(errors, string.Join("; ", errors));
     }
 
     // ---------- Ayudas ----------

@@ -1,28 +1,42 @@
-docs/screenshots/2026-10-02/galeria/propuesta-resumen-acusacion.jpg
+docs/screenshots/2026-10-02/galeria/tarjeta-pruebas.jpg
 
-# Propuesta: resumen de pruebas en el hueco de la rueda (solo capturas, no integrada)
+# Tarjeta "TUS PRUEBAS" en la acusación
 
-Rama `feature/propuesta-resumen-acusacion`, que no se fusiona. La tarjeta solo existe en la prueba de captura
-(`AnimationCapture.PropuestaResumenAcusacion`); el juego no la tiene.
+Adoptada por Cristian (02-10-2026). Rama `feature/propuesta-resumen-acusacion`, sin fusionar.
 
-En 20:9 (1080 × 2400 y 1440 × 3200) la rueda deja pared vacía por encima de la raya de 2 m. La propuesta pone ahí una
-tarjeta "TUS PRUEBAS" entre el texto de la acusación y esa raya. Lleva las pistas de la libreta por su nombre y las
-contradicciones como "Una versión choca con: …". Con la libreta vacía, una línea que dice que acusar es una apuesta y
-que se puede volver.
+## Qué hace
 
-Capturas: historia 2, primer día. "Varias pistas" son las cuatro primeras de la variante y las contradicciones que el
-juego calcula con ellas. La variante cambia en cada partida: por eso las pistas no son las mismas a 1080 × 2400 que a
-1440 × 3200.
+| Punto | Comportamiento | Test |
+|---|---|---|
+| a | Con la tarjeta, la pregunta ya no lleva la frase gris "Tu libreta está vacía…" / "En tu libreta…". Se queda solo la explicación de la prueba clave, que no está en la tarjeta: sin ella, el desplegable "Prueba clave" no se entiende. La caja de la pregunta mide ahora lo que su texto (antes, 240 fijos con la mitad vacía). | `ConLaTarjetaNoSeRepiteLaFraseGris` |
+| b | Libreta vacía: dos líneas, "TUS PRUEBAS" y "Libreta vacía: acusar ahora es una apuesta.". El resto, para la rueda. | `ConLaLibretaVaciaLaTarjetaSonDosLineas` (16:9 y 20:9) |
+| — | Entera si cabe en la pared que la rueda no usa (en 20:9 la rueda la limita el ancho). La rueda no encoge. | `En20a9ConPistasLaTarjetaEntera`, `LaTarjetaEnteraNoEncogeLaRueda` |
+| c | Si no cabe (16:9), una línea, "TUS PRUEBAS · 3 pistas · 1 contradicción", con flecha. Al tocarla se despliega y empuja la rueda hacia abajo mientras está abierta. Nunca tapa la rueda, el texto de arriba ni los botones; otro toque la pliega. | `En16a9ConPistasUnaLineaQueSeDespliega`, `ConMuchasPruebasSePliegaYNoTapaNada` (6 pistas y 12 contradicciones) y el test de controles (`CheckControls`) en cada estado |
+| d | Las contradicciones con el mismo texto que la libreta (`AIConversationManager.DescribeContradiction`, el que usa la libreta): "La versión de X («cita») choca con: pista". Ni más ni menos. | `LaTarjetaUsaElTextoDeLasContradiccionesTalCual` y, jugando, `TarjetaPruebasTests.LaTarjetaDiceLasContradiccionesComoLaLibreta`: cada línea de la tarjeta está en la libreta y al revés |
+| e | Capturas jugando de verdad (`ScriptedPlay`): se elige al sospechoso, se pregunta y se pulsa Enviar. Las pistas salen por el detector y la contradicción, enseñando la prueba al culpable con "Mostrar prueba". Lo único con guion es el modelo, que contesta con la frase real de cada pista (sus `sampleHits`). Libreta, desplegables y textos son los del juego. | `AnimationCapture.TarjetaPruebas` |
 
-## Lo que hay que saber antes de decidir
+## Para decidir
 
-- En la captura con pistas, el texto de arriba dice "cero pistas". No es un fallo del juego: esa frase cuenta las
-  opciones del desplegable de pruebas, que el juego rellena al descubrir cada pista jugando. La captura mete las pistas
-  directamente en el estado, sin ese paso. Jugando diría "cuatro pistas".
-- Si se integra, el texto de arriba ("En tu libreta: …") repetiría lo que dice la tarjeta: habría que quitar uno de los
-  dos.
-- En 16:9 no hay hueco: la rueda ya llena la pantalla. La tarjeta tendría que salir solo cuando sobre sitio o ser
-  plegable.
-- Las pistas salen por su nombre, sin decir a quién incriminan. El juego ya evita eso en la acusación y lo mantengo.
-- Con muchas pistas (6 o más, más contradicciones), la tarjeta reduce el texto hasta el mínimo legible. Si aún no cabe,
-  haría falta desplazamiento o solo las cifras.
+1. **La contradicción nombra a quien miente, y solo miente el culpable.** "La versión de Marcos («no salí del bar») choca
+   con…" deja ver al culpable en cuanto hay una contradicción. Ya pasaba en la libreta; la tarjeta lo repite tal cual,
+   como pediste, así que no revela nada nuevo. Pero en la acusación salta a la vista. Si se quiere evitar, habría que
+   cambiar el texto de la libreta (`DescribeContradiction`), y la tarjeta lo seguiría.
+2. Desplegada en 16:9, la rueda encoge mientras está abierta (no se tapa). La alternativa sería una capa por encima de
+   la rueda, que la taparía.
+3. En la tarjeta las cifras van con número ("3 pistas"), como escribiste. En el resto del juego, las cifras pequeñas van
+   en letra ("tres pistas").
+
+## Lo que salió mal por el camino
+
+- En 20:9 la tarjeta entera no cabía por 8 px: la caja de la pregunta tenía 240 fijos. Ahora mide lo que su texto, y
+  la tarjeta pone el resumen en la línea del título en lugar de dos cabeceras.
+- La tarjeta cambiaba de forma en pleno rebuild del layout (error de TextMeshPro). Ahora un cambio de tamaño la marca y
+  se decide en el siguiente fotograma.
+- En las primeras capturas, el aviso "PISTA NUEVA" y el sello de contradicción seguían en pantalla: la captura abría la
+  acusación nada más conseguir la última pista. Ahora espera a que acaben.
+- El test que juega de verdad (`TarjetaPruebasTests`) lo escribí después de conectar `GameManager`; no lo vi en rojo.
+  Los de la tarjeta (EditMode), sí: 14 en rojo antes de escribirla.
+- Tres tests pedían la frase gris de antes (`ElResumenDeLaAcusacionSigueAlTema`, el de la música al volver de la
+  acusación y el de una sola línea del estado vacío). Están adaptados: el aviso está ahora en la tarjeta.
+
+Suites: EditMode 927/928 (el que no corre es el benchmark, a petición), PlayMode 67, 0 fallos. Ollama, sin cargar.

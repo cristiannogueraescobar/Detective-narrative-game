@@ -64,6 +64,16 @@ public class HeightLineup : LayoutGroup
         return new Layout { pxPerCm = scale, labelBand = labelBand, figureHeights = heights, cellWidths = cells, startX = start };
     }
 
+    /// <summary>
+    /// Alto que necesita la rueda para su escala si la limita el ancho (nombres, 2 m de pared y la cifra de arriba).
+    /// Lo que la pared mida de más es sitio libre (tarjeta de pruebas de la acusación).
+    /// </summary>
+    public static float NeededHeight(float width, float labelBand, IList<(int cm, float aspect)> people, float overlap = 0f)
+    {
+        Layout plan = Plan(width, 100000f, labelBand, people, overlap);
+        return labelBand + TopLabelRoom + WallTopCm * plan.pxPerCm;
+    }
+
     // ---------- En escena ----------
 
     public float labelBand = 64f;
