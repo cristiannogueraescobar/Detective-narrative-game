@@ -437,7 +437,8 @@ public static class ClueCalibrator
             }
         }
 
-        foreach (ClueResult r in results.Where(r => !r.Passed || (r.clue.isSecret && r.FirstTurnHits > 0)))
+        // Con -clues se detallan todas las pedidas (para ver también los fallos de una que pasa por poco)
+        foreach (ClueResult r in results.Where(r => !r.Passed || (r.clue.isSecret && r.FirstTurnHits > 0) || options.clueIds.Count > 0))
         {
             sb.AppendLine();
             sb.AppendLine($"## {r.clue.id} — {r.Hits}/{r.Total}");
