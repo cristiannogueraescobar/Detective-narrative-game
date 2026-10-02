@@ -150,12 +150,17 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     characterId = "madre",
                     knowledge = new[] { MentionAlex, MentionEncarna, "Paula quiere vivir contigo y lo iba a decir en la vista del lunes." },
-                    version = "El sábado estuve todo el día en Granada, en casa de mi hermana, con Álex.",
+                    version = "El sábado estuve todo el día en Granada, en casa de mi hermana, con Álex. Mi vida está en Granada; no pienso irme a ningún sitio.",
                     secret = "Pensabas mudarte a Madrid con Paula después de la vista sin decírselo al juzgado.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "Madrid y tu medicación.",
                     ifAccused = "Te quedas helada y dices, muy bajo, que eres su madre.",
-                    doesNotKnow = "Qué pasó en la finca el sábado."
+                    doesNotKnow = "Qué pasó en la finca el sábado.",
+                    // Fase 2 de las mentiras de inocentes: miente sobre su secreto (Madrid), no sobre el crimen
+                    lieQuote = "mi vida está en Granada; no pienso irme",
+                    lieAnchors = new[] { new[] { "no pienso irme", "no me voy a ir", "no pienso mudarme", "no me muevo" }, new[] { "granada", "ningun sitio", "ninguna parte" } },
+                    versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.",
+                    lieAbout = "su plan de mudarse a Madrid con Paula sin decírselo al juzgado"
                 },
                 new CharacterRole
                 {
@@ -274,6 +279,27 @@ Tienes 7 días para descubrir qué pasó.",
                         "Sí, mi tía Remedios y mis primos Nerea y Hugo pueden confirmarlo. Nosotros pasamos todo el día en su casa."
                     },
                     sampleMisses = new[] { "No me acuerdo bien, estuvimos por ahí." }
+                },
+                new ClueData
+                {
+                    // Fase 2: rompe la mentira de un inocente sobre su secreto; no le acusa del crimen
+                    id = "3A_madrid", playerName = "Pisos en Madrid", holder = "hermano", kind = ClueKind.Context,
+                    exposesLie = true, exposesLieOf = "madre",
+                    summary = "Álex cuenta que su madre ya miraba pisos en Madrid para irse con Paula después del juicio, sin decírselo al juez.",
+                    topic = "los planes de tu madre o qué iba a pasar después del juicio",
+                    fact = "tu madre ya miraba pisos en Madrid para irse con Paula después del juicio, sin decírselo al juez.",
+                    anchors = new[]
+                    {
+                        new[] { "madrid" },
+                        new[] { "pisos", "piso", "mudarse", "mudarnos", "irse", "irnos", "vivir alli" }
+                    },
+                    calibrationQuestions = new[] { "¿Qué planes tenía tu madre después del juicio?", "¿Tu madre iba a quedarse en Granada?" },
+                    sampleHits = new[]
+                    {
+                        "O sea, mamá ya miraba pisos en Madrid para irse con Paula después del juicio, tío.",
+                        "Qué va, mamá quería irse a Madrid con Paula; ya estaba mirando piso y el juez no sabía nada."
+                    },
+                    sampleMisses = new[] { "Mamá vive en Granada, como siempre, tío.", "No sé qué planes tenía, no hablamos mucho." }
                 }
             }
         };
@@ -332,12 +358,17 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     characterId = "padre",
                     knowledge = new[] { MentionAlex, MentionEncarna, "Lucía conduce un coche pequeño rojo, un Seat Ibiza." },
-                    version = "El sábado de 18:30 a 21:30 estuve en el bar Casino; al volver pensé que Paula dormía. El domingo ya no estaba; creí que se había ido con su madre.",
+                    version = "El sábado de 18:30 a 21:30 estuve en el bar Casino, un par de cañas, nada más; al volver pensé que Paula dormía. El domingo ya no estaba; creí que se había ido con su madre.",
                     secret = "Bebiste mucho y no entraste a ver a Paula al volver; te avergüenza y temes que la jueza lo use contra ti.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "lo que bebiste el sábado.",
                     ifAccused = "Estallas: gritas que es tu hija y que su madre os ha puesto a todos en contra.",
-                    doesNotKnow = "Quién subió a la finca mientras estabas fuera."
+                    doesNotKnow = "Quién subió a la finca mientras estabas fuera.",
+                    // Fase 2 de las mentiras de inocentes: miente sobre su secreto (lo que bebió), no sobre el crimen
+                    lieQuote = "un par de cañas, nada más",
+                    lieAnchors = new[] { new[] { "un par de canas", "dos canas", "un par de cervezas" }, new[] { "nada mas", "solo", "sereno" } },
+                    versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.",
+                    lieAbout = "lo mucho que bebió el sábado"
                 },
                 new CharacterRole
                 {
@@ -453,6 +484,27 @@ Tienes 7 días para descubrir qué pasó.",
                         "Pregunte al camarero del bar, me vio toda la tarde."
                     },
                     sampleMisses = new[] { "Estuve por ahí, qué más da." }
+                },
+                new ClueData
+                {
+                    // Fase 2: rompe la mentira de un inocente sobre su secreto; no le acusa del crimen
+                    id = "3B_tumbos", playerName = "Un regreso dando tumbos", holder = "vecina", kind = ClueKind.Context,
+                    exposesLie = true, exposesLieOf = "padre",
+                    summary = "Encarna vio a Javier volver a las 21:30 dando tumbos, muy bebido; en su casa no se encendió la luz del cuarto de la niña.",
+                    topic = "Javier o lo que viste el sábado por la noche",
+                    fact = "a las 21:30 viste a Javier volver del pueblo dando tumbos, muy bebido, y en su casa no se encendió la luz del cuarto de la niña.",
+                    anchors = new[]
+                    {
+                        new[] { "tumbos", "eses", "borracho", "bebido", "tambaleando", "como una cuba" },
+                        new[] { "21:30", "nueve y media", "volvio", "volver", "luz" }
+                    },
+                    calibrationQuestions = new[] { "¿Vio volver a Javier el sábado por la noche?", "¿Cómo estaba Javier el sábado?" },
+                    sampleHits = new[]
+                    {
+                        "A las 21:30 vi volver a Javier dando tumbos, hijo, muy bebido; y no se encendió la luz del cuarto de la niña.",
+                        "Javier volvió como una cuba, a eso de las nueve y media; ni encendió la luz de la niña."
+                    },
+                    sampleMisses = new[] { "Javier volvió del pueblo por la noche, como cada sábado.", "Javier es buen hombre, hijo, aunque le guste el vino." }
                 }
             }
         };
@@ -538,7 +590,12 @@ Tienes 7 días para descubrir qué pasó.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "por qué tardaste en leer el mensaje de Paula.",
                     ifAccused = "Aprietas los puños y te callas.",
-                    doesNotKnow = "Qué pasó en la finca después de las ocho."
+                    doesNotKnow = "Qué pasó en la finca después de las ocho.",
+                    // Fase 2 de las mentiras de inocentes: miente sobre su secreto (la fiesta), no sobre el crimen; ya estaba en su versión
+                    lieQuote = "estuve en Granada con mi madre",
+                    lieAnchors = new[] { new[] { "con mi madre", "con mama" }, new[] { "estuve", "toda la noche", "en casa", "granada" } },
+                    versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.",
+                    lieAbout = "que estaba de fiesta y no miró el móvil hasta medianoche"
                 }
             },
             clues = new List<ClueData>
@@ -646,6 +703,27 @@ Tienes 7 días para descubrir qué pasó.",
                         "El camarero del bar se lo puede decir. Volví a las 22:00."
                     },
                     sampleMisses = new[] { "Estuve por ahí, qué más da." }
+                },
+                new ClueData
+                {
+                    // Fase 2: rompe la mentira de un inocente sobre su secreto; no le acusa del crimen
+                    id = "3C_fiesta", playerName = "Una noche de fiesta", holder = "madre", kind = ClueKind.Context,
+                    exposesLie = true, exposesLieOf = "hermano",
+                    summary = "Lucía cuenta que Álex se fue de fiesta el sábado por la noche y no volvió hasta la una, sin coger el móvil.",
+                    topic = "dónde estuvo Álex el sábado por la noche",
+                    fact = "el sábado por la noche Álex se fue de fiesta con sus amigos y no volvió hasta la una; no le cogía el móvil a nadie.",
+                    anchors = new[]
+                    {
+                        new[] { "fiesta", "de marcha", "salio", "con sus amigos", "con los amigos" },
+                        new[] { "la una", "1:00", "no volvio", "no contestaba", "no cogia", "no le cogia", "de madrugada" }
+                    },
+                    calibrationQuestions = new[] { "¿Estuvo Álex con usted toda la noche?", "¿Qué hizo Álex el sábado por la noche?" },
+                    sampleHits = new[]
+                    {
+                        "No, Álex se fue de fiesta con sus amigos y no volvió hasta la una; no me cogía el móvil.",
+                        "Salió con los amigos, de marcha, y no volvió hasta la una de la madrugada."
+                    },
+                    sampleMisses = new[] { "Álex estuvo conmigo en Granada.", "Álex es un buen chico, inspector." }
                 }
             }
         };

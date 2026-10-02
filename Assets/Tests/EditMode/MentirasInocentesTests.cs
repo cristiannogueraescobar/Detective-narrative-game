@@ -328,6 +328,9 @@ public class MentirasInocentesTests
     [TestCase("2A", "cartero", "2A_postales")]
     [TestCase("2B", "vecina", "2B_orujo")]
     [TestCase("2C", "cartero", "2C_postales")]
+    [TestCase("3A", "madre", "3A_madrid")]
+    [TestCase("3B", "padre", "3B_tumbos")]
+    [TestCase("3C", "hermano", "3C_fiesta")]
     public void MentirosoInocenteDeCadaVariante(string variantId, string liar, string clueId)
     {
         CaseLibrary.TryFind(variantId, out StoryData story, out VariantData v);
