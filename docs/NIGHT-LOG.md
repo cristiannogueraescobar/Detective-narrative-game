@@ -887,3 +887,18 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
   Una espera mía se paró por poca memoria del sistema (no el bot, que terminó bien).
 - **00:05 Cierre.** Todo con commit y push. Solo `feature/mejoras-seguras` fusionada (`a05a686`). Worktrees temporales
   borrados; Ollama descargado; sin procesos de Unity.
+
+## Revisión de Cristian de retratos y capturas
+
+- **01:02** Fusionadas a main, en orden y con las dos suites tras cada una: tests-sin-precarga (EditMode 758/759,
+  PlayMode 65), revision-finecomb (765/766, 66), revision-textos (774/775, 66) y pistas-dos-portadores (794/795, 66).
+  main = `b92ad83`. retratos-completos, sesion-c y retratos-javier, sin fusionar.
+- **01:20** Los seis problemas de interfaz ya estaban en main. Los destapó mi captura a 9:32 (`-captureHeight 1920` con
+  el ancho por defecto de 540). Reproducido en main a esa proporción; a 1080 × 1920 y 20:9 los controles se ven.
+- **02:05** `feature/arreglos-interfaz` (`9942290`): tope del busto en la cabecera, composición única (busto por
+  defecto, figura como opción B), sin ampliar por encima de 1:1 (PixelScale/PixelFit), sin contraluz en el busto
+  (`bustRimStrength`), barra de arriba en dos líneas si no cabe y rueda con solape del 30 %. Test nuevo de controles
+  (fuera de pantalla, por debajo de 48 dp o tapados) a 4 tamaños. Galerías en `docs/screenshots/2026-10-02/galeria/`.
+  Errores: borré el "antes" sin copiarlo (rehecho desde un worktree de main), el heredoc con `
+` otra vez, y el
+  tema de prueba que Unity descargaba al abrir la escena. EditMode 901/902, PlayMode 66, 0 fallos.
