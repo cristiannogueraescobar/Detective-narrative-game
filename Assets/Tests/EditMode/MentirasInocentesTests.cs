@@ -242,6 +242,20 @@ public class MentirasInocentesTests
         StringAssert.StartsWith("La versión de Daniel («", Contradictions.Describe(story, v, clue));
     }
 
+    // Calibración de la fase 1: "hasta cerca de las 23:00. Llegué a casa a esa hora" también es su mentira
+    [Test]
+    public void LaMentiraDeDanielEn1CSeDetectaComoLaDice()
+    {
+        CaseLibrary.TryFind("1C", out _, out VariantData v);
+        string[][] anchors = v.Role("padre").lieAnchors;
+        foreach (string said in new[]
+                 {
+                     "Estuve en el despacho hasta cerca de las 23:00. Llegué a casa a esa hora y subí a ver a Elena.",
+                     "A las 23:00 llegué a casa y subí a ver a Elena."
+                 })
+            Assert.IsTrue(ClueDetector.Evaluate(anchors, ClueDetector.Normalize(said), negationGuard: false).Matched, said);
+    }
+
     // El resto de variantes, sin mentiroso inocente hasta la fase 2
     [TestCase("1A")]
     [TestCase("2A")]

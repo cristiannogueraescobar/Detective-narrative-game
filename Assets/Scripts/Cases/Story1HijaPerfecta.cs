@@ -383,7 +383,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         new[] { "cenar con", "cena con", "cenando con", "cene con" },
                         new[] { "clientes", "cliente" }
                     },
-                    versionB = "Vale: no había clientes. Estaba con otra persona; Carmen no lo sabe.",
+                    versionB = "Vale: no había clientes. Estuve con otra persona, a escondidas.",
                     lieAbout = "su aventura"
                 },
                 new CharacterRole
@@ -447,12 +447,15 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     anchors = new[]
                     {
                         new[] { "corazon", "cardi", "arritmia", "medicament", "medicina", "tratamiento", "segunda opinion" },
-                        new[] { "receto", "recetaba", "prescrit", "prescrib", "segunda opinion", "furiosa", "se enfado", "se molesto", "ella misma", "hecha una fiera" }
+                        new[] { "receto", "recetaba", "prescrit", "prescrib", "segunda opinion", "furiosa", "se enfado", "se molesto", "ella misma", "hecha una fiera", "le dio", "le daba", "muy molesta", "otro especialista" }
                     },
                     calibrationQuestions = new[] { "¿Tomaba Elena alguna medicación?", "¿Quién decidía los tratamientos de Elena?" },
                     sampleHits = new[]
                     {
                         "Carmen le recetó ella misma algo para el corazón. Cuando pedí una segunda opinión se puso furiosa.",
+                        // Sesión C (calibración de la fase 1): respuestas reales que el detector no veía
+                        "Recuerdo que Carmen le dio algo para el corazón y se mostró muy molesta cuando sugerí consultar a otro especialista.",
+                        "Carmen le dio algo para el corazón y se puso muy nerviosa cuando quise consultar con otro especialista.",
                         "Yo quería que la viera un cardiólogo, una segunda opinión, y Carmen se enfadó muchísimo.",
                         "No estoy seguro de qué medicación tomaba Elena esa noche, solo sé que Carmen le recetó uno para el corazón hace unos meses.",
                         "Elena solía tomar un medicamento para el corazón prescrito por Carmen.",
@@ -649,7 +652,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     lieQuote = "llegué a casa a las 23:00",
                     lieAnchors = new[]
                     {
-                        new[] { "a las 23:00", "a las once", "sobre las once", "a eso de las once" },
+                        new[] { "23:00", "las once", "11 de la noche" },
                         new[] { "llegue", "volvi", "vine", "entre en casa" }
                     },
                     versionB = "Está bien: llegué antes, a las diez y cuarto. Vi el chichón y no la llevé al hospital.",

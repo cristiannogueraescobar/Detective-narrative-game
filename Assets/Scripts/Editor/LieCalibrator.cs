@@ -10,10 +10,10 @@ using UnityEngine;
 /// <summary>
 /// CALIBRADOR DE MENTIRAS (sesión C, mentiras de inocentes). Para cada mentiroso de las variantes pedidas (el culpable
 /// y el inocente que miente sobre su secreto), con el modelo de verdad:
-///   1. ¿La cuenta? Se le pregunta por su noche y por el tema de la pista que rompe su mentira, una pregunta por
-///      intento, y se mira si salta su lieAnchors (objetivo: 7 de 10).
-///   2. ¿Falsa mentira? Se le enseña la pista que le contradice y se mira que su respuesta NO cuente como mentir otra
-///      vez (objetivo: ninguna).
+///   1. ¿La cuenta? Se le pregunta por su noche, una pregunta por intento, y se mira si salta su lieAnchors
+///      (objetivo: 7 de 10).
+///   2. ¿La repite con la prueba delante? Se le enseña la pista que le contradice. Es informativo: la contradicción
+///      sale igual al enseñarla (también al culpable le pasa).
 /// Uso: Unity -batchmode -nographics -projectPath . -executeMethod LieCalibrator.RunFromCommandLine
 ///      -variants 1B,1C -tries 10. Informe: Logs/lie-calibration.md
 /// </summary>
@@ -35,16 +35,9 @@ public static class LieCalibrator
     public static ClueData BreakingClue(VariantData v, string liar) =>
         v.clues.FirstOrDefault(c => c.exposesLie && c.LiarIn(v) == liar);
 
-    public static IEnumerable<string> Questions(VariantData v, string liar)
-    {
-        foreach (string q in GenericQuestions)
-            yield return q;
-        ClueData clue = BreakingClue(v, liar);
-        if (clue?.calibrationQuestions == null)
-            yield break;
-        foreach (string q in clue.calibrationQuestions)
-            yield return ClueCalibrator.SplitTurns(q)[0];
-    }
+    // Solo lo que se pregunta de entrada por su noche: las preguntas de la pista que rompe la mentira presionan para que
+    // confiese, y eso no mide si la cuenta
+    public static IEnumerable<string> Questions(VariantData v, string liar) => GenericQuestions;
 
     // ---------- Ejecución ----------
 
