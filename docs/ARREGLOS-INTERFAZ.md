@@ -56,6 +56,12 @@ verde y 0 fallos, con los tests de layout (`LayoutValidationTests`) dentro. Olla
 - A 9:32 el desplegable de sospechoso corta "Marcos (dueño…)", porque el control es más estrecho. Esa proporción no
   existe en ningún móvil; lo que importa es que se ve y se toca.
 
+## Al fusionar
+
+`feature/retratos-completos` encima de esta rama choca solo en `Assets/Tests/PlayMode/AnimationCapture.cs` (las
+dos ramas tocan la opción de ancho de captura y añaden capturas en el mismo sitio): hay que quedarse con las dos partes.
+Orden propuesto: esta rama primero y después `feature/retratos-completos`.
+
 ## Decisiones para Cristian
 
 1. **¿Busto (A) o figura (B)?** Recomiendo A: el estado del sospechoso, que es información de juego, se ve siempre y no
