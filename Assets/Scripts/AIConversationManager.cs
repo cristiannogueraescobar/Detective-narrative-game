@@ -303,9 +303,7 @@ public class AIConversationManager : MonoBehaviour
 
     public string DescribeContradiction(ClueData clue)
     {
-        CharacterData culprit = Story.Character(State.Variant.culpritId);
-        string quote = State.Variant.Role(culprit.id).lieQuote;
-        return $"La versión de {culprit.shortName} («{quote}») choca con: {clue.playerName}";
+        return Contradictions.Describe(Story, State.Variant, clue);
     }
 
     private void LogEvaluation(string characterId, TurnOutcome outcome)

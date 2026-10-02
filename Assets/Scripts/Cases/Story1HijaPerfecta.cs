@@ -375,7 +375,16 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     admitsWhen = "el inspector insiste, menciona el restaurante o dice que lo va a comprobar",
                     nervousAbout = "dónde estuviste entre las 21:00 y las 23:05.",
                     ifAccused = "Te enfrías y hablas de pruebas y de presunción de inocencia.",
-                    doesNotKnow = "Qué medicación le dio Carmen a Elena esa noche."
+                    doesNotKnow = "Qué medicación le dio Carmen a Elena esa noche.",
+                    // Sesión C, mentiras de inocentes: miente sobre su secreto (la aventura), no sobre el crimen. 1B_cena la rompe
+                    lieQuote = "salí a cenar con clientes",
+                    lieAnchors = new[]
+                    {
+                        new[] { "cenar con", "cena con", "cenando con", "cene con" },
+                        new[] { "clientes", "cliente" }
+                    },
+                    versionB = "Vale: no había clientes. Estaba con otra persona; Carmen no lo sabe.",
+                    lieAbout = "su aventura"
                 },
                 new CharacterRole
                 {
@@ -515,6 +524,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 new ClueData
                 {
                     id = "1B_cena", playerName = "La cena del viernes", holder = "padre", kind = ClueKind.Clears, clears = "padre", isSecret = true,
+                    exposesLie = true, exposesLieOf = "padre", // Rompe la mentira de Daniel (inocente) y le descarta
                     summary = "Daniel no estaba en una cena de clientes: estuvo con Marta, una compañera del bufete, de 21:00 a 23:00.",
                     topic = "dónde o con quién estuviste esa noche",
                     fact = "Estuviste de 21:00 a 23:00 en casa de Marta, una compañera del bufete; ella y el portero pueden confirmarlo.",
@@ -634,7 +644,16 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     admitsWhen = "el inspector insiste, te dice que alguien vio tu coche llegar antes de las 23:00 o que va a pedir el registro de llamadas",
                     nervousAbout = "la hora a la que llegaste y tu móvil.",
                     ifAccused = "Te indignas, hablas de presunción de inocencia y exiges un abogado.",
-                    doesNotKnow = "Qué hacía Lucas en el instituto."
+                    doesNotKnow = "Qué hacía Lucas en el instituto.",
+                    // Sesión C, mentiras de inocentes: miente sobre la hora (su secreto: vio el golpe y no actuó). 1C_llamada la rompe
+                    lieQuote = "llegué a casa a las 23:00",
+                    lieAnchors = new[]
+                    {
+                        new[] { "a las 23:00", "a las once", "sobre las once", "a eso de las once" },
+                        new[] { "llegue", "volvi", "vine", "entre en casa" }
+                    },
+                    versionB = "Está bien: llegué antes, a las diez y cuarto. Vi el chichón y no la llevé al hospital.",
+                    lieAbout = "la hora a la que llegó: vio a Elena con el golpe y no la llevó al hospital"
                 },
                 new CharacterRole
                 {
@@ -730,6 +749,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 new ClueData
                 {
                     id = "1C_llamada", playerName = "Una llamada corta", holder = "padre", kind = ClueKind.Incriminates, isSecret = true,
+                    exposesLie = true, exposesLieOf = "padre", // Rompe la mentira de Daniel (llegó a las 22:15); incrimina a Lucas
                     summary = "Lucas llamó a Daniel a las 21:52, llorando: 'Elena se ha caído, pero está bien'. Daniel llegó a casa a las 22:15, no a las 23:00.",
                     topic = "las llamadas de esa noche o a qué hora llegaste de verdad a casa",
                     fact = "Lucas te llamó a las 21:52 llorando: 'Elena se ha caído por la escalera, pero está bien'. Por eso llegaste a casa a las 22:15, no a las 23:00.",

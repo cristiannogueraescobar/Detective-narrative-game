@@ -52,13 +52,41 @@ public class HintAdvisorTests
     }
 
     [Test]
-    public void NoSenalaAlCulpableNiEmpiezaPorLaPistaDecisiva()
+    public void NoEmpiezaPorLaPistaDecisiva()
     {
-        // Todos disponibles: primero pistas de inocentes que no son la ⚡
         Hint hint = Next("a", "b", "c");
-        ClueData clue = story.variants[0].Clue(hint.clueId);
-        Assert.AreNotEqual(story.variants[0].culpritId, clue.holder);
-        Assert.IsFalse(clue.exposesLie);
+        Assert.IsFalse(story.variants[0].Clue(hint.clueId).exposesLie);
+    }
+
+    // Sesión C, mentiras de inocentes (fuga 3): "Pensar" dejaba al culpable para el final, y a quien nunca te mandaba
+    // era el culpable. El orden de las pistas sugeridas no puede depender de quién lo es
+    [Test]
+    public void ElOrdenNoDependeDeQuienEsElCulpable()
+    {
+        List<string> Sequence(string culprit)
+        {
+            StoryData s = TestCases.Story();
+            s.variants[0].culpritId = culprit;
+            s.variants[0].Clue("ctx").holder = "a"; // Que el culpable "a" tenga una pista que se pueda sugerir
+            var st = new InvestigationState(s.variants[0]);
+            var memory = new HintMemory();
+            var ids = new List<string>();
+            for (int i = 0; i < 12; i++)
+            {
+                Hint h = HintAdvisor.Next(s, st, new[] { "a", "b", "c" }, memory);
+                if (h.clueId == null)
+                    break;
+                if (h.level == 2)
+                {
+                    ids.Add(h.clueId);
+                    st.Discover(h.clueId);
+                }
+            }
+            return ids;
+        }
+
+        CollectionAssert.AreEqual(Sequence("a"), Sequence("b"));
+        CollectionAssert.AreEqual(Sequence("a"), Sequence("c"));
     }
 
     [Test]

@@ -144,7 +144,8 @@ public class GameManager : MonoBehaviour
             unlocked = new List<string>(unlocked),
             discovered = new List<string>(State.DiscoveredClueIds),
             discoveredBy = State.DiscoveredClueIds.Select(id => id + ":" + State.RevealedBy(id)).ToList(),
-            culpritToldLie = State.CulpritToldLie
+            culpritToldLie = State.CulpritToldLie,
+            liesTold = State.LiesTold.ToList()
         };
 
         foreach (CharacterData character in story.cast)
@@ -596,7 +597,7 @@ public class GameManager : MonoBehaviour
         if (key != null)
         {
             keyLine = !result.correct ? $"Tu prueba clave, «{key.playerName}», no bastaba: señalabas a la persona equivocada."
-                    : key.exposesLie ? $"Tu prueba clave, «{key.playerName}», rompía su coartada. Así se cierra un caso."
+                    : key.exposesLie && key.LiarIn(variant) == variant.culpritId ? $"Tu prueba clave, «{key.playerName}», rompía su coartada. Así se cierra un caso."
                     : key.kind == ClueKind.Incriminates ? $"Tu prueba clave, «{key.playerName}», señalaba a quien lo hizo."
                     : $"«{key.playerName}» no acusaba a nadie: no era la prueba que lo demostraba.";
         }

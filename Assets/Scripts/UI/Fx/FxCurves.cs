@@ -209,6 +209,13 @@ public static class EndingReport
         sb.AppendLine(result.ending == Ending.Bad && result.ignoredClearingClue
             ? "Acusaste a alguien a quien tus propias pistas descartaban. El verdadero culpable sigue libre."
             : style.verdict);
+        // Acusaste a un inocente que mentía: sobre qué (su secreto), para aprender a distinguir mentiras
+        if (!string.IsNullOrEmpty(result.innocentLieAbout))
+        {
+            int cut = accusedName.IndexOf(" (", System.StringComparison.Ordinal);
+            string name = cut > 0 ? accusedName.Substring(0, cut) : accusedName;
+            sb.AppendLine($"{name} mentía, sí: sobre {result.innocentLieAbout}, no sobre el crimen.");
+        }
         sb.AppendLine();
 
         sb.AppendLine($"<color={Theme.Hex(t.accent)}><b>LO QUE PASÓ DE VERDAD</b></color>");
