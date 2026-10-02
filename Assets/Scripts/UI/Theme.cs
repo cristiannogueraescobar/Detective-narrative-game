@@ -6,6 +6,9 @@ using UnityEngine;
 /// Si no existe, se usan los valores de este fichero (paleta noir por defecto).
 /// Tamaños en píxeles de la resolución de referencia (1080 × 1920, vertical).
 /// </summary>
+/// <summary>Cómo sale el sospechoso en el interrogatorio: busto en la cabecera o figura en el centro (nunca los dos).</summary>
+public enum PortraitComposition { Busto, Figura }
+
 [CreateAssetMenu(fileName = "Theme", menuName = "Detective/Tema visual")]
 public class Theme : ScriptableObject
 {
@@ -108,7 +111,11 @@ public class Theme : ScriptableObject
     [Range(0f, 8f)] public float portraitRelief = 4.5f;
     [Range(1f, 24f)] public float portraitReliefRadius = 6f;            // Texels de muestreo
     public Color portraitRimColor = new Color(0.55f, 0.65f, 0.8f);      // Contraluz frío
-    [Range(0f, 2f)] public float portraitRimStrength = 0.7f;
+    [Range(0f, 2f)] public float portraitRimStrength = 0f;           // Rueda y ficha: apagado (decisión de Cristian, sesión C); antes 0,7
+    [Range(0f, 2f)] public float bustRimStrength = 0f;              // Contraluz en el busto y la figura grandes: a ese tamaño parecía un fallo
+    [Range(1f, 4f)] public float portraitMaxMagnification = 2f;     // Píxeles por téxel como mucho (enteros): 2× si cabe en la caja; si no, 1×
+    [Range(0.2f, 0.6f)] public float headerPortraitMaxShare = 0.4f; // Ancho máximo del busto en la cabecera: los controles, el resto
+    [Range(0f, 0.4f)] public float lineupOverlap = 0.3f;            // Rueda: parte de cada figura que puede quedar delante o detrás de la vecina
     [Range(0f, 1f)] public float portraitLampFalloff = 0.35f;
     [Range(0.5f, 2f)] public float portraitLitBoost = 1.3f;             // Compensa la luz que quita el relieve
     [Range(0f, 1f)] public float backgroundSaturation = 0.7f;
@@ -153,7 +160,11 @@ public class Theme : ScriptableObject
     public float deliberationSeconds = 2.2f;                    // Pausa antes del veredicto
     [Range(0f, 1f)] public float roomBrightness = 0.38f;        // Sala de interrogatorios detrás del chat
     public bool interrogationStage = true;                      // Sospechoso de cuerpo entero, tenue, en el hueco del centro (Sesión A)
-    [Range(0f, 0.6f)] public float stageAlpha = 0.24f;
+    // Revisión de Cristian (sesión C): el sospechoso salía dos veces (busto arriba y figura tenue en el centro).
+    // Ahora o busto o figura; con la figura, la cabecera se queda solo con los controles. interrogationStage = false
+    // fuerza el busto.
+    public PortraitComposition interrogationComposition = PortraitComposition.Busto;
+    [Range(0f, 1f)] public float stageAlpha = 0.95f;            // La figura (composición Figura) es el retrato: casi opaca
     public bool tensionVignette = true;                         // Viñeta de tensión según el estado del sospechoso
     [Range(0f, 1f)] public float introArtBrightness = 0.8f;     // Arte de cada historia detrás del expediente
     public Color story1Tint = new Color(0.85f, 0.92f, 1.05f);  // Casa en Santiago: fría

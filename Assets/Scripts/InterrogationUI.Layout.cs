@@ -86,7 +86,7 @@ public partial class InterrogationUI
             LayoutKit.Put(hudText, hud, flexibleWidth: 1f);
             hudText.alignment = TextAlignmentOptions.MidlineLeft;
             hudText.font = UIFactory.TitleFont(); // Como un rótulo de expediente
-            LayoutKit.OneLine(hudText, T.bodySize);
+            TextStyle.Set(hudText, TextStyle.Mode.OneLineOrTwo, T.bodySize); // Si no cabe ni al mínimo, en dos líneas
         }
         LayoutKit.Put(viewCluesButton, hud, width: 260f);
         LayoutKit.Label(viewCluesButton, "Libreta");
@@ -107,9 +107,10 @@ public partial class InterrogationUI
             portrait.anchorMax = Vector2.one;
             portrait.offsetMin = portrait.offsetMax = Vector2.zero;
             portrait.localScale = Vector3.one;
-            var fitter = UIComponents.GetOrAdd<AspectRatioFitter>(suspectImage.gameObject);
-            fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
-            fitter.aspectRatio = 0.75f;
+            // Sin AspectRatioFitter: estiraba el pixel art a lo que midiera la caja (bloques borrosos en pantallas altas)
+            if (suspectImage.TryGetComponent(out AspectRatioFitter oldFitter))
+                DestroyImmediate(oldFitter);
+            PixelFit.For(portraitBox, suspectImage);
 
             // Estado emocional a la vista: una etiqueta sobre el pie del retrato
             RectTransform chip = UIFactory.Container(portraitBox, "Estado (auto)", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));

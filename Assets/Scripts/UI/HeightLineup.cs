@@ -15,40 +15,53 @@ public class HeightLineup : LayoutGroup
         public float pxPerCm;
         public float labelBand;
         public float[] figureHeights;
-        public float[] cellWidths;   // A la medida de cada figura; suman el ancho de la fila
+        public float[] cellWidths;   // A la medida de cada figura; con startX y endX suman el ancho de la fila
+        public float startX;         // Con solape, sitio a los lados para lo que asoma de la primera y la última figura
         public float MarkY(int cm) => labelBand + cm * pxPerCm;
     }
 
     public const int WallTopCm = 200;
     private const float Padding = 0.92f; // Hueco entre figuras
+    private const float TopLabelRoom = 24f;
 
     /// <summary>
     /// Escala y alturas de las figuras para un área (ancho × alto en px), la franja de nombres de abajo y, por
     /// sospechoso, su altura (cm) y la proporción ancho/alto de su figura.
     /// </summary>
-    public static Layout Plan(float width, float height, float labelBand, IList<(int cm, float aspect)> people)
+    /// <param name="overlap">Parte del ancho de cada figura que puede quedar delante o detrás de la vecina (0 = cada
+    /// una en su hueco). Los huecos (botón y anillo) no se solapan: es la figura la que asoma.</param>
+    public static Layout Plan(float width, float height, float labelBand, IList<(int cm, float aspect)> people, float overlap = 0f)
     {
         int n = Mathf.Max(1, people.Count);
         // Huecos a la medida de cada figura: la limita el ancho de todas juntas, no la más ancha
         float widthPerScale = 0f;
         foreach (var (cm, aspect) in people)
-            widthPerScale += Mathf.Max(0.05f, aspect) * Mathf.Max(1, cm);
-        float scale = (height - labelBand) / WallTopCm;
+            widthPerScale += Mathf.Max(0.05f, aspect) * (1f - overlap) * Mathf.Max(1, cm);
+        // Lo que asoma por los extremos no puede salirse de la fila (taparía las cifras de la pared)
+        float edgeStart = 0f, edgeEnd = 0f;
+        if (people.Count > 0)
+        {
+            edgeStart = Mathf.Max(0.05f, people[0].aspect) * Mathf.Max(1, people[0].cm) * overlap * 0.5f;
+            edgeEnd = Mathf.Max(0.05f, people[people.Count - 1].aspect) * Mathf.Max(1, people[people.Count - 1].cm) * overlap * 0.5f;
+        }
+        widthPerScale += edgeStart + edgeEnd;
+        float scale = (height - labelBand - TopLabelRoom) / WallTopCm; // La cifra de 200 tiene que caber encima de su raya
         if (widthPerScale > 0f)
-            scale = Mathf.Min(scale, width * Padding / widthPerScale);
+            scale = Mathf.Min(scale, width * (overlap > 0f ? 1f : Padding) / widthPerScale); // Con solape no hace falta hueco
         var heights = new float[people.Count];
         var cells = new float[people.Count];
         float used = 0f;
         for (int i = 0; i < people.Count; i++)
         {
             heights[i] = people[i].cm * scale;
-            cells[i] = heights[i] * Mathf.Max(0.05f, people[i].aspect);
+            cells[i] = heights[i] * Mathf.Max(0.05f, people[i].aspect) * (1f - overlap);
             used += cells[i];
         }
-        float extra = people.Count > 0 ? (width - used) / n : 0f; // El sobrante, repartido
+        float start = edgeStart * scale, end = edgeEnd * scale;
+        float extra = people.Count > 0 ? (width - start - end - used) / n : 0f; // El sobrante, repartido
         for (int i = 0; i < people.Count; i++)
             cells[i] += extra;
-        return new Layout { pxPerCm = scale, labelBand = labelBand, figureHeights = heights, cellWidths = cells };
+        return new Layout { pxPerCm = scale, labelBand = labelBand, figureHeights = heights, cellWidths = cells, startX = start };
     }
 
     // ---------- En escena ----------
@@ -73,9 +86,19 @@ public class HeightLineup : LayoutGroup
         var people = new List<(int, float)>();
         foreach (HeightLineupItem it in items)
             people.Add((it.heightCm, it.aspect));
-        Layout plan = Plan(rect.rect.width, rect.rect.height, labelBand, people);
+        // Revisión de Cristian (sesión C): con tres o más, el ancho limitaba y media pantalla quedaba vacía
+        Layout plan = Plan(rect.rect.width, rect.rect.height, labelBand, people, ThemeManager.Current.lineupOverlap);
+        // Pero cada hueco se sigue tocando con el pulgar: si alguno baja de 48 dp, sin solape
+        foreach (float cell in plan.cellWidths)
+        {
+            if (cell - 6f < Theme.MinTouchSize)
+            {
+                plan = Plan(rect.rect.width, rect.rect.height, labelBand, people);
+                break;
+            }
+        }
         m_Tracker.Clear();
-        float x = 0f;
+        float x = plan.startX;
         for (int i = 0; i < items.Count; i++)
         {
             var cellRect = (RectTransform)items[i].transform;

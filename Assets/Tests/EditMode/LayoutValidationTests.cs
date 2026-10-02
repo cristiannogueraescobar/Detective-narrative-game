@@ -402,7 +402,7 @@ public class LayoutValidationTests
     {
         if (!text.TryGetComponent(out TextStyle style))
             return;
-        bool auto = style.mode == TextStyle.Mode.OneLine || style.mode == TextStyle.Mode.MultiLine;
+        bool auto = style.mode == TextStyle.Mode.OneLine || style.mode == TextStyle.Mode.MultiLine || style.mode == TextStyle.Mode.OneLineOrTwo;
         float actual = auto ? text.fontSizeMax : text.fontSize;
         float expected = Mathf.Max(style.maxSize * GameSettings.TextScale, Theme.MinReadableSize);
         if (auto != text.enableAutoSizing || Mathf.Abs(actual - expected) > 0.5f)

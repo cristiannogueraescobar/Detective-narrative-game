@@ -218,7 +218,8 @@ public static class GameTexts
         int left = Mathf.Max(0, questionsPerDay - questionsUsed);
         string questions = left == 0 ? $"<color={Theme.Hex(t.accent)}><b>SIN PREGUNTAS HOY</b></color>"
             : left == 1 ? $"QUEDA {n(1)} PREGUNTA" : $"QUEDAN {n(left)} PREGUNTAS";
-        return $"DÍA {n(day)} DE {maxDays}  ·  {questions}";
+        // <nobr>: si la barra tiene que ir en dos líneas, se parte por el punto, nunca dentro de una parte
+        return $"<nobr>DÍA {n(day)} DE {maxDays}  ·</nobr>  <nobr>{questions}</nobr>";
     }
 
     /// <summary>

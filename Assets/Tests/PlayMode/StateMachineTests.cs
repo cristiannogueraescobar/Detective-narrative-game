@@ -680,9 +680,10 @@ public class StateMachineTests
         var scene = Object.FindFirstObjectByType<InterrogationScene>();
         Assert.IsNotNull(scene, "la escena existe");
         yield return new WaitForSecondsRealtime(0.6f);
-        Assert.IsNotNull(scene.Stage.texture, "el sospechoso de cuerpo entero en el hueco del centro");
-        Assert.Greater(scene.Stage.color.a, 0.05f);
-        Assert.Less(scene.Stage.color.a, 0.6f, "tenue: no compite con el chat");
+        // Sesión C (revisión de Cristian): una sola composición; por defecto el busto, sin la figura tenue del centro
+        Assert.AreEqual(PortraitComposition.Busto, ThemeManager.Current.interrogationComposition);
+        Assert.IsFalse(scene.Stage.gameObject.activeInHierarchy, "el sospechoso no sale dos veces");
+        Assert.IsTrue(Find("SuspectImage").activeInHierarchy, "sale el busto");
         Assert.AreEqual(0f, scene.VignetteAlpha, 0.01f, "tranquilo: sin viñeta");
 
         var ui = Object.FindFirstObjectByType<InterrogationUI>();

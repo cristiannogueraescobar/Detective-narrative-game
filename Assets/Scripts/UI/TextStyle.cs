@@ -15,7 +15,8 @@ public class TextStyle : MonoBehaviour
         OneLine,    // Una línea: se reduce hasta el mínimo legible y después "…"
         MultiLine,  // Varias líneas en caja fija: se reduce y después "…"
         Scrolling,  // Dentro de un scroll: tamaño fijo, crece en alto
-        Fixed       // Tamaño fijo (texto que se escribe en un campo)
+        Fixed,      // Tamaño fijo (texto que se escribe en un campo)
+        OneLineOrTwo // Una línea que se reduce; si al mínimo legible aún no cabe, dos líneas (barra de arriba)
     }
 
     public Mode mode;
@@ -63,6 +64,13 @@ public class TextStyle : MonoBehaviour
                 text.textWrappingMode = TextWrappingModes.NoWrap;
                 text.overflowMode = TextOverflowModes.Ellipsis;
                 break;
+            case Mode.OneLineOrTwo:
+                text.enableAutoSizing = true;
+                text.fontSizeMax = max;
+                text.fontSizeMin = Theme.MinReadableSize;
+                text.overflowMode = TextOverflowModes.Ellipsis;
+                FitLines(text);
+                break;
             case Mode.MultiLine:
                 text.enableAutoSizing = true;
                 text.fontSizeMax = max;
@@ -80,6 +88,34 @@ public class TextStyle : MonoBehaviour
                 text.enableAutoSizing = false;
                 text.fontSize = max;
                 break;
+        }
+    }
+
+    private void OnRectTransformDimensionsChange()
+    {
+        if (mode == Mode.OneLineOrTwo && TryGetComponent(out TMP_Text text))
+            FitLines(text);
+    }
+
+    /// <summary>
+    /// Tras cambiar el texto de uno en modo OneLineOrTwo: vuelve a decidir si cabe en una línea.
+    /// </summary>
+    public static void Refit(TMP_Text text)
+    {
+        if (text != null && text.TryGetComponent(out TextStyle style) && style.mode == Mode.OneLineOrTwo)
+            FitLines(text);
+    }
+
+    private static void FitLines(TMP_Text text)
+    {
+        if (!text.isActiveAndEnabled || ((RectTransform)text.transform).rect.width <= 0f)
+            return;
+        text.textWrappingMode = TextWrappingModes.NoWrap;
+        text.ForceMeshUpdate(true, true);
+        if (text.isTextTruncated)
+        {
+            text.textWrappingMode = TextWrappingModes.Normal;
+            text.ForceMeshUpdate(true, true);
         }
     }
 
