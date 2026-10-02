@@ -1069,3 +1069,15 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
   sesiones en orden). Ni capturas en bruto, ni archivos de más de 5 MB, ni claves de Anthropic en ninguna. main = `79145e8`.
 - **11:32** Borradas, en local y en origin, las 9 ramas fusionadas hoy. Capturas finales de las tres historias en
   `docs/screenshots/2026-10-02/galeria/final-3-historias.jpg`.
+
+## Mentiras de inocentes, fase 1 (02-10-2026), rama `feature/mentiras-inocentes`
+
+- **14:20** Motor con TDD: la pista sabe qué mentira rompe; solo puntúan las contradicciones del culpable; mismo texto
+  para todas; las tres fugas cerradas (prueba enseñada, «Dice:», «Pensar»); línea en el informe al acusar a un inocente
+  que mentía; guardado con migración. Daniel miente en 1B y 1C. EditMode 952/953, PlayMode 67.
+- **15:24** Primera calibración: `1B_receta` bajó de 90 a 40 % por mi línea en la ficha de Daniel, y el calibrador de
+  mentiras daba 4/10 en 1C porque también preguntaba lo que presiona a confesar. Paré la serie, lo arreglé y la repetí.
+- **16:47** Resultados: pistas 84 % (main 86 %); premisas 1 %; mentiras de Daniel 10/10; estados 94-98 % bien formada y
+  93-94 % coherente (main 98/96); bot 22/24 culpables, nunca acusa a Daniel. Pero en 1B la contradicción de Daniel no
+  salió en ninguna partida: la libreta enseña su versión y el juego exige que la diga en el chat. Propuesta y decisiones
+  en `docs/REPORT-MENTIRAS-FASE1.md`. Sin fusionar.
