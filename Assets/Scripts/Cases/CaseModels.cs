@@ -111,6 +111,9 @@ public class CharacterData
     public string tellsLying;     // Cómo se le nota al mentir
     public string pressureArc;    // Cómo reacciona según aprieta el interrogatorio
 
+    // "Pensar" (fase 2 de las mentiras de inocentes): si nadie le ha preguntado aún por la familia, la ayuda lo sugiere una vez
+    public string hintAbout;      // "la familia"
+    public string hintQuestion;   // La pregunta que se propone
     public string DisplayName => $"{shortName} ({roleLabel})";
 }
 

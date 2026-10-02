@@ -513,7 +513,7 @@ public class GameManager : MonoBehaviour
         if (questionsUsedToday + cost > questionsPerDay)
             return new Hint { text = "Hoy ya no te quedan preguntas para pararte a pensar. Mañana será otro día." };
 
-        Hint hint = HintAdvisor.Next(story, State, unlocked, hintMemory);
+        Hint hint = HintAdvisor.Next(story, State, unlocked, hintMemory, QuestionsTo);
         if (hint.clueId != null) // "Ya lo tienes todo" o "alguien que no conoces" son avisos: no se cobran
             questionsUsedToday += cost;
         UpdateGameState();
@@ -524,6 +524,12 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Se puede volver a interrogar desde la acusación mientras queden días y no se haya acusado.
     /// </summary>
+    // Lo que el jugador ya le ha preguntado a alguien (para "Pensar")
+    private IEnumerable<string> QuestionsTo(string characterId) =>
+        conversationManager.Histories.TryGetValue(characterId, out List<ChatMessage> history)
+            ? history.Where(m => m.role == "user").Select(m => m.content)
+            : Enumerable.Empty<string>();
+
     public bool CanCancelAccusation => !accusationMade && currentDay <= maxDays;
 
     private void ShowAccusationPanel()

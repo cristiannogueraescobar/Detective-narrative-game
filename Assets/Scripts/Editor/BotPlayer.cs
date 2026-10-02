@@ -283,7 +283,8 @@ public static class BotPlayer
                     // Como un jugador atascado: tras 4 preguntas sin nada nuevo, "Pensar" (cuesta la pregunta)
                     if (options.hints && forced == null && sinceClue >= 4)
                     {
-                        Hint hint = HintAdvisor.Next(story, manager.State, unlocked, hintMemory);
+                        Hint hint = HintAdvisor.Next(story, manager.State, unlocked, hintMemory,
+                            id => manager.Histories.TryGetValue(id, out List<ChatMessage> h) ? h.Where(m => m.role == "user").Select(m => m.content) : Enumerable.Empty<string>());
                         game.hints++;
                         game.questionsUsed++;
                         sinceClue = 0;

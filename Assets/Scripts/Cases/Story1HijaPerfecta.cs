@@ -69,7 +69,10 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     speech = "Cotilla, detallista y cariñosa. Das horas exactas porque tienes el reloj de cuco delante. Llamas 'hijo' al inspector.",
                     speechExample = "Mire, hijo, yo no es que espíe, pero una tiene ojos.",
                     startsUnlocked = false,
-                    mentionAliases = new[] { "amparo", "vecina", "la de enfrente" }
+                    mentionAliases = new[] { "amparo", "vecina", "la de enfrente" },
+                    // "Pensar": duerme poco y ve la casa de enfrente (lo dice el día 1); que se le pregunte por la familia
+                    hintAbout = "la familia",
+                    hintQuestion = "¿Qué me cuenta de la familia Mendoza?"
                 }
             },
             variants = new List<VariantData> { Variant1A(), Variant1B(), Variant1C() }
