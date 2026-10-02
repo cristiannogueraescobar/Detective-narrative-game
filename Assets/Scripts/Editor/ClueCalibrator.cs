@@ -35,10 +35,11 @@ public static class ClueCalibrator
     {
         public List<string> variantIds = new List<string>();
         public List<string> clueIds = new List<string>(); // Vacío = todas las pistas de las variantes
-        // -seed N: cada llamada al modelo usa N + su número de orden. Con las mismas preguntas en el mismo orden, dos
-        // versiones reciben las mismas semillas: lo que cambie es por la ficha, no por el azar (sesión C)
+        // -seed N: la semilla de cada llamada sale de quién contesta (primera línea de su ficha), de la conversación y de
+        // cuántas veces se ha hecho ya esa misma: dos versiones dan la misma semilla a la misma pregunta al mismo
+        // personaje, aunque una tenga pistas de más antes (con el número de orden, una pista nueva desplazaba todas)
         public int seed = -1;
-        public int calls;
+        public readonly Dictionary<string, int> seedOccurrences = new Dictionary<string, int>();
         public int tries = 3;
         public string ollamaUrl = "http://localhost:11434";
         public string model = new OllamaSettings().model;
@@ -378,6 +379,22 @@ public static class ClueCalibrator
         public string error;
     }
 
+    /// <summary>Semilla estable para una llamada (ver Options.seed).</summary>
+    public static int SeedFor(Options options, string systemPrompt, IEnumerable<ChatMessage> history)
+    {
+        string who = (systemPrompt ?? "").Split('\n')[0];
+        string key = who + "|" + string.Join("|", history.Select(m => m.role + ":" + m.content));
+        options.seedOccurrences.TryGetValue(key, out int n);
+        options.seedOccurrences[key] = n + 1;
+        unchecked
+        {
+            uint hash = 2166136261; // FNV-1a: igual en cualquier proceso (string.GetHashCode no lo garantiza)
+            foreach (char c in key)
+                hash = (hash ^ c) * 16777619;
+            return (int)((uint)options.seed + hash % 1000000u + (uint)n * 7919u) & int.MaxValue;
+        }
+    }
+
     public static string Chat(HttpClient client, Options options, string systemPrompt, List<ChatMessage> history)
     {
         var messages = new List<ChatMessage> { new ChatMessage { role = "system", content = systemPrompt } };
@@ -405,7 +422,7 @@ public static class ClueCalibrator
                 options = new SeededChatOptions
                 {
                     temperature = request.options.temperature, num_predict = request.options.num_predict,
-                    num_ctx = request.options.num_ctx, seed = options.seed + options.calls++
+                    num_ctx = request.options.num_ctx, seed = SeedFor(options, systemPrompt, history)
                 }
             });
         }

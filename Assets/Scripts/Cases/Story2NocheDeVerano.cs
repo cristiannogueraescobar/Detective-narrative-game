@@ -515,17 +515,20 @@ Tienes 7 días.",
                     exposesLie = true, exposesLieOf = "vecina",
                     summary = "Ruiz cuenta que medio pueblo le compra a Maruxa el orujo que destila en su cocina, y que él hace la vista gorda.",
                     topic = "Maruxa o lo que se vende bajo cuerda en el pueblo",
-                    fact = "medio pueblo le compra a Maruxa el orujo que destila en su cocina de madrugada; tú haces la vista gorda.",
+                    fact = "Maruxa destila orujo en su cocina de madrugada y medio pueblo se lo compra; tú haces la vista gorda.",
                     anchors = new[]
                     {
                         new[] { "orujo", "aguardiente", "alambique" },
-                        new[] { "destila", "le compra", "le compran", "vende", "hace en casa", "cocina" }
+                        new[] { "destila", "compra", "vende", "hace en casa", "cocina", "clientela", "se dedica" }
                     },
                     calibrationQuestions = new[] { "¿Qué sabe de Maruxa?", "¿Se vende algo bajo cuerda en el pueblo?" },
                     sampleHits = new[]
                     {
                         "Maruxa destila orujo en su cocina y medio pueblo se lo compra; yo hago la vista gorda, compañero.",
-                        "Bajo cuerda, el orujo de Maruxa: lo hace en casa de madrugada y se lo compran todos."
+                        "Bajo cuerda, el orujo de Maruxa: lo hace en casa de madrugada y se lo compran todos.",
+                        // Calibración de la fase 2: respuestas reales que el detector no veía
+                        "El medio pueblo compra su orujo de madrugada y yo hago la vista gorda.",
+                        "Maruxa solo se dedica a su orujo y a espiar a todo el mundo desde la ventana."
                     },
                     sampleMisses = new[] { "Maruxa es una buena mujer; madruga mucho, nada más.", "Aquí no se vende nada raro, compañero." }
                 }
