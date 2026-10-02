@@ -348,7 +348,7 @@ public class MentirasInocentesTests
     [TestCase("2B", "vecina", "2B_orujo")]
     [TestCase("2C", "cartero", "2C_postales")]
     [TestCase("3A", "madre", "3A_madrid")]
-    [TestCase("3B", "padre", "3B_tumbos")]
+    [TestCase("3B", "vecina", "3B_pozo")] // Decisión de Cristian: Javier mentía sobre la noche y el sitio del crimen y el bot le acusaba
     [TestCase("3C", "hermano", "3C_fiesta")]
     public void MentirosoInocenteDeCadaVariante(string variantId, string liar, string clueId)
     {

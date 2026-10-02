@@ -97,6 +97,18 @@ Tienes 7 días para descubrir qué pasó.",
         };
     }
 
+    // Fase 2 de las mentiras de inocentes (3B, decisión de Cristian): Encarna miente sobre su secreto, el pleito del pozo.
+    // Es otro tema, otra hora y otro sitio que el crimen (antes mentía Javier sobre esa misma noche y el bot le acusaba)
+    private static CharacterRole LyingEncarna(string version, params string[] knowledge)
+    {
+        CharacterRole role = InnocentEncarna(version + " Javier y yo somos buenos vecinos.", knowledge);
+        role.lieQuote = "Javier y yo somos buenos vecinos";
+        role.lieAnchors = new[] { new[] { "buenos vecinos", "nos llevamos bien", "buena relacion" }, new[] { "javier", "somos" } };
+        role.versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.";
+        role.lieAbout = "el pleito con Javier por el agua del pozo";
+        return role;
+    }
+
     // ============================================
     // 3A · JAVIER — la discusión del sábado
     // ============================================
@@ -358,17 +370,12 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     characterId = "padre",
                     knowledge = new[] { MentionAlex, MentionEncarna, "Lucía conduce un coche pequeño rojo, un Seat Ibiza." },
-                    version = "El sábado de 18:30 a 21:30 estuve en el bar Casino, un par de cañas, nada más; al volver pensé que Paula dormía. El domingo ya no estaba; creí que se había ido con su madre.",
+                    version = "El sábado de 18:30 a 21:30 estuve en el bar Casino; al volver pensé que Paula dormía. El domingo ya no estaba; creí que se había ido con su madre.",
                     secret = "Bebiste mucho y no entraste a ver a Paula al volver; te avergüenza y temes que la jueza lo use contra ti.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "lo que bebiste el sábado.",
                     ifAccused = "Estallas: gritas que es tu hija y que su madre os ha puesto a todos en contra.",
-                    doesNotKnow = "Quién subió a la finca mientras estabas fuera.",
-                    // Fase 2 de las mentiras de inocentes: miente sobre su secreto (lo que bebió), no sobre el crimen
-                    lieQuote = "un par de cañas, nada más",
-                    lieAnchors = new[] { new[] { "un par de canas", "dos canas", "un par de cervezas" }, new[] { "nada mas", "solo", "sereno" } },
-                    versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.",
-                    lieAbout = "lo mucho que bebió el sábado"
+                    doesNotKnow = "Quién subió a la finca mientras estabas fuera."
                 },
                 new CharacterRole
                 {
@@ -381,7 +388,7 @@ Tienes 7 días para descubrir qué pasó.",
                     ifAccused = "Aprietas los puños y te callas.",
                     doesNotKnow = "Qué pasó en la finca el sábado."
                 },
-                InnocentEncarna("El sábado estuve en casa toda la tarde; desde mi ventana se ve el camino de la finca.",
+                LyingEncarna("El sábado estuve en casa toda la tarde; desde mi ventana se ve el camino de la finca.",
                     "Javier bebe mucho desde el divorcio.", "Conoces el coche de todos los que suben por el camino.")
             },
             clues = new List<ClueData>
@@ -487,28 +494,24 @@ Tienes 7 días para descubrir qué pasó.",
                 },
                 new ClueData
                 {
-                    // Fase 2: rompe la mentira de un inocente sobre su secreto; no le acusa del crimen
-                    id = "3B_tumbos", playerName = "Un regreso dando tumbos", holder = "vecina", kind = ClueKind.Context,
-                    exposesLie = true, exposesLieOf = "padre",
-                    summary = "Encarna vio a Javier volver a las 21:30 dando tumbos, muy bebido; en su casa no se encendió la luz del cuarto de la niña.",
-                    topic = "Javier o lo que viste el sábado por la noche",
-                    fact = "a las 21:30 viste a Javier volver del pueblo dando tumbos, muy bebido, y en su casa no se encendió la luz del cuarto de la niña.",
+                    // Fase 2: rompe la mentira de Encarna (inocente aquí) sobre el pleito del pozo; no la acusa del crimen
+                    id = "3B_pozo", playerName = "El pleito del pozo", holder = "padre", kind = ClueKind.Context,
+                    exposesLie = true, exposesLieOf = "vecina",
+                    summary = "Javier cuenta que Encarna y él llevan años en pleitos por el agua del pozo y que ella le tiene rencor.",
+                    topic = "Encarna o cómo te llevas con los vecinos",
+                    fact = "Encarna y tú lleváis años en pleitos por el agua del pozo; ella te tiene rencor y no os habláis.",
                     anchors = new[]
                     {
-                        new[] { "tumbos", "eses", "borracho", "bebido", "bebien", "tambale", "como una cuba", "mareado", "alcohol", "tomando" },
-                        new[] { "21:30", "nueve y media", "volvio", "volver", "vino", "de vuelta", "del pueblo", "luz" }
+                        new[] { "pleito", "juicio", "denuncia", "demanda", "abogado" },
+                        new[] { "pozo", "agua" }
                     },
-                    calibrationQuestions = new[] { "¿Vio volver a Javier el sábado por la noche?", "¿Cómo estaba Javier el sábado?" },
+                    calibrationQuestions = new[] { "¿Cómo se lleva con Encarna?", "¿Qué tal con los vecinos de la finca?" },
                     sampleHits = new[]
                     {
-                        "A las 21:30 vi volver a Javier dando tumbos, hijo, muy bebido; y no se encendió la luz del cuarto de la niña.",
-                        "Javier volvió como una cuba, a eso de las nueve y media; ni encendió la luz de la niña.",
-                        // Calibración de la fase 2: respuestas reales que el detector no veía
-                        "Sí, hijo, vino de vuelta alrededor de las 21:30. Estaba muy mareado y con cara de quien ha estado tomando.",
-                        "Vimos a Javier volver del pueblo andando tambaleante a las 21:30.",
-                        "Hijo, ese día vino muy borracho a casa, andaba tambaleándose y no se encendió la luz de su cuarto."
+                        "Con Encarna, mal: llevamos años en pleitos por el agua del pozo y no nos hablamos.",
+                        "Los vecinos bien, menos Encarna: me puso una denuncia por el pozo y me tiene rencor."
                     },
-                    sampleMisses = new[] { "Javier volvió del pueblo por la noche, como cada sábado.", "Javier es buen hombre, hijo, aunque le guste el vino." }
+                    sampleMisses = new[] { "Encarna es mayor, vive sola; poco más sé de ella.", "Con los vecinos, lo normal." }
                 }
             }
         };
