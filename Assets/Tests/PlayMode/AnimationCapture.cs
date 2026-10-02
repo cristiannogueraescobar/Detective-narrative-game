@@ -433,6 +433,109 @@ public class AnimationCapture
         }
     }
 
+    // PROPUESTA (solo capturas, no integrada): en 20:9 la rueda deja pared vacía arriba; ese hueco con un resumen de
+    // las pruebas del jugador. Historia 2, libreta vacía y con varias pistas. propuesta_resumen_vacia / _pistas
+    [UnityTest]
+    public IEnumerator PropuestaResumenAcusacion()
+    {
+        foreach (bool withClues in new[] { false, true })
+        {
+            yield return SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
+            yield return null;
+            RedirectCanvases();
+            Tutorial.SkipAll();
+            yield return Click("PlayButton");
+            yield return Click("Caso " + CaseLibrary.Stories[1].id);
+            yield return Click("StartButton");
+            yield return new WaitForSecondsRealtime(1f);
+
+            var manager = UnityEngine.Object.FindFirstObjectByType<AIConversationManager>();
+            InvestigationState state = manager.State;
+            if (withClues)
+            {
+                foreach (ClueData clue in state.Variant.clues.Take(4))
+                    state.Discover(clue.id);
+                state.RegisterLieTold();
+                state.UpdateContradictions();
+            }
+            UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+            yield return new WaitForSecondsRealtime(1.5f);
+            BuildEvidenceSummary(state);
+            yield return null;
+            Canvas.ForceUpdateCanvases();
+            yield return new WaitForSecondsRealtime(0.3f);
+            Shot(withClues ? "propuesta_resumen_pistas" : "propuesta_resumen_vacia");
+        }
+    }
+
+    // Tarjeta entre el texto de la acusación y la raya de 200 cm de la pared
+    private static void BuildEvidenceSummary(InvestigationState state)
+    {
+        Theme t = ThemeManager.Current;
+        var panel = (RectTransform)UnityEngine.Object.FindObjectsByType<RectTransform>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+            .First(r => r.name == "AccusatonPanel");
+        var prompt = (RectTransform)panel.GetComponentsInChildren<TMPro.TMP_Text>().First(x => x.name == "Text (TMP)").transform;
+        RectTransform mark = panel.GetComponentsInChildren<RectTransform>().First(r => r.name == "Linea 200");
+        var corners = new Vector3[4];
+        prompt.GetWorldCorners(corners);
+        float top = corners[0].y;
+        TMPro.TMP_Text promptText = prompt.GetComponent<TMPro.TMP_Text>();
+        promptText.ForceMeshUpdate();
+        top = corners[1].y - promptText.textBounds.size.y * panel.lossyScale.y - 24f * panel.lossyScale.y;
+        mark.GetWorldCorners(corners);
+        float bottom = corners[1].y + 40f * panel.lossyScale.y;
+
+        var card = new GameObject("Resumen de pruebas (propuesta)", typeof(RectTransform), typeof(Image)).GetComponent<RectTransform>();
+        card.SetParent(panel, false);
+        card.GetComponent<Image>().sprite = UISprites.Rounded(ThemeManager.Current.RadiusPill / 3);
+        card.GetComponent<Image>().type = Image.Type.Sliced;
+        card.GetComponent<Image>().color = new Color(t.buttonSecondary.r, t.buttonSecondary.g, t.buttonSecondary.b, 0.9f);
+        card.GetComponent<Image>().raycastTarget = false;
+        card.anchorMin = new Vector2(0f, 0f);
+        card.anchorMax = new Vector2(1f, 0f);
+        card.pivot = new Vector2(0.5f, 1f);
+        float scale = panel.lossyScale.y;
+        Vector3 local = panel.InverseTransformPoint(new Vector3(0f, top, 0f));
+        Vector3 localBottom = panel.InverseTransformPoint(new Vector3(0f, bottom, 0f));
+        card.offsetMin = new Vector2(32f, 0f);
+        card.offsetMax = new Vector2(-32f, 0f);
+        card.anchoredPosition = new Vector2(0f, local.y - panel.rect.yMin);
+        card.sizeDelta = new Vector2(-64f, Mathf.Max(120f, local.y - localBottom.y));
+
+        var clues = state.DiscoveredClueIds.Select(id => state.Variant.clues.First(c => c.id == id)).ToList();
+        var contradictions = state.ContradictionClueIds.Select(id => state.Variant.clues.First(c => c.id == id)).ToList();
+        string accent = Theme.Hex(t.accent);
+        var text = new System.Text.StringBuilder();
+        text.Append($"<size=125%><b><color={accent}>TUS PRUEBAS</color></b></size>\n");
+        if (clues.Count == 0)
+        {
+            text.Append("\nLibreta vacía: aún no tienes pistas ni contradicciones.\n");
+            text.Append("<size=80%><color=#9A968E>Sin pruebas, acusar es una apuesta. Puedes volver e interrogar más.</color></size>");
+        }
+        else
+        {
+            text.Append($"\n<b>En la libreta: {clues.Count} pistas</b>\n");
+            foreach (ClueData c in clues)
+                text.Append($"  ·  {c.playerName}\n");
+            text.Append($"\n<b>Contradicciones: {contradictions.Count}</b>\n");
+            foreach (ClueData c in contradictions)
+                text.Append($"  <color={accent}><b>≠</b></color>  Una versión choca con: {c.playerName}\n");
+            if (contradictions.Count == 0)
+                text.Append("<size=80%><color=#9A968E>  Ninguna todavía.</color></size>\n");
+        }
+        TMPro.TMP_Text label = UIFactory.Label(card, text.ToString(), t.bodySize, t.textPrimary);
+        var lr = label.rectTransform;
+        lr.anchorMin = Vector2.zero;
+        lr.anchorMax = Vector2.one;
+        lr.offsetMin = new Vector2(28f, 20f);
+        lr.offsetMax = new Vector2(-28f, -20f);
+        label.alignment = TMPro.TextAlignmentOptions.TopLeft;
+        label.enableAutoSizing = true;
+        label.fontSizeMax = t.bodySize;
+        label.fontSizeMin = Theme.MinReadableSize;
+        label.textWrappingMode = TMPro.TextWrappingModes.Normal;
+    }
+
     // Ronda 15: los partes de la mañana quedan al final de la libreta
     [UnityTest]
     public IEnumerator LibretaConPartes()
