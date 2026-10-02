@@ -19,9 +19,11 @@ using UnityEngine.UI;
 public class AnimationCapture
 {
     // -captureHeight 1200 = móvil alargado (1080x2400 a media resolución); por defecto 1080x1920
-    private static readonly int Width = 540;
+    // -captureWidth 720 -captureHeight 1600 = 1440x3200 a media resolución. Sin el ancho, una altura distinta daba
+    // proporciones que no existen (540x1920 = 9:32; sesión C: las capturas de retratos salieron así por error)
+    private static readonly int Width = Argument("-captureWidth", 540);
     private static readonly int Height = Argument("-captureHeight", 960);
-    private static string Suffix => Height == 960 ? "" : "_" + (Height * 2);
+    private static string Suffix => Height == 960 && Width == 540 ? "" : $"_{Width * 2}x{Height * 2}";
 
     private static int Argument(string name, int fallback)
     {
@@ -385,6 +387,49 @@ public class AnimationCapture
                 yield return new WaitForSecondsRealtime(0.6f); // Fundido del cambio de retrato
                 Shot("retrato_" + views[i].artId);
             }
+        }
+    }
+
+    // Sesión C, arreglos de interfaz: siempre la misma historia (la 2, con cuatro sospechosos: el caso más apretado de la
+    // rueda) para comparar antes y después a cada tamaño de pantalla. interfaz_interrogatorio, interfaz_acusacion
+    [UnityTest]
+    public IEnumerator InterfazHistoria2()
+    {
+        Tutorial.SkipAll();
+        StoryData story = CaseLibrary.Stories[1];
+        yield return Click("PlayButton");
+        yield return Click("Caso " + story.id);
+        yield return Click("StartButton");
+        yield return new WaitForSecondsRealtime(1f);
+        Shot("interfaz_interrogatorio");
+        UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(1.5f);
+        Shot("interfaz_acusacion");
+    }
+
+    // La opción B de la composición (solo la figura, sin busto), en la misma pantalla: interfaz_figura_interrogatorio
+    [UnityTest]
+    public IEnumerator InterfazHistoria2Figura()
+    {
+        Theme theme = UnityEngine.Object.Instantiate(ThemeManager.Current);
+        theme.hideFlags = HideFlags.HideAndDontSave;
+        theme.interrogationComposition = PortraitComposition.Figura;
+        ThemeManager.Override(theme);
+        try
+        {
+            yield return SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
+            yield return null;
+            RedirectCanvases();
+            Tutorial.SkipAll();
+            yield return Click("PlayButton");
+            yield return Click("Caso " + CaseLibrary.Stories[1].id);
+            yield return Click("StartButton");
+            yield return new WaitForSecondsRealtime(1f);
+            Shot("interfaz_figura_interrogatorio");
+        }
+        finally
+        {
+            ThemeManager.Override(null);
         }
     }
 

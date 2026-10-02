@@ -493,10 +493,12 @@ public partial class InterrogationUI : MonoBehaviour
 
         // El arte antiguo se gradúa para casar con el tema; el nuevo ya viene con la paleta del juego
         if (legacyArt)
-            ArtGrading.Apply(suspectImage, ArtGrading.Kind.LegacyPortrait);
+            ArtGrading.Apply(suspectImage, ArtGrading.Kind.LegacyBust);
         else
             ArtGrading.Clear(suspectImage);
         suspectImage.gameObject.SetActive(true);
+        if (suspectImage.transform.parent != null && suspectImage.transform.parent.TryGetComponent(out PixelFit fit))
+            fit.Apply(); // Cada recorte tiene sus téxeles: el tope de ampliación cambia con el retrato
         emotionPresenter?.Apply(emotion, instant);
         if (scene != null)
         {
@@ -743,6 +745,7 @@ public partial class InterrogationUI : MonoBehaviour
             string previous = hudText.text;
             hudText.richText = true;
             hudText.text = GameTexts.HudRich(day, maxDays, questionsUsed, questionsMax, T);
+            TextStyle.Refit(hudText);
             if (previous != hudText.text && Application.isPlaying)
                 UIAnimations.Pop(this, hudText.transform);
         }

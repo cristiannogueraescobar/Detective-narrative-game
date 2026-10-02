@@ -53,4 +53,27 @@ public class HeightLineupTests
             sum += Four[i].aspect * Four[i].cm;
         Assert.AreEqual(1000f * 0.92f / sum, plan.pxPerCm, 1e-3f, "la limita el ancho total, no la figura más ancha");
     }
+    // Revisión de Cristian (sesión C): con tres o más la fila la limitaba el ancho y media pantalla quedaba vacía.
+    // Con solape las figuras crecen, los huecos (botón y anillo) siguen sin pisarse y nada asoma fuera de la fila
+    [Test]
+    public void ConSolapeLasFigurasCrecenSinSalirseDeLaFila()
+    {
+        var three = Four.Take(3).ToArray();
+        var plain = HeightLineup.Plan(900f, 1100f, 64f, three);
+        var overlapped = HeightLineup.Plan(900f, 1100f, 64f, three, 0.3f);
+        Assert.Greater(overlapped.pxPerCm, plain.pxPerCm * 1.25f, "más grandes");
+
+        float x = overlapped.startX, total = overlapped.startX;
+        for (int i = 0; i < three.Length; i++)
+        {
+            float figure = overlapped.figureHeights[i] * three[i].aspect;
+            float center = x + overlapped.cellWidths[i] * 0.5f;
+            Assert.GreaterOrEqual(center - figure * 0.5f, -0.5f, $"la figura {i} no asoma por la izquierda");
+            Assert.LessOrEqual(center + figure * 0.5f, 900.5f, $"la figura {i} no asoma por la derecha");
+            Assert.GreaterOrEqual(overlapped.cellWidths[i], figure * 0.7f - 0.01f, "su hueco, al menos lo que no se solapa");
+            x += overlapped.cellWidths[i];
+            total += overlapped.cellWidths[i];
+        }
+        Assert.LessOrEqual(total, 900.5f, "los huecos caben en la fila");
+    }
 }

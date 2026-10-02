@@ -17,6 +17,7 @@ public static class ArtGrading
     public enum Kind
     {
         LegacyPortrait, // Retratos antiguos (pixel art saturado)
+        LegacyBust,     // El mismo arte, grande (busto o figura del interrogatorio): contraluz del tema bustRimStrength
         Background      // Fondos e ilustraciones de la escena
     }
 
@@ -26,13 +27,14 @@ public static class ArtGrading
             return;
 
         Theme t = ThemeManager.Current;
-        bool portrait = kind == Kind.LegacyPortrait;
+        bool portrait = kind != Kind.Background;
+        float rim = kind == Kind.LegacyBust ? t.bustRimStrength : t.portraitRimStrength;
         float saturation = portrait ? t.legacyPortraitSaturation : t.backgroundSaturation;
         Color grade = portrait ? t.legacyPortraitGrade : t.backgroundGrade;
         float brightness = portrait ? t.legacyPortraitBrightness : t.backgroundBrightness;
 
         graphic.material = portrait && t.portraitLit
-            ? LitMaterialFor(t, saturation, grade, brightness * t.portraitLitBoost)
+            ? LitMaterialFor(t, saturation, grade, brightness * t.portraitLitBoost, rim)
             : MaterialFor(saturation, grade, brightness);
 
         // Pixel art nítido: filtrado sin suavizar (propiedad en memoria, no cambia la importación)
@@ -49,11 +51,11 @@ public static class ArtGrading
             graphic.material = null;
     }
 
-    private static Material LitMaterialFor(Theme t, float saturation, Color grade, float brightness)
+    private static Material LitMaterialFor(Theme t, float saturation, Color grade, float brightness, float rim)
     {
         string key = $"lit|{saturation:F2}|{ColorUtility.ToHtmlStringRGB(grade)}|{brightness:F2}|{t.portraitLightDir}|" +
                      $"{ColorUtility.ToHtmlStringRGB(t.portraitLightColor)}|{t.portraitAmbient:F2}|{t.portraitRelief:F2}|" +
-                     $"{t.portraitReliefRadius:F1}|{ColorUtility.ToHtmlStringRGB(t.portraitRimColor)}|{t.portraitLampFalloff:F2}|{t.portraitRimStrength:F2}";
+                     $"{t.portraitReliefRadius:F1}|{ColorUtility.ToHtmlStringRGB(t.portraitRimColor)}|{t.portraitLampFalloff:F2}|{rim:F2}";
         if (materials.TryGetValue(key, out Material cached) && cached != null)
             return cached;
 
@@ -75,7 +77,7 @@ public static class ArtGrading
         material.SetFloat("_Radius", t.portraitReliefRadius);
         material.SetColor("_RimColor", t.portraitRimColor);
         material.SetFloat("_Falloff", t.portraitLampFalloff);
-        material.SetFloat("_RimStrength", t.portraitRimStrength);
+        material.SetFloat("_RimStrength", rim);
         materials[key] = material;
         return material;
     }

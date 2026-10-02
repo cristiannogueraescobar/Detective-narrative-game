@@ -42,6 +42,9 @@ public static class SceneTension
 /// según la tensión de su estado; al cambiar de sospechoso, el nuevo entra con un fundido y un deslizamiento corto;
 /// una pista nueva da un destello y una contradicción sacude el retrato. Con "reducir animaciones", solo color y
 /// fundidos. Se apaga desde el tema (interrogationStage, tensionVignette).
+/// Revisión de Cristian (sesión C): el sospechoso salía dos veces (busto y figura tenue). Ahora el tema elige una sola
+/// composición (interrogationComposition): Busto (cabecera, sin figura) o Figura (casi opaca, sin busto; la etiqueta de
+/// estado, la sacudida y la entrada pasan a la figura).
 /// </summary>
 public class InterrogationScene : MonoBehaviour
 {
@@ -49,7 +52,10 @@ public class InterrogationScene : MonoBehaviour
     public const string VignetteName = "Viñeta de tensión (auto)";
 
     private RawImage stage;
-    private AspectRatioFitter stageFit;
+    private PixelFit stageFit;
+    private RectTransform stageHolder;
+    private RectTransform bustBox;
+    private RectTransform chip;      // Etiqueta de estado: va con el retrato que se ve
     private RectTransform stageRect;
     private Image vignette;
     private Image flash;
@@ -77,9 +83,7 @@ public class InterrogationScene : MonoBehaviour
     public static InterrogationScene Build(RectTransform panel, RectTransform chatArea, RectTransform portraitBox)
     {
         var scene = UIComponents.GetOrAdd<InterrogationScene>(panel.gameObject);
-        scene.portrait = portraitBox;
-        if (portraitBox != null)
-            scene.portraitGroup = UIComponents.GetOrAdd<CanvasGroup>(portraitBox.gameObject);
+        scene.bustBox = portraitBox;
 
         if (chatArea != null && chatArea.Find(StageName) == null)
         {
@@ -90,8 +94,8 @@ public class InterrogationScene : MonoBehaviour
             scene.stage = figure.gameObject.AddComponent<RawImage>();
             scene.stage.raycastTarget = false;
             scene.stageRect = figure;
-            scene.stageFit = figure.gameObject.AddComponent<AspectRatioFitter>();
-            scene.stageFit.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+            scene.stageHolder = holder;
+            scene.stageFit = PixelFit.For(holder, scene.stage); // Sin ampliar por encima de su resolución
             scene.stage.gameObject.AddComponent<Decorative>();
             // Destello de pista: un velo ámbar sobre la figura
             RectTransform glow = UIFactory.Container(holder, "Destello", Vector2.zero, Vector2.one);
@@ -117,10 +121,30 @@ public class InterrogationScene : MonoBehaviour
         return scene;
     }
 
+    /// <summary>Composición Figura (y la escena permitida): la figura es el retrato y no hay busto.</summary>
+    public static bool FigureMode => T.interrogationStage && T.interrogationComposition == PortraitComposition.Figura;
+
     public void ApplyTheme()
     {
-        if (stage != null)
-            stage.transform.parent.gameObject.SetActive(T.interrogationStage);
+        bool figure = FigureMode && stageHolder != null;
+        if (stageHolder != null)
+            stageHolder.gameObject.SetActive(figure);
+        if (bustBox != null)
+            bustBox.gameObject.SetActive(!figure);
+        // La etiqueta de estado, la sacudida y el fundido de entrada van con el retrato que se ve
+        RectTransform shown = figure ? stageHolder : bustBox;
+        if (chip == null && bustBox != null)
+            chip = bustBox.Find("Estado (auto)") as RectTransform;
+        if (chip != null && shown != null)
+        {
+            // Busto: sobre su pie. Figura: sobre la cabeza, por dentro (el chat crece desde abajo y taparía el pie; por
+            // fuera se metía debajo de "Acusar")
+            chip.SetParent(figure ? stageRect : shown, false);
+            chip.anchorMin = chip.anchorMax = chip.pivot = new Vector2(0.5f, figure ? 1f : 0f);
+            chip.anchoredPosition = new Vector2(0f, figure ? -8f : 8f);
+        }
+        portrait = shown;
+        portraitGroup = shown != null && !figure ? UIComponents.GetOrAdd<CanvasGroup>(shown.gameObject) : null;
         if (vignette != null)
             vignette.gameObject.SetActive(T.tensionVignette);
     }
@@ -136,10 +160,10 @@ public class InterrogationScene : MonoBehaviour
             stage.texture = texture;
             // De la cabeza a los muslos: se ve la postura y la cara es grande (las piernas quedarían detrás de la mesa)
             stage.uvRect = StageCrop;
-            if (texture != null)
-                stageFit.aspectRatio = texture.width * StageCrop.width / (texture.height * StageCrop.height);
+            if (stageFit != null)
+                stageFit.Apply();
             if (legacyArt)
-                ArtGrading.Apply(stage, ArtGrading.Kind.LegacyPortrait);
+                ArtGrading.Apply(stage, ArtGrading.Kind.LegacyBust);
             else
                 ArtGrading.Clear(stage);
         }
@@ -165,7 +189,7 @@ public class InterrogationScene : MonoBehaviour
     /// </summary>
     public void ClueFlash()
     {
-        if (flash == null || !isActiveAndEnabled || !T.interrogationStage)
+        if (flash == null || !isActiveAndEnabled || !FigureMode)
             return;
         if (pulse != null)
             StopCoroutine(pulse);
