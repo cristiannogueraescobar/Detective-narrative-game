@@ -228,6 +228,7 @@ public partial class InterrogationUI
             cell.gameObject.AddComponent<ThemeRole>().role = UIRole.Ignore;
 
             (Texture2D texture, bool legacy) = PortraitOf(view, EmotionOf(view.id));
+            PortraitCrops.Crops crops = PortraitCrops.For(view.portraitKey, view.artId, legacy, texture);
             RectTransform frame = UIFactory.Container(cell, "Marco", new Vector2(0f, 0f), new Vector2(1f, 1f));
             frame.offsetMin = new Vector2(8f, labelHeight);
             frame.offsetMax = new Vector2(-8f, -8f);
@@ -240,18 +241,18 @@ public partial class InterrogationUI
             if (singleRow)
             {
                 // De cuerpo entero, de los pies a la cabeza: HeightLineup le da su altura real contra la pared
-                Rect figure = legacy ? PortraitCrops.Figure(view.portraitKey) : PortraitCrops.Full;
+                Rect figure = crops.figure;
                 raw.uvRect = figure;
                 frame.offsetMin = frame.offsetMax = Vector2.zero;
                 var item = cell.gameObject.AddComponent<HeightLineupItem>();
                 item.heightCm = view.heightCm > 0 ? view.heightCm : 170;
-                item.aspect = texture != null ? texture.width * figure.width / (texture.height * figure.height) : 0.5f;
+                item.aspect = PortraitCrops.Aspect(texture, figure);
                 item.figure = face;
                 card.color = new Color(T.panelBorder.r, T.panelBorder.g, T.panelBorder.b, 0.35f); // La pared se ve detrás
             }
             else
             {
-                raw.uvRect = PortraitCrops.Bust(legacy ? view.portraitKey : null);
+                raw.uvRect = crops.bust;
                 face.gameObject.AddComponent<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.FitInParent;
                 face.GetComponent<AspectRatioFitter>().aspectRatio = 0.75f;
             }
@@ -374,7 +375,7 @@ public partial class InterrogationUI
             (Texture2D portrait, bool legacy) = PortraitOf(summary.culprit, Emotion.Tranquilo);
             bool placeholder = portrait == null || portrait.name.Contains("Placeholder");
             Mugshot.Show(resultDetailsText, placeholder ? null : portrait,
-                legacy ? PortraitCrops.Bust(summary.culprit.portraitKey) : PortraitCrops.Full, legacy,
+                PortraitCrops.For(summary.culprit.portraitKey, summary.culprit.artId, legacy, portrait).bust, legacy,
                 $"CULPABLE\n{culpritName}");
         }
     }

@@ -21,9 +21,12 @@ public class AnimationCapture
     // -captureHeight 1200 = móvil alargado (1080x2400 a media resolución); por defecto 1080x1920
     // -captureWidth 720 -captureHeight 1600 = 1440x3200 a media resolución. Sin el ancho, una altura distinta daba
     // proporciones que no existen (540x1920 = 9:32; sesión C: las capturas de retratos salieron así por error)
+    // -captureWidth 1080 -captureHeight 1920 = píxeles reales de un móvil (filtro de importación, BRIEF 6.4)
     private static readonly int Width = Argument("-captureWidth", 540);
     private static readonly int Height = Argument("-captureHeight", 960);
-    private static string Suffix => Height == 960 && Width == 540 ? "" : $"_{Width * 2}x{Height * 2}";
+    // Media resolución: el nombre lleva el tamaño de pantalla (×2). Con 1080 o más de ancho ya son píxeles reales
+    private static string Suffix => Height == 960 && Width == 540 ? ""
+        : Width >= 1080 ? $"_{Width}x{Height}" : $"_{Width * 2}x{Height * 2}";
 
     private static int Argument(string name, int fallback)
     {
@@ -313,6 +316,78 @@ public class AnimationCapture
         Shot("veredicto_ficha");
     }
 
+    // Arte nuevo (docs/art/javier/BRIEF.md 6.4): qué filtro de importación se ve más nítido sin dientes de sierra a
+    // tamaño de móvil. A/B en tiempo de ejecución sobre los retratos actuales (sin tocar sus .meta): la textura tal cual
+    // (bilineal con mipmaps), una copia del nivel 0 sin mipmaps con filtro Point y la misma copia en bilineal.
+    // filtro_<pantalla>_<variante>; lanzar con capture-anim.sh "AnimationCapture.FiltroDeImportacion" 1920
+    [UnityTest]
+    public IEnumerator FiltroDeImportacion()
+    {
+        Tutorial.SkipAll();
+        yield return Click("PlayButton");
+        yield return Click("Caso 1");
+        yield return Click("StartButton");
+        yield return new WaitForSecondsRealtime(1.5f);
+        yield return FilterShots("filtro_interrogatorio");
+        UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(1.5f);
+        yield return FilterShots("filtro_rueda");
+    }
+
+    private IEnumerator FilterShots(string name)
+    {
+        var originals = new Dictionary<RawImage, Texture2D>();
+        foreach (RawImage raw in UnityEngine.Object.FindObjectsByType<RawImage>(FindObjectsSortMode.None))
+            if (raw.isActiveAndEnabled && raw.texture is Texture2D t && t.mipmapCount > 1 && t.width >= 512)
+                originals[raw] = t;
+        Shot(name + "_bilineal_mipmaps");
+
+        // Las tres variantes salen de la misma copia sin comprimir (CopyTexture falla con anchos que no son múltiplo
+        // de 4 en formatos comprimidos): así la compresión no sesga la comparación
+        var withMips = new Dictionary<Texture2D, Texture2D>();
+        var noMips = new Dictionary<Texture2D, Texture2D>();
+        foreach (Texture2D source in originals.Values.Distinct())
+        {
+            withMips[source] = Uncompressed(source, mipmaps: true);
+            noMips[source] = Uncompressed(source, mipmaps: false);
+        }
+        foreach (var (variant, set, filter) in new[]
+                 {
+                     ("_copia_bilineal_mipmaps", withMips, FilterMode.Bilinear),
+                     ("_point_sin_mipmaps", noMips, FilterMode.Point),
+                     ("_bilineal_sin_mipmaps", noMips, FilterMode.Bilinear),
+                 })
+        {
+            foreach (var pair in originals)
+            {
+                set[pair.Value].filterMode = filter;
+                pair.Key.texture = set[pair.Value];
+            }
+            yield return null;
+            Shot(name + variant);
+        }
+
+        foreach (var pair in originals)
+            pair.Key.texture = pair.Value;
+        foreach (Texture2D copy in withMips.Values.Concat(noMips.Values))
+            UnityEngine.Object.Destroy(copy);
+        Debug.Log($"[Filtro] {name}: {originals.Count} retratos comparados");
+    }
+
+    private static Texture2D Uncompressed(Texture2D source, bool mipmaps)
+    {
+        RenderTexture rt = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.ARGB32);
+        Graphics.Blit(source, rt);
+        RenderTexture previous = RenderTexture.active;
+        RenderTexture.active = rt;
+        var copy = new Texture2D(source.width, source.height, TextureFormat.RGBA32, mipmaps);
+        copy.ReadPixels(new Rect(0, 0, source.width, source.height), 0, 0, mipmaps);
+        copy.Apply(updateMipmaps: mipmaps);
+        RenderTexture.active = previous;
+        RenderTexture.ReleaseTemporary(rt);
+        return copy;
+    }
+
     // Sesión A, bloque 4: entrada del sospechoso nuevo (fundido y deslizamiento de la figura y del busto)
     [UnityTest]
     public IEnumerator CambioDeSospechoso()
@@ -433,107 +508,41 @@ public class AnimationCapture
         }
     }
 
-    // PROPUESTA (solo capturas, no integrada): en 20:9 la rueda deja pared vacía arriba; ese hueco con un resumen de
-    // las pruebas del jugador. Historia 2, libreta vacía y con varias pistas. propuesta_resumen_vacia / _pistas
-    [UnityTest]
-    public IEnumerator PropuestaResumenAcusacion()
-    {
-        foreach (bool withClues in new[] { false, true })
-        {
-            yield return SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
-            yield return null;
-            RedirectCanvases();
-            Tutorial.SkipAll();
-            yield return Click("PlayButton");
-            yield return Click("Caso " + CaseLibrary.Stories[1].id);
-            yield return Click("StartButton");
-            yield return new WaitForSecondsRealtime(1f);
+    // Sesión C, retratos completos: cada personaje de la historia con sus tres expresiones en el interrogatorio, y la
+    // rueda de acusación. retratos_<historia>_<artId>_<estado> y acusacion_<historia>
+    [UnityTest] public IEnumerator RetratosHistoria1() { yield return RetratosDe(0); }
+    [UnityTest] public IEnumerator RetratosHistoria2() { yield return RetratosDe(1); }
+    [UnityTest] public IEnumerator RetratosHistoria3() { yield return RetratosDe(2); }
 
-            var manager = UnityEngine.Object.FindFirstObjectByType<AIConversationManager>();
-            InvestigationState state = manager.State;
-            if (withClues)
+    private IEnumerator RetratosDe(int index)
+    {
+        Tutorial.SkipAll();
+        StoryData story = CaseLibrary.Stories[index];
+        yield return Click("PlayButton");
+        yield return Click("Caso " + story.id);
+        yield return Click("StartButton");
+        yield return new WaitForSecondsRealtime(0.5f);
+        var ui = UnityEngine.Object.FindFirstObjectByType<InterrogationUI>();
+        var dropdown = Find("SuspectDropdown").GetComponent<TMPro.TMP_Dropdown>();
+        var views = story.cast.Select(c => SuspectView.From(c)).ToList();
+        ui.SetSuspects(views);
+        for (int i = 0; i < views.Count; i++)
+        {
+            dropdown.value = i;
+            dropdown.onValueChanged.Invoke(i);
+            yield return new WaitForSecondsRealtime(0.6f);
+            foreach (Emotion e in new[] { Emotion.Tranquilo, Emotion.Triste, Emotion.Nervioso, Emotion.Enfadado })
             {
-                foreach (ClueData clue in state.Variant.clues.Take(4))
-                    state.Discover(clue.id);
-                state.RegisterLieTold();
-                state.UpdateContradictions();
+                if (e != Emotion.Tranquilo && ArtLibrary.Load($"{LegacyExpressions.Folder}/{views[i].artId}_{e.ToString().ToLowerInvariant()}.png") == null)
+                    continue; // Solo las que tiene
+                ui.SetEmotion(views[i].id, e);
+                yield return new WaitForSecondsRealtime(0.6f);
+                Shot($"retratos_{index + 1}_{views[i].artId}_{e.ToString().ToLowerInvariant()}");
             }
-            UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
-            yield return new WaitForSecondsRealtime(1.5f);
-            BuildEvidenceSummary(state);
-            yield return null;
-            Canvas.ForceUpdateCanvases();
-            yield return new WaitForSecondsRealtime(0.3f);
-            Shot(withClues ? "propuesta_resumen_pistas" : "propuesta_resumen_vacia");
         }
-    }
-
-    // Tarjeta entre el texto de la acusación y la raya de 200 cm de la pared
-    private static void BuildEvidenceSummary(InvestigationState state)
-    {
-        Theme t = ThemeManager.Current;
-        var panel = (RectTransform)UnityEngine.Object.FindObjectsByType<RectTransform>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
-            .First(r => r.name == "AccusatonPanel");
-        var prompt = (RectTransform)panel.GetComponentsInChildren<TMPro.TMP_Text>().First(x => x.name == "Text (TMP)").transform;
-        RectTransform mark = panel.GetComponentsInChildren<RectTransform>().First(r => r.name == "Linea 200");
-        var corners = new Vector3[4];
-        prompt.GetWorldCorners(corners);
-        float top = corners[0].y;
-        TMPro.TMP_Text promptText = prompt.GetComponent<TMPro.TMP_Text>();
-        promptText.ForceMeshUpdate();
-        top = corners[1].y - promptText.textBounds.size.y * panel.lossyScale.y - 24f * panel.lossyScale.y;
-        mark.GetWorldCorners(corners);
-        float bottom = corners[1].y + 40f * panel.lossyScale.y;
-
-        var card = new GameObject("Resumen de pruebas (propuesta)", typeof(RectTransform), typeof(Image)).GetComponent<RectTransform>();
-        card.SetParent(panel, false);
-        card.GetComponent<Image>().sprite = UISprites.Rounded(ThemeManager.Current.RadiusPill / 3);
-        card.GetComponent<Image>().type = Image.Type.Sliced;
-        card.GetComponent<Image>().color = new Color(t.buttonSecondary.r, t.buttonSecondary.g, t.buttonSecondary.b, 0.9f);
-        card.GetComponent<Image>().raycastTarget = false;
-        card.anchorMin = new Vector2(0f, 0f);
-        card.anchorMax = new Vector2(1f, 0f);
-        card.pivot = new Vector2(0.5f, 1f);
-        float scale = panel.lossyScale.y;
-        Vector3 local = panel.InverseTransformPoint(new Vector3(0f, top, 0f));
-        Vector3 localBottom = panel.InverseTransformPoint(new Vector3(0f, bottom, 0f));
-        card.offsetMin = new Vector2(32f, 0f);
-        card.offsetMax = new Vector2(-32f, 0f);
-        card.anchoredPosition = new Vector2(0f, local.y - panel.rect.yMin);
-        card.sizeDelta = new Vector2(-64f, Mathf.Max(120f, local.y - localBottom.y));
-
-        var clues = state.DiscoveredClueIds.Select(id => state.Variant.clues.First(c => c.id == id)).ToList();
-        var contradictions = state.ContradictionClueIds.Select(id => state.Variant.clues.First(c => c.id == id)).ToList();
-        string accent = Theme.Hex(t.accent);
-        var text = new System.Text.StringBuilder();
-        text.Append($"<size=125%><b><color={accent}>TUS PRUEBAS</color></b></size>\n");
-        if (clues.Count == 0)
-        {
-            text.Append("\nLibreta vacía: aún no tienes pistas ni contradicciones.\n");
-            text.Append("<size=80%><color=#9A968E>Sin pruebas, acusar es una apuesta. Puedes volver e interrogar más.</color></size>");
-        }
-        else
-        {
-            text.Append($"\n<b>En la libreta: {clues.Count} pistas</b>\n");
-            foreach (ClueData c in clues)
-                text.Append($"  ·  {c.playerName}\n");
-            text.Append($"\n<b>Contradicciones: {contradictions.Count}</b>\n");
-            foreach (ClueData c in contradictions)
-                text.Append($"  <color={accent}><b>≠</b></color>  Una versión choca con: {c.playerName}\n");
-            if (contradictions.Count == 0)
-                text.Append("<size=80%><color=#9A968E>  Ninguna todavía.</color></size>\n");
-        }
-        TMPro.TMP_Text label = UIFactory.Label(card, text.ToString(), t.bodySize, t.textPrimary);
-        var lr = label.rectTransform;
-        lr.anchorMin = Vector2.zero;
-        lr.anchorMax = Vector2.one;
-        lr.offsetMin = new Vector2(28f, 20f);
-        lr.offsetMax = new Vector2(-28f, -20f);
-        label.alignment = TMPro.TextAlignmentOptions.TopLeft;
-        label.enableAutoSizing = true;
-        label.fontSizeMax = t.bodySize;
-        label.fontSizeMin = Theme.MinReadableSize;
-        label.textWrappingMode = TMPro.TextWrappingModes.Normal;
+        UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(1.5f);
+        Shot($"acusacion_{index + 1}");
     }
 
     // Ronda 15: los partes de la mañana quedan al final de la libreta

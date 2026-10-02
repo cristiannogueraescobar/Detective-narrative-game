@@ -485,11 +485,11 @@ public partial class InterrogationUI : MonoBehaviour
         (Texture2D texture, bool legacyArt) = PortraitOf(view, emotion);
 
         suspectImage.texture = texture;
-        // El pixel art antiguo es de cuerpo entero: en el interrogatorio, plano medio; en el chat, la cara
-        string cropKey = legacyArt ? view.portraitKey : null;
-        suspectImage.uvRect = PortraitCrops.Bust(cropKey);
+        // Los retratos son de cuerpo entero: en el interrogatorio, plano medio; en el chat, la cara
+        PortraitCrops.Crops crops = PortraitCrops.For(view.portraitKey, view.artId, legacyArt, texture);
+        suspectImage.uvRect = crops.bust;
         bool placeholder = texture == null || texture.name.Contains("Placeholder");
-        chat?.SetAvatar(placeholder ? null : texture, PortraitCrops.Face(cropKey, texture), legacyArt);
+        chat?.SetAvatar(placeholder ? null : texture, crops.face, legacyArt);
 
         // El arte antiguo se gradúa para casar con el tema; el nuevo ya viene con la paleta del juego
         if (legacyArt)
@@ -524,6 +524,10 @@ public partial class InterrogationUI : MonoBehaviour
             texture = ArtLibrary.LoadFirst(PortraitPaths.Candidates(view.artId, emotion));
         if (texture != null)
             return (texture, false);
+        // Expresión hecha sobre el retrato de hoy (sesión C): mismo encuadre y tratamiento que él
+        Texture2D expression = view.artId != null ? ArtLibrary.LoadFirst(LegacyExpressions.Candidates(view.artId, emotion)) : null;
+        if (expression != null && view.portraitKey != null && suspectImages.ContainsKey(view.portraitKey))
+            return (expression, true);
         if (view.portraitKey != null && suspectImages.TryGetValue(view.portraitKey, out Texture2D legacy) && legacy != null)
             return (legacy, true);
         return (ArtLibrary.Placeholder(T.placeholder), false);

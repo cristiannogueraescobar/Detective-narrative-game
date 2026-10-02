@@ -36,6 +36,14 @@ Hasta que haya retratos nuevos se usan los antiguos (`Assets/Images/Suspects/*.g
 que ningún personaje comparta cara con otro: Javier, Lucía, Álex (de los de la historia 1), Amparo (envejecida),
 Maruxa y Encarna (de la vecina). Si no hay ninguno, se muestra un color plano.
 
+### Daniel (`padre.gif.png`): el original más flojo, rehacer
+Medido sobre los 7 originales (01-10-2026, `docs/art/javier/BRIEF.md`). Daniel tiene un **píxel efectivo de 9 px**
+(118 píxeles de arte de alto), cuando el resto tiene **3-6 px** (189-330). Su **cabeza mide el 28 % de la figura
+(≈1/3,6)**, cuando Marcos y Álex miden el 19 % (≈1/5,3): parece más infantil y es el único **sin sombra suave bajo los
+pies**. Además, Javier se derivó de él y arrastra lo mismo. Hay que rehacerlo con el estilo de Marcos (02) y Álex (04),
+con el mismo método y la misma guía de estilo del encargo de Javier: fondo blanco liso, `Tools/remove_white_bg.py` y
+`Tools/measure_portrait.py`.
+
 ### Derivados que no llegan a la calidad de un original (Sesión A)
 Se distinguen de un vistazo y encajan con su ficha, pero **comparten cara y pose con su original**: Javier con Daniel;
 Amparo, Maruxa y Encarna entre sí (Lucía y Álex llevan más cambios: gafas, ropa, espejo). Dentro de una historia nunca
@@ -43,8 +51,10 @@ coinciden dos con la misma cara; aun así, son los primeros que conviene sustitu
 **mismo estilo que los originales actuales** (para que casen hasta que llegue el arte noir de arriba):
 
 Estilo común (añadir a cada prompt): *16-bit pixel art character, full body, standing, front three-quarter view, clean
-dark outline, limited warm palette, transparent background, 3:4 tall canvas, same scale and style as a set of
-Spanish small-town characters (detective game).*
+dark outline, limited warm palette, subtle soft shadow under the feet, plain flat white background, 3:4 tall canvas,
+same scale and style as a set of Spanish small-town characters (detective game).* Los generadores no dan
+transparencia real: el fondo blanco se quita después con `Tools/remove_white_bg.py`. Para la guía completa de estilo
+y el método (editar, no regenerar), ver `docs/art/javier/BRIEF.md`.
 
 | Personaje | Prompt |
 |---|---|

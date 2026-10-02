@@ -35,8 +35,16 @@ reiniciar. No está documentado como garantía, así que lo fiable sigue siendo 
 
 Prueba rápida sin abrir sesión (gasta unos céntimos de tokens):
 
+Git Bash:
+
 ```bash
 claude -p "Invoke the Skill tool with 'unity-perf:code-standards' and reply LOADED or the exact error." --max-turns 3 < /dev/null
+```
+
+PowerShell (no tiene `< /dev/null`; si avisa de que no le llega nada por la entrada estándar, se puede ignorar):
+
+```powershell
+claude -p "Invoke the Skill tool with 'unity-perf:code-standards' and reply LOADED or the exact error." --max-turns 3
 ```
 
 ## Si no cargan

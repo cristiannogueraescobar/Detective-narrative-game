@@ -71,4 +71,53 @@ public static class PortraitCrops
     }
 
     public static IEnumerable<string> Keys => ByKey.Keys;
+
+    // ---------- Arte nuevo (Assets/Art/Portraits/<artId>_<estado>.png) ----------
+
+    public struct Crops
+    {
+        public Rect figure; // Pies a cabeza: rueda con alturas reales
+        public Rect bust;   // Plano medio: interrogatorio y ficha del culpable
+        public Rect face;   // Mini-retrato del chat
+    }
+
+    // Encuadre del encargo (docs/art/javier/BRIEF.md): 768x1024, figura al 90 % del alto con los pies a 40 px y la
+    // cabeza centrada; busto y cara con las proporciones medianas de los 7 retratos antiguos. Es la previsión hasta
+    // que llegue el arte: entonces se sustituye por lo que mida Tools/measure_portrait.py (BRIEF 6.3).
+    private static readonly Crops BriefFraming = new Crops
+    {
+        figure = new Rect(0.200f, 0.039f, 0.600f, 0.900f),
+        bust = new Rect(0.248f, 0.453f, 0.504f, 0.504f),
+        face = new Rect(0.368f, 0.714f, 0.264f, 0.198f),
+    };
+
+    private static readonly Dictionary<string, Crops> NewArtByArtId = new Dictionary<string, Crops>
+    {
+        { "javier", BriefFraming },
+    };
+
+    public static bool HasNewArtCrops(string artId) => artId != null && NewArtByArtId.ContainsKey(artId);
+
+    public static Crops NewArt(string artId) => NewArtByArtId[artId];
+
+    /// <summary>
+    /// Encuadres de un retrato: los del arte antiguo por su portraitKey; los del arte nuevo por su artId si están
+    /// medidos; si no, la imagen entera y la cara genérica (lo que hacía el juego antes).
+    /// </summary>
+    public static Crops For(string portraitKey, string artId, bool legacy, Texture texture)
+    {
+        if (legacy)
+            return new Crops { figure = Figure(portraitKey), bust = Bust(portraitKey), face = Face(portraitKey, texture) };
+        if (HasNewArtCrops(artId))
+            return NewArtByArtId[artId];
+        return new Crops { figure = Full, bust = Full, face = UISprites.FaceCrop(texture) };
+    }
+
+    /// <summary>
+    /// Proporción ancho/alto en pantalla de la figura recortada (la rueda reparte el sitio con ella).
+    /// </summary>
+    public static float Aspect(Texture texture, Rect figure)
+    {
+        return texture != null ? texture.width * figure.width / (texture.height * figure.height) : 0.5f;
+    }
 }
