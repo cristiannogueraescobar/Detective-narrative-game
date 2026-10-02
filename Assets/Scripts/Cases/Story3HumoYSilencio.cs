@@ -495,14 +495,18 @@ Tienes 7 días para descubrir qué pasó.",
                     fact = "a las 21:30 viste a Javier volver del pueblo dando tumbos, muy bebido, y en su casa no se encendió la luz del cuarto de la niña.",
                     anchors = new[]
                     {
-                        new[] { "tumbos", "eses", "borracho", "bebido", "tambaleando", "como una cuba" },
-                        new[] { "21:30", "nueve y media", "volvio", "volver", "luz" }
+                        new[] { "tumbos", "eses", "borracho", "bebido", "bebien", "tambale", "como una cuba", "mareado", "alcohol", "tomando" },
+                        new[] { "21:30", "nueve y media", "volvio", "volver", "vino", "de vuelta", "del pueblo", "luz" }
                     },
                     calibrationQuestions = new[] { "¿Vio volver a Javier el sábado por la noche?", "¿Cómo estaba Javier el sábado?" },
                     sampleHits = new[]
                     {
                         "A las 21:30 vi volver a Javier dando tumbos, hijo, muy bebido; y no se encendió la luz del cuarto de la niña.",
-                        "Javier volvió como una cuba, a eso de las nueve y media; ni encendió la luz de la niña."
+                        "Javier volvió como una cuba, a eso de las nueve y media; ni encendió la luz de la niña.",
+                        // Calibración de la fase 2: respuestas reales que el detector no veía
+                        "Sí, hijo, vino de vuelta alrededor de las 21:30. Estaba muy mareado y con cara de quien ha estado tomando.",
+                        "Vimos a Javier volver del pueblo andando tambaleante a las 21:30.",
+                        "Hijo, ese día vino muy borracho a casa, andaba tambaleándose y no se encendió la luz de su cuarto."
                     },
                     sampleMisses = new[] { "Javier volvió del pueblo por la noche, como cada sábado.", "Javier es buen hombre, hijo, aunque le guste el vino." }
                 }
