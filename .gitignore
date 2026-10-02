@@ -110,3 +110,6 @@ docs/screenshots/*/[0-9][0-9][0-9][0-9]/
 # Estado local de Claude Code (las skills de .claude/skills sí se versionan)
 .claude/scheduled_tasks.lock
 .claude/settings.local.json
+
+# Cachés de Python de las herramientas
+__pycache__/

@@ -21,9 +21,12 @@ public class AnimationCapture
     // -captureHeight 1200 = móvil alargado (1080x2400 a media resolución); por defecto 1080x1920
     // -captureWidth 720 -captureHeight 1600 = 1440x3200 a media resolución. Sin el ancho, una altura distinta daba
     // proporciones que no existen (540x1920 = 9:32; sesión C: las capturas de retratos salieron así por error)
+    // -captureWidth 1080 -captureHeight 1920 = píxeles reales de un móvil (filtro de importación, BRIEF 6.4)
     private static readonly int Width = Argument("-captureWidth", 540);
     private static readonly int Height = Argument("-captureHeight", 960);
-    private static string Suffix => Height == 960 && Width == 540 ? "" : $"_{Width * 2}x{Height * 2}";
+    // Media resolución: el nombre lleva el tamaño de pantalla (×2). Con 1080 o más de ancho ya son píxeles reales
+    private static string Suffix => Height == 960 && Width == 540 ? ""
+        : Width >= 1080 ? $"_{Width}x{Height}" : $"_{Width * 2}x{Height * 2}";
 
     private static int Argument(string name, int fallback)
     {
@@ -311,6 +314,78 @@ public class AnimationCapture
         }
         yield return null;
         Shot("veredicto_ficha");
+    }
+
+    // Arte nuevo (docs/art/javier/BRIEF.md 6.4): qué filtro de importación se ve más nítido sin dientes de sierra a
+    // tamaño de móvil. A/B en tiempo de ejecución sobre los retratos actuales (sin tocar sus .meta): la textura tal cual
+    // (bilineal con mipmaps), una copia del nivel 0 sin mipmaps con filtro Point y la misma copia en bilineal.
+    // filtro_<pantalla>_<variante>; lanzar con capture-anim.sh "AnimationCapture.FiltroDeImportacion" 1920
+    [UnityTest]
+    public IEnumerator FiltroDeImportacion()
+    {
+        Tutorial.SkipAll();
+        yield return Click("PlayButton");
+        yield return Click("Caso 1");
+        yield return Click("StartButton");
+        yield return new WaitForSecondsRealtime(1.5f);
+        yield return FilterShots("filtro_interrogatorio");
+        UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(1.5f);
+        yield return FilterShots("filtro_rueda");
+    }
+
+    private IEnumerator FilterShots(string name)
+    {
+        var originals = new Dictionary<RawImage, Texture2D>();
+        foreach (RawImage raw in UnityEngine.Object.FindObjectsByType<RawImage>(FindObjectsSortMode.None))
+            if (raw.isActiveAndEnabled && raw.texture is Texture2D t && t.mipmapCount > 1 && t.width >= 512)
+                originals[raw] = t;
+        Shot(name + "_bilineal_mipmaps");
+
+        // Las tres variantes salen de la misma copia sin comprimir (CopyTexture falla con anchos que no son múltiplo
+        // de 4 en formatos comprimidos): así la compresión no sesga la comparación
+        var withMips = new Dictionary<Texture2D, Texture2D>();
+        var noMips = new Dictionary<Texture2D, Texture2D>();
+        foreach (Texture2D source in originals.Values.Distinct())
+        {
+            withMips[source] = Uncompressed(source, mipmaps: true);
+            noMips[source] = Uncompressed(source, mipmaps: false);
+        }
+        foreach (var (variant, set, filter) in new[]
+                 {
+                     ("_copia_bilineal_mipmaps", withMips, FilterMode.Bilinear),
+                     ("_point_sin_mipmaps", noMips, FilterMode.Point),
+                     ("_bilineal_sin_mipmaps", noMips, FilterMode.Bilinear),
+                 })
+        {
+            foreach (var pair in originals)
+            {
+                set[pair.Value].filterMode = filter;
+                pair.Key.texture = set[pair.Value];
+            }
+            yield return null;
+            Shot(name + variant);
+        }
+
+        foreach (var pair in originals)
+            pair.Key.texture = pair.Value;
+        foreach (Texture2D copy in withMips.Values.Concat(noMips.Values))
+            UnityEngine.Object.Destroy(copy);
+        Debug.Log($"[Filtro] {name}: {originals.Count} retratos comparados");
+    }
+
+    private static Texture2D Uncompressed(Texture2D source, bool mipmaps)
+    {
+        RenderTexture rt = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.ARGB32);
+        Graphics.Blit(source, rt);
+        RenderTexture previous = RenderTexture.active;
+        RenderTexture.active = rt;
+        var copy = new Texture2D(source.width, source.height, TextureFormat.RGBA32, mipmaps);
+        copy.ReadPixels(new Rect(0, 0, source.width, source.height), 0, 0, mipmaps);
+        copy.Apply(updateMipmaps: mipmaps);
+        RenderTexture.active = previous;
+        RenderTexture.ReleaseTemporary(rt);
+        return copy;
     }
 
     // Sesión A, bloque 4: entrada del sospechoso nuevo (fundido y deslizamiento de la figura y del busto)
