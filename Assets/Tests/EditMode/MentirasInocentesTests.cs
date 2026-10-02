@@ -121,6 +121,25 @@ public class MentirasInocentesTests
         StringAssert.Contains("Bea mentía, sí: sobre el tabaco, no sobre el crimen.", report);
     }
 
+    // Decisión de Cristian (fase 2): con la mentira contada en cuanto está en la libreta, los finales buenos se duplicaban
+    // (bot: 8 → 18 de 36). El final bueno pasa a 6 puntos; las 9 variantes llegan a 6 sin que el culpable confiese
+    [Test]
+    public void ElFinalBuenoPideSeisPuntos()
+    {
+        Assert.AreEqual(6, InvestigationState.GoodThreshold);
+        StoryData story = TestCases.Story();
+        var five = new InvestigationState(story.variants[0]);
+        foreach (string id in new[] { "i1", "i2", "x" })
+            five.Discover(id);
+        five.RegisterLieTold();
+        five.UpdateContradictions();
+        Assert.AreEqual(5, five.Evidence);
+        Assert.AreEqual(Ending.Bittersweet, five.Accuse("a").ending, "con 5, agridulce");
+        five.Discover("i3");
+        Assert.AreEqual(6, five.Evidence);
+        Assert.AreEqual(Ending.Good, five.Accuse("a").ending, "con 6, bueno");
+    }
+
     // ---------- Análisis del turno ----------
 
     [Test]

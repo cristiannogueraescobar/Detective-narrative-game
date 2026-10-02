@@ -27,7 +27,7 @@ public class AccusationResult
 /// </summary>
 public class InvestigationState
 {
-    public const int GoodThreshold = 5;
+    public const int GoodThreshold = 6; // Antes 5; fase 2 de las mentiras de inocentes (decisión de Cristian)
     public const int BittersweetThreshold = 3;
     public const int ContradictionWeight = 2;
 
