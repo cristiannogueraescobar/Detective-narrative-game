@@ -108,11 +108,9 @@ public static class Notebook
             // pista choca con la versión de alguien, enseñársela es como se destapa una mentira)
             // Igual para todos en cuanto ha contestado (sesión C: la del culpable esperaba a su mentira y le delataba). Una
             // versión que nombra a alguien aún no disponible espera a que aparezca
+            // La misma regla que da por dicha su mentira (HeardVersions)
             CharacterRole role = state.Variant.roles.FirstOrDefault(r => r.characterId == character.id);
-            bool heard = interviewedSet.Contains(character.id) && !string.IsNullOrEmpty(role?.version)
-                         && !story.cast.Any(o => !unlockedSet.Contains(o.id) && !string.IsNullOrEmpty(o.shortName)
-                                                 && role.version.Contains(o.shortName));
-            if (heard)
+            if (HeardVersions.Heard(story, role, interviewedSet, unlockedSet))
                 sb.AppendLine($"<indent=6%><i><size=90%>Dice: «{role.version}»</size></i></indent>");
         }
 

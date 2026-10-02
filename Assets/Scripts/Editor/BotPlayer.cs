@@ -316,6 +316,7 @@ public static class BotPlayer
                     int contradictionsBefore = manager.State.ContradictionClueIds.Count;
                     var watch = System.Diagnostics.Stopwatch.StartNew();
                     LLMResult result = manager.AskSuspect(decision.suspect, decision.question, day, shown).GetAwaiter().GetResult();
+                    manager.RegisterHeardLies(unlocked); // Como el juego al rehacer la libreta
                     long elapsed = watch.ElapsedMilliseconds;
                     if (!result.Success)
                         throw new Exception("Ollama: " + result.ErrorMessage);

@@ -164,6 +164,53 @@ public class MentirasInocentesTests
         CollectionAssert.Contains(fromOld.ContradictionClueIds.ToList(), "x");
     }
 
+    // ---------- Decisión de Cristian (fase 1): la mentira cuenta en cuanto su versión está en la libreta ----------
+
+    [Test]
+    public void LaVersionEstaEnLaLibretaEnCuantoContestaSalvoSiNombraAAlguienAunNoDisponible()
+    {
+        StoryData story = StoryWithInnocentLiar();
+        CharacterRole bea = story.variants[0].Role("b");
+        Assert.IsFalse(HeardVersions.Heard(story, bea, new string[0], new[] { "a", "b" }), "aún no ha contestado");
+        Assert.IsTrue(HeardVersions.Heard(story, bea, new[] { "b" }, new[] { "a", "b" }));
+        bea.version = "Trabajé toda la tarde con Carla.";
+        Assert.IsFalse(HeardVersions.Heard(story, bea, new[] { "b" }, new[] { "a", "b" }), "nombra a Carla, que aún no ha aparecido");
+        Assert.IsTrue(HeardVersions.Heard(story, bea, new[] { "b" }, new[] { "a", "b", "c" }));
+    }
+
+    [Test]
+    public void LaMentiraDelInocenteCuentaEnCuantoSuVersionEstaEnLaLibreta()
+    {
+        StoryData story = StoryWithInnocentLiar();
+        var state = new InvestigationState(story.variants[0]);
+        state.Discover("d");
+        Assert.IsEmpty(HeardVersions.RegisterLies(story, state, new string[0], new[] { "a", "b" }), "sin contestar, nada");
+        List<ClueData> created = HeardVersions.RegisterLies(story, state, new[] { "b" }, new[] { "a", "b" });
+        CollectionAssert.AreEqual(new[] { "d" }, created.Select(c => c.id).ToArray(), "ha contestado y la pista ya está: contradicción");
+        Assert.IsTrue(state.LieTold("b"));
+        Assert.IsEmpty(HeardVersions.RegisterLies(story, state, new[] { "b" }, new[] { "a", "b" }), "una sola vez");
+    }
+
+    [Test]
+    public void YLaDelCulpableIgual()
+    {
+        StoryData story = StoryWithInnocentLiar();
+        var state = new InvestigationState(story.variants[0]);
+        state.Discover("x");
+        CollectionAssert.AreEqual(new[] { "x" }, HeardVersions.RegisterLies(story, state, new[] { "a" }, new[] { "a", "b" }).Select(c => c.id).ToArray());
+        Assert.IsTrue(state.CulpritToldLie);
+    }
+
+    [Test]
+    public void QuienNoMienteNoRegistraNada()
+    {
+        StoryData story = TestCases.Story(); // Bea no miente aquí
+        var state = new InvestigationState(story.variants[0]);
+        HeardVersions.RegisterLies(story, state, new[] { "b" }, new[] { "a", "b" });
+        Assert.IsFalse(state.LieTold("b"));
+        Assert.IsEmpty(state.LiesTold);
+    }
+
     // ---------- Datos de las historias ----------
 
     private static IEnumerable<(StoryData story, VariantData variant)> All()

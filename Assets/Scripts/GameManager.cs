@@ -459,6 +459,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void RefreshNotebook()
     {
+        conversationManager.RegisterHeardLies(unlocked); // Lo que la libreta enseña como su versión ya cuenta como dicho
         interrogationUI?.UpdateNotebook(Notebook.Format(story, State, unlocked,
             conversationManager.Emotions, conversationManager.DescribeContradiction, onPaper: true,
             interviewed: conversationManager.Histories.Where(h => h.Value.Any(m => m.role == "assistant")).Select(h => h.Key),

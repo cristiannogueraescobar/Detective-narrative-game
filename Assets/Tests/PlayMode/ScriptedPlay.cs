@@ -63,12 +63,16 @@ public static class ScriptedPlay
         yield return new WaitForSecondsRealtime(0.5f);
     }
 
-    private static List<CharacterData> Unlocked(StoryData story)
+    public static List<CharacterData> Unlocked(StoryData story)
     {
         var dropdown = Find("SuspectDropdown").GetComponent<TMP_Dropdown>();
         return dropdown.options.Select(o => story.cast.FirstOrDefault(c => SuspectView.From(c).displayName == o.text))
             .Where(c => c != null).ToList();
     }
+
+    /// <summary>Pregunta a quien sea (desbloqueado) y el modelo contesta lo que se le da.</summary>
+    public static IEnumerator AskWith(ScriptedProvider provider, CharacterData who, string question, string answer, ClueData showing = null)
+        => Ask(provider, who, question, answer, showing);
 
     private static IEnumerator Ask(ScriptedProvider provider, CharacterData who, string question, string answer, ClueData showing = null)
     {

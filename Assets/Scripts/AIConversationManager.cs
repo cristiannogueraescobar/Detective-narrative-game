@@ -301,6 +301,21 @@ public class AIConversationManager : MonoBehaviour
         return emotions.TryGetValue(characterId, out Emotion emotion) ? emotion : Emotion.Tranquilo;
     }
 
+    /// <summary>
+    /// Mentiras cuya versión ya está en la libreta: cuentan como dichas (HeardVersions). Se llama antes de rehacer la libreta;
+    /// las contradicciones nuevas se avisan como las demás.
+    /// </summary>
+    public List<ClueData> RegisterHeardLies(IEnumerable<string> unlocked)
+    {
+        if (Story == null || State == null)
+            return new List<ClueData>();
+        IEnumerable<string> interviewed = conversationHistory.Where(h => h.Value.Any(m => m.role == "assistant")).Select(h => h.Key);
+        List<ClueData> created = HeardVersions.RegisterLies(Story, State, interviewed, unlocked);
+        foreach (ClueData clue in created)
+            OnContradictionDetected?.Invoke(DescribeContradiction(clue));
+        return created;
+    }
+
     public string DescribeContradiction(ClueData clue)
     {
         return Contradictions.Describe(Story, State.Variant, clue);
