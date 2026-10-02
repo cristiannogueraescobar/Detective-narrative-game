@@ -383,7 +383,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         new[] { "cenar con", "cena con", "cenando con", "cene con" },
                         new[] { "clientes", "cliente" }
                     },
-                    versionB = "Vale: no había clientes. Estuve con otra persona, a escondidas.",
+                    versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.", // Sin frase hecha: la repetía tal cual
                     lieAbout = "su aventura"
                 },
                 new CharacterRole
@@ -392,7 +392,6 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     knowledge = new[]
                     {
                         MentionAmparo,
-                        "Mamá siempre está con médicos y pastillas para Elena; papá quiso pedir una segunda opinión y discutieron."
                     },
                     version = "Estuve en mi cuarto con los cascos casi toda la noche, jugando; solo me los quité un momento.",
                     secret = "Fumas porros a escondidas en tu cuarto y no quieres que tus padres lo sepan.",
@@ -464,7 +463,30 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         "Carmen la recetó y siempre ha sido muy cuidadosa con su tratamiento cardiovascular.",
                         "Carmen tomaba las decisiones médicas para Elena y se molestó cuando pedí una segunda opinión."
                     },
-                    sampleMisses = new[] { "Tenía algo del corazón, eso lo lleva Carmen." }
+                    sampleMisses = new[] { "Tenía algo del corazón, eso lo lleva Carmen." },
+                    // Decisión de Cristian (fase 1): al 80 %. Daniel la suelta poco y varía mucho; Lucas ya sabía lo de la segunda opinión
+                    alsoHeldBy = new[]
+                    {
+                        new ClueHolder
+                        {
+                            characterId = "hermano",
+                            topic = "las medicinas de Elena o las peleas de tus padres",
+                            fact = "mamá le recetó ella misma a Elena una medicina para el corazón; cuando papá quiso que la viera otro cardiólogo, mamá se puso hecha una fiera.",
+                            summary = "Lucas cuenta que Carmen le recetó ella misma a Elena algo para el corazón y se puso furiosa cuando Daniel quiso otra opinión.",
+                            anchors = new[]
+                            {
+                                new[] { "corazon", "cardi", "medicina", "medicament", "pastilla", "segunda opinion" },
+                                new[] { "receto", "recetaba", "ella misma", "hecha una fiera", "furiosa", "se enfado", "se puso como", "otro medico", "otro cardiologo", "segunda opinion" }
+                            },
+                            calibrationQuestions = new[] { "¿Tomaba Elena alguna medicina?", "¿Discutían tus padres por algo?" },
+                            sampleHits = new[]
+                            {
+                                "O sea, mamá le recetó ella misma una medicina para el corazón, y cuando papá quiso otro cardiólogo se puso hecha una fiera.",
+                                "Discutían por las pastillas del corazón de Elena, tío: papá quería una segunda opinión y mamá se enfadó un montón."
+                            },
+                            sampleMisses = new[] { "No sé qué tomaba, tío; eso lo llevaba mamá.", "Mis padres discuten a veces, como todos." }
+                        }
+                    }
                 },
                 new ClueData
                 {
@@ -656,7 +678,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         new[] { "23:00", "las once", "11 de la noche" },
                         new[] { "llegue", "volvi", "vine", "entre en casa" }
                     },
-                    versionB = "Está bien: llegué antes, a las diez y cuarto. Vi el chichón y no la llevé al hospital.",
+                    versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.",
                     lieAbout = "la hora a la que llegó: vio a Elena con el golpe y no la llevó al hospital"
                 },
                 new CharacterRole

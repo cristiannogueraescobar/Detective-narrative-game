@@ -303,6 +303,25 @@ public class MentirasInocentesTests
             Assert.IsTrue(ClueDetector.Evaluate(anchors, ClueDetector.Normalize(said), negationGuard: false).Matched, said);
     }
 
+    // Decisión de Cristian (fase 1): 1B_receta al 80 %. Daniel la suelta poco y varía mucho entre pasadas; Lucas, que ya
+    // sabía lo de la segunda opinión, la cuenta también (segundo portador, como Amparo con 1B_cena)
+    [Test]
+    public void LaRecetaDe1BLaSabenDanielYLucas()
+    {
+        CaseLibrary.TryFind("1B", out _, out VariantData v);
+        CollectionAssert.AreEquivalent(new[] { "padre", "hermano" }, v.Clue("1B_receta").Holders.ToArray());
+    }
+
+    // Calibración de la fase 1: con una frase hecha como reacción, Daniel la repetía tal cual ("estuve con otra persona")
+    // en vez de confesar con los detalles de su secreto, y las anclas de su pista no la veían (1B_cena por Daniel: 10 %)
+    [TestCase("1B")]
+    [TestCase("1C")]
+    public void LaReaccionDelInocenteRemiteASuSecretoSinFraseHecha(string variantId)
+    {
+        CaseLibrary.TryFind(variantId, out _, out VariantData v);
+        StringAssert.Contains("lo que ocultas", v.Role("padre").versionB);
+    }
+
     // El resto de variantes, sin mentiroso inocente hasta la fase 2
     [TestCase("1A")]
     [TestCase("2A")]
