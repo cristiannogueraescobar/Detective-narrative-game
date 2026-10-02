@@ -442,7 +442,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     id = "1B_receta", playerName = "La receta de casa", holder = "padre", kind = ClueKind.Incriminates,
                     summary = "Carmen le recetó ella misma a Elena un medicamento para el corazón. Cuando Daniel pidió una segunda opinión, ella se puso furiosa.",
                     topic = "la medicación o los tratamientos de Elena", // Sesión C: "¿quién decidía los tratamientos?" no daba el hecho
-                    fact = "Carmen le recetó ella misma a Elena un medicamento para el corazón, y se puso furiosa cuando pediste una segunda opinión a un cardiólogo.",
+                    fact = "Carmen decidía ella sola los tratamientos de Elena: le recetó ella misma un medicamento para el corazón y se puso furiosa cuando pediste una segunda opinión a un cardiólogo.",
                     anchors = new[]
                     {
                         new[] { "corazon", "cardi", "arritmia", "medicament", "medicina", "tratamiento", "segunda opinion" },
@@ -470,7 +470,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         new ClueHolder
                         {
                             characterId = "hermano",
-                            topic = "las medicinas de Elena o las peleas de tus padres",
+                            topic = "las medicinas de Elena o quién la llevaba al médico", // Las peleas de sus padres no: le pone nervioso hablar mal de su madre
                             fact = "mamá le recetó ella misma a Elena una medicina para el corazón; cuando papá quiso que la viera otro cardiólogo, mamá se puso hecha una fiera.",
                             summary = "Lucas cuenta que Carmen le recetó ella misma a Elena algo para el corazón y se puso furiosa cuando Daniel quiso otra opinión.",
                             anchors = new[]
@@ -478,7 +478,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                                 new[] { "corazon", "cardi", "medicina", "medicament", "pastilla", "segunda opinion" },
                                 new[] { "receto", "recetaba", "ella misma", "hecha una fiera", "furiosa", "se enfado", "se puso como", "otro medico", "otro cardiologo", "segunda opinion" }
                             },
-                            calibrationQuestions = new[] { "¿Tomaba Elena alguna medicina?", "¿Discutían tus padres por algo?" },
+                            calibrationQuestions = new[] { "¿Tomaba Elena alguna medicina?", "¿Quién llevaba a Elena al médico?" },
                             sampleHits = new[]
                             {
                                 "O sea, mamá le recetó ella misma una medicina para el corazón, y cuando papá quiso otro cardiólogo se puso hecha una fiera.",
