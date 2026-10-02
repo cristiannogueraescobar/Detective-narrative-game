@@ -785,3 +785,120 @@ retratos → 4 gráficos.
 - **10:35** `docs/SKILLS-MAP.md`: qué skill del proyecto y cuál instalada usar en cada tipo de tarea. Solo nombres
   comprobados en disco. `CLAUDE.md` nuevo con la línea "lee SKILLS-MAP.md al empezar". Probado en un proceso nuevo:
   leyó el mapa solo y siguió la fila de Animaciones.
+
+# Sesión C (01-10-2026): decisiones de Cristian sobre la sesión B + 3 h autónomas
+
+Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier` (sin fusionar); esta sección va en
+`feature/sesion-c`, que sale del `main` ya fusionado.
+
+## Parte 1: decisiones
+- **21:15-21:21 Punto 1.** `feature/mejoras-seguras` fusionada a `main` con `--no-ff` (`a05a686`). Antes: 16 archivos,
+  ninguna captura, ninguna clave de Anthropic, nada > 5 MB. En el resultado fusionado: EditMode 756/757 (el que no corre es
+  el banco, Explicit), PlayMode 64, 0 fallos. Push hecho; Ollama descargado tras PlayMode.
+- **21:21 Punto 2.** Los 6 archivos de juego de `feature/retratos-javier` (contados desde su merge-base con main;
+  el resto del diff contra main son los cambios de mejoras-seguras, que una fusión no desharía): ver el resumen
+  final. No se fusiona.
+- **21:22 Punto 3.** `docs/art/ENCARGO.md` (inglés): página 1 para el artista, guía de estilo medida, los 5
+  personajes con 3 expresiones cada uno, entregables y formato; referencias 02-04 y retratos actuales copiados en
+  `docs/art/encargo/`. Culpables en alguna variante: Daniel (1A), Javier (3A), Encarna (3C) → ninguna expresión
+  delata. **Cambios frente a ART-NEEDED:** la "sonrisa dulce que inquieta" de Encarna la delataba (culpable en 3C)
+  → cálida, nunca siniestra; sin los prismáticos de Amparo (son su secreto). Herramientas de generación: aparcadas.
+- **21:28 Punto 5** (rama `feature/tests-sin-precarga`, test primero): `OllamaProvider.PreloadDisabled`, solo lo enciende
+  un `[SetUpFixture]` de PlayMode; el juego sigue precargando (test). Comprobado: Ollama vacío antes y después de la
+  suite PlayMode completa (antes la suite cargaba qwen, 5,6 GB). PlayMode 65, EditMode 758/759, 0 fallos.
+- Mensaje nuevo de Cristian a mitad del punto 5: retratos completos por derivación de código, después de terminar
+  lo pendiente (puntos 4, bloques A-D). Respondida su pregunta sobre retratos ya hechos (sesión A: 6 derivados en
+  el juego; sesión B: generados con IA fuera del repo, sin integrar; sesión C: ninguno).
+- **21:33 Punto 4** (rama `feature/pistas-dos-portadores`, `bf9068b`, test primero): `ClueData.alsoHeldBy` + vista
+  `ForHolder` (tema, hecho, anclas y preguntas propias). Ficha, detector, ayudas, calibrador, validador y resumen
+  final usan todos los portadores. Segundo portador de 1B_cena y 1C_llamada: **Amparo** (1B: conoce a Marta, la del
+  bufete, que trae a Daniel a casa; 1C: tras el golpe ve a Lucas llorando al móvil y a las 22:15 llega el coche del
+  padre). EditMode 764/765, 0 fallos.
+- **21:35** Medición en marcha (worktrees `../dng-main` y `../dng-dos`): 48 pistas ×10 en main (base del bloque A y
+  de las dos pistas), bot en la rama y en main (semilla 1919), y después las dos pistas ×10 en la rama. Un error
+  mío al preparar la carpeta de la rama hizo fallar ese primer paso; se repite al final de la serie.
+
+## Parte 2
+- **21:36 Bloque B.** finecomb carga (se lanzó sin error). Auditoría de `Assets/Scripts` por un subagente con su
+  método, solo lectura, orden de riesgo: 2 importantes (Continuar borra la partida ante cualquier excepción; el
+  jugador puede inyectar instrucciones al sospechoso) y 6 menores. **Error mío:** cambié de rama (a
+  revision-textos) mientras el subagente leía, así que auditó `main` y no el cambio de dos portadores.
+- **21:53 Bloque C** (rama `feature/revision-textos`, `37cd95a`, skill ux-copy): 462 textos revisados, 18 cambios
+  (concordancia sin género, glosario, números en letra, «Cómo se juega», «Mostrar prueba» más corto, comillas).
+  4 cambios para Cristian (etiquetas de estado sin género, títulos, error de Anthropic, historia/caso).
+  `docs/TEXT-REVIEW.md`. EditMode 765/766 con LayoutValidationTests, PlayMode 64, 0 fallos. Dos tests que fijaban
+  el texto antiguo los actualicé después del código y no antes (FxTests, GameSmokeTests): fallo de orden TDD.
+- **22:03 Bloque B, arreglos** (rama `feature/revision-finecomb`, `35ebc73`, test primero): la partida que no se puede
+  restaurar se aparta en vez de borrarse; los corchetes del jugador no pueden fingir una prueba; reemplazo atómico
+  del guardado y recuperación del `.tmp` (ese test no lo vi en rojo); EndDay/Think ignorados con una pregunta en
+  vuelo; el bot resuelve antes la pista que el nombre (revisión 5, n.º 4); TearDown de PlayMode vacía la cola.
+  Pendientes con prioridad en CODE-REVIEW.md. EditMode 763/764, PlayMode 65, 0 fallos.
+- **22:05** Inventario de retratos (`feature/retratos-completos`): 12 personajes, 36 expresiones que faltan.
+- **22:08 Revisión del cambio de dos portadores** (lo que finecomb no cubrió): **4 importantes** en mi versión
+  (Daniel "recordaba" la confesión si la contaba Amparo; anclas de Amparo que su habla normal y su propia ficha
+  disparaban; incoherencia del coche en 1B). **Paro la serie** antes de medir esa versión (habría sido una medida
+  inválida; el bot de la rama no llegó a empezar).
+- **22:13** Arreglos con test primero (`c68b2ab`): quién contó cada pista (guardado), resumen por portador, anclas
+  precisas, versión coherente, ayuda a la versión abierta, comprobación de datos de todos los portadores.
+  EditMode 776/777, PlayMode 64, 0 fallos. Medición relanzada en cola.
+- **22:15** 48 pistas ×10 en main: 42/48 ≥ 2/3, media 84 %. Bajo el 70 %: 1B_cena 45, 1C_pantalla 45, 1C_llamada 43,
+  2B_imagenes 60, 2C_grabacion 60, 3C_pisadas 55. Clasificación por causa (subagente sobre las respuestas reales):
+  modelo (1B, 1C_llamada), anclas (2C, parte de 1C_llamada), pregunta (1C_pantalla, 3C_pisadas), diseño (2B).
+- **22:21** Punto 4 aislado (`c68b2ab`, ×10): 1B_cena Daniel 30 % / **Amparo 90 %**; 1C_llamada Daniel 57 % / Amparo 40 %.
+- **22:24 Bloque A** (`fd2b041`, test primero: las respuestas reales que no se detectaban pasan a ejemplos): anclas de
+  2C_grabacion y de Daniel en 1C_llamada, segunda pregunta de 1C_pantalla y 3C_pisadas, Marcos como segundo
+  portador de 2B_imagenes. ×10 en la rama final: 1B 15/**90** %, 1C_pantalla **90**, 1C_llamada **60**/50, 2B 60/45,
+  2C **95**, 3C_pisadas **100** (main: 45, 45, 43, 60, 60, 55). Bots de rama y main en marcha.
+
+## Retratos (mensaje nuevo de Cristian, rama `feature/retratos-completos`)
+- **22:05** Inventario (`docs/art/INVENTARIO-RETRATOS.md`).
+- **22:15 Javier** (test primero): sin bigote, barba de días, cejas bajas, párpados caídos, pelo casi negro con canas,
+  cuadros. Parecido con Daniel: **2 de 3 "personas distintas" → pasa**. Integrado (`a43f4d3`).
+- **22:22 Vecinas**: gafas/arrugas/sonrisa (Amparo), pañuelo/ceño (Maruxa), sonrisa/medalla (Encarna), sin cigarro.
+  Parecido con la vecina original: **9 de 9 "la misma persona"** (misma pose y cuerpo píxel a píxel) → **no pasan,
+  no se integran** (receta y tests en la rama, PNG sin regenerar).
+- **22:33 Expresiones** (`bc334bd`): 24 imágenes (las dos más frecuentes de cada uno además de tranquilo), editando
+  solo la cara: cejas, lágrimas, gota de sudor, rubor, boca si se ve. Mismo encuadre (≤ 1 %, test). Prueba de
+  emoción: 3 subagentes, **24 de 24 identificadas** (23 a 3/3, Amparo nervioso 2/3). De paso: el tranquilo de hoy de
+  Marcos, Maruxa y Encarna se lee como "enfadado" (0/3). Integradas como arte antiguo (mismo encuadre). Fallo de TDD:
+  `make_expressions.py` lo escribí antes que sus tests.
+- **22:39** `docs/art/RETRATOS-FINAL.jpg` y `docs/art/ANTES-DESPUES.jpg`.
+- **23:04** Bot en la rama final (`fd2b041`, semilla 1919, 18 partidas): culpable **17/18**. Los 5 nombres inventados
+  de 1B son de Carmen (un fármaco y García Márquez), no de la vía nueva de Amparo. Bot de main en marcha.
+- **23:06 Bloque D** (`docs/PRIMERA-PARTIDA.md`, skill journey-mapping, capturas reales y datos del bot): el día 1
+  termina sin pistas en 12 de 18 partidas (primera pista en la pregunta 6,1 con 5 al día); 2-4 de 7 días sin pista.
+  5 fricciones con una propuesta cada una. Solo análisis.
+- **23:11 Pistas entre el 70 y el 80 %** (`241d8d1`, test primero): anclas que recuperan respuestas reales en
+  2A_curva, 2C_prueba, 2C_gps y 3A_garrafas, y una pregunta de 2A_curva que no empuja a negar. 1A_partida, 2C_puerto,
+  2C_comisaria y 3B_armario sin cambios (modelo o sin datos). Medición ×10 en cola tras el bot de main.
+- **23:30** Bot de main (`a05a686`): culpable **11/18**, primera pista en la pregunta 7,1 (rama: 17/18 y 6,1). En la
+  sesión B, la misma semilla dio 17/18 en el main anterior y 15/18 en mejoras. 6 puntos es más que el ±2 habitual:
+  no lo doy por ruido sin repetirlo. Repetición en marcha.
+- **23:36** Pistas 70-80 % ×10 en la rama (`241d8d1`): 2A_curva 77 → **100**, 2C_prueba 73 → **87**, 2C_gps 75 → **85**,
+  3A_garrafas 75 → **85**.
+- **23:37 Capturas de retratos** (`AnimationCapture.RetratosHistoria1-3`, 1080×1920): 39 capturas, interrogatorio con
+  cada expresión y rueda de acusación de las tres historias; galería `docs/art/CAPTURAS-RETRATOS.jpg` (`505f76a`).
+  **Error mío:** la suite de capturas cargó qwen en Ollama al abrir la escena (la rama de retratos no lleva el arreglo
+  del punto 5), así que Ollama y las capturas coincidieron, contra la regla. Las capturas salieron bien, pero conviene
+  fusionar primero `feature/tests-sin-precarga`.
+- **23:43** Suites de `feature/pistas-dos-portadores` (final): EditMode 776/777, PlayMode 64, 0 fallos.
+- **00:04** Repetición del bot de main con la misma semilla: **16/18** (antes 11/18). Era la variación del bot, no la
+  fusión: con este bot el ruido es de unos ±5 sobre 18, no ±2. Main cumple (≥ 14). Rama de pistas: 17/18.
+  Una espera mía se paró por poca memoria del sistema (no el bot, que terminó bien).
+- **00:05 Cierre.** Todo con commit y push. Solo `feature/mejoras-seguras` fusionada (`a05a686`). Worktrees temporales
+  borrados; Ollama descargado; sin procesos de Unity.
+
+## Revisión de Cristian de retratos y capturas
+
+- **01:02** Fusionadas a main, en orden y con las dos suites tras cada una: tests-sin-precarga (EditMode 758/759,
+  PlayMode 65), revision-finecomb (765/766, 66), revision-textos (774/775, 66) y pistas-dos-portadores (794/795, 66).
+  main = `b92ad83`. retratos-completos, sesion-c y retratos-javier, sin fusionar.
+- **01:20** Los seis problemas de interfaz ya estaban en main. Los destapó mi captura a 9:32 (`-captureHeight 1920` con
+  el ancho por defecto de 540). Reproducido en main a esa proporción; a 1080 × 1920 y 20:9 los controles se ven.
+- **02:05** `feature/arreglos-interfaz` (`9942290`): tope del busto en la cabecera, composición única (busto por
+  defecto, figura como opción B), sin ampliar por encima de 1:1 (PixelScale/PixelFit), sin contraluz en el busto
+  (`bustRimStrength`), barra de arriba en dos líneas si no cabe y rueda con solape del 30 %. Test nuevo de controles
+  (fuera de pantalla, por debajo de 48 dp o tapados) a 4 tamaños. Galerías en `docs/screenshots/2026-10-02/galeria/`.
+  Errores: borré el "antes" sin copiarlo (rehecho desde un worktree de main), el heredoc con `
+` otra vez, y el
+  tema de prueba que Unity descargaba al abrir la escena. EditMode 901/902, PlayMode 66, 0 fallos.
