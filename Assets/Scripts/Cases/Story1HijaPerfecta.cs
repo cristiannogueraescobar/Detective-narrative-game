@@ -442,12 +442,12 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 {
                     id = "1B_receta", playerName = "La receta de casa", holder = "padre", kind = ClueKind.Incriminates,
                     summary = "Carmen le recetó ella misma a Elena un medicamento para el corazón. Cuando Daniel pidió una segunda opinión, ella se puso furiosa.",
-                    topic = "la medicación de Elena o quién le recetaba las medicinas",
+                    topic = "la medicación o los tratamientos de Elena", // Sesión C: "¿quién decidía los tratamientos?" no daba el hecho
                     fact = "Carmen le recetó ella misma a Elena un medicamento para el corazón, y se puso furiosa cuando pediste una segunda opinión a un cardiólogo.",
                     anchors = new[]
                     {
                         new[] { "corazon", "cardi", "arritmia", "medicament", "medicina", "tratamiento", "segunda opinion" },
-                        new[] { "receto", "recetaba", "prescrit", "prescrib", "segunda opinion", "furiosa", "se enfado", "se molesto", "ella misma", "hecha una fiera", "le dio", "le daba", "muy molesta", "otro especialista" }
+                        new[] { "receto", "recetaba", "prescrit", "prescrib", "segunda opinion", "furiosa", "se enfado", "se molesto", "ella misma", "hecha una fiera", "le dio", "le daba", "muy molesta", "otro especialista", "sin consultar", "otros medicos" }
                     },
                     calibrationQuestions = new[] { "¿Tomaba Elena alguna medicación?", "¿Quién decidía los tratamientos de Elena?" },
                     sampleHits = new[]
@@ -456,6 +456,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         // Sesión C (calibración de la fase 1): respuestas reales que el detector no veía
                         "Recuerdo que Carmen le dio algo para el corazón y se mostró muy molesta cuando sugerí consultar a otro especialista.",
                         "Carmen le dio algo para el corazón y se puso muy nerviosa cuando quise consultar con otro especialista.",
+                        "Carmen decidía los tratamientos para Elena, siempre según su criterio y sin consultar a otros médicos.",
                         "Yo quería que la viera un cardiólogo, una segunda opinión, y Carmen se enfadó muchísimo.",
                         "No estoy seguro de qué medicación tomaba Elena esa noche, solo sé que Carmen le recetó uno para el corazón hace unos meses.",
                         "Elena solía tomar un medicamento para el corazón prescrito por Carmen.",
