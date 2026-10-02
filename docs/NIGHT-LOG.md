@@ -1081,3 +1081,17 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
   93-94 % coherente (main 98/96); bot 22/24 culpables, nunca acusa a Daniel. Pero en 1B la contradicción de Daniel no
   salió en ninguna partida: la libreta enseña su versión y el juego exige que la diga en el chat. Propuesta y decisiones
   en `docs/REPORT-MENTIRAS-FASE1.md`. Sin fusionar.
+
+## Mentiras de inocentes: decisiones de la fase 1 y fase 2 (02-10-2026)
+
+- **17:00** Regla con TDD: la mentira cuenta en cuanto la versión está en la libreta (HeardVersions, juego y bot).
+  Bot en 9 variantes: los finales buenos pasan de 8 a 18 de 36; propuesta de umbral a 6 (no aplicada).
+- **17:37** Estados con 15 intentos: 98/96 % en la rama frente a 96/95 % en main. Era ruido.
+- **19:30** 1B_receta: Lucas como segundo portador (90 %). La reacción de Daniel, que repetía una frase hecha, pasa a
+  remitir a su secreto (1B_cena por Daniel: 10 → 70 %).
+- **20:00** Error mío: la semilla por número de orden se desplazaba con cada pista nueva. Ahora sale de quién contesta
+  y de qué se le pregunta; re-medidas 1B, historia 2 y 3B.
+- **22:26** Fase 2: 2A, 2B, 2C, 3A y 3C cumplen frente a main; 3B no (el bot acusa a Javier por su mentira, que es
+  sobre la noche y el sitio del crimen). Propuesta: Encarna y el pleito del pozo. Huecos que ya había en main:
+  estados de la historia 2 (90 %) y premisas de la historia 3 (8-9 %). Informe: docs/REPORT-MENTIRAS-FASE2.md.
+  EditMode 966/967, PlayMode 68. Sin fusionar.
