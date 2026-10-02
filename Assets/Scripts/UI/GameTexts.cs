@@ -248,14 +248,31 @@ public static class GameTexts
     /// <summary>
     /// Lo que el jugador lleva a la acusación (sin decir qué pistas incriminan a quién).
     /// </summary>
+    // Tarjeta "TUS PRUEBAS" de la acusación
+    public const string EvidenceCardTitle = "TUS PRUEBAS";
+    public const string EvidenceCardEmpty = "Libreta vacía: acusar ahora es una apuesta.";
+    public const string KeyClueHint = "Elige también la prueba clave: si lo demuestra, tu rango sube.";
+
+    /// <summary>"cuatro pistas · una contradicción": en letra hasta diez, como el resumen de la acusación.</summary>
+    public static string EvidenceLine(int clues, int contradictions)
+    {
+        return $"{ClueCount(clues)} · {ContradictionCount(contradictions)}";
+    }
+
+    private static string ClueCount(int clues) => clues == 1 ? "una pista" : $"{NumberWord(clues)} pistas";
+
+    private static string ContradictionCount(int contradictions) =>
+        contradictions == 0 ? "ninguna contradicción"
+        : contradictions == 1 ? "una contradicción" : $"{NumberWord(contradictions)} contradicciones";
+
+
     public static string AccusationSummary(int clues, int contradictions)
     {
         if (clues <= 0 && contradictions <= 0)
             return "Tu libreta está vacía: acusar ahora es una apuesta.";
-        string c = clues == 1 ? "una pista" : $"{NumberWord(clues)} pistas";
-        string x = contradictions == 0 ? "ninguna contradicción"
-                 : contradictions == 1 ? "una contradicción" : $"{NumberWord(contradictions)} contradicciones";
+        string c = ClueCount(clues);
+        string x = ContradictionCount(contradictions);
         // El selector de la prueba clave solo aparece con pistas: se explica justo entonces
-        return $"En tu libreta: {c} y {x}." + (clues > 0 ? " Elige también la prueba clave: si lo demuestra, tu rango sube." : "");
+        return $"En tu libreta: {c} y {x}." + (clues > 0 ? " " + KeyClueHint : "");
     }
 }

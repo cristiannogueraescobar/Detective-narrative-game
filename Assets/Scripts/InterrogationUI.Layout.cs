@@ -537,6 +537,9 @@ public partial class InterrogationUI
         LayoutKit.Size(wall, height: 0f, flexibleHeight: 1f);
         UIComponents.GetOrAdd<LayoutElement>(wall.gameObject).minHeight = 0f;
         BuildLineupWall(wall);
+        // Encima de la pared: lo que llevas a la acusación (tarjeta "TUS PRUEBAS")
+        Transform dropdownArrow = accusationDropdown != null ? accusationDropdown.transform.Find("Arrow") : null;
+        evidenceCard = EvidenceCard.Build(column, wall, dropdownArrow != null && dropdownArrow.TryGetComponent(out Image arrowImage) ? arrowImage.sprite : null);
         lineup = UIFactory.Container(wall, "Rueda (auto)", Vector2.zero, Vector2.one);
         lineup.offsetMin = new Vector2(LineupWallMargin, 0f); // Sitio para las cifras de la izquierda
         var grid = lineup.gameObject.AddComponent<GridLayoutGroup>();

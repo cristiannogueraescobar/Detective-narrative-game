@@ -168,7 +168,8 @@ public class LayoutValidationTests
     {
         RectTransform panel = LayoutPreview.ShowOnly(session, "AccusatonPanel");
         TMP_Text prompt = panel.GetComponentsInChildren<TMP_Text>(true).First(t => t.name == "Text (TMP)");
-        StringAssert.Contains("libreta", prompt.text);
+        // Con la tarjeta "TUS PRUEBAS", lo gris que queda es la explicación de la prueba clave (hay pistas en el peor caso)
+        StringAssert.Contains("prueba clave", prompt.text);
         string before = prompt.text;
 
         GameSettings.HighContrast = !GameSettings.HighContrast;

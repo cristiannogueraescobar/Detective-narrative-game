@@ -545,6 +545,48 @@ public class AnimationCapture
         Shot($"acusacion_{index + 1}");
     }
 
+    // Sesión C, tarjeta "TUS PRUEBAS" (adoptada): jugando de verdad, con el modelo con guion (ScriptedPlay): las pistas
+    // salen por el flujo normal y los textos son los del juego. Historia 2 (si la variante no deja conseguirlas el primer
+    // día, otra partida). tarjeta_vacia, tarjeta_pistas y, si está plegada, tarjeta_pistas_desplegada
+    [UnityTest]
+    public IEnumerator TarjetaPruebas()
+    {
+        var provider = new ScriptedProvider();
+        yield return SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
+        yield return null;
+        RedirectCanvases();
+        yield return ScriptedPlay.Start(1, provider);
+        UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(1.5f);
+        Shot("tarjeta_vacia");
+
+        bool played = false;
+        for (int attempt = 0; attempt < 15 && !played; attempt++)
+        {
+            yield return SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
+            yield return null;
+            RedirectCanvases();
+            yield return ScriptedPlay.Start(attempt < 10 ? 1 : attempt % 3, provider);
+            if (!ScriptedPlay.Feasible(3, true))
+                continue;
+            yield return ScriptedPlay.GatherEvidence(provider, 3, true, new List<ClueData>());
+            played = true;
+        }
+        Assert.IsTrue(played, "ninguna partida permitía tres pistas y una contradicción el primer día");
+        Debug.Log($"[Captura] tarjeta: historia {UnityEngine.Object.FindFirstObjectByType<AIConversationManager>().Story.id}");
+        yield return new WaitForSecondsRealtime(8f); // Que acaben los avisos de pista y el sello de contradicción
+        UnityEngine.Object.FindFirstObjectByType<GameManager>().ForceAccusationPanel();
+        yield return new WaitForSecondsRealtime(1.5f);
+        Shot("tarjeta_pistas");
+        var card = Find(EvidenceCard.ObjectName).GetComponent<EvidenceCard>();
+        if (card.Mode == EvidenceCardMode.Collapsed)
+        {
+            card.Toggle();
+            yield return new WaitForSecondsRealtime(0.5f);
+            Shot("tarjeta_pistas_desplegada");
+        }
+    }
+
     // Ronda 15: los partes de la mañana quedan al final de la libreta
     [UnityTest]
     public IEnumerator LibretaConPartes()

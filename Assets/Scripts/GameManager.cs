@@ -526,8 +526,11 @@ public class GameManager : MonoBehaviour
 
     private void ShowAccusationPanel()
     {
-        interrogationUI?.ShowAccusationPanel(UnlockedSuspects(), CanCancelAccusation,
-            conversationManager.State?.ContradictionClueIds.Count ?? 0);
+        // Las contradicciones, con el texto de la libreta (la tarjeta "TUS PRUEBAS" no dice más que ella)
+        InvestigationState state = conversationManager.State;
+        var contradictions = state == null ? new List<string>()
+            : state.ContradictionClueIds.Select(id => conversationManager.DescribeContradiction(state.Variant.Clue(id))).ToList();
+        interrogationUI?.ShowAccusationPanel(UnlockedSuspects(), CanCancelAccusation, contradictions);
     }
 
     public void CancelAccusation()

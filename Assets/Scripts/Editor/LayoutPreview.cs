@@ -123,7 +123,9 @@ public static class LayoutPreview
             reports: Notebook.ReportsUpTo(variant, 7))); // Y todos los partes
 
         ShowEnding(ui, Ending.Insufficient);
-        ui.ShowAccusationPanel(suspects, canGoBack: true, contradictions: 12); // Cifras de dos dígitos: la línea más larga
+        // Doce contradicciones (cifras de dos dígitos: la línea más larga), con el texto que da la libreta
+        ui.ShowAccusationPanel(suspects, canGoBack: true, Enumerable.Range(1, 12)
+            .Select(i => $"La versión de alguien («una cita larga de su mentira {i}») choca con: Una pista con nombre largo").ToList());
 
         // Conversación larga (vive en el scroll), con todos los tipos de aviso que pueden aparecer en ella
         ui.ShowDayTransition(2, "El forense sitúa la muerte entre las 22:30 y las 23:15.");

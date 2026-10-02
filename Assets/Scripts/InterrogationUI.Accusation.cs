@@ -14,6 +14,8 @@ public partial class InterrogationUI
     // ============================================
 
     private int accusationContradictions;
+    private readonly List<string> accusationContradictionTexts = new List<string>();
+    private EvidenceCard evidenceCard;
     private TMP_Dropdown keyClueDropdown; // "Prueba clave" (opcional): la pista que demuestra la acusación
 
     private void FillKeyClueOptions()
@@ -28,21 +30,48 @@ public partial class InterrogationUI
         keyClueDropdown.gameObject.SetActive(evidenceOptions.Count > 0); // Sin pistas no hay nada que elegir
     }
 
-    // Lo que llevas a la acusación, bajo la pregunta (sin decir qué pista incrimina a quién). Se rehace al
-    // cambiar de tema: el color va en el texto
+    // La pregunta y, con pistas, la explicación de la prueba clave. Lo que llevas (pistas y contradicciones) ya lo dice
+    // la tarjeta "TUS PRUEBAS": la frase gris de antes lo repetía. Se rehace al cambiar de tema: el color va en el texto
     private void RefreshAccusationPrompt()
     {
         if (accusationPromptText == null)
             return;
-        accusationPromptText.text = $"{GameTexts.AccusationPrompt}\n<size=90%><color={Theme.Hex(T.textSecondary)}>" +
-                                    $"{GameTexts.AccusationSummary(evidenceOptions.Count, accusationContradictions)}</color></size>";
+        accusationPromptText.text = evidenceCard == null
+            ? $"{GameTexts.AccusationPrompt}\n<size=90%><color={Theme.Hex(T.textSecondary)}>" +
+              $"{GameTexts.AccusationSummary(evidenceOptions.Count, accusationContradictions)}</color></size>"
+            : evidenceOptions.Count > 0
+                ? $"{GameTexts.AccusationPrompt}\n<size=90%><color={Theme.Hex(T.textSecondary)}>{GameTexts.KeyClueHint}</color></size>"
+                : GameTexts.AccusationPrompt;
+        FitAccusationPrompt();
     }
 
-    public void ShowAccusationPanel(List<SuspectView> options, bool canGoBack, int contradictions = 0)
+    // Sin la frase de resumen, la caja de la pregunta mide lo que su texto (hasta 240): lo que sobra es para la tarjeta
+    private void FitAccusationPrompt()
+    {
+        if (evidenceCard == null || accusationPromptText == null
+            || !accusationPromptText.TryGetComponent(out LayoutElement box))
+            return;
+        float width = accusationPromptText.rectTransform.rect.width;
+        if (width <= 0f)
+            return;
+        float size = accusationPromptText.enableAutoSizing ? accusationPromptText.fontSizeMax : accusationPromptText.fontSize;
+        float saved = accusationPromptText.fontSize;
+        accusationPromptText.fontSize = size;
+        float needed = accusationPromptText.GetPreferredValues(accusationPromptText.text, width, float.PositiveInfinity).y + 8f;
+        accusationPromptText.fontSize = saved;
+        box.minHeight = box.preferredHeight = Mathf.Min(AccusationPromptMaxHeight, needed);
+    }
+
+    private const float AccusationPromptMaxHeight = 240f;
+
+    /// <param name="contradictions">Las contradicciones con el mismo texto que la libreta (las dice la tarjeta).</param>
+    public void ShowAccusationPanel(List<SuspectView> options, bool canGoBack, IReadOnlyList<string> contradictions)
     {
         ShowPanel(accusationPanel);
         accusationOptions = options;
-        accusationContradictions = contradictions;
+        accusationContradictions = contradictions.Count;
+        accusationContradictionTexts.Clear();
+        accusationContradictionTexts.AddRange(contradictions);
         RefreshAccusationPrompt();
         FillKeyClueOptions();
         // El título está dentro de la columna de la distribución: se busca en todo el panel
@@ -73,6 +102,19 @@ public partial class InterrogationUI
             Debug.LogError("[InterrogationUI] ¡accusationDropdown es NULL!");
         }
         FillLineup(options);
+        if (evidenceCard != null)
+        {
+            evidenceCard.Set(evidenceOptions.ConvertAll(c => c.playerName), accusationContradictionTexts);
+            // La forma depende del sitio que deja la rueda: se mide con el layout ya hecho
+            if (evidenceCard.transform.parent is RectTransform cardColumn)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(cardColumn);
+                FitAccusationPrompt();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(cardColumn);
+                evidenceCard.Apply();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(cardColumn);
+            }
+        }
     }
 
     /// <summary>
