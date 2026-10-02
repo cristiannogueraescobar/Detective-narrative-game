@@ -51,8 +51,13 @@ public class TallScreenHeader : MonoBehaviour
         // Sin busto (composición Figura) la cabecera son solo los controles: no crece
         bool bust = portrait != null && portrait.gameObject.activeSelf;
         float height = baseHeight + (bust ? Mathf.Max(0f, extra) * ThemeManager.Current.tallScreenHeaderShare : 0f);
-        // El tope del busto depende del ancho: se recalcula si cambia cualquiera de los dos
-        float key = height * 100000f + area.rect.width;
+        // El tope del busto es sobre el ancho de la cabecera: el de la columna sin sus márgenes (la cabecera ocupa la
+        // columna a lo ancho). Se recalcula si cambia el alto o ese ancho
+        var column = (RectTransform)transform;
+        float rowWidth = column.rect.width > 0f ? column.rect.width : area.rect.width;
+        if (TryGetComponent(out LayoutGroup group))
+            rowWidth -= group.padding.horizontal;
+        float key = height * 100000f + rowWidth;
         if (Mathf.Approximately(key, applied))
             return;
         applied = key;
@@ -61,10 +66,9 @@ public class TallScreenHeader : MonoBehaviour
         {
             // Con un tope: sin él, en una pantalla muy alta el busto se llevaba el ancho y dejaba los controles en
             // 33 px (revisión de Cristian, sesión C: "una flecha y tres barras grises")
-            float maxWidth = area.rect.width * ThemeManager.Current.headerPortraitMaxShare;
+            float maxWidth = rowWidth * ThemeManager.Current.headerPortraitMaxShare;
             portrait.minWidth = portrait.preferredWidth = Mathf.Min(height * portraitAspect, maxWidth);
         }
-        if (transform is RectTransform rect)
-            LayoutRebuilder.MarkLayoutForRebuild(rect);
+        LayoutRebuilder.MarkLayoutForRebuild(column);
     }
 }

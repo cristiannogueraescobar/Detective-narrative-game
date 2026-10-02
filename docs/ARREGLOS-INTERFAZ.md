@@ -84,3 +84,18 @@ Orden propuesto: esta rama primero y después `feature/retratos-completos`.
 - El test de la etiqueta de estado en la opción B lo escribí a la vez que el arreglo; no lo vi en rojo.
 - `LaEscenaMuestraAlSospechosoYLaViñetaSubeConLaTension` (PlayMode) pedía la figura tenue de la Sesión A. Lo he cambiado
   a la regla nueva: por defecto, busto y sin figura.
+
+## Decisiones de Cristian aplicadas (02-10-2026)
+
+1. Composición A (busto) por defecto: ya lo era.
+2. Solape de la rueda: 30 %, ya lo era.
+3. Busto a 2× (múltiplo entero) si cabe en el tope del 40 % de la cabecera; si no, 1× (`portraitMaxMagnification` = 2).
+   Tests: `ElBustoPuedeIrA2xSiCabeYSiNo1x` y `ElBustoNoSeSaleDelTopeDeLaCabecera`. Este último encontró un fallo: el
+   tope del 40 % se medía sobre el ancho de la pantalla, no sobre el de la cabecera (381 px frente a 362 a 20:9).
+   Corregido. **Aviso:** con el arte actual, 2× no llega a darse en ningún móvil ni tableta. El recorte del busto
+   mide unos 450 téxeles de ancho, y a 2× serían 900 px, más que el 40 % de cualquier pantalla (432 px a 1080 de
+   ancho, 576 a 1440, 819 en una tableta de 2048). Sí se daría con un arte más pequeño o un tope más ancho.
+4. Sin contraluz azul tampoco en la rueda ni en la ficha (`portraitRimStrength` = 0; antes 0,7). Tests:
+   `ElBustoYLaRuedaNoLlevanContraluz` y `LasFigurasDeLaRuedaSalenSinContraluz`.
+
+Suites: EditMode 906/907 (el que no corre es el benchmark, a petición), PlayMode 66, 0 fallos.

@@ -111,9 +111,9 @@ public class Theme : ScriptableObject
     [Range(0f, 8f)] public float portraitRelief = 4.5f;
     [Range(1f, 24f)] public float portraitReliefRadius = 6f;            // Texels de muestreo
     public Color portraitRimColor = new Color(0.55f, 0.65f, 0.8f);      // Contraluz frío
-    [Range(0f, 2f)] public float portraitRimStrength = 0.7f;
+    [Range(0f, 2f)] public float portraitRimStrength = 0f;           // Rueda y ficha: apagado (decisión de Cristian, sesión C); antes 0,7
     [Range(0f, 2f)] public float bustRimStrength = 0f;              // Contraluz en el busto y la figura grandes: a ese tamaño parecía un fallo
-    [Range(1f, 4f)] public float portraitMaxMagnification = 1f;     // Píxeles por téxel como mucho (enteros): sin bloques borrosos
+    [Range(1f, 4f)] public float portraitMaxMagnification = 2f;     // Píxeles por téxel como mucho (enteros): 2× si cabe en la caja; si no, 1×
     [Range(0.2f, 0.6f)] public float headerPortraitMaxShare = 0.4f; // Ancho máximo del busto en la cabecera: los controles, el resto
     [Range(0f, 0.4f)] public float lineupOverlap = 0.3f;            // Rueda: parte de cada figura que puede quedar delante o detrás de la vecina
     [Range(0f, 1f)] public float portraitLampFalloff = 0.35f;

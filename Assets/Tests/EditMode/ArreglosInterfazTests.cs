@@ -163,9 +163,36 @@ public class ArreglosInterfazTests
         Assert.AreEqual(600f / density, size.y, 0.5f);
     }
 
+    // Decisión de Cristian (sesión C): 2× (múltiplo entero) si cabe dentro del tope de la cabecera; si no, 1×
+    [Test]
+    public void ElBustoPuedeIrA2xSiCabeYSiNo1x()
+    {
+        float max = ThemeManager.Current.portraitMaxMagnification;
+        Assert.AreEqual(2f, max, "el tema permite 2×");
+        Vector2 big = PixelScale.Fit(new Vector2(1000f, 1400f), new Vector2(450f, 600f), 1f, max);
+        Assert.AreEqual(new Vector2(900f, 1200f), big, "cabe a 2,2×: se queda en 2×");
+        Vector2 middle = PixelScale.Fit(new Vector2(800f, 1100f), new Vector2(450f, 600f), 1f, max);
+        Assert.AreEqual(new Vector2(450f, 600f), middle, "a 1,8× no cabe 2×: 1×, nunca 1,8×");
+        Vector2 huge = PixelScale.Fit(new Vector2(2000f, 3000f), new Vector2(450f, 600f), 1f, max);
+        Assert.AreEqual(new Vector2(900f, 1200f), huge, "nunca más de 2×");
+    }
+
+    // La caja del busto es la que limita el tope del 40 %: el busto, a cualquier escala, no se sale de ella
+    [TestCase(1080f, 1920f)]
     [TestCase(1080f, 2400f)]
     [TestCase(1080f, 3840f)]
-    public void ElBustoDelInterrogatorioNoPasaDe1a1(float w, float h)
+    public void ElBustoNoSeSaleDelTopeDeLaCabecera(float w, float h)
+    {
+        LayoutPreview.SetSize(session, LayoutPreview.CanvasSize(w, h));
+        LayoutPreview.ShowOnly(session, "InterrogationPanel");
+        Rect bust = WorldRect(BustImage().rectTransform);
+        Rect header = WorldRect(LayoutPreview.Find(session, "Cabecera (auto)"));
+        Assert.LessOrEqual(bust.width, header.width * ThemeManager.Current.headerPortraitMaxShare + Tolerance);
+    }
+
+    [TestCase(1080f, 2400f)]
+    [TestCase(1080f, 3840f)]
+    public void ElBustoDelInterrogatorioNoPasaDelMaximo(float w, float h)
     {
         LayoutPreview.SetSize(session, LayoutPreview.CanvasSize(w, h));
         LayoutPreview.ShowOnly(session, "InterrogationPanel");
@@ -181,15 +208,30 @@ public class ArreglosInterfazTests
     // ---------- 4. Sin contraluz azul en el busto (y se puede volver a encender desde el tema) ----------
 
     [Test]
-    public void ElBustoNoLlevaContraluzYLaRuedaSi()
+    // Decisión de Cristian (sesión C): tampoco en la rueda de acusación. Los dos se encienden desde el tema
+    public void ElBustoYLaRuedaNoLlevanContraluz()
     {
         var raw = new GameObject("retrato", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
         ArtGrading.Apply(raw, ArtGrading.Kind.LegacyBust);
         Assert.AreEqual(ThemeManager.Current.bustRimStrength, raw.material.GetFloat("_RimStrength"), 1e-4f, "busto");
-        Assert.AreEqual(0f, ThemeManager.Current.bustRimStrength, "por defecto, apagado");
+        Assert.AreEqual(0f, ThemeManager.Current.bustRimStrength, "busto: por defecto, apagado");
         ArtGrading.Apply(raw, ArtGrading.Kind.LegacyPortrait);
         Assert.AreEqual(ThemeManager.Current.portraitRimStrength, raw.material.GetFloat("_RimStrength"), 1e-4f, "rueda y ficha");
+        Assert.AreEqual(0f, ThemeManager.Current.portraitRimStrength, "rueda: por defecto, apagado");
         Object.DestroyImmediate(raw.gameObject);
+    }
+
+    [Test]
+    public void LasFigurasDeLaRuedaSalenSinContraluz()
+    {
+        List<SuspectView> three = CaseLibrary.Stories[1].cast.Take(3).Select(SuspectView.From).ToList();
+        session.ui.ShowAccusationPanel(three, canGoBack: true, contradictions: 0);
+        LayoutPreview.ShowOnly(session, "AccusatonPanel");
+        var figures = LayoutPreview.Find(session, "Rueda (auto)").GetComponentsInChildren<HeightLineupItem>()
+            .Select(i => i.figure.GetComponent<RawImage>()).Where(r => r != null && r.material != null && r.material.HasProperty("_RimStrength")).ToList();
+        Assert.IsNotEmpty(figures, "la rueda usa el material con relieve");
+        foreach (RawImage figure in figures)
+            Assert.AreEqual(0f, figure.material.GetFloat("_RimStrength"), 1e-4f, figure.name);
     }
 
     [Test]
