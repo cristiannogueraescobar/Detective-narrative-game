@@ -322,9 +322,12 @@ public class ArreglosInterfazTests
         Assert.AreEqual(EvidenceCardMode.Collapsed, EvidenceCard.Choose(spare: 200f, fullHeight: 300f, empty: false));
     }
 
-    [TestCase(4, 1, "4 pistas · 1 contradicción")]
-    [TestCase(1, 0, "1 pista · 0 contradicciones")]
-    [TestCase(0, 2, "0 pistas · 2 contradicciones")]
+    // Decisión de Cristian: en letra hasta diez, como el resto del juego (el resumen de la acusación); cifras desde once
+    [TestCase(4, 1, "cuatro pistas · una contradicción")]
+    [TestCase(1, 0, "una pista · ninguna contradicción")]
+    [TestCase(0, 2, "cero pistas · dos contradicciones")]
+    [TestCase(10, 10, "diez pistas · diez contradicciones")]
+    [TestCase(11, 12, "11 pistas · 12 contradicciones")]
     public void LaLineaResumenDeLaTarjeta(int clues, int contradictions, string expected)
     {
         Assert.AreEqual(expected, GameTexts.EvidenceLine(clues, contradictions));
@@ -362,7 +365,7 @@ public class ArreglosInterfazTests
     {
         EvidenceCard card = ShowCard(new Vector2(1080f, 1920f), 4, 1);
         Assert.AreEqual(EvidenceCardMode.Collapsed, card.Mode, "en 16:9 la lista entera no cabe sin encoger la rueda");
-        StringAssert.Contains("4 pistas · 1 contradicción", card.VisibleText);
+        StringAssert.Contains("cuatro pistas · una contradicción", card.VisibleText);
         Assert.LessOrEqual(((RectTransform)card.transform).rect.height, Theme.MinTouchSize + Tolerance, "una sola línea");
         Assert.IsNotNull(card.GetComponentInChildren<Button>(), "se toca para desplegar");
         CheckAccusation(true);
@@ -412,6 +415,11 @@ public class ArreglosInterfazTests
         EvidenceCard card = ShowCard(LayoutPreview.CanvasSize(w, h), 6, 12);
         Assert.AreEqual(EvidenceCardMode.Collapsed, card.Mode);
         CheckAccusation(true);
+        // La línea plegada más larga ("seis pistas · 12 contradicciones") cabe entera, sin "…" ni por debajo de lo legible
+        TMP_Text line = card.GetComponentInChildren<Button>().GetComponentInChildren<TMP_Text>();
+        line.ForceMeshUpdate(true, true);
+        Assert.IsFalse(line.isTextTruncated, line.GetParsedText());
+        Assert.GreaterOrEqual(line.fontSize, Theme.MinReadableSize - 0.01f);
         card.Toggle();
         LayoutPreview.Rebuild((RectTransform)session.canvas.transform);
         CheckAccusation(true);

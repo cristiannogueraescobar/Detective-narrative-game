@@ -11,7 +11,7 @@ Adoptada por Cristian (02-10-2026). Rama `feature/propuesta-resumen-acusacion`, 
 | a | Con la tarjeta, la pregunta ya no lleva la frase gris "Tu libreta está vacía…" / "En tu libreta…". Se queda solo la explicación de la prueba clave, que no está en la tarjeta: sin ella, el desplegable "Prueba clave" no se entiende. La caja de la pregunta mide ahora lo que su texto (antes, 240 fijos con la mitad vacía). | `ConLaTarjetaNoSeRepiteLaFraseGris` |
 | b | Libreta vacía: dos líneas, "TUS PRUEBAS" y "Libreta vacía: acusar ahora es una apuesta.". El resto, para la rueda. | `ConLaLibretaVaciaLaTarjetaSonDosLineas` (16:9 y 20:9) |
 | — | Entera si cabe en la pared que la rueda no usa (en 20:9 la rueda la limita el ancho). La rueda no encoge. | `En20a9ConPistasLaTarjetaEntera`, `LaTarjetaEnteraNoEncogeLaRueda` |
-| c | Si no cabe (16:9), una línea, "TUS PRUEBAS · 3 pistas · 1 contradicción", con flecha. Al tocarla se despliega y empuja la rueda hacia abajo mientras está abierta. Nunca tapa la rueda, el texto de arriba ni los botones; otro toque la pliega. | `En16a9ConPistasUnaLineaQueSeDespliega`, `ConMuchasPruebasSePliegaYNoTapaNada` (6 pistas y 12 contradicciones) y el test de controles (`CheckControls`) en cada estado |
+| c | Si no cabe (16:9), una línea, "TUS PRUEBAS · tres pistas · una contradicción", con flecha. Al tocarla se despliega y empuja la rueda hacia abajo mientras está abierta. Nunca tapa la rueda, el texto de arriba ni los botones; otro toque la pliega. | `En16a9ConPistasUnaLineaQueSeDespliega`, `ConMuchasPruebasSePliegaYNoTapaNada` (6 pistas y 12 contradicciones) y el test de controles (`CheckControls`) en cada estado |
 | d | Las contradicciones con el mismo texto que la libreta (`AIConversationManager.DescribeContradiction`, el que usa la libreta): "La versión de X («cita») choca con: pista". Ni más ni menos. | `LaTarjetaUsaElTextoDeLasContradiccionesTalCual` y, jugando, `TarjetaPruebasTests.LaTarjetaDiceLasContradiccionesComoLaLibreta`: cada línea de la tarjeta está en la libreta y al revés |
 | e | Capturas jugando de verdad (`ScriptedPlay`): se elige al sospechoso, se pregunta y se pulsa Enviar. Las pistas salen por el detector y la contradicción, enseñando la prueba al culpable con "Mostrar prueba". Lo único con guion es el modelo, que contesta con la frase real de cada pista (sus `sampleHits`). Libreta, desplegables y textos son los del juego. | `AnimationCapture.TarjetaPruebas` |
 
@@ -23,8 +23,8 @@ Adoptada por Cristian (02-10-2026). Rama `feature/propuesta-resumen-acusacion`, 
    cambiar el texto de la libreta (`DescribeContradiction`), y la tarjeta lo seguiría.
 2. Desplegada en 16:9, la rueda encoge mientras está abierta (no se tapa). La alternativa sería una capa por encima de
    la rueda, que la taparía.
-3. En la tarjeta las cifras van con número ("3 pistas"), como escribiste. En el resto del juego, las cifras pequeñas van
-   en letra ("tres pistas").
+3. Números en letra hasta diez y en cifras desde once, como el resto del juego (decisión de Cristian, 02-10-2026):
+   "TUS PRUEBAS · tres pistas · una contradicción". Comparte el texto con el resumen de la acusación.
 
 ## Lo que salió mal por el camino
 
