@@ -1055,3 +1055,17 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
   La prueba rápida de SKILLS-SETUP en PowerShell da LOADED.
 - Errores míos: un heredoc para un script de edición (inofensivo, con asserts; luego volví a Write) y la primera
   captura del filtro, que salió a 540×1920 deformada y con `CopyTexture` fallando en anchos que no son múltiplo de 4.
+
+## Decisiones de Cristian sobre los arreglos de interfaz (02-10-2026)
+
+- Busto a 2× si cabe en el tope del 40 % de la cabecera (si no, 1×) y sin contraluz tampoco en la rueda, con tests.
+  El test del tope encontró que el 40 % se medía sobre la pantalla y no sobre la cabecera; corregido. Con el arte actual
+  2× no llega a darse en ningún móvil (el busto mide unos 450 téxeles; a 2× serían 900 px).
+- Propuesta, solo capturas: resumen de pruebas en el hueco de la rueda en 20:9. Rama `feature/propuesta-resumen-acusacion`,
+  sin fusionar.
+- Fusionadas a main, con las dos suites tras cada una: arreglos-interfaz (EditMode 906/907, PlayMode 66),
+  retratos-completos (909/910, 66; conflicto en AnimationCapture.cs, me quedé con las dos partes), sesion-c (909/910, 66)
+  y retratos-javier (913/914, 66; conflictos en AnimationCapture.cs, el ancho de captura, y en NIGHT-LOG, con las dos
+  sesiones en orden). Ni capturas en bruto, ni archivos de más de 5 MB, ni claves de Anthropic en ninguna. main = `79145e8`.
+- **11:32** Borradas, en local y en origin, las 9 ramas fusionadas hoy. Capturas finales de las tres historias en
+  `docs/screenshots/2026-10-02/galeria/final-3-historias.jpg`.
