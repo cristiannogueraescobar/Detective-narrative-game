@@ -322,18 +322,29 @@ public class MentirasInocentesTests
         StringAssert.Contains("lo que ocultas", v.Role("padre").versionB);
     }
 
-    // El resto de variantes, sin mentiroso inocente hasta la fase 2
-    [TestCase("1A")]
-    [TestCase("2A")]
-    [TestCase("2B")]
-    [TestCase("2C")]
-    [TestCase("3A")]
-    [TestCase("3B")]
-    [TestCase("3C")]
-    public void FueraDeLaFase1NadieMasMiente(string variantId)
+    // Fase 2 (decisiones de Cristian): un mentiroso inocente por variante, salvo 1A (Carmen solo tiene el zolpidem, que
+    // queda fuera por estar demasiado cerca del arma). Quién miente y qué pista lo rompe
+    [TestCase("1A", null, null)]
+    [TestCase("2A", "cartero", "2A_postales")]
+    [TestCase("2B", "vecina", "2B_orujo")]
+    [TestCase("2C", "cartero", "2C_postales")]
+    public void MentirosoInocenteDeCadaVariante(string variantId, string liar, string clueId)
     {
-        CaseLibrary.TryFind(variantId, out _, out VariantData v);
-        Assert.IsEmpty(InnocentLiars(v).Select(r => r.characterId).ToArray());
+        CaseLibrary.TryFind(variantId, out StoryData story, out VariantData v);
+        CollectionAssert.AreEqual(liar == null ? new string[0] : new[] { liar }, InnocentLiars(v).Select(r => r.characterId).ToArray());
+        if (liar == null)
+            return;
+        ClueData clue = v.Clue(clueId);
+        Assert.AreEqual(liar, clue.exposesLieOf);
+        Assert.AreNotEqual(liar, clue.holder, "lo cuenta otro: el que miente no se delata solo");
+        StringAssert.StartsWith($"La versión de {story.Character(liar).shortName} («", Contradictions.Describe(story, v, clue));
+    }
+
+    [Test]
+    public void En2CHaySietePistas()
+    {
+        CaseLibrary.TryFind("2C", out _, out VariantData v);
+        Assert.AreEqual(7, v.clues.Count);
     }
 
     private static Theme ThemeManagerTheme() => ThemeManager.Current;

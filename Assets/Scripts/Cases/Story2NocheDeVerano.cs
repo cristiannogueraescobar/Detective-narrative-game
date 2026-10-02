@@ -97,6 +97,18 @@ Tienes 7 días.",
         };
     }
 
+    // Fase 2 de las mentiras de inocentes (2B): Maruxa miente sobre su secreto, el orujo; el humo "es de la cocina"
+    private static CharacterRole LyingMaruxa(params string[] knowledge)
+    {
+        CharacterRole role = InnocentMaruxa(knowledge);
+        role.version = "Esa madrugada me levanté a las cinco, como siempre, a encender la cocina de leña: el humo es de eso, fillo. Estuve un buen rato mirando por la ventana.";
+        role.lieQuote = "el humo es de la cocina de leña";
+        role.lieAnchors = new[] { new[] { "cocina de lena", "la lena" }, new[] { "humo" } };
+        role.versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.";
+        role.lieAbout = "el orujo que destila en casa sin licencia";
+        return role;
+    }
+
     // ============================================
     // 2A · MARCOS — acoso y humillación en el bar
     // ============================================
@@ -150,12 +162,17 @@ Tienes 7 días.",
                 {
                     characterId = "cartero",
                     knowledge = new[] { MentionMaruxa, "Cada madrugada vas a la oficina de clasificación y entras a las 5:15." },
-                    version = "A las 5:10 pasé por delante de La Marea camino de la oficina, y a las 5:15 ya estaba clasificando.",
+                    version = "A las 5:10 pasé por delante de La Marea camino de la oficina, y a las 5:15 ya estaba clasificando. En quince años no se me ha quedado ni una carta.",
                     secret = "Guardas en casa postales que nunca llegaste a entregar; te da vergüenza que se sepa.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "que registren tu casa.",
                     ifAccused = "Te encoges y repites que solo haces tu trabajo.",
-                    doesNotKnow = "Qué pasó dentro del bar esa noche."
+                    doesNotKnow = "Qué pasó dentro del bar esa noche.",
+                    // Fase 2 de las mentiras de inocentes: miente sobre su secreto (las postales), no sobre el crimen
+                    lieQuote = "en quince años no se me ha quedado ni una carta",
+                    lieAnchors = new[] { new[] { "quince anos", "nunca se me ha quedado", "jamas se me ha quedado" }, new[] { "carta", "cartas", "postal" } },
+                    versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.",
+                    lieAbout = "las postales que guarda en casa sin entregar"
                 },
                 new CharacterRole
                 {
@@ -267,6 +284,27 @@ Tienes 7 días.",
                         "Según el localizador de la furgoneta, Andrés estaba en la oficina de clasificación."
                     },
                     sampleMisses = new[] { "El cartero es un tipo raro, pero no sé dónde andaba." }
+                },
+                new ClueData
+                {
+                    // Fase 2: rompe la mentira de Andrés (inocente aquí) sobre las postales; no le acusa del crimen
+                    id = "2A_postales", playerName = "La postal que no llegó", holder = "vecina", kind = ClueKind.Context,
+                    exposesLie = true, exposesLieOf = "cartero",
+                    summary = "Maruxa dice que la postal de su sobrina nunca llegó y que en el pueblo se rumorea que el cartero se guarda cartas.",
+                    topic = "el correo del pueblo o el cartero",
+                    fact = "la postal que te mandó tu sobrina en primavera nunca llegó, y no es la primera: en el pueblo dicen que Andrés se guarda cartas en casa.",
+                    anchors = new[]
+                    {
+                        new[] { "postal", "carta", "cartas", "correo" },
+                        new[] { "nunca llego", "no llego", "se guarda", "se las guarda", "guarda cartas", "se queda con", "en su casa", "en casa" }
+                    },
+                    calibrationQuestions = new[] { "¿Qué tal funciona el correo aquí?", "¿Qué me dice del cartero, de Andrés?" },
+                    sampleHits = new[]
+                    {
+                        "Ay, fillo, la postal de mi sobrina nunca llegó; dicen que Andrés se guarda las cartas en casa.",
+                        "El correo va como va: a mí no me llegó una postal, y en el pueblo dicen que el cartero se las guarda."
+                    },
+                    sampleMisses = new[] { "Andrés pasa todas las mañanas con el correo, como un reloj.", "Cartas ya no escribe nadie, fillo." }
                 }
             }
         };
@@ -343,7 +381,7 @@ Tienes 7 días.",
                     ifAccused = "Te ríes con desprecio y dices que no vas a aguantar lecciones de un chaval de Vigo.",
                     doesNotKnow = "Qué vio Maruxa esa madrugada."
                 },
-                InnocentMaruxa("Sofía pasaba cada noche por la curva de vuelta a casa de su tía.", "En fiestas pasan coches a todas horas.")
+                LyingMaruxa("Sofía pasaba cada noche por la curva de vuelta a casa de su tía.", "En fiestas pasan coches a todas horas.")
             },
             clues = new List<ClueData>
             {
@@ -469,6 +507,27 @@ Tienes 7 días.",
                             sampleMisses = new[] { "Cerré a las cinco y me quedé recogiendo dentro hasta las seis y media.", "Cámaras no tengo, ¿para qué?" }
                         }
                     }
+                },
+                new ClueData
+                {
+                    // Fase 2: rompe la mentira de Maruxa (inocente) sobre el humo de su cocina; no la acusa del crimen
+                    id = "2B_orujo", playerName = "El orujo de la curva", holder = "detective", kind = ClueKind.Context,
+                    exposesLie = true, exposesLieOf = "vecina",
+                    summary = "Ruiz cuenta que medio pueblo le compra a Maruxa el orujo que destila en su cocina, y que él hace la vista gorda.",
+                    topic = "Maruxa o lo que se vende bajo cuerda en el pueblo",
+                    fact = "medio pueblo le compra a Maruxa el orujo que destila en su cocina de madrugada; tú haces la vista gorda.",
+                    anchors = new[]
+                    {
+                        new[] { "orujo", "aguardiente", "alambique" },
+                        new[] { "destila", "le compra", "le compran", "vende", "hace en casa", "cocina" }
+                    },
+                    calibrationQuestions = new[] { "¿Qué sabe de Maruxa?", "¿Se vende algo bajo cuerda en el pueblo?" },
+                    sampleHits = new[]
+                    {
+                        "Maruxa destila orujo en su cocina y medio pueblo se lo compra; yo hago la vista gorda, compañero.",
+                        "Bajo cuerda, el orujo de Maruxa: lo hace en casa de madrugada y se lo compran todos."
+                    },
+                    sampleMisses = new[] { "Maruxa es una buena mujer; madruga mucho, nada más.", "Aquí no se vende nada raro, compañero." }
                 }
             }
         };
@@ -540,12 +599,17 @@ Tienes 7 días.",
                     // Aquí Maruxa solo se nombra (la desbloquea): si "ve pasar a todo el mundo", el modelo la ofrece
                     // como testigo en vez del GPS de la furgoneta, que es la pista de esta variante
                     knowledge = new[] { "Maruxa, la de la casa de la curva, madruga mucho.", "Esa madrugada llevabas un certificado urgente para la comisaría." },
-                    version = "Esa madrugada pasé antes por la comisaría con un certificado urgente y llegué a la oficina pasadas las cinco y cuarto.",
+                    version = "Esa madrugada pasé antes por la comisaría con un certificado urgente y llegué a la oficina pasadas las cinco y cuarto. En quince años no se me ha quedado ni una carta.",
                     secret = "Guardas en casa postales que nunca llegaste a entregar; te da vergüenza que se sepa.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "que registren tu casa.",
                     ifAccused = "Te encoges y repites que solo haces tu trabajo.",
-                    doesNotKnow = "Qué pasó dentro del bar esa noche."
+                    doesNotKnow = "Qué pasó dentro del bar esa noche.",
+                    // Fase 2 de las mentiras de inocentes: miente sobre su secreto (las postales), no sobre el crimen
+                    lieQuote = "en quince años no se me ha quedado ni una carta",
+                    lieAnchors = new[] { new[] { "quince anos", "nunca se me ha quedado", "jamas se me ha quedado" }, new[] { "carta", "cartas", "postal" } },
+                    versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.",
+                    lieAbout = "las postales que guarda en casa sin entregar"
                 },
                 InnocentMaruxa("Sofía pasaba cada noche por la curva de vuelta a casa de su tía.", "Conoces el coche de todo el mundo en Portomar.")
             },
@@ -677,6 +741,27 @@ Tienes 7 días.",
                         "La cámara lo grabó todo: me veis a las cinco cerrando y a las seis y media recogiendo."
                     },
                     sampleMisses = new[] { "Estuve en el bar, pregunte a quien quiera." }
+                },
+                new ClueData
+                {
+                    // Fase 2: rompe la mentira de Andrés (inocente aquí) sobre las postales; no le acusa del crimen
+                    id = "2C_postales", playerName = "La postal que no llegó", holder = "vecina", kind = ClueKind.Context,
+                    exposesLie = true, exposesLieOf = "cartero",
+                    summary = "Maruxa dice que la postal de su sobrina nunca llegó y que en el pueblo se rumorea que el cartero se guarda cartas.",
+                    topic = "el correo del pueblo o el cartero",
+                    fact = "la postal que te mandó tu sobrina en primavera nunca llegó, y no es la primera: en el pueblo dicen que Andrés se guarda cartas en casa.",
+                    anchors = new[]
+                    {
+                        new[] { "postal", "carta", "cartas", "correo" },
+                        new[] { "nunca llego", "no llego", "se guarda", "se las guarda", "guarda cartas", "se queda con", "en su casa", "en casa" }
+                    },
+                    calibrationQuestions = new[] { "¿Qué tal funciona el correo aquí?", "¿Qué me dice del cartero, de Andrés?" },
+                    sampleHits = new[]
+                    {
+                        "Ay, fillo, la postal de mi sobrina nunca llegó; dicen que Andrés se guarda las cartas en casa.",
+                        "El correo va como va: a mí no me llegó una postal, y en el pueblo dicen que el cartero se las guarda."
+                    },
+                    sampleMisses = new[] { "Andrés pasa todas las mañanas con el correo, como un reloj.", "Cartas ya no escribe nadie, fillo." }
                 }
             }
         };
