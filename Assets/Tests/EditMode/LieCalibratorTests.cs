@@ -29,4 +29,12 @@ public class LieCalibratorTests
         Assert.AreEqual("1C_llamada", LieCalibrator.BreakingClue(v, "padre").id);
         Assert.AreEqual("1C_gritos", LieCalibrator.BreakingClue(v, "hermano").id);
     }
+
+    // -seed: las mismas semillas en las dos versiones (rama y main) para comparar sin el azar del modelo
+    [Test]
+    public void LaSemillaSeLeeDeLaLineaDeOrdenes()
+    {
+        Assert.AreEqual(-1, ClueCalibrator.ParseArgs(new[] { "-tries", "3" }).seed, "sin -seed, al azar");
+        Assert.AreEqual(1919, ClueCalibrator.ParseArgs(new[] { "-seed", "1919" }).seed);
+    }
 }

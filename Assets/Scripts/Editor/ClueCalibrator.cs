@@ -35,6 +35,10 @@ public static class ClueCalibrator
     {
         public List<string> variantIds = new List<string>();
         public List<string> clueIds = new List<string>(); // Vacío = todas las pistas de las variantes
+        // -seed N: cada llamada al modelo usa N + su número de orden. Con las mismas preguntas en el mismo orden, dos
+        // versiones reciben las mismas semillas: lo que cambie es por la ficha, no por el azar (sesión C)
+        public int seed = -1;
+        public int calls;
         public int tries = 3;
         public string ollamaUrl = "http://localhost:11434";
         public string model = new OllamaSettings().model;
@@ -111,6 +115,9 @@ public static class ClueCalibrator
                     break;
                 case "-temperature":
                     options.temperature = float.Parse(args[i + 1], System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case "-seed":
+                    options.seed = int.Parse(args[i + 1]);
                     break;
                 case "-model":
                     options.model = args[i + 1];
@@ -347,6 +354,24 @@ public static class ClueCalibrator
     }
 
     [Serializable]
+    private class SeededChatRequest
+    {
+        public string model;
+        public ChatMessage[] messages;
+        public bool stream;
+        public SeededChatOptions options;
+    }
+
+    [Serializable]
+    private class SeededChatOptions
+    {
+        public float temperature;
+        public int num_predict;
+        public int num_ctx;
+        public int seed;
+    }
+
+    [Serializable]
     private class ChatResponse
     {
         public ChatMessage message;
@@ -371,7 +396,20 @@ public static class ClueCalibrator
             }
         };
 
-        var content = new StringContent(JsonUtility.ToJson(request), Encoding.UTF8, "application/json");
+        string json = JsonUtility.ToJson(request);
+        if (options.seed >= 0)
+        {
+            json = JsonUtility.ToJson(new SeededChatRequest
+            {
+                model = request.model, messages = request.messages, stream = false,
+                options = new SeededChatOptions
+                {
+                    temperature = request.options.temperature, num_predict = request.options.num_predict,
+                    num_ctx = request.options.num_ctx, seed = options.seed + options.calls++
+                }
+            });
+        }
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
         HttpResponseMessage http = client.PostAsync(options.ollamaUrl.TrimEnd('/') + "/api/chat", content).GetAwaiter().GetResult();
         string body = http.Content.ReadAsStringAsync().GetAwaiter().GetResult();
         ChatResponse parsed = JsonUtility.FromJson<ChatResponse>(body);
