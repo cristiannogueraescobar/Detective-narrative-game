@@ -85,7 +85,12 @@ public class EmotionSystemTests
     [Test]
     public void SeNotaLoQueTePoneNerviosoAunqueDisimules()
     {
-        StringAssert.Contains("TE PONE NERVIOSO, aunque disimules", PromptBuilder.EmotionGuide("Sofía"));
+        string guide = PromptBuilder.EmotionGuide("Sofía");
+        StringAssert.Contains("TE PONE NERVIOSO, aunque disimules", guide);
+        // Primera medida: con la cláusula metida antes de "si te acusan", las acusaciones salían tristes (69 de 360 frente
+        // a 15 en main). La acusación va antes, en su propia frase
+        StringAssert.Contains("Si te acusan: enfadado o asustado.", guide);
+        Assert.Less(guide.IndexOf("Si te acusan", System.StringComparison.Ordinal), guide.IndexOf("Nervioso", System.StringComparison.Ordinal));
     }
 
     [Test]

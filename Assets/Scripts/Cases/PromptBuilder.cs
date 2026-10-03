@@ -14,7 +14,7 @@ public static class PromptBuilder
         string who = string.IsNullOrEmpty(victim) ? "la víctima" : victim;
         // Todos los personajes ocultan algo: si "ocultar" bastase para estar nervioso, lo estarían siempre
         return $"Tranquilo si te preguntan por ti, tu trabajo, tu rutina o lo que viste. Si te hablan de {who}: triste, nunca tranquilo. " +
-               "Nervioso solo si tocan lo de TE PONE NERVIOSO, aunque disimules; enfadado o asustado si te acusan.";
+               "Si te acusan: enfadado o asustado. Nervioso solo si tocan lo de TE PONE NERVIOSO, aunque disimules.";
     }
 
     public static string Build(StoryData story, VariantData variant, string characterId, int day,

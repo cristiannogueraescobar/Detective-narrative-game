@@ -176,6 +176,15 @@ public static class EmotionCalibrator
         }
 
         sb.AppendLine();
+        sb.AppendLine("| Historia / variante | Bien formada | Coherente |");
+        sb.AppendLine("|---|---|---|");
+        foreach (var story in samples.GroupBy(s => s.variantId.Substring(0, 1)).OrderBy(g => g.Key))
+        {
+            sb.AppendLine($"| **Historia {story.Key}** | {story.Count(s => s.parse.wellFormed)}/{story.Count()} | **{story.Count(s => s.Coherent)}/{story.Count()} ({Rate(story.Count(s => s.Coherent), story.Count())})** |");
+            foreach (var variant in story.GroupBy(s => s.variantId).OrderBy(g => g.Key))
+                sb.AppendLine($"| {variant.Key} | {variant.Count(s => s.parse.wellFormed)}/{variant.Count()} | {variant.Count(s => s.Coherent)}/{variant.Count()} |");
+        }
+        sb.AppendLine();
         sb.AppendLine("## Respuestas mal formadas o incoherentes");
         foreach (Sample s in samples.Where(s => !s.parse.wellFormed || !s.Coherent).Take(25))
         {
