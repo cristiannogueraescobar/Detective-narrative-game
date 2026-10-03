@@ -180,7 +180,8 @@ public static class EmotionCalibrator
         sb.AppendLine("|---|---|---|");
         foreach (var story in samples.GroupBy(s => s.variantId.Substring(0, 1)).OrderBy(g => g.Key))
         {
-            sb.AppendLine($"| **Historia {story.Key}** | {story.Count(s => s.parse.wellFormed)}/{story.Count()} | **{story.Count(s => s.Coherent)}/{story.Count()} ({Rate(story.Count(s => s.Coherent), story.Count())})** |");
+            string byProbe = string.Join(" · ", story.GroupBy(s => s.probe).OrderBy(g => g.Key).Select(g => $"{g.Key} {g.Count(s => s.Coherent)}/{g.Count()}"));
+            sb.AppendLine($"| **Historia {story.Key}** | {story.Count(s => s.parse.wellFormed)}/{story.Count()} | **{story.Count(s => s.Coherent)}/{story.Count()} ({Rate(story.Count(s => s.Coherent), story.Count())})** · {byProbe} |");
             foreach (var variant in story.GroupBy(s => s.variantId).OrderBy(g => g.Key))
                 sb.AppendLine($"| {variant.Key} | {variant.Count(s => s.parse.wellFormed)}/{variant.Count()} | {variant.Count(s => s.Coherent)}/{variant.Count()} |");
         }
