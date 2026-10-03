@@ -15,7 +15,7 @@ public static class PromptBuilder
         // Todos los personajes ocultan algo: si "ocultar" bastase para estar nervioso, lo estarían siempre
         // La víctima primero (también al describirla: ahí salía "tranquilo"); más corta la de "tranquilo" para no pasar del tope
         return $"Si te hablan de {who}, o la describes: triste, nunca tranquilo. Tranquilo si te preguntan por ti o tu rutina. " +
-               "Si te acusan: enfadado o asustado. Nervioso solo si tocan lo de TE PONE NERVIOSO, aunque disimules.";
+               "Si te acusan: enfadado o asustado. Nervioso solo si tocan lo de TE PONE NERVIOSO.";
     }
 
     public static string Build(StoryData story, VariantData variant, string characterId, int day,

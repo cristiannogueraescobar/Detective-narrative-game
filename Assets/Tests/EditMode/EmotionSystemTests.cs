@@ -82,11 +82,14 @@ public class EmotionSystemTests
         StringAssert.Contains("aunque describas a alguien", EmotionParser.TagInstruction);
     }
 
+    // Tercera medida: "aunque disimules" les ponía nerviosos y evasivos justo en los temas de sus pistas (Ruiz: 2C_prueba
+    // 77 → 47 %, 2B_imagenes 70 → 40 %). Fuera: lo que le pone nervioso vuelve a decirse sin más
     [Test]
-    public void SeNotaLoQueTePoneNerviosoAunqueDisimules()
+    public void LoQueTePoneNerviosoSinAunqueDisimules()
     {
         string guide = PromptBuilder.EmotionGuide("Sofía");
-        StringAssert.Contains("TE PONE NERVIOSO, aunque disimules", guide);
+        StringAssert.Contains("Nervioso solo si tocan lo de TE PONE NERVIOSO.", guide);
+        StringAssert.DoesNotContain("aunque disimules", guide);
         // Primera medida: con la cláusula metida antes de "si te acusan", las acusaciones salían tristes (69 de 360 frente
         // a 15 en main). La acusación va antes, en su propia frase
         StringAssert.Contains("Si te acusan: enfadado o asustado.", guide);
