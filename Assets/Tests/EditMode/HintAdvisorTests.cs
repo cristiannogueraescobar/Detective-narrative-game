@@ -52,13 +52,41 @@ public class HintAdvisorTests
     }
 
     [Test]
-    public void NoSenalaAlCulpableNiEmpiezaPorLaPistaDecisiva()
+    public void NoEmpiezaPorLaPistaDecisiva()
     {
-        // Todos disponibles: primero pistas de inocentes que no son la ⚡
         Hint hint = Next("a", "b", "c");
-        ClueData clue = story.variants[0].Clue(hint.clueId);
-        Assert.AreNotEqual(story.variants[0].culpritId, clue.holder);
-        Assert.IsFalse(clue.exposesLie);
+        Assert.IsFalse(story.variants[0].Clue(hint.clueId).exposesLie);
+    }
+
+    // Sesión C, mentiras de inocentes (fuga 3): "Pensar" dejaba al culpable para el final, y a quien nunca te mandaba
+    // era el culpable. El orden de las pistas sugeridas no puede depender de quién lo es
+    [Test]
+    public void ElOrdenNoDependeDeQuienEsElCulpable()
+    {
+        List<string> Sequence(string culprit)
+        {
+            StoryData s = TestCases.Story();
+            s.variants[0].culpritId = culprit;
+            s.variants[0].Clue("ctx").holder = "a"; // Que el culpable "a" tenga una pista que se pueda sugerir
+            var st = new InvestigationState(s.variants[0]);
+            var memory = new HintMemory();
+            var ids = new List<string>();
+            for (int i = 0; i < 12; i++)
+            {
+                Hint h = HintAdvisor.Next(s, st, new[] { "a", "b", "c" }, memory);
+                if (h.clueId == null)
+                    break;
+                if (h.level == 2)
+                {
+                    ids.Add(h.clueId);
+                    st.Discover(h.clueId);
+                }
+            }
+            return ids;
+        }
+
+        CollectionAssert.AreEqual(Sequence("a"), Sequence("b"));
+        CollectionAssert.AreEqual(Sequence("a"), Sequence("c"));
     }
 
     [Test]
@@ -125,5 +153,73 @@ public class HintAdvisorTests
         Assert.AreEqual(first.clueId, second.clueId);
         Assert.AreEqual(2, second.level, "tras Continuar, la siguiente es la concreta, no otra vez la vaga");
         Assert.AreEqual(2, restored.count);
+    }
+
+    // ---------- Decisión de Cristian (fase 2): "Pensar" manda a la vecina a hablar de la familia ----------
+    // El texto del día 1 ya dice que la vecina duerme poco: si el jugador aún no le ha preguntado por nadie de la familia,
+    // la ayuda se lo sugiere una vez, antes que las pistas (en 1B, la cena de Daniel casi nunca salía porque nadie le
+    // preguntaba a Amparo por él)
+
+    private Hint NextAsked(Dictionary<string, List<string>> asked, params string[] unlocked)
+    {
+        return HintAdvisor.Next(story, state, unlocked, memory, id => asked.TryGetValue(id, out List<string> q) ? q : new List<string>());
+    }
+
+    private void CarlaWatches()
+    {
+        CharacterData carla = story.Character("c");
+        carla.hintAbout = "la familia";
+        carla.hintQuestion = "¿Qué me cuenta de la familia?";
+    }
+
+    [Test]
+    public void SugierePreguntarALaVecinaPorLaFamiliaSiNadieLoHaHecho()
+    {
+        CarlaWatches();
+        Hint hint = NextAsked(new Dictionary<string, List<string>>(), "a", "b", "c");
+        Assert.AreEqual("c", hint.holderId);
+        Assert.IsNull(hint.clueId, "no apunta a una pista concreta");
+        Assert.AreEqual("¿Qué me cuenta de la familia?", hint.question);
+        StringAssert.Contains("Carla", hint.text);
+        StringAssert.Contains("la familia", hint.text);
+    }
+
+    [Test]
+    public void SiYaLeHaPreguntadoPorAlguienDeLaFamiliaNo()
+    {
+        CarlaWatches();
+        var asked = new Dictionary<string, List<string>> { { "c", new List<string> { "¿Vio usted a Bea esa noche?" } } };
+        Hint hint = NextAsked(asked, "a", "b", "c");
+        Assert.AreNotEqual("c", hint.clueId == null ? hint.holderId : "", "ya le preguntó por Bea: la ayuda pasa a las pistas");
+        Assert.IsNotNull(hint.clueId);
+    }
+
+    [Test]
+    public void SoloUnaVezYSoloSiEstaDisponible()
+    {
+        CarlaWatches();
+        Assert.IsNotNull(NextAsked(new Dictionary<string, List<string>>(), "a", "b").clueId, "Carla aún no está: pistas");
+        memory = new HintMemory();
+        Hint first = NextAsked(new Dictionary<string, List<string>>(), "a", "b", "c");
+        Assert.IsNull(first.clueId);
+        Hint second = NextAsked(new Dictionary<string, List<string>>(), "a", "b", "c");
+        Assert.IsNotNull(second.clueId, "la segunda vez, ya no");
+    }
+
+    [Test]
+    public void SinLaListaDePreguntasFuncionaComoAntes()
+    {
+        CarlaWatches();
+        Assert.IsNotNull(Next("a", "b", "c").clueId);
+    }
+
+    [Test]
+    public void EnLaHistoria1LaVecinaEsAmparoYSabeDeLaFamilia()
+    {
+        StoryData s1 = CaseLibrary.Stories[0];
+        CharacterData amparo = s1.Character("vecina");
+        Assert.AreEqual("la familia", amparo.hintAbout);
+        Assert.IsFalse(string.IsNullOrEmpty(amparo.hintQuestion));
+        Assert.IsTrue(s1.variants.All(v => v.culpritId != "vecina"), "nunca es la culpable: la ayuda no señala a nadie");
     }
 }

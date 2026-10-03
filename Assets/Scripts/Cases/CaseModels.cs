@@ -29,7 +29,11 @@ public class ClueData
     public string[][] anchors;        // AND entre grupos, OR dentro de cada grupo
     public ClueKind kind;
     public string clears;             // Id del personaje descartado (solo kind == Clears)
-    public bool exposesLie;           // Choca con la mentira del culpable
+    public bool exposesLie;           // Choca con la mentira de alguien (la del culpable si exposesLieOf va vacío)
+    public string exposesLieOf;       // Sesión C, mentiras de inocentes: id de quien miente; vacío = el culpable
+
+    /// <summary>De quién es la mentira que rompe esta pista (solo si exposesLie).</summary>
+    public string LiarIn(VariantData variant) => string.IsNullOrEmpty(exposesLieOf) ? variant.culpritId : exposesLieOf;
     public string[] calibrationQuestions; // Turnos separados por "||"
     public string[] sampleHits;       // Respuestas de ejemplo que DEBEN detectarse
     public string[] sampleMisses;     // Respuestas de ejemplo que NO deben detectarse
@@ -107,6 +111,9 @@ public class CharacterData
     public string tellsLying;     // Cómo se le nota al mentir
     public string pressureArc;    // Cómo reacciona según aprieta el interrogatorio
 
+    // "Pensar" (fase 2 de las mentiras de inocentes): si nadie le ha preguntado aún por la familia, la ayuda lo sugiere una vez
+    public string hintAbout;      // "la familia"
+    public string hintQuestion;   // La pregunta que se propone
     public string DisplayName => $"{shortName} ({roleLabel})";
 }
 
@@ -124,12 +131,14 @@ public class CharacterRole
     public string ifAccused;
     public string doesNotKnow;
 
-    // Solo el culpable
+    // El culpable siempre; un inocente, si miente sobre su propio secreto (sesión C): lieQuote, lieAnchors, versionB y
+    // lieAbout. lieStrategy y admissionSamples, solo el culpable
     public string lieQuote;       // Cita corta de su mentira, para el texto de la contradicción
     public string[][] lieAnchors; // Detecta que ha contado su mentira
     public string versionB;       // Verdad parcial cuando le muestran una prueba que le contradice
     public string lieStrategy;    // Culpable: cómo sostiene la mentira (StoriesDatabase.json)
     public string[] admissionSamples; // Frases de la versión B que NO deben contar como la mentira
+    public string lieAbout;       // Inocente: sobre qué miente de verdad ("su aventura"), para el informe si le acusan
 }
 
 public class VariantData

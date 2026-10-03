@@ -56,6 +56,7 @@ public static class BotPlayer
         public string answer;
         public Emotion emotion;
         public List<string> newClues = new List<string>();
+        public List<string> newContradictions = new List<string>(); // Con su texto (sesión C: también las de inocentes)
         public List<PlaythroughChecks.Finding> findings = new List<PlaythroughChecks.Finding>();
     }
 
@@ -74,6 +75,8 @@ public static class BotPlayer
         public int cluesFound;
         public int cluesTotal;
         public int contradictions;
+        public int innocentContradictions;                    // Sesión C: de esas, las de un inocente que miente
+        public bool innocentLiarAccused;                      // Acusó a un inocente que mentía
         public int evidence;
         public string accusationReason;
         public string error;
@@ -280,7 +283,8 @@ public static class BotPlayer
                     // Como un jugador atascado: tras 4 preguntas sin nada nuevo, "Pensar" (cuesta la pregunta)
                     if (options.hints && forced == null && sinceClue >= 4)
                     {
-                        Hint hint = HintAdvisor.Next(story, manager.State, unlocked, hintMemory);
+                        Hint hint = HintAdvisor.Next(story, manager.State, unlocked, hintMemory,
+                            id => manager.Histories.TryGetValue(id, out List<ChatMessage> h) ? h.Where(m => m.role == "user").Select(m => m.content) : Enumerable.Empty<string>());
                         game.hints++;
                         game.questionsUsed++;
                         sinceClue = 0;
@@ -310,8 +314,10 @@ public static class BotPlayer
 
                     ClueData shown = decision.evidence != null ? variant.Clue(decision.evidence) : null;
                     turnClues.Clear();
+                    int contradictionsBefore = manager.State.ContradictionClueIds.Count;
                     var watch = System.Diagnostics.Stopwatch.StartNew();
                     LLMResult result = manager.AskSuspect(decision.suspect, decision.question, day, shown).GetAwaiter().GetResult();
+                    manager.RegisterHeardLies(unlocked); // Como el juego al rehacer la libreta
                     long elapsed = watch.ElapsedMilliseconds;
                     if (!result.Success)
                         throw new Exception("Ollama: " + result.ErrorMessage);
@@ -327,6 +333,8 @@ public static class BotPlayer
                     {
                         ms = elapsed, day = day, suspectId = decision.suspect, question = decision.question, evidenceId = decision.evidence,
                         answer = result.Text, emotion = emotion, newClues = new List<string>(turnClues),
+                        newContradictions = manager.State.ContradictionClueIds.Skip(contradictionsBefore)
+                            .Select(id => Contradictions.Describe(story, variant, variant.Clue(id))).ToList(),
                         findings = PlaythroughChecks.Check(result.Text, sheet, decision.suspect == variant.culpritId,
                             manager.State.ContradictionClueIds.Count, manager.State.ShownTo(decision.suspect).Count(), previous, decision.question)
                     });
@@ -348,6 +356,8 @@ public static class BotPlayer
             game.ending = outcome.ending;
             game.cluesFound = manager.State.DiscoveredClueIds.Count;
             game.contradictions = manager.State.ContradictionClueIds.Count;
+            game.innocentContradictions = manager.State.ContradictionClueIds.Count(id => variant.Clue(id).LiarIn(variant) != variant.culpritId);
+            game.innocentLiarAccused = accused != variant.culpritId && !string.IsNullOrEmpty(variant.Role(accused).lieQuote);
             game.evidence = outcome.evidence;
             if (shared)
             {
@@ -608,7 +618,7 @@ public static class BotPlayer
         sb.AppendLine();
         if (game.error != null)
             sb.AppendLine($"**Error:** {game.error}");
-        sb.AppendLine($"Final: **{game.ending}** · acusado: {game.accusedId} · culpable: {game.culpritId} · preguntas: {game.questionsUsed} · días: {game.daysUsed} · pistas {game.cluesFound}/{game.cluesTotal} · contradicciones {game.contradictions}");
+        sb.AppendLine($"Final: **{game.ending}** · acusado: {game.accusedId} · culpable: {game.culpritId} · preguntas: {game.questionsUsed} · días: {game.daysUsed} · pistas {game.cluesFound}/{game.cluesTotal} · contradicciones {game.contradictions} (de inocentes {game.innocentContradictions}){(game.innocentLiarAccused ? " · **acusó a un inocente que mentía**" : "")}");
         sb.AppendLine($"Motivo de la acusación: {game.accusationReason}");
         sb.AppendLine($"Turnos sin decisión válida del detective: {game.fallbacks}");
         foreach (string bad in game.badDecisions)
@@ -622,6 +632,8 @@ public static class BotPlayer
             sb.AppendLine($"> {t.answer.Replace("\n", " ")} *({t.emotion.ToString().ToLowerInvariant()})*");
             if (t.newClues.Count > 0)
                 sb.AppendLine($"  - PISTAS: {string.Join(", ", t.newClues)}");
+            foreach (string c in t.newContradictions)
+                sb.AppendLine($"  - CONTRADICCIÓN: {c}");
             foreach (var f in t.findings)
                 sb.AppendLine($"  - ⚑ {f.kind}: {f.detail}");
             sb.AppendLine();
@@ -656,6 +668,8 @@ public static class BotPlayer
         int answers = all.Sum(g => g.turns.Count);
         sb.AppendLine();
         sb.AppendLine($"**Total:** {all.Count} partidas · {answers} respuestas · aciertos del culpable {all.Count(g => g.accusedId == g.culpritId)}/{all.Count}");
+        sb.AppendLine($"**Mentiras de inocentes:** partidas con alguna contradicción de un inocente {all.Count(g => g.innocentContradictions > 0)}/{all.Count} · " +
+                      $"acusaciones a un inocente que mentía {all.Count(g => g.innocentLiarAccused)}/{all.Count}");
         int checkedGames = all.Count(g => g.memoryChecked);
         if (checkedGames > 0)
             sb.AppendLine($"**Memoria entre partidas** (mismo gestor, como «Caso nuevo»): {checkedGames} partidas comprobadas · "

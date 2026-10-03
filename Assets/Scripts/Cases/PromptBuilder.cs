@@ -71,6 +71,9 @@ public static class PromptBuilder
         else
         {
             sb.AppendLine("Eres inocente del crimen, aunque ocultes cosas.");
+            // Sesión C: si miente sobre su secreto, reacciona a la prueba que le contradice igual que el culpable
+            if (!string.IsNullOrEmpty(role.versionB))
+                sb.AppendLine($"SI EL INSPECTOR TE MUESTRA UNA PRUEBA QUE CONTRADICE TU VERSIÓN: {role.versionB}");
         }
 
         sb.AppendLine($"TE PONE NERVIOSO: {role.nervousAbout}");

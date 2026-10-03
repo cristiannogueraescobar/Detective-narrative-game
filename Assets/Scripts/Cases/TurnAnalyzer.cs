@@ -60,14 +60,16 @@ public static class TurnAnalyzer
                 outcome.newClues.Add(clue);
         }
 
-        if (characterId == variant.culpritId)
+        // La mentira de quien tenga una: el culpable y, desde la sesión C, el inocente que miente sobre su secreto
+        CharacterRole speaker = variant.roles.FirstOrDefault(r => r.characterId == characterId);
+        if (speaker?.lieAnchors != null && speaker.lieAnchors.Length > 0)
         {
             // Las mentiras suelen ser negaciones ("no entré"): sin guardia de negación
-            outcome.lieTrace = ClueDetector.Evaluate(variant.Role(characterId).lieAnchors, normalized, negationGuard: false);
+            outcome.lieTrace = ClueDetector.Evaluate(speaker.lieAnchors, normalized, negationGuard: false);
             if (outcome.lieTrace.Matched)
             {
                 outcome.lieTold = true;
-                state.RegisterLieTold();
+                state.RegisterLieTold(characterId);
             }
         }
 

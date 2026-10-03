@@ -97,6 +97,18 @@ Tienes 7 días para descubrir qué pasó.",
         };
     }
 
+    // Fase 2 de las mentiras de inocentes (3B, decisión de Cristian): Encarna miente sobre su secreto, el pleito del pozo.
+    // Es otro tema, otra hora y otro sitio que el crimen (antes mentía Javier sobre esa misma noche y el bot le acusaba)
+    private static CharacterRole LyingEncarna(string version, params string[] knowledge)
+    {
+        CharacterRole role = InnocentEncarna(version + " Javier y yo somos buenos vecinos.", knowledge);
+        role.lieQuote = "Javier y yo somos buenos vecinos";
+        role.lieAnchors = new[] { new[] { "buenos vecinos", "nos llevamos bien", "buena relacion" }, new[] { "javier", "somos" } };
+        role.versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.";
+        role.lieAbout = "el pleito con Javier por el agua del pozo";
+        return role;
+    }
+
     // ============================================
     // 3A · JAVIER — la discusión del sábado
     // ============================================
@@ -150,12 +162,17 @@ Tienes 7 días para descubrir qué pasó.",
                 {
                     characterId = "madre",
                     knowledge = new[] { MentionAlex, MentionEncarna, "Paula quiere vivir contigo y lo iba a decir en la vista del lunes." },
-                    version = "El sábado estuve todo el día en Granada, en casa de mi hermana, con Álex.",
+                    version = "El sábado estuve todo el día en Granada, en casa de mi hermana, con Álex. Mi vida está en Granada; no pienso irme a ningún sitio.",
                     secret = "Pensabas mudarte a Madrid con Paula después de la vista sin decírselo al juzgado.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "Madrid y tu medicación.",
                     ifAccused = "Te quedas helada y dices, muy bajo, que eres su madre.",
-                    doesNotKnow = "Qué pasó en la finca el sábado."
+                    doesNotKnow = "Qué pasó en la finca el sábado.",
+                    // Fase 2 de las mentiras de inocentes: miente sobre su secreto (Madrid), no sobre el crimen
+                    lieQuote = "mi vida está en Granada; no pienso irme",
+                    lieAnchors = new[] { new[] { "no pienso irme", "no me voy a ir", "no pienso mudarme", "no me muevo" }, new[] { "granada", "ningun sitio", "ninguna parte" } },
+                    versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.",
+                    lieAbout = "su plan de mudarse a Madrid con Paula sin decírselo al juzgado"
                 },
                 new CharacterRole
                 {
@@ -274,6 +291,27 @@ Tienes 7 días para descubrir qué pasó.",
                         "Sí, mi tía Remedios y mis primos Nerea y Hugo pueden confirmarlo. Nosotros pasamos todo el día en su casa."
                     },
                     sampleMisses = new[] { "No me acuerdo bien, estuvimos por ahí." }
+                },
+                new ClueData
+                {
+                    // Fase 2: rompe la mentira de un inocente sobre su secreto; no le acusa del crimen
+                    id = "3A_madrid", playerName = "Pisos en Madrid", holder = "hermano", kind = ClueKind.Context,
+                    exposesLie = true, exposesLieOf = "madre",
+                    summary = "Álex cuenta que su madre ya miraba pisos en Madrid para irse con Paula después del juicio, sin decírselo al juez.",
+                    topic = "los planes de tu madre o qué iba a pasar después del juicio",
+                    fact = "tu madre ya miraba pisos en Madrid para irse con Paula después del juicio, sin decírselo al juez.",
+                    anchors = new[]
+                    {
+                        new[] { "madrid" },
+                        new[] { "pisos", "piso", "mudarse", "mudarnos", "irse", "irnos", "vivir alli" }
+                    },
+                    calibrationQuestions = new[] { "¿Qué planes tenía tu madre después del juicio?", "¿Tu madre iba a quedarse en Granada?" },
+                    sampleHits = new[]
+                    {
+                        "O sea, mamá ya miraba pisos en Madrid para irse con Paula después del juicio, tío.",
+                        "Qué va, mamá quería irse a Madrid con Paula; ya estaba mirando piso y el juez no sabía nada."
+                    },
+                    sampleMisses = new[] { "Mamá vive en Granada, como siempre, tío.", "No sé qué planes tenía, no hablamos mucho." }
                 }
             }
         };
@@ -350,7 +388,7 @@ Tienes 7 días para descubrir qué pasó.",
                     ifAccused = "Aprietas los puños y te callas.",
                     doesNotKnow = "Qué pasó en la finca el sábado."
                 },
-                InnocentEncarna("El sábado estuve en casa toda la tarde; desde mi ventana se ve el camino de la finca.",
+                LyingEncarna("El sábado estuve en casa toda la tarde; desde mi ventana se ve el camino de la finca.",
                     "Javier bebe mucho desde el divorcio.", "Conoces el coche de todos los que suben por el camino.")
             },
             clues = new List<ClueData>
@@ -453,6 +491,30 @@ Tienes 7 días para descubrir qué pasó.",
                         "Pregunte al camarero del bar, me vio toda la tarde."
                     },
                     sampleMisses = new[] { "Estuve por ahí, qué más da." }
+                },
+                new ClueData
+                {
+                    // Fase 2: rompe la mentira de Encarna (inocente aquí) sobre el pleito del pozo; no la acusa del crimen
+                    id = "3B_pozo", playerName = "El pleito del pozo", holder = "padre", kind = ClueKind.Context,
+                    exposesLie = true, exposesLieOf = "vecina",
+                    summary = "Javier cuenta que Encarna y él llevan años en pleitos por el agua del pozo y que ella le tiene rencor.",
+                    topic = "Encarna o cómo te llevas con los vecinos",
+                    fact = "Encarna y tú lleváis años en pleitos por el agua del pozo; ella te tiene rencor y no os habláis.",
+                    anchors = new[]
+                    {
+                        new[] { "pleito", "juicio", "denuncia", "demanda", "abogado", "problemas", "discut", "pelea", "lio", "rencor", "no nos llevamos", "no nos hablamos", "sin hablar" },
+                        new[] { "pozo", "agua" }
+                    },
+                    calibrationQuestions = new[] { "¿Cómo se lleva con Encarna?", "¿Qué tal con los vecinos de la finca?" },
+                    sampleHits = new[]
+                    {
+                        "Con Encarna, mal: llevamos años en pleitos por el agua del pozo y no nos hablamos.",
+                        "Los vecinos bien, menos Encarna: me puso una denuncia por el pozo y me tiene rencor.",
+                        // Calibración: respuestas reales que el detector no veía
+                        "Con Encarna no nos llevamos bien, ella y yo siempre hemos tenido problemas por el agua del pozo.",
+                        "Con Encarna llevamos años sin hablarnos por el lío del agua; me tiene rencor."
+                    },
+                    sampleMisses = new[] { "Encarna es mayor, vive sola; poco más sé de ella.", "Con los vecinos, lo normal." }
                 }
             }
         };
@@ -538,7 +600,12 @@ Tienes 7 días para descubrir qué pasó.",
                     admitsWhen = "el inspector insiste",
                     nervousAbout = "por qué tardaste en leer el mensaje de Paula.",
                     ifAccused = "Aprietas los puños y te callas.",
-                    doesNotKnow = "Qué pasó en la finca después de las ocho."
+                    doesNotKnow = "Qué pasó en la finca después de las ocho.",
+                    // Fase 2 de las mentiras de inocentes: miente sobre su secreto (la fiesta), no sobre el crimen; ya estaba en su versión
+                    lieQuote = "estuve en Granada con mi madre",
+                    lieAnchors = new[] { new[] { "con mi madre", "con mama" }, new[] { "estuve", "toda la noche", "en casa", "granada" } },
+                    versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.",
+                    lieAbout = "que estaba de fiesta y no miró el móvil hasta medianoche"
                 }
             },
             clues = new List<ClueData>
@@ -646,6 +713,27 @@ Tienes 7 días para descubrir qué pasó.",
                         "El camarero del bar se lo puede decir. Volví a las 22:00."
                     },
                     sampleMisses = new[] { "Estuve por ahí, qué más da." }
+                },
+                new ClueData
+                {
+                    // Fase 2: rompe la mentira de un inocente sobre su secreto; no le acusa del crimen
+                    id = "3C_fiesta", playerName = "Una noche de fiesta", holder = "madre", kind = ClueKind.Context,
+                    exposesLie = true, exposesLieOf = "hermano",
+                    summary = "Lucía cuenta que Álex se fue de fiesta el sábado por la noche y no volvió hasta la una, sin coger el móvil.",
+                    topic = "dónde estuvo Álex el sábado por la noche",
+                    fact = "el sábado por la noche Álex se fue de fiesta con sus amigos y no volvió hasta la una; no le cogía el móvil a nadie.",
+                    anchors = new[]
+                    {
+                        new[] { "fiesta", "de marcha", "salio", "con sus amigos", "con los amigos" },
+                        new[] { "la una", "1:00", "no volvio", "no contestaba", "no cogia", "no le cogia", "de madrugada" }
+                    },
+                    calibrationQuestions = new[] { "¿Estuvo Álex con usted toda la noche?", "¿Qué hizo Álex el sábado por la noche?" },
+                    sampleHits = new[]
+                    {
+                        "No, Álex se fue de fiesta con sus amigos y no volvió hasta la una; no me cogía el móvil.",
+                        "Salió con los amigos, de marcha, y no volvió hasta la una de la madrugada."
+                    },
+                    sampleMisses = new[] { "Álex estuvo conmigo en Granada.", "Álex es un buen chico, inspector." }
                 }
             }
         };

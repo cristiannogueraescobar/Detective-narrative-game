@@ -48,21 +48,45 @@ public class HintMemory
 
 public static class HintAdvisor
 {
-    public static Hint Next(StoryData story, InvestigationState state, IEnumerable<string> unlocked, HintMemory memory)
+    public static Hint Next(StoryData story, InvestigationState state, IEnumerable<string> unlocked, HintMemory memory,
+                            System.Func<string, IEnumerable<string>> questionsTo = null)
     {
         VariantData v = state.Variant;
         var available = new HashSet<string>(unlocked);
+
+        // Decisión de Cristian (fase 2): a quien ve mucho (la vecina) se le pregunta por la familia. Si aún nadie lo ha
+        // hecho, se sugiere una vez, antes que las pistas. Solo si el juego da las preguntas hechas (questionsTo)
+        if (questionsTo != null)
+        {
+            foreach (CharacterData watcher in story.cast.Where(c => !string.IsNullOrEmpty(c.hintAbout) && available.Contains(c.id)))
+            {
+                string key = "@" + watcher.id;
+                if (memory.given.ContainsKey(key))
+                    continue;
+                List<string[]> family = story.cast.Where(o => o.id != watcher.id && o.mentionAliases != null).Select(o => o.mentionAliases).ToList();
+                bool askedAboutFamily = (questionsTo(watcher.id) ?? Enumerable.Empty<string>()).Select(ClueDetector.Normalize)
+                    .Any(q => q.Contains("familia") || family.Any(aliases => ClueDetector.MentionsAny(q, aliases)));
+                if (askedAboutFamily)
+                    continue;
+                memory.given[key] = 2;
+                memory.count++;
+                return new Hint
+                {
+                    holderId = watcher.id, level = 2, question = watcher.hintQuestion,
+                    text = $"Pregúntale a {watcher.shortName} por {watcher.hintAbout}: «{watcher.hintQuestion}»"
+                };
+            }
+        }
         List<ClueData> pending = v.clues.Where(c => !state.IsDiscovered(c.id)).ToList();
 
-        // Orden: inocentes antes que el culpable, lo que no es decisivo antes que la ⚡, lo abierto antes que el secreto
-        // Con dos portadores, se sugiere el que esté disponible (el que no es el culpable, si lo están los dos)
+        // Orden: lo que no es decisivo antes que las ⚡ (de cualquiera), lo abierto antes que el secreto. Nada depende de
+        // quién es el culpable (sesión C: dejarle para el final le delataba). Con dos portadores, el disponible, con la
+        // versión abierta antes que la secreta
         List<ClueData> candidates = pending.Where(c => c.Holders.Any(available.Contains))
             .Select(c => c.ForHolder(c.Holders.Where(available.Contains)
-                .OrderBy(h => h == v.culpritId ? 1 : 0)
-                .ThenBy(h => c.ForHolder(h).isSecret ? 1 : 0) // La versión abierta antes que la secreta
+                .OrderBy(h => c.ForHolder(h).isSecret ? 1 : 0) // La versión abierta antes que la secreta
                 .First()))
-            .OrderBy(c => c.holder == v.culpritId ? 1 : 0)
-            .ThenBy(c => c.exposesLie ? 1 : 0)
+            .OrderBy(c => c.exposesLie ? 1 : 0)
             .ThenBy(c => c.isSecret ? 1 : 0)
             .ToList();
 

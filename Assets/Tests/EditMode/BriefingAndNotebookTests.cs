@@ -98,19 +98,21 @@ public class BriefingAndNotebookTests
         StringAssert.DoesNotContain(versionC, notebook, "a c aún no le has preguntado");
     }
 
-    // Tercera revisión: la versión del culpable es su mentira; no se apunta hasta que la ha contado
+    // Sesión C, mentiras de inocentes (fuga 2): antes la versión del culpable esperaba a que contase su mentira, y eso
+    // le delataba (la de los demás salía al primer turno). Ahora llega igual para todos: en cuanto ha contestado
     [Test]
-    public void LaMentiraDelCulpableSoloSeApuntaCuandoLaHaContado()
+    public void LaVersionLlegaIgualParaTodos()
     {
         StoryData story = TestCases.Story();
         var state = new InvestigationState(story.variants[0]);
-        string lie = story.variants[0].Role("a").version;
-        string Format() => Notebook.Format(story, state, new[] { "a", "b" }, new Dictionary<string, Emotion>(), c => "x",
-            onPaper: true, interviewed: new[] { "a" });
+        string culprit = story.variants[0].Role("a").version;
+        string innocent = story.variants[0].Role("b").version;
+        string notebook = Notebook.Format(story, state, new[] { "a", "b" }, new Dictionary<string, Emotion>(), c => "x",
+            onPaper: true, interviewed: new[] { "a", "b" });
 
-        StringAssert.DoesNotContain(lie, Format(), "contestó, pero aún no ha contado su versión");
-        state.RegisterLieTold();
-        StringAssert.Contains(lie, Format());
+        Assert.IsFalse(state.CulpritToldLie);
+        StringAssert.Contains(culprit, notebook, "el culpable ha contestado: su versión, como la de cualquiera");
+        StringAssert.Contains(innocent, notebook);
     }
 
     // Tercera revisión: una versión que nombra a alguien aún no disponible no se apunta todavía

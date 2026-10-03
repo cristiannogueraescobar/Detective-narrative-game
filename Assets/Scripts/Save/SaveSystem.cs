@@ -39,6 +39,7 @@ public class SaveData
     public List<string> discoveredBy = new List<string>(); // "pista:personaje"; vacío en guardados anteriores
     public List<Shown> shown = new List<Shown>();
     public bool culpritToldLie;
+    public List<string> liesTold = new List<string>(); // Quién ha contado su mentira (sesión C); vacío en guardados anteriores
     public List<History> histories = new List<History>();
     public List<EmotionEntry> emotions = new List<EmotionEntry>();
     public List<Conversation> conversations = new List<Conversation>();
@@ -330,8 +331,11 @@ public static class SaveSystem
             state.Discover(clueId, by.TryGetValue(clueId, out string who) && variant.Clue(clueId)?.HeldBy(who) == true ? who : null);
         foreach (SaveData.Shown shown in data.shown)
             state.RegisterShown(shown.characterId, shown.clueId);
-        if (data.culpritToldLie)
+        if (data.culpritToldLie) // Guardados anteriores: solo sabían de la mentira del culpable
             state.RegisterLieTold();
+        foreach (string who in data.liesTold ?? new List<string>())
+            if (variant.roles.Any(r => r.characterId == who))
+                state.RegisterLieTold(who);
 
         state.UpdateContradictions();
         return state;

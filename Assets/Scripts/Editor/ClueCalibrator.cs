@@ -23,7 +23,7 @@ using UnityEngine;
 public static class ClueCalibrator
 {
     public const string ReportPath = "Logs/clue-calibration.md";
-    private const int CalibrationDay = 2;
+    public const int CalibrationDay = 2;
 
     public static readonly string[] PrecisionQuestions =
     {
@@ -35,6 +35,11 @@ public static class ClueCalibrator
     {
         public List<string> variantIds = new List<string>();
         public List<string> clueIds = new List<string>(); // Vacío = todas las pistas de las variantes
+        // -seed N: la semilla de cada llamada sale de quién contesta (primera línea de su ficha), de la conversación y de
+        // cuántas veces se ha hecho ya esa misma: dos versiones dan la misma semilla a la misma pregunta al mismo
+        // personaje, aunque una tenga pistas de más antes (con el número de orden, una pista nueva desplazaba todas)
+        public int seed = -1;
+        public readonly Dictionary<string, int> seedOccurrences = new Dictionary<string, int>();
         public int tries = 3;
         public string ollamaUrl = "http://localhost:11434";
         public string model = new OllamaSettings().model;
@@ -111,6 +116,9 @@ public static class ClueCalibrator
                     break;
                 case "-temperature":
                     options.temperature = float.Parse(args[i + 1], System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case "-seed":
+                    options.seed = int.Parse(args[i + 1]);
                     break;
                 case "-model":
                     options.model = args[i + 1];
@@ -347,10 +355,44 @@ public static class ClueCalibrator
     }
 
     [Serializable]
+    private class SeededChatRequest
+    {
+        public string model;
+        public ChatMessage[] messages;
+        public bool stream;
+        public SeededChatOptions options;
+    }
+
+    [Serializable]
+    private class SeededChatOptions
+    {
+        public float temperature;
+        public int num_predict;
+        public int num_ctx;
+        public int seed;
+    }
+
+    [Serializable]
     private class ChatResponse
     {
         public ChatMessage message;
         public string error;
+    }
+
+    /// <summary>Semilla estable para una llamada (ver Options.seed).</summary>
+    public static int SeedFor(Options options, string systemPrompt, IEnumerable<ChatMessage> history)
+    {
+        string who = (systemPrompt ?? "").Split('\n')[0];
+        string key = who + "|" + string.Join("|", history.Select(m => m.role + ":" + m.content));
+        options.seedOccurrences.TryGetValue(key, out int n);
+        options.seedOccurrences[key] = n + 1;
+        unchecked
+        {
+            uint hash = 2166136261; // FNV-1a: igual en cualquier proceso (string.GetHashCode no lo garantiza)
+            foreach (char c in key)
+                hash = (hash ^ c) * 16777619;
+            return (int)((uint)options.seed + hash % 1000000u + (uint)n * 7919u) & int.MaxValue;
+        }
     }
 
     public static string Chat(HttpClient client, Options options, string systemPrompt, List<ChatMessage> history)
@@ -371,7 +413,20 @@ public static class ClueCalibrator
             }
         };
 
-        var content = new StringContent(JsonUtility.ToJson(request), Encoding.UTF8, "application/json");
+        string json = JsonUtility.ToJson(request);
+        if (options.seed >= 0)
+        {
+            json = JsonUtility.ToJson(new SeededChatRequest
+            {
+                model = request.model, messages = request.messages, stream = false,
+                options = new SeededChatOptions
+                {
+                    temperature = request.options.temperature, num_predict = request.options.num_predict,
+                    num_ctx = request.options.num_ctx, seed = SeedFor(options, systemPrompt, history)
+                }
+            });
+        }
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
         HttpResponseMessage http = client.PostAsync(options.ollamaUrl.TrimEnd('/') + "/api/chat", content).GetAwaiter().GetResult();
         string body = http.Content.ReadAsStringAsync().GetAwaiter().GetResult();
         ChatResponse parsed = JsonUtility.FromJson<ChatResponse>(body);
@@ -437,7 +492,8 @@ public static class ClueCalibrator
             }
         }
 
-        foreach (ClueResult r in results.Where(r => !r.Passed || (r.clue.isSecret && r.FirstTurnHits > 0)))
+        // Con -clues se detallan todas las pedidas (para ver también los fallos de una que pasa por poco)
+        foreach (ClueResult r in results.Where(r => !r.Passed || (r.clue.isSecret && r.FirstTurnHits > 0) || options.clueIds.Count > 0))
         {
             sb.AppendLine();
             sb.AppendLine($"## {r.clue.id} — {r.Hits}/{r.Total}");

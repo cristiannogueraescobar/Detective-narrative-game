@@ -69,7 +69,10 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     speech = "Cotilla, detallista y cariñosa. Das horas exactas porque tienes el reloj de cuco delante. Llamas 'hijo' al inspector.",
                     speechExample = "Mire, hijo, yo no es que espíe, pero una tiene ojos.",
                     startsUnlocked = false,
-                    mentionAliases = new[] { "amparo", "vecina", "la de enfrente" }
+                    mentionAliases = new[] { "amparo", "vecina", "la de enfrente" },
+                    // "Pensar": duerme poco y ve la casa de enfrente (lo dice el día 1); que se le pregunte por la familia
+                    hintAbout = "la familia",
+                    hintQuestion = "¿Qué me cuenta de la familia Mendoza?"
                 }
             },
             variants = new List<VariantData> { Variant1A(), Variant1B(), Variant1C() }
@@ -375,7 +378,16 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     admitsWhen = "el inspector insiste, menciona el restaurante o dice que lo va a comprobar",
                     nervousAbout = "dónde estuviste entre las 21:00 y las 23:05.",
                     ifAccused = "Te enfrías y hablas de pruebas y de presunción de inocencia.",
-                    doesNotKnow = "Qué medicación le dio Carmen a Elena esa noche."
+                    doesNotKnow = "Qué medicación le dio Carmen a Elena esa noche.",
+                    // Sesión C, mentiras de inocentes: miente sobre su secreto (la aventura), no sobre el crimen. 1B_cena la rompe
+                    lieQuote = "salí a cenar con clientes",
+                    lieAnchors = new[]
+                    {
+                        new[] { "cenar con", "cena con", "cenando con", "cene con" },
+                        new[] { "clientes", "cliente" }
+                    },
+                    versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.", // Sin frase hecha: la repetía tal cual
+                    lieAbout = "su aventura"
                 },
                 new CharacterRole
                 {
@@ -383,7 +395,6 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     knowledge = new[]
                     {
                         MentionAmparo,
-                        "Mamá siempre está con médicos y pastillas para Elena; papá quiso pedir una segunda opinión y discutieron."
                     },
                     version = "Estuve en mi cuarto con los cascos casi toda la noche, jugando; solo me los quité un momento.",
                     secret = "Fumas porros a escondidas en tu cuarto y no quieres que tus padres lo sepan.",
@@ -433,17 +444,21 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 {
                     id = "1B_receta", playerName = "La receta de casa", holder = "padre", kind = ClueKind.Incriminates,
                     summary = "Carmen le recetó ella misma a Elena un medicamento para el corazón. Cuando Daniel pidió una segunda opinión, ella se puso furiosa.",
-                    topic = "la medicación de Elena o quién le recetaba las medicinas",
-                    fact = "Carmen le recetó ella misma a Elena un medicamento para el corazón, y se puso furiosa cuando pediste una segunda opinión a un cardiólogo.",
+                    topic = "la medicación o los tratamientos de Elena", // Sesión C: "¿quién decidía los tratamientos?" no daba el hecho
+                    fact = "Carmen decidía ella sola los tratamientos de Elena: le recetó ella misma un medicamento para el corazón y se puso furiosa cuando pediste una segunda opinión a un cardiólogo.",
                     anchors = new[]
                     {
                         new[] { "corazon", "cardi", "arritmia", "medicament", "medicina", "tratamiento", "segunda opinion" },
-                        new[] { "receto", "recetaba", "prescrit", "prescrib", "segunda opinion", "furiosa", "se enfado", "se molesto", "ella misma", "hecha una fiera" }
+                        new[] { "receto", "recetaba", "prescrit", "prescrib", "segunda opinion", "furiosa", "se enfado", "se molesto", "ella misma", "hecha una fiera", "le dio", "le daba", "muy molesta", "otro especialista", "sin consultar", "otros medicos" }
                     },
                     calibrationQuestions = new[] { "¿Tomaba Elena alguna medicación?", "¿Quién decidía los tratamientos de Elena?" },
                     sampleHits = new[]
                     {
                         "Carmen le recetó ella misma algo para el corazón. Cuando pedí una segunda opinión se puso furiosa.",
+                        // Sesión C (calibración de la fase 1): respuestas reales que el detector no veía
+                        "Recuerdo que Carmen le dio algo para el corazón y se mostró muy molesta cuando sugerí consultar a otro especialista.",
+                        "Carmen le dio algo para el corazón y se puso muy nerviosa cuando quise consultar con otro especialista.",
+                        "Carmen decidía los tratamientos para Elena, siempre según su criterio y sin consultar a otros médicos.",
                         "Yo quería que la viera un cardiólogo, una segunda opinión, y Carmen se enfadó muchísimo.",
                         "No estoy seguro de qué medicación tomaba Elena esa noche, solo sé que Carmen le recetó uno para el corazón hace unos meses.",
                         "Elena solía tomar un medicamento para el corazón prescrito por Carmen.",
@@ -451,7 +466,30 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                         "Carmen la recetó y siempre ha sido muy cuidadosa con su tratamiento cardiovascular.",
                         "Carmen tomaba las decisiones médicas para Elena y se molestó cuando pedí una segunda opinión."
                     },
-                    sampleMisses = new[] { "Tenía algo del corazón, eso lo lleva Carmen." }
+                    sampleMisses = new[] { "Tenía algo del corazón, eso lo lleva Carmen." },
+                    // Decisión de Cristian (fase 1): al 80 %. Daniel la suelta poco y varía mucho; Lucas ya sabía lo de la segunda opinión
+                    alsoHeldBy = new[]
+                    {
+                        new ClueHolder
+                        {
+                            characterId = "hermano",
+                            topic = "las medicinas de Elena o quién la llevaba al médico", // Las peleas de sus padres no: le pone nervioso hablar mal de su madre
+                            fact = "mamá le recetó ella misma a Elena una medicina para el corazón; cuando papá quiso que la viera otro cardiólogo, mamá se puso hecha una fiera.",
+                            summary = "Lucas cuenta que Carmen le recetó ella misma a Elena algo para el corazón y se puso furiosa cuando Daniel quiso otra opinión.",
+                            anchors = new[]
+                            {
+                                new[] { "corazon", "cardi", "medicina", "medicament", "pastilla", "segunda opinion" },
+                                new[] { "receto", "recetaba", "ella misma", "hecha una fiera", "furiosa", "se enfado", "se puso como", "otro medico", "otro cardiologo", "segunda opinion" }
+                            },
+                            calibrationQuestions = new[] { "¿Tomaba Elena alguna medicina?", "¿Quién llevaba a Elena al médico?" },
+                            sampleHits = new[]
+                            {
+                                "O sea, mamá le recetó ella misma una medicina para el corazón, y cuando papá quiso otro cardiólogo se puso hecha una fiera.",
+                                "Discutían por las pastillas del corazón de Elena, tío: papá quería una segunda opinión y mamá se enfadó un montón."
+                            },
+                            sampleMisses = new[] { "No sé qué tomaba, tío; eso lo llevaba mamá.", "Mis padres discuten a veces, como todos." }
+                        }
+                    }
                 },
                 new ClueData
                 {
@@ -515,6 +553,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 new ClueData
                 {
                     id = "1B_cena", playerName = "La cena del viernes", holder = "padre", kind = ClueKind.Clears, clears = "padre", isSecret = true,
+                    exposesLie = true, exposesLieOf = "padre", // Rompe la mentira de Daniel (inocente) y le descarta
                     summary = "Daniel no estaba en una cena de clientes: estuvo con Marta, una compañera del bufete, de 21:00 a 23:00.",
                     topic = "dónde o con quién estuviste esa noche",
                     fact = "Estuviste de 21:00 a 23:00 en casa de Marta, una compañera del bufete; ella y el portero pueden confirmarlo.",
@@ -634,7 +673,16 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                     admitsWhen = "el inspector insiste, te dice que alguien vio tu coche llegar antes de las 23:00 o que va a pedir el registro de llamadas",
                     nervousAbout = "la hora a la que llegaste y tu móvil.",
                     ifAccused = "Te indignas, hablas de presunción de inocencia y exiges un abogado.",
-                    doesNotKnow = "Qué hacía Lucas en el instituto."
+                    doesNotKnow = "Qué hacía Lucas en el instituto.",
+                    // Sesión C, mentiras de inocentes: miente sobre la hora (su secreto: vio el golpe y no actuó). 1C_llamada la rompe
+                    lieQuote = "llegué a casa a las 23:00",
+                    lieAnchors = new[]
+                    {
+                        new[] { "23:00", "las once", "11 de la noche" },
+                        new[] { "llegue", "volvi", "vine", "entre en casa" }
+                    },
+                    versionB = "Admítelo: cuenta lo que ocultas, con sus detalles.",
+                    lieAbout = "la hora a la que llegó: vio a Elena con el golpe y no la llevó al hospital"
                 },
                 new CharacterRole
                 {
@@ -730,6 +778,7 @@ Tienes 7 días para descubrir qué pasó esa noche.",
                 new ClueData
                 {
                     id = "1C_llamada", playerName = "Una llamada corta", holder = "padre", kind = ClueKind.Incriminates, isSecret = true,
+                    exposesLie = true, exposesLieOf = "padre", // Rompe la mentira de Daniel (llegó a las 22:15); incrimina a Lucas
                     summary = "Lucas llamó a Daniel a las 21:52, llorando: 'Elena se ha caído, pero está bien'. Daniel llegó a casa a las 22:15, no a las 23:00.",
                     topic = "las llamadas de esa noche o a qué hora llegaste de verdad a casa",
                     fact = "Lucas te llamó a las 21:52 llorando: 'Elena se ha caído por la escalera, pero está bien'. Por eso llegaste a casa a las 22:15, no a las 23:00.",

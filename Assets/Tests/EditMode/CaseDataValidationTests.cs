@@ -39,7 +39,7 @@ public class CaseDataValidationTests
     {
         var (_, v) = Get(variantId);
 
-        Assert.That(v.clues.Count, Is.InRange(4, 6), "4-6 pistas");
+        Assert.That(v.clues.Count, Is.InRange(4, 7), "4-7 pistas"); // 7: decisión de Cristian para 2C (mentiras de inocentes)
         Assert.IsTrue(v.clues.Any(c => c.exposesLie), "al menos una pista que exponga la mentira");
         Assert.IsTrue(v.clues.Any(c => c.kind == ClueKind.Clears), "al menos una pista de descarte");
         Assert.AreEqual(v.clues.Count, v.clues.Select(c => c.id).Distinct().Count(), "ids únicos");
