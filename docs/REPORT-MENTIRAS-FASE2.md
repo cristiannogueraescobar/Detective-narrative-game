@@ -169,3 +169,14 @@ te tiene rencor». Es otro tema, otra hora y otro sitio.
    pregunta por Daniel). ¿Una pista de dirección (que alguien mencione que Amparo lo ve todo de Daniel)?
 
 Suites al cerrar: EditMode 966/967 (el que no corre es el benchmark, a petición) y PlayMode 68, con 0 fallos.
+
+## 6. Decisiones de Cristian sobre la fase 2 (03-10-2026)
+
+| Decisión | Resultado | Medida |
+|---|---|---|
+| 1. Final bueno a 6 puntos, si las 9 variantes llegan sin confesión | **Hecho.** `FinalBuenoAlcanzableSinElCulpable` y la prueba de resolubilidad (35 preguntas) pasan con 6 | Máximo sin confesión: 1A 6, 1B 9, 1C 6, 2A 6, 2B 6, 2C 7, 3A 6, 3B 8, 3C 6. **Seis variantes llegan justo a 6:** el final bueno exige todas las pistas incriminatorias y la contradicción del culpable |
+| 2. 3B: miente Encarna (el pleito del pozo); Javier ya no miente | **Cumple** | Pistas 87 % (`main` 84 %; `3B_pozo` 95 %, tras ampliar las anclas a cómo lo cuenta Javier). Premisas 0 % (`main` 5 %). Estados 99/97 % (`main` 99/98 %). Bot 4/4 dos veces (`main` 3/4), sin acusar a Encarna |
+| 3. `1B_receta` por Daniel se queda así | — | |
+| 4. "Pensar" sugiere preguntar a Amparo por la familia si aún nadie lo ha hecho (TDD) | **Cumple** | Bot de 1B, 8 partidas antes y después con la misma semilla: `1B_cena` sale en 0/8 → **3/8**; preguntas a Amparo sobre la familia 1 → 11; contradicción de Daniel 0 → 3 partidas; culpable 8/8 en las dos, sin acusar a Daniel |
+
+Los datos de 3B en el apartado 2 (Javier, `3B_tumbos`) quedan sustituidos por esto.

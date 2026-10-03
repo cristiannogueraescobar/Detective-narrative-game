@@ -1095,3 +1095,10 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
   sobre la noche y el sitio del crimen). Propuesta: Encarna y el pleito del pozo. Huecos que ya había en main:
   estados de la historia 2 (90 %) y premisas de la historia 3 (8-9 %). Informe: docs/REPORT-MENTIRAS-FASE2.md.
   EditMode 966/967, PlayMode 68. Sin fusionar.
+
+## Decisiones de Cristian sobre la fase 2 (03-10-2026)
+
+- **00:40** Final bueno a 6: las 9 variantes llegan sin confesión (seis justo a 6). Cambiado con TDD.
+- **00:55** 3B: miente Encarna (pleito del pozo), Javier ya no. "Pensar" manda a Amparo a hablar de la familia (TDD).
+- **01:55** 3B cumple (pistas 87 %, premisas 0 %, estados 99/97 %, bot 4/4). "Pensar": 1B_cena sale en 3/8 partidas del bot
+  (antes 0/8). Fusión a main a continuación.
