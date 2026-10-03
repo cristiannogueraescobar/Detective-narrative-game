@@ -37,4 +37,21 @@ public class PremiseCalibratorTests
         Assert.AreEqual(2, PremiseCalibrator.ExitCode(0));
         Assert.AreEqual(0, PremiseCalibrator.ExitCode(5));
     }
+
+    // Sesión C (premisas de la historia 3): negaba con las palabras de su ficha ("no te consta") y el clasificador lo
+    // contaba como aceptada
+    [TestCase("Ay, hijo, eso no me lo consta... No recuerdo ninguna pelea con Javier ese día. Estuve en casa toda la tarde viendo la tele, como siempre.")]
+    [TestCase("Pues mire, eso no me consta. Yo estuve en el bar.")]
+    public void NoMeConstaEsNegar(string answer)
+    {
+        Assert.IsTrue(PremiseCalibrator.Denies(answer));
+    }
+
+    // Segunda medida (premisas de la historia 3): Javier negaba la pelea de ese día diciendo cuándo fue de verdad
+    [TestCase("La última vez que discutimos fue en el juzgado, claro.")]
+    [TestCase("Esa no fue una discusión, simplemente fuimos al juzgado por la custodia y nos enfadamos un poco.")]
+    public void DecirQueLaDiscusionFueOtroDiaEsNegar(string answer)
+    {
+        Assert.IsTrue(PremiseCalibrator.Denies(answer));
+    }
 }

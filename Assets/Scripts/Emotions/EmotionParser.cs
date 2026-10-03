@@ -32,7 +32,8 @@ public static class EmotionParser
     private static readonly Regex Exact = new Regex(@"\[\s*estado\s*:", RegexOptions.IgnoreCase);
     // Etiqueta cortada por el límite de tokens: "[ESTADO: nerv", "[EST"
     private static readonly Regex Truncated = new Regex(@"\[\s*[a-záéíóú]{0,3}es[^\]\n]*$", RegexOptions.IgnoreCase);
-    private static readonly Regex Bare = new Regex(@"(^|\n)\s*estado\s*:\s*(\S+)\s*$", RegexOptions.IgnoreCase);
+    // Sin corchetes: en su propia línea o justo tras el final de una frase ("… esa noche.  ESTADO: asustado")
+    private static readonly Regex Bare = new Regex(@"(^|\n|(?<=[.!?…»])[ \t]+)\s*estado\s*:\s*(\S+)\s*$", RegexOptions.IgnoreCase);
     private static readonly Regex Spaces = new Regex(@"[ \t]+");
 
     /// <summary>
