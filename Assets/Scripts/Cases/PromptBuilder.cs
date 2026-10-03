@@ -13,8 +13,9 @@ public static class PromptBuilder
     {
         string who = string.IsNullOrEmpty(victim) ? "la víctima" : victim;
         // Todos los personajes ocultan algo: si "ocultar" bastase para estar nervioso, lo estarían siempre
-        // La víctima primero (también al describirla: ahí salía "tranquilo"); más corta la de "tranquilo" para no pasar del tope
-        return $"Si te hablan de {who}, o la describes: triste, nunca tranquilo. Tranquilo si te preguntan por ti o tu rutina. " +
+        // La víctima primero (también al describirla: ahí salía "tranquilo"). "Lo que viste" se queda: sin ella, los testigos
+        // contaban peor lo que vieron
+        return $"Si te hablan de {who}, o la describes: triste, nunca tranquilo. Tranquilo si te preguntan por ti, tu trabajo, tu rutina o lo que viste. " +
                "Si te acusan: enfadado o asustado. Nervioso solo si tocan lo de TE PONE NERVIOSO.";
     }
 

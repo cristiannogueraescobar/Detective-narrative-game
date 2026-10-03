@@ -113,4 +113,12 @@ public class EmotionSystemTests
         string guide = PromptBuilder.EmotionGuide("Sofía");
         StringAssert.StartsWith("Si te hablan de Sofía, o la describes: triste, nunca tranquilo.", guide);
     }
+
+    // Cuarta medida: al acortar "Tranquilo si te preguntan por ti, tu trabajo, tu rutina o lo que viste" se perdió "lo que
+    // viste", y los testigos contaban peor lo que vieron (2B_furgoneta, 3A_garrafas). Vuelve entera
+    [Test]
+    public void LosTestigosCuentanTranquilosLoQueVieron()
+    {
+        StringAssert.Contains("Tranquilo si te preguntan por ti, tu trabajo, tu rutina o lo que viste.", PromptBuilder.EmotionGuide("Sofía"));
+    }
 }
