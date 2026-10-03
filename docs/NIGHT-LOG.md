@@ -1102,3 +1102,13 @@ Nota: la sección "# Sesión B" del NIGHT-LOG está en `feature/retratos-javier`
 - **00:55** 3B: miente Encarna (pleito del pozo), Javier ya no. "Pensar" manda a Amparo a hablar de la familia (TDD).
 - **01:55** 3B cumple (pistas 87 %, premisas 0 %, estados 99/97 %, bot 4/4). "Pensar": 1B_cena sale en 3/8 partidas del bot
   (antes 0/8). Fusión a main a continuación.
+
+## Premisas (historia 3) y estados (historia 2), rama `feature/premisas-y-emociones` (03-10-2026)
+
+- **02:10** Arreglos con TDD: la etiqueta sin corchetes se leía mal y se veía en el chat; recordatorio de la etiqueta;
+  clasificador de premisas («no me consta»); Javier en 3C sabe que el sábado no vio a Lucía.
+- **03:20** Segunda vuelta: acusación primero en la guía; víctima primero; Encarna en 3A. Cola parada y relanzada en
+  cada cambio.
+- **09:15** Premisas de la historia 3: 4,2 % (main 8,3 %). Estados de la historia 2: solo v3 llega (95,2 %; main 88 %),
+  pero cuesta pistas en la historia 2 y en 3A y un tercio de las contradicciones en el bot. v4-v6 no llegan. La rama
+  queda en v3, sin fusionar; propuesta y decisiones en docs/REPORT-PREMISAS-EMOCIONES.md.
