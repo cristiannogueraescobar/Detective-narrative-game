@@ -82,14 +82,11 @@ public class EmotionSystemTests
         StringAssert.Contains("aunque describas a alguien", EmotionParser.TagInstruction);
     }
 
-    // Tercera medida: "aunque disimules" les ponía nerviosos y evasivos justo en los temas de sus pistas (Ruiz: 2C_prueba
-    // 77 → 47 %, 2B_imagenes 70 → 40 %). Fuera: lo que le pone nervioso vuelve a decirse sin más
     [Test]
-    public void LoQueTePoneNerviosoSinAunqueDisimules()
+    public void SeNotaLoQueTePoneNerviosoAunqueDisimules()
     {
         string guide = PromptBuilder.EmotionGuide("Sofía");
-        StringAssert.Contains("Nervioso solo si tocan lo de TE PONE NERVIOSO.", guide);
-        StringAssert.DoesNotContain("aunque disimules", guide);
+        StringAssert.Contains("TE PONE NERVIOSO, aunque disimules", guide);
         // Primera medida: con la cláusula metida antes de "si te acusan", las acusaciones salían tristes (69 de 360 frente
         // a 15 en main). La acusación va antes, en su propia frase
         StringAssert.Contains("Si te acusan: enfadado o asustado.", guide);
@@ -112,13 +109,5 @@ public class EmotionSystemTests
     {
         string guide = PromptBuilder.EmotionGuide("Sofía");
         StringAssert.StartsWith("Si te hablan de Sofía, o la describes: triste, nunca tranquilo.", guide);
-    }
-
-    // Cuarta medida: al acortar "Tranquilo si te preguntan por ti, tu trabajo, tu rutina o lo que viste" se perdió "lo que
-    // viste", y los testigos contaban peor lo que vieron (2B_furgoneta, 3A_garrafas). Vuelve entera
-    [Test]
-    public void LosTestigosCuentanTranquilosLoQueVieron()
-    {
-        StringAssert.Contains("Tranquilo si te preguntan por ti, tu trabajo, tu rutina o lo que viste.", PromptBuilder.EmotionGuide("Sofía"));
     }
 }

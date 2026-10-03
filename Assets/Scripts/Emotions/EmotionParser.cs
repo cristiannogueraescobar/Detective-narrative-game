@@ -24,7 +24,7 @@ public struct EmotionParse
 public static class EmotionParser
 {
     public const string TagInstruction =
-        "Termina SIEMPRE, aunque describas a alguien, con: [ESTADO: tranquilo], [ESTADO: nervioso], " +
+        "Termina SIEMPRE, aunque describas a alguien, con una línea: [ESTADO: tranquilo], [ESTADO: nervioso], " +
         "[ESTADO: asustado], [ESTADO: enfadado] o [ESTADO: triste].";
 
     // Tolera erratas alrededor de "estado" ("[MESTADO: x]", "[ESTADOS: x]"): si no, la etiqueta se veía en el chat
