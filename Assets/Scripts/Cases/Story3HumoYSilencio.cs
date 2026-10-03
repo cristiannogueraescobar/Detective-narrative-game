@@ -186,7 +186,8 @@ Tienes 7 días para descubrir qué pasó.",
                     doesNotKnow = "Qué pasó en la finca después de las nueve."
                 },
                 InnocentEncarna("El sábado estuve en casa toda la tarde; desde mi ventana se ve la finca de Javier.",
-                    "Javier bebe mucho desde el divorcio.", "Paula venía a ver tus caballos cuando estaba en la finca.")
+                    "Javier bebe mucho desde el divorcio.", "Paula venía a ver tus caballos cuando estaba en la finca.",
+                    "El sábado no hablaste con Javier: lo del pozo va por abogados.")
             },
             clues = new List<ClueData>
             {
@@ -572,7 +573,7 @@ Tienes 7 días para descubrir qué pasó.",
                 new CharacterRole
                 {
                     characterId = "padre",
-                    knowledge = new[] { MentionAlex, MentionEncarna },
+                    knowledge = new[] { MentionAlex, MentionEncarna, "El sábado no viste ni hablaste con Lucía; la última vez que discutisteis fue en el juzgado." },
                     version = "El sábado estuve en el bar Casino hasta las diez. Volví tarde y pensé que Paula dormía. El domingo ya no estaba.",
                     secret = "Esa noche bebiste demasiado y no entraste a ver a Paula al volver; te avergüenza.",
                     admitsWhen = "el inspector insiste",

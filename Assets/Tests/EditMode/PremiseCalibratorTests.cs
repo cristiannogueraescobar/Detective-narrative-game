@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 
 public class PremiseCalibratorTests
@@ -53,5 +54,23 @@ public class PremiseCalibratorTests
     public void DecirQueLaDiscusionFueOtroDiaEsNegar(string answer)
     {
         Assert.IsTrue(PremiseCalibrator.Denies(answer));
+    }
+
+    // Y la historia 3: Javier aceptaba una pelea con Lucía el sábado (su ficha habla del divorcio y la custodia, pero ese
+    // día no la vio). Ahora su ficha lo dice
+    [Test]
+    public void EnLaHistoria3JavierSabeQueElSabadoNoVioALucia()
+    {
+        CaseLibrary.TryFind("3C", out _, out VariantData v);
+        Assert.IsTrue(v.Role("padre").knowledge.Any(k => k.Contains("no viste ni hablaste con Lucía")));
+    }
+
+    // Encarna en 3A: hablaba del pleito del pozo (verdad) y se inventaba una pelea ese día. Como Javier en 3C, pero sin
+    // "no viste": en 3A sí le vio (3A_garrafas)
+    [Test]
+    public void EnLaHistoria3EncarnaSabeQueElSabadoNoHabloConJavier()
+    {
+        CaseLibrary.TryFind("3A", out _, out VariantData v);
+        Assert.IsTrue(v.Role("vecina").knowledge.Any(k => k.Contains("no hablaste con Javier")));
     }
 }
