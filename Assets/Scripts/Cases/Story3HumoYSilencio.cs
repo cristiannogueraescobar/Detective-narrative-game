@@ -502,14 +502,17 @@ Tienes 7 días para descubrir qué pasó.",
                     fact = "Encarna y tú lleváis años en pleitos por el agua del pozo; ella te tiene rencor y no os habláis.",
                     anchors = new[]
                     {
-                        new[] { "pleito", "juicio", "denuncia", "demanda", "abogado" },
+                        new[] { "pleito", "juicio", "denuncia", "demanda", "abogado", "problemas", "discut", "pelea", "lio", "rencor", "no nos llevamos", "no nos hablamos", "sin hablar" },
                         new[] { "pozo", "agua" }
                     },
                     calibrationQuestions = new[] { "¿Cómo se lleva con Encarna?", "¿Qué tal con los vecinos de la finca?" },
                     sampleHits = new[]
                     {
                         "Con Encarna, mal: llevamos años en pleitos por el agua del pozo y no nos hablamos.",
-                        "Los vecinos bien, menos Encarna: me puso una denuncia por el pozo y me tiene rencor."
+                        "Los vecinos bien, menos Encarna: me puso una denuncia por el pozo y me tiene rencor.",
+                        // Calibración: respuestas reales que el detector no veía
+                        "Con Encarna no nos llevamos bien, ella y yo siempre hemos tenido problemas por el agua del pozo.",
+                        "Con Encarna llevamos años sin hablarnos por el lío del agua; me tiene rencor."
                     },
                     sampleMisses = new[] { "Encarna es mayor, vive sola; poco más sé de ella.", "Con los vecinos, lo normal." }
                 }
