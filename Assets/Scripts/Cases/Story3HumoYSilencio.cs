@@ -186,7 +186,8 @@ Tienes 7 días para descubrir qué pasó.",
                     doesNotKnow = "Qué pasó en la finca después de las nueve."
                 },
                 InnocentEncarna("El sábado estuve en casa toda la tarde; desde mi ventana se ve la finca de Javier.",
-                    "Javier bebe mucho desde el divorcio.", "Paula venía a ver tus caballos cuando estaba en la finca.")
+                    "Javier bebe mucho desde el divorcio.", "Paula venía a ver tus caballos cuando estaba en la finca.",
+                    "El sábado no hablaste con Javier: lo del pozo va por abogados.")
             },
             clues = new List<ClueData>
             {

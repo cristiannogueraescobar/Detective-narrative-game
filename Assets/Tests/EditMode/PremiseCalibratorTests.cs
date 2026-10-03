@@ -56,4 +56,21 @@ public class PremiseCalibratorTests
         CaseLibrary.TryFind("3C", out _, out VariantData v);
         Assert.IsTrue(v.Role("padre").knowledge.Any(k => k.Contains("no viste ni hablaste con Lucía")));
     }
+
+    // Segunda medida (premisas de la historia 3): Javier negaba la pelea de ese día diciendo cuándo fue de verdad
+    [TestCase("La última vez que discutimos fue en el juzgado, claro.")]
+    [TestCase("Esa no fue una discusión, simplemente fuimos al juzgado por la custodia y nos enfadamos un poco.")]
+    public void DecirQueLaDiscusionFueOtroDiaEsNegar(string answer)
+    {
+        Assert.IsTrue(PremiseCalibrator.Denies(answer));
+    }
+
+    // Encarna en 3A: hablaba del pleito del pozo (verdad) y se inventaba una pelea ese día. Como Javier en 3C, pero sin
+    // "no viste": en 3A sí le vio (3A_garrafas)
+    [Test]
+    public void EnLaHistoria3EncarnaSabeQueElSabadoNoHabloConJavier()
+    {
+        CaseLibrary.TryFind("3A", out _, out VariantData v);
+        Assert.IsTrue(v.Role("vecina").knowledge.Any(k => k.Contains("no hablaste con Javier")));
+    }
 }
