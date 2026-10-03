@@ -101,4 +101,13 @@ public class EmotionSystemTests
         StringAssert.Contains("ERES EL CULPABLE", prompt);
         StringAssert.DoesNotContain("con calma", prompt);
     }
+
+    // Segunda medida (coherencia de estados): al describir a la víctima ya ponían etiqueta, pero "tranquilo" (66 de 360 en
+    // las preguntas sobre ella). La víctima va primero, también al describirla
+    [Test]
+    public void LaVictimaVaPrimeroTambienAlDescribirla()
+    {
+        string guide = PromptBuilder.EmotionGuide("Sofía");
+        StringAssert.StartsWith("Si te hablan de Sofía, o la describes: triste, nunca tranquilo.", guide);
+    }
 }
