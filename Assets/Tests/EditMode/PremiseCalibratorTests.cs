@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 
 public class PremiseCalibratorTests
@@ -36,5 +37,23 @@ public class PremiseCalibratorTests
         // Con Ollama apagado todas las peticiones fallan: un informe vacío no puede salir como éxito
         Assert.AreEqual(2, PremiseCalibrator.ExitCode(0));
         Assert.AreEqual(0, PremiseCalibrator.ExitCode(5));
+    }
+
+    // Sesión C (premisas de la historia 3): negaba con las palabras de su ficha ("no te consta") y el clasificador lo
+    // contaba como aceptada
+    [TestCase("Ay, hijo, eso no me lo consta... No recuerdo ninguna pelea con Javier ese día. Estuve en casa toda la tarde viendo la tele, como siempre.")]
+    [TestCase("Pues mire, eso no me consta. Yo estuve en el bar.")]
+    public void NoMeConstaEsNegar(string answer)
+    {
+        Assert.IsTrue(PremiseCalibrator.Denies(answer));
+    }
+
+    // Y la historia 3: Javier aceptaba una pelea con Lucía el sábado (su ficha habla del divorcio y la custodia, pero ese
+    // día no la vio). Ahora su ficha lo dice
+    [Test]
+    public void EnLaHistoria3JavierSabeQueElSabadoNoVioALucia()
+    {
+        CaseLibrary.TryFind("3C", out _, out VariantData v);
+        Assert.IsTrue(v.Role("padre").knowledge.Any(k => k.Contains("no viste ni hablaste con Lucía")));
     }
 }

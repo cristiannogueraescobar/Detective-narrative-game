@@ -73,4 +73,27 @@ public class EmotionSystemTests
     {
         Assert.AreEqual(coherent, EmotionCoherence.IsCoherent(probe, emotion));
     }
+
+    // Sesión C (coherencia de estados de la historia 2): sin etiqueta al describir a alguien; el culpable "tranquilo" en lo
+    // que le pone nervioso (su ficha le pedía calma) y en general disimulando
+    [Test]
+    public void LaEtiquetaSeAcuerdaTambienAlDescribirAAlguien()
+    {
+        StringAssert.Contains("aunque describas a alguien", EmotionParser.TagInstruction);
+    }
+
+    [Test]
+    public void SeNotaLoQueTePoneNerviosoAunqueDisimules()
+    {
+        StringAssert.Contains("TE PONE NERVIOSO, aunque disimules", PromptBuilder.EmotionGuide("Sofía"));
+    }
+
+    [Test]
+    public void AlCulpableYaNoSeLePideCalma()
+    {
+        CaseLibrary.TryFind("2C", out StoryData story, out VariantData v);
+        string prompt = PromptBuilder.Build(story, v, v.culpritId, 1, null, null);
+        StringAssert.Contains("ERES EL CULPABLE", prompt);
+        StringAssert.DoesNotContain("con calma", prompt);
+    }
 }

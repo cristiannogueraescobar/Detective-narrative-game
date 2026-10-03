@@ -125,4 +125,22 @@ public class EmotionParserTests
     {
         StringAssert.Contains("[ESTADO: pensativo]", EmotionParser.Canonical("Hola. [ESTADO: pensativo]"));
     }
+
+    // Calibración de estados (sesión C): "… No estuve en casa esa noche.  ESTADO: asustado", sin corchetes y en la misma
+    // línea; el chat lo enseñaba tal cual y el estado no contaba
+    [TestCase("No estuve en casa esa noche.  ESTADO: asustado", Emotion.Asustado, "No estuve en casa esa noche.")]
+    [TestCase("Nadie me vio, chaval. ESTADO: enfadado", Emotion.Enfadado, "Nadie me vio, chaval.")]
+    public void LaEtiquetaSinCorchetesTrasElPuntoTambienCuenta(string raw, Emotion expected, string text)
+    {
+        EmotionParse p = EmotionParser.Parse(raw);
+        Assert.AreEqual(expected, p.emotion);
+        Assert.AreEqual(text, p.text);
+    }
+
+    [Test]
+    public void LaPalabraEstadoEnMitadDeUnaFraseNoEsUnaEtiqueta()
+    {
+        EmotionParse p = EmotionParser.Parse("Le dije que su estado: nervioso perdido, no era normal.");
+        Assert.IsNull(p.emotion);
+    }
 }

@@ -14,7 +14,7 @@ public static class PromptBuilder
         string who = string.IsNullOrEmpty(victim) ? "la víctima" : victim;
         // Todos los personajes ocultan algo: si "ocultar" bastase para estar nervioso, lo estarían siempre
         return $"Tranquilo si te preguntan por ti, tu trabajo, tu rutina o lo que viste. Si te hablan de {who}: triste, nunca tranquilo. " +
-               "Nervioso solo si tocan lo de TE PONE NERVIOSO; enfadado o asustado si te acusan.";
+               "Nervioso solo si tocan lo de TE PONE NERVIOSO, aunque disimules; enfadado o asustado si te acusan.";
     }
 
     public static string Build(StoryData story, VariantData variant, string characterId, int day,
@@ -63,7 +63,7 @@ public static class PromptBuilder
 
         if (isCulprit)
         {
-            sb.AppendLine("ERES EL CULPABLE, pero nunca lo confiesas. Mantén tu versión con calma y no des detalles de más.");
+            sb.AppendLine("ERES EL CULPABLE, pero nunca lo confiesas. Mantén tu versión y no des detalles de más.");
             sb.AppendLine($"SI EL INSPECTOR TE MUESTRA UNA PRUEBA QUE CONTRADICE TU VERSIÓN: {role.versionB}");
             if (!string.IsNullOrEmpty(role.lieStrategy))
                 sb.AppendLine($"CÓMO SOSTIENES LA MENTIRA: {role.lieStrategy}");

@@ -23,7 +23,7 @@ public static class PremiseCalibrator
     // Negaciones al principio de la respuesta
     private static readonly Regex Denial = new Regex(
         @"^\W*(no\b|nunca|jam[aá]s|mentira|falso|qu[eé] va|eso no|se equivoca|imposible|de ninguna manera|en absoluto)|" +
-        @"\b(no (discut|pas[oó]|es verdad|es cierto|recuerdo|s[eé] de qu[eé])|nunca (he|hemos|discut)|mentira|se equivoca|no he discutido|apenas nos hablamos)",
+        @"\b(no (discut|pas[oó]|es verdad|es cierto|recuerdo|s[eé] de qu[eé])|nunca (he|hemos|discut)|mentira|se equivoca|no he discutido|apenas nos hablamos|no (me )?(lo )?consta)",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     public static bool Denies(string answer)

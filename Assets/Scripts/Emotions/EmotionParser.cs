@@ -24,7 +24,7 @@ public struct EmotionParse
 public static class EmotionParser
 {
     public const string TagInstruction =
-        "Termina SIEMPRE con una línea aparte que diga cómo te sientes: [ESTADO: tranquilo], [ESTADO: nervioso], " +
+        "Termina SIEMPRE, aunque describas a alguien, con una línea: [ESTADO: tranquilo], [ESTADO: nervioso], " +
         "[ESTADO: asustado], [ESTADO: enfadado] o [ESTADO: triste].";
 
     // Tolera erratas alrededor de "estado" ("[MESTADO: x]", "[ESTADOS: x]"): si no, la etiqueta se veía en el chat
@@ -32,7 +32,8 @@ public static class EmotionParser
     private static readonly Regex Exact = new Regex(@"\[\s*estado\s*:", RegexOptions.IgnoreCase);
     // Etiqueta cortada por el límite de tokens: "[ESTADO: nerv", "[EST"
     private static readonly Regex Truncated = new Regex(@"\[\s*[a-záéíóú]{0,3}es[^\]\n]*$", RegexOptions.IgnoreCase);
-    private static readonly Regex Bare = new Regex(@"(^|\n)\s*estado\s*:\s*(\S+)\s*$", RegexOptions.IgnoreCase);
+    // Sin corchetes: en su propia línea o justo tras el final de una frase ("… esa noche.  ESTADO: asustado")
+    private static readonly Regex Bare = new Regex(@"(^|\n|(?<=[.!?…»])[ \t]+)\s*estado\s*:\s*(\S+)\s*$", RegexOptions.IgnoreCase);
     private static readonly Regex Spaces = new Regex(@"[ \t]+");
 
     /// <summary>

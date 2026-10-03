@@ -572,7 +572,7 @@ Tienes 7 días para descubrir qué pasó.",
                 new CharacterRole
                 {
                     characterId = "padre",
-                    knowledge = new[] { MentionAlex, MentionEncarna },
+                    knowledge = new[] { MentionAlex, MentionEncarna, "El sábado no viste ni hablaste con Lucía; la última vez que discutisteis fue en el juzgado." },
                     version = "El sábado estuve en el bar Casino hasta las diez. Volví tarde y pensé que Paula dormía. El domingo ya no estaba.",
                     secret = "Esa noche bebiste demasiado y no entraste a ver a Paula al volver; te avergüenza.",
                     admitsWhen = "el inspector insiste",
