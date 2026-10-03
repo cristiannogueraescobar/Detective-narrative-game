@@ -32,4 +32,21 @@ public class EmotionCalibratorTests
     {
         Assert.AreEqual(passes, EmotionCalibrator.Passes(ok, total));
     }
+
+    // Estados de la historia 2 personaje a personaje: la lista de fallos se corta a 25 y no deja ver quién falla
+    [Test]
+    public void LaTablaPorPersonajeCuentaCadaTipoDePregunta()
+    {
+        string table = EmotionCalibrator.ByCharacterTable(new[]
+        {
+            ("2C", "ruiz", EmotionProbe.Victima, true),
+            ("2C", "ruiz", EmotionProbe.Victima, false),
+            ("2C", "ruiz", EmotionProbe.Acusacion, true),
+            ("2A", "nuria", EmotionProbe.Neutra, true)
+        });
+
+        StringAssert.Contains("| 2A · nuria | 1/1 | — | — | — | 1/1 |", table);
+        StringAssert.Contains("| 2C · ruiz | — | 1/2 | — | 1/1 | 2/3 |", table);
+        Assert.Less(table.IndexOf("2A · nuria"), table.IndexOf("2C · ruiz"));
+    }
 }

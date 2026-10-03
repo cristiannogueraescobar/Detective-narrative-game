@@ -176,8 +176,20 @@ public static class EmotionCalibrator
         }
 
         sb.AppendLine();
+        sb.AppendLine("| Historia / variante | Bien formada | Coherente |");
+        sb.AppendLine("|---|---|---|");
+        foreach (var story in samples.GroupBy(s => s.variantId.Substring(0, 1)).OrderBy(g => g.Key))
+        {
+            sb.AppendLine($"| **Historia {story.Key}** | {story.Count(s => s.parse.wellFormed)}/{story.Count()} | **{story.Count(s => s.Coherent)}/{story.Count()} ({Rate(story.Count(s => s.Coherent), story.Count())})** |");
+            foreach (var variant in story.GroupBy(s => s.variantId).OrderBy(g => g.Key))
+                sb.AppendLine($"| {variant.Key} | {variant.Count(s => s.parse.wellFormed)}/{variant.Count()} | {variant.Count(s => s.Coherent)}/{variant.Count()} |");
+        }
+        sb.AppendLine();
+        sb.Append(ByCharacterTable(samples.Select(s => (s.variantId, s.characterId, s.probe, s.Coherent))));
+        sb.AppendLine();
+        // Todas: cortada a 25, la lista daba la impresión de que una historia no fallaba
         sb.AppendLine("## Respuestas mal formadas o incoherentes");
-        foreach (Sample s in samples.Where(s => !s.parse.wellFormed || !s.Coherent).Take(25))
+        foreach (Sample s in samples.Where(s => !s.parse.wellFormed || !s.Coherent))
         {
             sb.AppendLine();
             sb.AppendLine($"- {s.variantId} · {s.characterId} · {s.probe} · \"{s.question}\" → {(s.parse.emotion?.ToString() ?? "sin estado")}{(s.parse.wellFormed ? "" : " (mal formada)")}");
@@ -188,6 +200,25 @@ public static class EmotionCalibrator
         File.WriteAllText(ReportPath, sb.ToString(), new UTF8Encoding(false));
         Console.WriteLine($"[Estados] Bien formada {wellFormed}/{samples.Count}, coherente {coherent}/{samples.Count}. Informe: {Path.GetFullPath(ReportPath)}");
         return passed;
+    }
+
+    /// <summary>Coherentes por variante y personaje, una columna por tipo de pregunta.</summary>
+    public static string ByCharacterTable(IEnumerable<(string variantId, string characterId, EmotionProbe probe, bool coherent)> rows)
+    {
+        var probes = (EmotionProbe[])Enum.GetValues(typeof(EmotionProbe));
+        var sb = new StringBuilder();
+        sb.AppendLine("| Personaje | " + string.Join(" | ", probes) + " | Total |");
+        sb.AppendLine("|---|" + string.Concat(probes.Select(_ => "---|")) + "---|");
+        foreach (var who in rows.GroupBy(r => (r.variantId, r.characterId)).OrderBy(g => g.Key.variantId).ThenBy(g => g.Key.characterId))
+        {
+            var cells = probes.Select(p =>
+            {
+                var of = who.Where(r => r.probe == p).ToList();
+                return of.Count == 0 ? "—" : $"{of.Count(r => r.coherent)}/{of.Count}";
+            });
+            sb.AppendLine($"| {who.Key.variantId} · {who.Key.characterId} | {string.Join(" | ", cells)} | {who.Count(r => r.coherent)}/{who.Count()} |");
+        }
+        return sb.ToString();
     }
 
     private static string Rate(int ok, int total)
